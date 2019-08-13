@@ -1234,7 +1234,7 @@ namespace TSBTool
             // AttributeForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(400, 274);
+            this.ClientSize = new System.Drawing.Size(400, 273);
             this.Controls.Add(this.m_AutoUpdateButton);
             this.Controls.Add(this.m_JerseyNumberUpDown);
             this.Controls.Add(this.m_CancelButton);
@@ -1257,7 +1257,7 @@ namespace TSBTool
             this.Controls.Add(this.m_PositionComboBox);
             this.Controls.Add(this.m_TeamsComboBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximumSize = new System.Drawing.Size(416, 312);
+            this.MaximumSize = new System.Drawing.Size(800, 600);
             this.MinimumSize = new System.Drawing.Size(416, 312);
             this.Name = "AttributeForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

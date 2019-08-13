@@ -29,7 +29,7 @@ namespace TSBTool
 		// TODO change back to private;
 		protected byte[] outputRom;
 		protected  int namePointersStart         = 0x48;
-		protected  int lastPointer               = 0x6d8;
+		protected  int lastPlayerNamePointer     = 0x6d8;
 		protected  int ROM_LENGTH                = 0x60010;
 		// the locations below are correct (I think), but they are unused.
 		//		private int playerNumberNameDataStart = 0x06Da;
@@ -89,6 +89,7 @@ namespace TSBTool
 		public static  bool ShowTeamFormation = false;
 		public static  bool ShowPlaybook      = false;
 		public static  bool ShowColors        = false;
+		public static bool ShowTeamStrings    = false;
 
 		
 		private bool mShowOffPref = false;
@@ -461,20 +462,26 @@ Do you want to continue?",ROM_LENGTH, filename, len),
 				int pos = GetPointerPosition(team,position);
 
 				UpdatePlayerData(team,position,bytes, change);
-				AdjustDataPointers(pos, change);
+				AdjustDataPointers(pos, change, lastPlayerNamePointer);
 			}
 		}
 
-		protected virtual void AdjustDataPointers(int pos, int change)
+		/// <summary>
+		/// Updates strng pointers
+		/// </summary>
+		/// <param name="pos">The position of the current pointer</param>
+		/// <param name="change">the amount of change</param>
+		/// <param name="lastPointer">the last pointer to update.</param>
+		protected virtual void AdjustDataPointers(int firstPointerLocation, int change, int lastPointerLocation)
 		{
 			byte low, hi;
 			int  word;
-			// last pointer is at 0x69d For NES
+			// last player name pointer is at 0x69d For NES
 			// snes is lastpointer+1 (0x178738+1)
 
 			int i=0;
-			int end = lastPointer+1;
-			for( i = pos+2; i < end; i+=2)
+			int end = lastPointerLocation+1;
+			for( i = firstPointerLocation+2; i < end; i+=2)
 			{
 				low  =  outputRom[i];
 				hi   =  outputRom[i+1];
@@ -511,7 +518,7 @@ Do you want to continue?",ROM_LENGTH, filename, len),
 			int nextPos = GetNextDataPosition(team,position);
 			if( nextPos == -1 )
 			{
-				int pointerLocation = lastPointer;
+				int pointerLocation = lastPlayerNamePointer;
 				byte lowByte = outputRom[pointerLocation];
 				int  hiByte  = outputRom[pointerLocation+1];
 				hiByte =  hiByte << 8;
@@ -657,6 +664,11 @@ Do you want to continue?",ROM_LENGTH, filename, len),
 			{
 				result.Append(string.Format("{0}\n", GetPlaybook(team)));
 			}
+			if (ShowTeamStrings)
+			{
+				int teamIndex = GetTeamIndex(team);
+				result.Append(string.Format("TEAM_ABB={0},TEAM_CITY={1},TEAM_NAME={2}\n", GetTeamAbbreviation(teamIndex), GetTeamCity(teamIndex), GetTeamName(teamIndex)));
+			}
 			if(ShowColors)
 			{
 //				result.Append(string.Format("COLORS {0}, {1}\n",
@@ -682,6 +694,121 @@ Do you want to continue?",ROM_LENGTH, filename, len),
 			result.Append("\n");
 			return result.ToString();
 		}
+
+		#region Team string table stuff
+
+		public virtual string GetTeamName(int teamIndex)
+		{
+			string retVal = GetTeamStringTableString(teamIndex + 64);
+			return retVal;
+		}
+
+		public virtual string GetTeamCity(int teamIndex)
+		{
+			string retVal = GetTeamStringTableString(teamIndex+32);
+			return retVal;
+		}
+
+		public virtual string GetTeamAbbreviation(int teamIndex)
+		{
+			string retVal = GetTeamStringTableString(teamIndex);
+			return retVal;
+		}
+
+		public virtual string GetTeamStringTableString(int stringIndex)
+		{
+			int length = 0;
+			int stringStartingLocation = GetTeamStringTableLocation(stringIndex, out length);
+
+			char[] stringChars = new char[length];
+			for (int i = 0; i < stringChars.Length; i++)
+			{
+				stringChars[i] = (char)OutputRom[stringStartingLocation + i];
+			}
+			string retVal = new string(stringChars);
+			return retVal;
+		}
+
+		/// <summary>
+		/// Returns the location of the 'Team' string table. This string table 
+		/// contains the city abbreviations, city names and team names.
+		/// </summary>
+		/// <param name="stringIndex">The index of the string to get.</param>
+		/// <param name="length">out param stores the length.</param>
+		/// <returns>Returns the location of the string at the specified index.</returns>
+		private int GetTeamStringTableLocation(int stringIndex, out int length)
+		{
+			int team_string_table_loc = GetTeamStringTableStart();
+			int pointer_loc = team_string_table_loc + 2 * stringIndex;
+			byte b1 = OutputRom[pointer_loc + 1];
+			byte b2 = OutputRom[pointer_loc];
+			byte b3 = OutputRom[pointer_loc + 3]; // b3 & b4 for length
+			byte b4 = OutputRom[pointer_loc + 2];
+			length = ((b3 << 8) + b4) - ((b1 << 8) + b2);
+			int pointerVal = (b1 << 8) + b2;
+			pointerVal -= 0xBC00;// table adjustment
+			int stringStartingLocation = team_string_table_loc + pointerVal;
+			return stringStartingLocation;
+		}
+
+		public virtual void SetTeamStringTableString(int stringIndex, string newValue)
+		{
+			int junk = 0;
+			string oldValue = GetTeamStringTableString(stringIndex);
+			if (oldValue == newValue)
+				return;
+			int shiftAmount = newValue.Length - oldValue.Length;
+			if (shiftAmount != 0)
+			{
+				int currentPointerLocation = GetTeamStringTableStart() + 2 * stringIndex;
+				int lastPointerLocation = GetTeamStringTableStart() + 2 * NumberOfStringsInTeamStringTable;
+				AdjustDataPointers(currentPointerLocation, shiftAmount, lastPointerLocation);
+				int startPosition = GetTeamStringTableLocation(stringIndex + 1, out junk) -1 ;
+				int endPosition = 0x20000;
+				if (shiftAmount < 0)
+					ShiftDataUp(startPosition, endPosition, shiftAmount, outputRom);
+				else if (shiftAmount > 0)
+					ShiftDataDown(startPosition, endPosition, shiftAmount, outputRom);
+			}
+			// lay down the value
+			int startLoc = GetTeamStringTableLocation(stringIndex, out shiftAmount);
+			for (int i = 0; i < newValue.Length; i++)
+			{
+				OutputRom[startLoc + i] = (byte)newValue[i];
+			}
+		}
+
+		public virtual int NumberOfStringsInTeamStringTable { get { return 119; } }
+
+		public virtual void SetTeamAbbreviation(int teamIndex, string abb)
+		{
+			if (abb != null && abb.Length == 4)
+			{
+				SetTeamStringTableString(teamIndex, abb);
+			}
+			else
+				errors.Add(string.Format(
+					"Error setting team abbreviation, teamIndex={0}; value length must == 4; {1}",
+					teamIndex, abb));
+		}
+
+		public virtual void SetTeamName(int teamIndex, string name)
+		{
+			SetTeamStringTableString(teamIndex + 64, name);
+		}
+
+		public virtual void SetTeamCity(int teamIndex, string city)
+		{
+			SetTeamStringTableString(teamIndex + 32, city);
+		}
+
+		protected virtual int GetTeamStringTableStart()
+		{
+			int team_string_table_loc = 0x1fc00 + 0x10; // need to add 0x10 later to account for the NES header
+			return team_string_table_loc;
+		}
+		#endregion
+
 
 		public virtual string GetAll()
 		{
@@ -773,7 +900,7 @@ Do you want to continue?",ROM_LENGTH, filename, len),
 			//if(team == "falcons" && position == "P")
 			if(team == teams[teams.Length-1] && position == positionNames[positionNames.Length-1] )
 				//return 0x6d6;
-				return lastPointer-2; //TODO: check this
+				return lastPlayerNamePointer-2; //TODO: check this
 			if(positionIndex < 0)
 			{
 				errors.Add(string.Format("ERROR! (low level) Position '{0}' does not exist. Valid positions are:",position));

@@ -22,7 +22,8 @@ namespace TSBTool
 		private static Regex teamRegex, weekRegex, gameRegex, numberRegex, 
 			posNameFaceRegex, simDataRegex, yearRegex, setRegex,
 			returnTeamRegex, offensiveFormationRegex, playbookRegex,
-			juiceRegex, homeRegex, awayRegex, divChampRegex, confChampRegex, uniformUsageRegex;
+			juiceRegex, homeRegex, awayRegex, divChampRegex, confChampRegex,
+			uniformUsageRegex, replaceStringRegex, teamStringsRegex;
 
 		private string currentTeam; //used for roster update
 		private ArrayList scheduleList;
@@ -62,6 +63,8 @@ namespace TSBTool
 				divChampRegex    = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
 				confChampRegex   = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
 				uniformUsageRegex= new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
+				replaceStringRegex = new Regex("ReplaceString\\(\\s*\"([A-Za-z0-9 .]+)\"\\s*,\\s*\"([A-Za-z .]+)\"\\s*(,\\s*([0-9]+))*\\s*\\)");
+				teamStringsRegex = new Regex("TEAM_ABB=([0-9A-Z. ]+),TEAM_CITY=([0-9A-Z .]+),TEAM_NAME=([0-9A-Z .]+)");
 			}
 //			colorsRegex      = new Regex(
 //                 "COLORS\\s*Home\\s*=\\s*(0x[0-9a-fA-F]{4})\\s*,\\s*Away\\s*=\\s*(0x[0-9a-fA-F]{4})\\s*,\\s*"+
@@ -257,85 +260,122 @@ namespace TSBTool
 					}
 				}
 			}
-			else if(line.StartsWith("COLORS")) // do the colors here
-			{
-				string tmp;
+            else if (line.StartsWith("ReplaceString"))
+            {
+                Match repMatch = replaceStringRegex.Match(line);
+                string find = "";
+                string replace = "";
+                int occur = -1;
+                if (repMatch.Groups.Count > 1)
+                {
+                    find = repMatch.Groups[1].ToString();
+                    replace = repMatch.Groups[2].ToString();
+                    if (repMatch.Groups.Count > 3)
+                    {
+                        Int32.TryParse(repMatch.Groups[4].ToString(), out occur);
+                        occur--;
+                    }
+                    String msg = StaticUtils.ReplaceStringInRom(tool.OutputRom, find, replace, occur);
+                    if (msg.StartsWith("Error"))
+                        errors.Add(msg);
+                    else
+                        Console.WriteLine(msg);
+                }
+                else
+                {
+                    errors.Add(String.Format("ERROR! Not enough info to use 'ReplaceString' function.Line={0}",line));
+                }
+            }
+            else if (line.StartsWith("TEAM_ABB"))
+            {
+                Match teamStringsMatch = teamStringsRegex.Match(line);
+                string teamAbb  = teamStringsMatch.Groups[1].ToString();
+                string teamCity = teamStringsMatch.Groups[2].ToString();
+                string teamName = teamStringsMatch.Groups[3].ToString();
+                int index = TecmoTool.GetTeamIndex(currentTeam);
+                tool.SetTeamAbbreviation(index, teamAbb);
+                tool.SetTeamCity(index, teamCity);
+                tool.SetTeamName(index, teamName);
+            }
+            else if (line.StartsWith("COLORS")) // do the colors here
+            {
+                string tmp;
 
-				Match home = homeRegex.Match(line);
-				Match away = awayRegex.Match(line);
-				Match confChamp = confChampRegex.Match(line);
-				Match divChamp = divChampRegex.Match(line);
-				Match uniUsage = uniformUsageRegex.Match(line);
-				if( home != Match.Empty )
-				{
-					tmp = home.Groups[1].Value;
-					tool.SetHomeUniform(currentTeam, tmp);
-				}
-				if( away != Match.Empty )
-				{
-					tmp = away.Groups[1].Value;
-					tool.SetAwayUniform(currentTeam, tmp);
-				}
-				if( confChamp != Match.Empty )
-				{
-					tmp = confChamp.Groups[1].Value;
-					tool.SetConfChampColors(currentTeam, tmp);
-				}
-				if( divChamp != Match.Empty )
-				{
-					tmp = divChamp.Groups[1].Value;
-					tool.SetDivChampColors(currentTeam, tmp);
-				}
-				if( uniUsage != Match.Empty )
-				{
-					tmp = uniUsage.Groups[1].Value;
-					tool.SetUniformUsage(currentTeam, tmp);
-				}
-			}
-			else if( teamRegex.Match(line) != Match.Empty )//line.StartsWith("TEAM") )
-			{
-				Console.WriteLine("'{0}' ",line);
-				currentState = rosterState;
-				string team = GetTeam(line);
-				bool ret = SetCurrentTeam(team);
-				if(!ret)
-				{
-					errors.Add(string.Format("ERROR with line '{0}'.",line));
-					errors.Add(string.Format("Team input must be in the form 'TEAM = team SimData=0x1F'"));
-					return;
-				}
-				int[] simData = GetSimData(line);
-				if( simData != null )
-				{
-					if(simData[0] > -1)
-						tool.SetTeamSimData(currentTeam,(byte)simData[0]);
-					else
-						errors.Add(string.Format("Warning: No sim data for team {0}",team));
+                Match home = homeRegex.Match(line);
+                Match away = awayRegex.Match(line);
+                Match confChamp = confChampRegex.Match(line);
+                Match divChamp = divChampRegex.Match(line);
+                Match uniUsage = uniformUsageRegex.Match(line);
+                if (home != Match.Empty)
+                {
+                    tmp = home.Groups[1].Value;
+                    tool.SetHomeUniform(currentTeam, tmp);
+                }
+                if (away != Match.Empty)
+                {
+                    tmp = away.Groups[1].Value;
+                    tool.SetAwayUniform(currentTeam, tmp);
+                }
+                if (confChamp != Match.Empty)
+                {
+                    tmp = confChamp.Groups[1].Value;
+                    tool.SetConfChampColors(currentTeam, tmp);
+                }
+                if (divChamp != Match.Empty)
+                {
+                    tmp = divChamp.Groups[1].Value;
+                    tool.SetDivChampColors(currentTeam, tmp);
+                }
+                if (uniUsage != Match.Empty)
+                {
+                    tmp = uniUsage.Groups[1].Value;
+                    tool.SetUniformUsage(currentTeam, tmp);
+                }
+            }
+            else if (teamRegex.Match(line) != Match.Empty)//line.StartsWith("TEAM") )
+            {
+                Console.WriteLine("'{0}' ", line);
+                currentState = rosterState;
+                string team = GetTeam(line);
+                bool ret = SetCurrentTeam(team);
+                if (!ret)
+                {
+                    errors.Add(string.Format("ERROR with line '{0}'.", line));
+                    errors.Add(string.Format("Team input must be in the form 'TEAM = team SimData=0x1F'"));
+                    return;
+                }
+                int[] simData = GetSimData(line);
+                if (simData != null)
+                {
+                    if (simData[0] > -1)
+                        tool.SetTeamSimData(currentTeam, (byte)simData[0]);
+                    else
+                        errors.Add(string.Format("Warning: No sim data for team {0}", team));
 
-					if( simData[1] > -1 )
-						tool.SetTeamSimOffensePref(currentTeam, simData[1]);
-				}
-				else
-					errors.Add(string.Format("ERROR with line '{0}'.",line));
+                    if (simData[1] > -1)
+                        tool.SetTeamSimOffensePref(currentTeam, simData[1]);
+                }
+                else
+                    errors.Add(string.Format("ERROR with line '{0}'.", line));
 
-				Match oFormMatch = offensiveFormationRegex.Match(line);
-				if( oFormMatch != Match.Empty )
-				{
-					string formation = oFormMatch.Groups[1].ToString();
-					tool.SetTeamOffensiveFormation( team, formation );
-				}
-			}
-			else if( weekRegex.Match(line) != Match.Empty )  //line.StartsWith("WEEK"))
-			{
-				currentState = scheduleState;
-				if( scheduleList == null)
-					scheduleList = new ArrayList(300);
-				scheduleList.Add( line );
-			}
-			else if( yearRegex.Match(line) != Match.Empty )//line.StartsWith("YEAR"))
-			{
-				SetYear(line);
-			}
+                Match oFormMatch = offensiveFormationRegex.Match(line);
+                if (oFormMatch != Match.Empty)
+                {
+                    string formation = oFormMatch.Groups[1].ToString();
+                    tool.SetTeamOffensiveFormation(team, formation);
+                }
+            }
+            else if (weekRegex.Match(line) != Match.Empty)  //line.StartsWith("WEEK"))
+            {
+                currentState = scheduleState;
+                if (scheduleList == null)
+                    scheduleList = new ArrayList(300);
+                scheduleList.Add(line);
+            }
+            else if (yearRegex.Match(line) != Match.Empty)//line.StartsWith("YEAR"))
+            {
+                SetYear(line);
+            }
             else if (line.StartsWith("AFC") || line.StartsWith("NFC"))
             {
                 String[] parts = line.Replace(" ", "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -353,15 +393,15 @@ namespace TSBTool
                     }
                 }
             }
-			else if(currentState == scheduleState)
-			{
-				if( scheduleList != null )
-					scheduleList.Add(line);
-			}
-			else if(currentState == rosterState)
-			{
-				UpdateRoster(line);
-			}
+            else if (currentState == scheduleState)
+            {
+                if (scheduleList != null)
+                    scheduleList.Add(line);
+            }
+            else if (currentState == rosterState)
+            {
+                UpdateRoster(line);
+            }
             else
             {
                 errors.Add(string.Format("Garbage/orphin line not applied \"{0}\"", line));
@@ -536,8 +576,6 @@ namespace TSBTool
 
 		private void SetQB(string line)
 		{
-			string input = line.ToLower();
-			//string simString = simRegex.Match(line).Groups[1].ToString();
 			string fname = GetFirstName(line);
 			string lname = GetLastName(line);
 			string pos = GetPosition(line);
@@ -793,7 +831,7 @@ namespace TSBTool
 			return pos;
 		}
 
-		public string GetLastName(string line)
+		public string oldGetLastName(string line)
 		{
 			string ret ="";
 			Match m = posNameFaceRegex.Match(line);
@@ -806,7 +844,7 @@ namespace TSBTool
 			return ret;
 		}
 
-		public string GetFirstName(string line)
+		public string oldGetFirstName(string line)
 		{
 			string ret ="";
 			Match m = posNameFaceRegex.Match(line);
@@ -819,6 +857,41 @@ namespace TSBTool
 			}
 			return ret;
 		}
+
+        Regex mFirstNameRegex = new Regex("([a-z. ]+)");
+        Regex mLastNameRegex = new Regex(" ([A-Z. ]+)");
+
+        public string GetLastName(string line)
+        {
+            string ret = "";
+            Match m = posNameFaceRegex.Match(line);
+            if (m != Match.Empty)
+            {
+                string name = m.Groups[2].ToString().Trim();
+                Match m2 = mLastNameRegex.Match(name);
+                if (m2 != Match.Empty)
+                    ret = m2.Groups[1].ToString().Trim();
+                else
+                    Console.Error.WriteLine("ERROR Getting last name for>" + line);
+            }
+            return ret;
+        }
+
+        public string GetFirstName(string line)
+        {
+            string ret = "";
+            Match m = posNameFaceRegex.Match(line);
+            if (m != Match.Empty)
+            {
+                string name = m.Groups[2].ToString().Trim();
+                Match m2 = mFirstNameRegex.Match(name);
+                if (m2 != Match.Empty)
+                    ret = m2.Groups[1].ToString().Trim();
+                else
+                    Console.Error.WriteLine("ERROR Getting first name for>" + line);
+            }
+            return ret;
+        }
 
 		
 		/// <summary>

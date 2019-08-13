@@ -83,6 +83,8 @@ namespace TSBTool
         private MenuItem mScheduleMenuItem;
         private MenuItem mHackStompMenuItem;
         private MenuItem mSetPatchMenuItem;
+        private MenuItem debugDialogMenuItem;
+        private MenuItem showTeamStringsMenuItem;
 		//filter="Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|All files (*.*)|*.*"
 		//private string nesFilter = "nes files (*.nes)|*.nes|SNES files (*.smc)|*.smc";
 		private string nesFilter = "TSB files (*.nes;*.smc)|*.nes;*.smc";
@@ -93,20 +95,22 @@ namespace TSBTool
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+
+			//**** drag/drop stuff ******//
+			richTextBox1.EnableAutoDragDrop = true;
+			richTextBox1.DragEnter += new DragEventHandler(richTextBox1_DragOver);
+			richTextBox1.DragDrop += new DragEventHandler(richTextBox1_DragDrop);
+			//**************************//
+
 			tool = TecmoToolFactory.GetToolForRom( romFileName );
 
 			if(romFileName != null && romFileName.Length > 0)
 			{
-				if( tool.Init(romFileName) )
-				{
-					state2();
-					UpdateTitle(romFileName);
-				}
-				else 
-					state1();
+				LoadROM(romFileName);
 			}
 			else
 				state1();
+
             PopulateHacksMenu();
 
 			if(dataFileName != null && dataFileName.Length > 0)
@@ -134,16 +138,34 @@ namespace TSBTool
 				}
 			}
 			catch {}
-			/*richTextBox1.Settings.AddKeywords(tool.GetTeams());
-			richTextBox1.Settings.AddKeywords(tool.GetPositionNames());
-			string[] others = {"TEAM","WEEK","Face","YEAR","at","Schedule"};
-			richTextBox1.Settings.AddKeywords(others);
-			richTextBox1.Settings.Comment = "^#";
-			richTextBox1.CompileKeywords();
-			richTextBox1.CompileRegexes();*/
 		}
 
+        void richTextBox1_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.All;
+            else
+                e.Effect = DragDropEffects.None;
+        }
 
+        void richTextBox1_DragDrop(object sender, DragEventArgs e)
+        {
+            Control tb = sender as Control;
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            string file = "";
+            if (files != null && files.Length == 1)
+            {
+                file = files[0].ToLower();
+                if (file.EndsWith(".nes"))
+                {
+                    LoadROM(file);
+                }
+                else if( file.EndsWith(".txt") || file.EndsWith(".csv"))
+                {
+                    LoadDataFile(file);
+                }
+            }
+        }
 
         private void PopulateHacksMenu()
         {
@@ -171,9 +193,7 @@ namespace TSBTool
             MenuItem item = sender as MenuItem;
             if (item != null)
             {
-                //item.Checked = !item.Checked;
                 string hack = item.Tag.ToString();
-                //if (item.Checked)
                 {
                     //Append hack
                     if( !richTextBox1.Text.EndsWith("\n") )
@@ -183,21 +203,6 @@ namespace TSBTool
                     if( !hack.EndsWith("\n"))
                         richTextBox1.AppendText("\n");
                 }
-                //else
-                //{
-                //    int oldStart = richTextBox1.SelectionStart;
-                //    object oldObj = Clipboard.GetDataObject();
-                //    //RemoveHack
-                //    int location = richTextBox1.Text.IndexOf(hack);
-                //    if (location > -1)
-                //    {
-                //        richTextBox1.SelectionStart = location;
-                //        richTextBox1.SelectionLength = hack.Length;
-                //        richTextBox1.Cut();
-                //        richTextBox1.SelectionStart = oldStart;
-                //        Clipboard.SetDataObject(oldObj);
-                //    }
-                //}
             }
         }
 
@@ -230,6 +235,7 @@ namespace TSBTool
 
 		private void state1()
 		{
+			debugDialogMenuItem.Enabled = false;
 			viewContentsBbutton.Enabled=false;
 			viewTSBContentsMenuItem.Enabled=false;
 			applyButton.Enabled=false;
@@ -238,6 +244,7 @@ namespace TSBTool
 
 		private void state2()
 		{
+			debugDialogMenuItem.Enabled = true;
 			viewContentsBbutton.Enabled=true;
 			viewTSBContentsMenuItem.Enabled=true;
 			applyButton.Enabled=true;
@@ -278,6 +285,7 @@ namespace TSBTool
             this.menuItem11 = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
             this.viewTSBContentsMenuItem = new System.Windows.Forms.MenuItem();
+            this.showTeamStringsMenuItem = new System.Windows.Forms.MenuItem();
             this.mProBowlMenuItem = new System.Windows.Forms.MenuItem();
             this.testScheduleMenuItem = new System.Windows.Forms.MenuItem();
             this.offensivePrefMenuItem = new System.Windows.Forms.MenuItem();
@@ -294,6 +302,7 @@ namespace TSBTool
             this.findNextMenuItem = new System.Windows.Forms.MenuItem();
             this.findPrevMenuItem = new System.Windows.Forms.MenuItem();
             this.hacksMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.debugDialogMenuItem = new System.Windows.Forms.MenuItem();
             this.mHackStompMenuItem = new System.Windows.Forms.MenuItem();
             this.mSetPatchMenuItem = new System.Windows.Forms.MenuItem();
             this.mScheduleMenuItem = new System.Windows.Forms.MenuItem();
@@ -386,6 +395,7 @@ namespace TSBTool
             this.menuItem11.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem5,
             this.viewTSBContentsMenuItem,
+            this.showTeamStringsMenuItem,
             this.mProBowlMenuItem,
             this.testScheduleMenuItem,
             this.offensivePrefMenuItem,
@@ -411,74 +421,80 @@ namespace TSBTool
             this.viewTSBContentsMenuItem.Text = "View TSB contents";
             this.viewTSBContentsMenuItem.Click += new System.EventHandler(this.viewTSBContentsMenuItem_Click);
             // 
+            // showTeamStringsMenuItem
+            // 
+            this.showTeamStringsMenuItem.Index = 2;
+            this.showTeamStringsMenuItem.Text = "Show Team Abb, City, Name";
+            this.showTeamStringsMenuItem.Click += new EventHandler(showTeamStringsMenuItem_Click);
+            // 
             // mProBowlMenuItem
             // 
             this.mProBowlMenuItem.Checked = true;
-            this.mProBowlMenuItem.Index = 2;
+            this.mProBowlMenuItem.Index = 3;
             this.mProBowlMenuItem.Text = "Show ProBowl Roster";
             this.mProBowlMenuItem.Click += new System.EventHandler(this.mProBowlMenuItem_Click);
             // 
             // testScheduleMenuItem
             // 
-            this.testScheduleMenuItem.Index = 3;
+            this.testScheduleMenuItem.Index = 4;
             this.testScheduleMenuItem.Text = "Show Schedule Only";
             this.testScheduleMenuItem.Click += new System.EventHandler(this.testScheduleMenuItem_Click);
             // 
             // offensivePrefMenuItem
             // 
             this.offensivePrefMenuItem.Checked = true;
-            this.offensivePrefMenuItem.Index = 4;
+            this.offensivePrefMenuItem.Index = 5;
             this.offensivePrefMenuItem.Text = "Show Offensive Team &Preference";
             this.offensivePrefMenuItem.Click += new System.EventHandler(this.offensivePrefMenuItem_Click);
             // 
             // mOffensiveFormationsMenuItem
             // 
             this.mOffensiveFormationsMenuItem.Checked = true;
-            this.mOffensiveFormationsMenuItem.Index = 5;
+            this.mOffensiveFormationsMenuItem.Index = 6;
             this.mOffensiveFormationsMenuItem.Text = "Show Offensive Formaions";
             this.mOffensiveFormationsMenuItem.Click += new System.EventHandler(this.mOffensiveFormationsMenuItem_Click);
             // 
             // mPlaybookMenuItem
             // 
             this.mPlaybookMenuItem.Checked = true;
-            this.mPlaybookMenuItem.Index = 6;
+            this.mPlaybookMenuItem.Index = 7;
             this.mPlaybookMenuItem.Text = "Show Playbooks";
             this.mPlaybookMenuItem.Click += new System.EventHandler(this.mPlaybookMenuItem_Click);
             // 
             // mColorsMenuItem
             // 
-            this.mColorsMenuItem.Index = 7;
+            this.mColorsMenuItem.Index = 8;
             this.mColorsMenuItem.Text = "Show &Colors";
             this.mColorsMenuItem.Click += new System.EventHandler(this.mColorsMenuItem_Click);
             // 
             // eolMenuItem
             // 
             this.eolMenuItem.Checked = true;
-            this.eolMenuItem.Index = 8;
+            this.eolMenuItem.Index = 9;
             this.eolMenuItem.Text = "EOL= Windows Style (CR LF)";
             this.eolMenuItem.Click += new System.EventHandler(this.eolMenuItem_Click);
             // 
             // mEditPlayersMenuItem1
             // 
-            this.mEditPlayersMenuItem1.Index = 9;
+            this.mEditPlayersMenuItem1.Index = 10;
             this.mEditPlayersMenuItem1.Text = "&Edit Players";
             this.mEditPlayersMenuItem1.Click += new System.EventHandler(this.EditPlayers_Click);
             // 
             // mProwbowlMenuItem
             // 
-            this.mProwbowlMenuItem.Index = 10;
+            this.mProwbowlMenuItem.Index = 11;
             this.mProwbowlMenuItem.Text = "Edit &Pro Bowl";
             this.mProwbowlMenuItem.Click += new System.EventHandler(this.mProwbowlMenuItem_Click);
             // 
             // mEditTeamsMenuItem2
             // 
-            this.mEditTeamsMenuItem2.Index = 11;
+            this.mEditTeamsMenuItem2.Index = 12;
             this.mEditTeamsMenuItem2.Text = "Edit &Teams";
             this.mEditTeamsMenuItem2.Click += new System.EventHandler(this.mEditTeamsMenuItem_Click);
             // 
             // mDeleteCommasMenuItem
             // 
-            this.mDeleteCommasMenuItem.Index = 12;
+            this.mDeleteCommasMenuItem.Index = 13;
             this.mDeleteCommasMenuItem.Text = "&Delete Trailing Commas";
             this.mDeleteCommasMenuItem.Click += new System.EventHandler(this.mDeleteCommasMenuItem_Click);
             // 
@@ -513,19 +529,26 @@ namespace TSBTool
             // 
             this.hacksMainMenuItem.Index = 3;
             this.hacksMainMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.debugDialogMenuItem,
             this.mHackStompMenuItem,
             this.mSetPatchMenuItem});
             this.hacksMainMenuItem.Text = "&Hacks";
             // 
+            // debugDialogMenuItem
+            // 
+            this.debugDialogMenuItem.Index = 0;
+            this.debugDialogMenuItem.Text = "&Debug Dialog";
+            this.debugDialogMenuItem.Click += new System.EventHandler(this.debugDialogMenuItem_Click);
+            // 
             // mHackStompMenuItem
             // 
-            this.mHackStompMenuItem.Index = 0;
+            this.mHackStompMenuItem.Index = 1;
             this.mHackStompMenuItem.Text = "&Check for \'SET\' commands setting values in the same locations";
             this.mHackStompMenuItem.Click += new System.EventHandler(this.mHackStompMenuItem_Click);
             // 
             // mSetPatchMenuItem
             // 
-            this.mSetPatchMenuItem.Index = 1;
+            this.mSetPatchMenuItem.Index = 2;
             this.mSetPatchMenuItem.Text = "Create \'SET\' patch";
             this.mSetPatchMenuItem.Click += new System.EventHandler(this.mSetPatchMenuItem_Click);
             // 
@@ -780,16 +803,20 @@ namespace TSBTool
 		private void loadTSBMenuItem_Click(object sender, System.EventArgs e)
 		{
 			string filename = GetFileName(nesFilter, false);
+			LoadROM(filename);
+		}
 
-			tool = TecmoToolFactory.GetToolForRom( filename );
-			if(filename != null && tool != null)
+		private void LoadROM(string filename)
+		{
+			tool = TecmoToolFactory.GetToolForRom(filename);
+			if (filename != null && tool != null)
 			{
-				if( tool.OutputRom != null )
+				if (tool.OutputRom != null)
 				{
 					state2();
 					UpdateTitle(filename);
 				}
-				else if( tool.Init(filename))
+				else if (tool.Init(filename))
 				{
 					state2();
 					UpdateTitle(filename);
@@ -913,6 +940,7 @@ namespace TSBTool
 			tool.ShowOffPref = this.offensivePrefMenuItem.Checked;
 			TecmoTool.ShowPlaybook = mPlaybookMenuItem.Checked;
 			TecmoTool.ShowTeamFormation = mOffensiveFormationsMenuItem.Checked;
+			TecmoTool.ShowTeamStrings = showTeamStringsMenuItem.Checked;
 
 			string msg = 
 					"#  -> Double click on a team or player to bring up the All new Player/Team editing GUI.\n"+
@@ -1505,6 +1533,11 @@ This Program is not endorsed or related to the Tecmo video game company.
 			mPlaybookMenuItem.Checked = !mPlaybookMenuItem.Checked;
 		}
 
+		private void showTeamStringsMenuItem_Click(object sender, EventArgs e)
+		{
+			showTeamStringsMenuItem.Checked = !showTeamStringsMenuItem.Checked;
+		}
+
 		private void mCutMenuItem_Click(object sender, System.EventArgs e)
 		{
 			richTextBox1.Cut();
@@ -1697,10 +1730,6 @@ This Program is not endorsed or related to the Tecmo video game company.
 
 		}
 
-		private void mTestMenuItem_Click(object sender, System.EventArgs e)
-		{
-		}
-
 		private void menuItem7_Click(object sender, System.EventArgs e)
 		{
 			UniformEditForm form = new UniformEditForm();
@@ -1837,5 +1866,12 @@ This Program is not endorsed or related to the Tecmo video game company.
             maker.Show();
         }
 
+		private void debugDialogMenuItem_Click(object sender, EventArgs e)
+		{
+			DebugDialog dlg = new DebugDialog();
+			dlg.Tool = this.tool;
+			dlg.ShowDialog();
+			dlg.Dispose();
+		}
 	}
 }

@@ -101,7 +101,7 @@ namespace TSBTool
                                 throw new Exception("Invalid input.");
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception )
                         {
                             MainClass.ShowError(string.Format(
                                 "Error with '{0}'. Value '{1}' is invalid for range {2}",

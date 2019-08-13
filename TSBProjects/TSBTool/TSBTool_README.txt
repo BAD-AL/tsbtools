@@ -1,5 +1,34 @@
 TSBToolSupreme README
 ======================================================================================================
+TSBToolSupreme Version 1.0.0.4 (11 Aug 2019)
+1. Confirmed mono Support
+2. 'ReplaceString' function.
+3. Get/Set team abbrv. City, Name
+
+To run under Mono on Macintosh:
+	1. Install Mono (full)
+	2. From Terminal type "mono --arch=32 TSBToolSupreme.exe" (without the quotes)
+
+To run under Mono on Linux:
+	1. Install Mono (full)
+	2. From Terminal type "mono TSBToolSupreme.exe" (without the quotes)
+
+'ReplaceString' functionality:
+I added a 'ReplaceString' function to the Input parser of TSBToolSupreme (only use for strings that are the 
+									same size or shorter [ new value will be padded with spaces if shorter]).
+To use it, use the following syntax:
+	ReplaceString("the original string","replacement string")
+		or
+	ReplaceString("the original string","replacement string", 2)
+	Where the '2' argument specifies that you want to replace only the 2nd occurence in the ROM (works for all numbers, not just 2)
+ 
+ Get/Set team abbrv. City, Name:
+	In GUI view Menu, check "Show Team abb., City, Name"
+	When viewing contants, you'll see lines like "TEAM_ABB=BUF.,TEAM_CITY=BUFFALO,TEAM_NAME=BILLS" in the teams sections.
+	The team abbreviation must be 4 characters ling, Keep the strings a reasonable length; they won't show correctly in the team
+		menus if you make them too long.
+	
+======================================================================================================
 TSBToolSupreme Version 1.0.0.3 (1 Jan 2014)
 1. Little fixup in 'Hacks' support.
 

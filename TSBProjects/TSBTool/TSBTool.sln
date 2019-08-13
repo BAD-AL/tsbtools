@@ -1,5 +1,6 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSBTool", "TSBTool.csproj", "{693F0C71-8F57-413E-9F43-48B2677DB6E0}"
 EndProject
 Global

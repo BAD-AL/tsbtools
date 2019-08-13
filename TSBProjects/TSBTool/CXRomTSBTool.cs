@@ -123,7 +123,7 @@ namespace TSBTool
 
             mTeamFormationsStartingLoc = 0x3f940;
             namePointersStart = 0x48 + 12;
-            lastPointer = 0x06e4;//0x6d9 + 12;
+            lastPlayerNamePointer = 0x06e4;//0x6d9 + 12;
 			
 			try
 			{
@@ -471,6 +471,48 @@ namespace TSBTool
 			return all.ToString();
 		}
 
+        public override string GetTeamName(int teamIndex)
+        {
+            string retVal = GetTeamStringTableString(teamIndex + 68);
+            return retVal;
+        }
+
+        public override string GetTeamCity(int teamIndex)
+        {
+            string retVal = GetTeamStringTableString(teamIndex + 34);
+            return retVal;
+        }
+
+        public override string GetTeamAbbreviation(int teamIndex)
+        {
+            string retVal = GetTeamStringTableString(teamIndex);
+            return retVal;
+        }
+
+        public override void SetTeamAbbreviation(int teamIndex, string abb)
+        {
+            if (abb != null && abb.Length == 4)
+            {
+                SetTeamStringTableString(teamIndex, abb);
+            }
+            else
+                Errors.Add(string.Format(
+                    "Error setting team abbreviation, teamIndex={0}; value length must == 4; {1}",
+                    teamIndex, abb));
+        }
+
+        public override void SetTeamName(int teamIndex, string name)
+        {
+            SetTeamStringTableString(teamIndex + 68, name);
+        }
+
+        public override void SetTeamCity(int teamIndex, string city)
+        {
+            SetTeamStringTableString(teamIndex + 34, city);
+        }
+
+        public override int NumberOfStringsInTeamStringTable { get { return 123; } }
+
         /// <summary>
         /// Offensive formation is messed up in CXROM 
         /// </summary>
@@ -796,9 +838,14 @@ namespace TSBTool
 				ShiftDataDown(startPosition, endPosition, shiftAmount, outputRom);
 		}
 
-		protected override void AdjustDataPointers(int pos, int change)
-		{ 
-			if( pos == lastPointer-2)//0x06e2) // panther's punter
+		protected override void AdjustDataPointers(int pos, int change, int lastPointer)
+		{
+			if (pos >= GetTeamStringTableStart()) // doing Team String table stuff
+			{
+				base.AdjustDataPointers(pos, change, lastPointer);
+				return;
+			}
+			if( pos == lastPlayerNamePointer-2)//0x06e2) // panther's punter
 			{
 				int pointerLoc = pos+2;
 				byte lo = outputRom[pointerLoc];
@@ -814,9 +861,9 @@ namespace TSBTool
 				outputRom[pointerLoc]   = lo;
 				outputRom[pointerLoc+1] = hi;
 			}
-			else if ( pos < lastPointer +1 )
+			else if ( pos < lastPlayerNamePointer +1 )
 			{
-				base.AdjustDataPointers(pos, change);
+				base.AdjustDataPointers(pos, change, base.lastPlayerNamePointer);
 			}
 			else
 			{

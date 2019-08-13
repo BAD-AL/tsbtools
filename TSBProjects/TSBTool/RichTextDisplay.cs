@@ -13,7 +13,7 @@ namespace TSBTool
 	{
 		private System.Windows.Forms.RichTextBox richTextBox;
 		private System.Windows.Forms.MainMenu mainMenu1;
-		private System.Windows.Forms.MenuItem menuItem1;
+		private System.Windows.Forms.MenuItem fileMenu;
 		private System.Windows.Forms.MenuItem mLoadMenuItem;
 		private System.Windows.Forms.MenuItem mSaveMenuItem;
 		private System.Windows.Forms.MenuItem mExitMenuItem;
@@ -23,16 +23,76 @@ namespace TSBTool
 		private System.Windows.Forms.MenuItem mContextLoadMenuItem;
 		private System.Windows.Forms.MenuItem mContextSaveMenuItem;
 		private System.Windows.Forms.MenuItem mContextSaveAsMenuItem;
-		private System.Windows.Forms.MenuItem menuItem2;
+		private System.Windows.Forms.MenuItem editMenuItem;
 		private System.Windows.Forms.MenuItem mCopyMenuItem;
 		private System.Windows.Forms.MenuItem mPasteMenuItem;
 		private System.Windows.Forms.MenuItem mCopyMenuItemC;
+        private Button mCancelButton;
+        private Button mOkButton;
 		private System.Windows.Forms.MenuItem mPateMenuItemC;
+        private System.Windows.Forms.MenuItem mClearMenuItem;
 
 		public RichTextBox ContentBox
 		{
 			get { return this.richTextBox; }
 		}
+
+        /// <summary>
+        /// The text to show 
+        /// </summary>
+        public string MessageText
+        {
+            get { return richTextBox.Text; }
+            set { richTextBox.Text = value; }
+        }
+
+        public bool MessageEditable
+        {
+            get { return !richTextBox.ReadOnly; }
+            set { richTextBox.ReadOnly = !value; }
+        }
+
+        public bool ShowCancelButton
+        {
+            set { this.mCancelButton.Visible = value; }
+        }
+
+        /// <summary>
+        /// Returns the MessageText of the Form
+        /// </summary>
+        /// <param name="title">The title bar text</param>
+        /// <param name="message">The initial message text to display</param>
+        /// <param name="icon">the Icon to use</param>
+        /// <param name="editable">true to allow the user to edit the MessageText</param>
+        /// <returns>The resulting MessageText</returns>
+        public static string ShowMessage(string title, string message, Icon icon, bool editable, bool showCancelButton)
+        {
+            string retVal = null;
+            RichTextDisplay mf = new RichTextDisplay();
+            mf.Icon = icon;
+            mf.MessageEditable = editable;
+            mf.Text = title;
+            mf.MessageText = message;
+            mf.ShowCancelButton = showCancelButton;
+
+            if (mf.ShowDialog() == DialogResult.OK)
+            {
+                retVal = mf.MessageText;
+            }
+            mf.Dispose();
+            return retVal;
+        }
+
+
+        /// <summary>
+        /// Shows a message
+        /// </summary>
+        /// <param name="title">the title bar text</param>
+        /// <param name="message">the message to show</param>
+        public static void ShowMessage(string title, string message)
+        {
+            ShowMessage(title, message, SystemIcons.Hand, false, false);
+        }
 
 		private RichTextBoxStreamType mRichTextStreamType = RichTextBoxStreamType.PlainText;
 
@@ -58,12 +118,6 @@ namespace TSBTool
 		public RichTextDisplay()
 		{
 			InitializeComponent();
-//			this.contextMenu1.MenuItems.AddRange(
-//				new System.Windows.Forms.MenuItem[] {
-//					this.mLoadMenuItem,
-//					this.mSaveMenuItem,
-//					this.mSaveAsMenuItem,
-//					this.mExitMenuItem});
 		}
 
 		public void ShowFile(string fileName )
@@ -110,25 +164,30 @@ namespace TSBTool
             this.mCopyMenuItemC = new System.Windows.Forms.MenuItem();
             this.mPateMenuItemC = new System.Windows.Forms.MenuItem();
             this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.fileMenu = new System.Windows.Forms.MenuItem();
             this.mLoadMenuItem = new System.Windows.Forms.MenuItem();
             this.mSaveMenuItem = new System.Windows.Forms.MenuItem();
             this.mSaveAsMenuItem = new System.Windows.Forms.MenuItem();
             this.mExitMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.editMenuItem = new System.Windows.Forms.MenuItem();
             this.mCopyMenuItem = new System.Windows.Forms.MenuItem();
             this.mPasteMenuItem = new System.Windows.Forms.MenuItem();
+            this.mClearMenuItem = new System.Windows.Forms.MenuItem();
+            this.mCancelButton = new System.Windows.Forms.Button();
+            this.mOkButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // richTextBox
             // 
             this.richTextBox.AcceptsTab = true;
+            this.richTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBox.ContextMenu = this.contextMenu1;
-            this.richTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.richTextBox.Location = new System.Drawing.Point(0, 0);
             this.richTextBox.Name = "richTextBox";
             this.richTextBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.richTextBox.Size = new System.Drawing.Size(692, 566);
+            this.richTextBox.Size = new System.Drawing.Size(692, 523);
             this.richTextBox.TabIndex = 0;
             this.richTextBox.Text = "";
             this.richTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBox_KeyDown);
@@ -140,7 +199,8 @@ namespace TSBTool
             this.mContextSaveMenuItem,
             this.mContextSaveAsMenuItem,
             this.mCopyMenuItemC,
-            this.mPateMenuItemC});
+            this.mPateMenuItemC,
+            this.mClearMenuItem});
             // 
             // mContextLoadMenuItem
             // 
@@ -171,22 +231,28 @@ namespace TSBTool
             this.mPateMenuItemC.Index = 4;
             this.mPateMenuItemC.Text = "&Paste";
             this.mPateMenuItemC.Click += new System.EventHandler(this.mPasteMenuItem_Click);
+            //
+            // mClearMenuItem
+            // 
+            this.mClearMenuItem.Index = 5;
+            this.mClearMenuItem.Text = "&Clear";
+            this.mClearMenuItem.Click += new System.EventHandler(this.mClearMenuItem_Click);
             // 
             // mainMenu1
             // 
             this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem1,
-            this.menuItem2});
+            this.fileMenu,
+            this.editMenuItem});
             // 
             // menuItem1
             // 
-            this.menuItem1.Index = 0;
-            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.fileMenu.Index = 0;
+            this.fileMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.mLoadMenuItem,
             this.mSaveMenuItem,
             this.mSaveAsMenuItem,
             this.mExitMenuItem});
-            this.menuItem1.Text = "&File";
+            this.fileMenu.Text = "&File";
             // 
             // mLoadMenuItem
             // 
@@ -212,13 +278,13 @@ namespace TSBTool
             this.mExitMenuItem.Text = "E&xit";
             this.mExitMenuItem.Click += new System.EventHandler(this.mExitMenuItem_Click);
             // 
-            // menuItem2
+            // editMenuItem
             // 
-            this.menuItem2.Index = 1;
-            this.menuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.editMenuItem.Index = 1;
+            this.editMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.mCopyMenuItem,
             this.mPasteMenuItem});
-            this.menuItem2.Text = "&Edit";
+            this.editMenuItem.Text = "&Edit";
             // 
             // mCopyMenuItem
             // 
@@ -232,10 +298,33 @@ namespace TSBTool
             this.mPasteMenuItem.Text = "&Paste";
             this.mPasteMenuItem.Click += new System.EventHandler(this.mPasteMenuItem_Click);
             // 
+            // mCancelButton
+            // 
+            this.mCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.mCancelButton.Location = new System.Drawing.Point(524, 536);
+            this.mCancelButton.Name = "mCancelButton";
+            this.mCancelButton.Size = new System.Drawing.Size(75, 23);
+            this.mCancelButton.TabIndex = 1;
+            this.mCancelButton.Text = "&Cancel";
+            this.mCancelButton.UseVisualStyleBackColor = true;
+            this.mCancelButton.Visible = false;
+            // 
+            // mOkButton
+            // 
+            this.mOkButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.mOkButton.Location = new System.Drawing.Point(605, 536);
+            this.mOkButton.Name = "mOkButton";
+            this.mOkButton.Size = new System.Drawing.Size(75, 23);
+            this.mOkButton.TabIndex = 2;
+            this.mOkButton.Text = "&OK";
+            this.mOkButton.UseVisualStyleBackColor = true;
+            // 
             // RichTextDisplay
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(692, 566);
+            this.Controls.Add(this.mOkButton);
+            this.Controls.Add(this.mCancelButton);
             this.Controls.Add(this.richTextBox);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Menu = this.mainMenu1;
@@ -343,6 +432,10 @@ namespace TSBTool
 			richTextBox.Paste(DataFormats.GetFormat(DataFormats.Text));
 		}
 
+        private void mClearMenuItem_Click(object sender, System.EventArgs e)
+        {
+            richTextBox.Clear();
+        }
 		
 	}
 }

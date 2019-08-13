@@ -58,21 +58,6 @@ namespace TSBTool
 		public static bool GUI_MODE = false;
 		public static bool AUTO_CORRECT_SCHEDULE = true;
 
-		public bool ShowTeamFormation
-		{
-			get
-			{
-				return TecmoTool.ShowTeamFormation;
-			}
-		}
-		public bool ShowPlaybook
-		{
-			get
-			{
-				return TecmoTool.ShowPlaybook;
-			}
-		}
-
 		private bool mShowOffPref = true;
 		
 		private const int billsQB1SimLoc  = 0x26acf; //0x18163;
@@ -492,18 +477,18 @@ Do you want to continue?",ROM_LENGTH),
 				int pos = GetPointerPosition(team,position);
 
 				UpdatePlayerData(team,position,bytes, change);
-				AdjustDataPointers(pos, change);
+				AdjustDataPointers(pos, change, lastPointer);
 			}
 		}
 
-		private void AdjustDataPointers(int pos, int change)
+		private void AdjustDataPointers(int pos, int change, int lastPointerLocation)
 		{
 			byte low, hi;
 			int  word;
 			// last pointer is at 0x178738
 			
 			int i=0;
-			int end = lastPointer +1;//here was just lastPointer
+			int end = lastPointerLocation +1;//here was just lastPointer
 			for( i = pos+2; i < end; i+=2)
 			{
 				low  =  outputRom[i];
@@ -661,15 +646,20 @@ Do you want to continue?",ROM_LENGTH),
 			string teamString = string.Format("TEAM = {0} SimData=0x{1}",team, data);
 			result.Append( teamString );
 			
-			if( ShowTeamFormation )
+			if( TecmoTool.ShowTeamFormation )
 			{
 				result.Append(string.Format(", {0}", GetTeamOffensiveFormation(team) ));
 			}
 			result.Append("\n");
 
-			if( ShowPlaybook )
+			if( TecmoTool.ShowPlaybook )
 			{
 				result.Append(string.Format("{0}\n", GetPlaybook(team)));
+			}
+			if (TecmoTool.ShowTeamStrings)
+			{
+				int teamIndex = GetTeamIndex(team);
+				result.Append(string.Format("TEAM_ABB={0},TEAM_CITY={1},TEAM_NAME={2}\n", GetTeamAbbreviation(teamIndex), GetTeamCity(teamIndex), GetTeamName(teamIndex)));
 			}
 
 			for(int i =0; i < positionNames.Length; i++)
@@ -682,6 +672,133 @@ Do you want to continue?",ROM_LENGTH),
 			result.Append("\n");
 			return result.ToString();
 		}
+
+		#region Team String Table Stuff
+		public virtual int NumberOfStringsInTeamStringTable { get { return 30; } }
+
+		public void SetTeamStringTableString(int stringIndex, string newValue)
+		{
+			int junk = 0;
+			string oldValue = GetTeamStringTableString(stringIndex);
+			if (oldValue == newValue)
+				return;
+			int shiftAmount = newValue.Length - oldValue.Length;
+			if (shiftAmount != 0)
+			{
+				int currentPointerLocation = GetTeamStringTableStart() + 2 * stringIndex;
+				int lastPointerLocation = GetTeamStringTableStart() + 2 * NumberOfStringsInTeamStringTable;
+				AdjustDataPointers(currentPointerLocation, shiftAmount, lastPointerLocation);
+				int startPosition = GetTeamStringTableLocation(stringIndex + 1, out junk) - 1;
+				int endPosition = 0x7330;
+				if (shiftAmount < 0)
+					ShiftDataUp(startPosition, endPosition, shiftAmount, outputRom);
+				else if (shiftAmount > 0)
+					ShiftDataDown(startPosition, endPosition, shiftAmount, outputRom);
+			}
+			// lay down the value
+			int startLoc = GetTeamStringTableLocation(stringIndex, out shiftAmount);
+			for (int i = 0; i < newValue.Length; i++)
+			{
+				if (newValue[i] == '*') // do the star substitution
+					OutputRom[startLoc + i] = 0;
+				else
+					OutputRom[startLoc + i] = (byte)newValue[i];
+			}
+		}
+
+		public virtual string GetTeamStringTableString(int stringIndex)
+		{
+			int length = 0;
+			int stringStartingLocation = GetTeamStringTableLocation(stringIndex, out length);
+
+			char[] stringChars = new char[length];
+			for (int i = 0; i < stringChars.Length; i++)
+			{
+				stringChars[i] = (char)OutputRom[stringStartingLocation + i];
+				if (stringChars[i] == 0)
+					stringChars[i] = '*';
+			}
+			string retVal = new string(stringChars);
+			return retVal;
+		}
+
+		/// <summary>
+		/// Returns the location of the 'Team' string table. This string table 
+		/// contains the city abbreviations, city names and team names.
+		/// </summary>
+		/// <param name="stringIndex">The index of the string to get.</param>
+		/// <param name="length">out param stores the length.</param>
+		/// <returns>Returns the location of the string at the specified index.</returns>
+		private int GetTeamStringTableLocation(int stringIndex, out int length)
+		{
+			int team_string_table_loc = GetTeamStringTableStart();
+			int pointer_loc = team_string_table_loc + 2 * stringIndex;
+			byte b1 = OutputRom[pointer_loc + 1];
+			byte b2 = OutputRom[pointer_loc];
+			byte b3 = OutputRom[pointer_loc + 3]; // b3 & b4 for length
+			byte b4 = OutputRom[pointer_loc + 2];
+			length = ((b3 << 8) + b4) - ((b1 << 8) + b2);
+			if (stringIndex == NumberOfStringsInTeamStringTable - 1)
+				length = 9; // hack. there are no more pointers to use for length   :'(
+			int pointerVal = (b1 << 8) + b2;
+			int stringStartingLocation = pointerVal - 0x8000;// table adjustment
+			return stringStartingLocation;
+		}
+
+		protected virtual int GetTeamStringTableStart()
+		{
+			int team_string_table_loc = 0x7000;
+			return team_string_table_loc;
+		}
+
+		public virtual string GetTeamName(int teamIndex)
+		{
+			string retVal = GetTeamStringTableString(teamIndex);
+			int lastSpace = retVal.LastIndexOf(' ');
+			retVal = retVal.Substring(lastSpace+1).Replace("*","");
+			return retVal;
+		}
+
+		public virtual string GetTeamCity(int teamIndex)
+		{
+			string retVal = GetTeamStringTableString(teamIndex).Substring(5);
+			int lastSpace = retVal.LastIndexOf(' ');
+			retVal = retVal.Substring(0, lastSpace);
+			return retVal;
+		}
+
+		public virtual string GetTeamAbbreviation(int teamIndex)
+		{
+			string retVal = GetTeamStringTableString(teamIndex);
+			retVal = retVal.Substring(0, 4);
+			return retVal;
+		}
+
+		public virtual void SetTeamAbbreviation(int teamIndex, string abb)
+		{
+			if (abb == null || abb.Length != 4)
+			{
+				Errors.Add(String.Format("Error Setting TeamAbbreviation; TeamIndex:{0}; abb:{1}",teamIndex, abb));
+			}
+			else
+			{
+				string teamString = String.Format("{0}*{1} {2}*",abb, GetTeamCity(teamIndex), GetTeamName(teamIndex) );
+				SetTeamStringTableString(teamIndex, teamString);
+			}
+		}
+
+		public virtual void SetTeamName(int teamIndex, string name)
+		{
+			string teamString = String.Format("{0}*{1} {2}*", GetTeamAbbreviation(teamIndex), GetTeamCity(teamIndex), name);
+			SetTeamStringTableString(teamIndex, teamString);
+		}
+
+		public virtual void SetTeamCity(int teamIndex, string city)
+		{
+			string teamString = String.Format("{0}*{1} {2}*", GetTeamAbbreviation(teamIndex),city, GetTeamName(teamIndex));
+			SetTeamStringTableString(teamIndex, teamString);
+		}
+		#endregion
 
 		public string GetAll()
 		{
@@ -721,7 +838,7 @@ Do you want to continue?",ROM_LENGTH),
 			hiByte = hiByte + lowByte;
 
 			//int ret = hiByte - 0x8000 + 0x010;
-			int ret = hiByte + dataPositionOffset;
+			int ret = hiByte + dataPositionOffset; //= 0x170000;
 			return  ret;
 		}
 

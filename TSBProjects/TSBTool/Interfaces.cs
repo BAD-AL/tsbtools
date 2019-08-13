@@ -24,6 +24,27 @@ namespace TSBTool
 		string GetKey();
 
 		string GetAll();
+		string GetTeamPlayers(string team);
+
+		#region team String stuff
+		int NumberOfStringsInTeamStringTable { get; }
+
+		string GetTeamStringTableString(int index);
+
+		void SetTeamStringTableString(int index, string str);
+
+		void SetTeamAbbreviation(int teamIndex, string abb);
+
+		void SetTeamName(int teamIndex, string name);
+
+		void SetTeamCity(int teamIndex, string city);
+
+		string GetTeamAbbreviation(int teamIndex);
+
+		string GetTeamName(int teamIndex);
+
+		string GetTeamCity(int teamIndex);
+		#endregion
 
 		string GetPlayerStuff(bool jerseyNumbers,bool names,bool faces,bool abilities,bool simData);
 

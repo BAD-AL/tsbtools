@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.30319</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{693F0C71-8F57-413E-9F43-48B2677DB6E0}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -60,6 +60,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
     <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
@@ -138,6 +139,12 @@
     <Compile Include="CXRomTSBTool.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DebugDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DebugDialog.designer.cs">
+      <DependentUpon>DebugDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="FaceForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -185,6 +192,12 @@
     <Compile Include="SchedulerHelper2.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SearchTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SearchTextBox.designer.cs">
+      <DependentUpon>SearchTextBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="SimStuff.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -200,6 +213,7 @@
     <Compile Include="SNES_TecmoTool.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="StaticUtils.cs" />
     <Compile Include="StringInputDlg.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -228,24 +242,35 @@
     <EmbeddedResource Include="49ers.ico" />
     <EmbeddedResource Include="AllStarConfrenceControl.resx">
       <DependentUpon>AllStarConfrenceControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="AllStarForm.resx">
       <DependentUpon>AllStarForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="AllstarPlayerControl.resx">
       <DependentUpon>AllstarPlayerControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="AttributeForm.resx">
       <DependentUpon>AttributeForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ColorForm2.resx">
       <DependentUpon>ColorForm2.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="CxRomTeamHomeAwayUniformForm.resx">
       <DependentUpon>CxRomTeamHomeAwayUniformForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DebugDialog.resx">
+      <DependentUpon>DebugDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="FaceForm.resx">
       <DependentUpon>FaceForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="FACES\00.BMP" />
     <EmbeddedResource Include="FACES\01.BMP" />
@@ -419,18 +444,23 @@
     <EmbeddedResource Include="guy.ico" />
     <EmbeddedResource Include="HomeAwayUniformForm.resx">
       <DependentUpon>HomeAwayUniformForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MainGUI.resx">
       <DependentUpon>MainGUI.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ModifyTeamForm.resx">
       <DependentUpon>ModifyTeamForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="NumberForm.resx">
       <DependentUpon>NumberForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="PatchMaker.resx">
       <DependentUpon>PatchMaker.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="PLAYS\P1-0.BMP" />
     <EmbeddedResource Include="PLAYS\P1-1.BMP" />
@@ -499,24 +529,31 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="RichTextDisplay.resx">
       <DependentUpon>RichTextDisplay.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ScheduleForm.resx">
       <DependentUpon>ScheduleForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SnesReturnTeamPlayerControl.resx">
       <DependentUpon>SnesReturnTeamPlayerControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="StringInputDlg.resx">
       <DependentUpon>StringInputDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UniformEditForm.resx">
       <DependentUpon>UniformEditForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="WeekScheduler.resx">
       <DependentUpon>WeekScheduler.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="TSBToolSupreme.exe.config" />
