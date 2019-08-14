@@ -8,7 +8,7 @@ copy ..\bin\Debug\TSBToolSupreme.exe .
 copy ..\bin\Debug\TSPRBOWL.nes .
 .\TSBToolSupreme.exe .\TSPRBOWL.nes Test1.txt -out:output.nes
 .\TSBToolSupreme.exe output.nes > OUTPUT.txt
-"C:\Program Files\ExamDiff Pro\ExamDiff.exe" .\Test1.txt .\OUTPUT.txt
+BCompare.exe .\Test1.txt .\OUTPUT.txt
 ::FC /C /L Test1.txt OUTPUT.txt > RESULTS.txt
 ::del *.nes
 

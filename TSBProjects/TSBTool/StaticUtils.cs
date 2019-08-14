@@ -11,63 +11,6 @@ namespace TSBTool
     /// </summary>
     public static class StaticUtils
     {
-        private static Dictionary<string,Image> sImageMap = null;
-        private static Dictionary<string, Image> ImageMap 
-        {
-            get
-            {
-                if (sImageMap == null)
-                    sImageMap = new Dictionary<string, Image>();
-                return sImageMap;
-            }
-        }
-        private static ColorInfo ci = null;
-        /// <summary>
-        /// Get an image from the assembly; caches the image.
-        /// </summary>
-        public static Image GetEmbeddedImage(string file)
-        {
-            Image ret = null;
-            try
-            {
-                if (ci == null)
-                    ci = new ColorInfo();
-                if (ImageMap.ContainsKey(file))
-                    ret = ImageMap[file];
-                else
-                {
-                    System.IO.Stream s =
-                        ci.GetType().Assembly.GetManifestResourceStream(file);
-                    if (s != null)
-                        ret = Image.FromStream(s);
-                    sImageMap.Add(file, ret);
-                }
-            }
-            catch (Exception )
-            {
-                Console.Error.WriteLine("Error getting image "+ file);
-            }
-            return ret;
-        }
-
-        /// <summary>
-        /// Gets an image from the path; caches the image.
-        /// </summary>
-        public static Image GetImageFromPath(string path)
-        {
-            Image ret = null;
-
-            if (ImageMap.ContainsKey(path))
-                ret = ImageMap[path];
-            else if( File.Exists(path))
-            {
-                ret = Image.FromFile(path);
-                ImageMap.Add(path, ret);
-            }
-            return ret;
-        }
-
-
         /// <summary>
         /// Returns a string starting with 'Error!' on error condition, the locations of the replacements otherwise.
         /// </summary>

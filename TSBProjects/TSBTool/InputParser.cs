@@ -99,7 +99,7 @@ namespace TSBTool
 					ProcessLine(lines[i]);
 					//Console.WriteLine(i);
 				}
-				ShowErrors();
+				MainClass.ShowErrors();
 				ApplySchedule();
 			}
 			catch(Exception e)
@@ -118,31 +118,15 @@ namespace TSBTool
 			}
 		}
 
-		private void ShowErrors()
-		{
-			if( tool.Errors.Count > 0)
-			{
-				MainClass.ShowErrors(tool.Errors);
-				tool.Errors = new ArrayList();
-			}
-			if( errors.Count > 0 )
-			{
-				MainClass.ShowErrors(errors);
-				errors = new ArrayList();
-			}
-		}
-
 		protected virtual void ApplySchedule()
 		{
 			if( scheduleList != null )
 			{
-				ArrayList errors =  tool.ApplySchedule(scheduleList);
-				MainClass.ShowErrors( errors );
+				tool.ApplySchedule(scheduleList);
+				MainClass.ShowErrors(  );
 				scheduleList = null;
 			}
 		}
-
-
 
 		public void ReadFromStdin()
 		{
@@ -157,7 +141,7 @@ namespace TSBTool
 					ProcessLine(line);
 					//Console.WriteLine("Line "+lineNumber);
 				}
-				ShowErrors();
+				MainClass.ShowErrors();
 				ApplySchedule();
 			}
 			catch(Exception e)

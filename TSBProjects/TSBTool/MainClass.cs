@@ -355,17 +355,29 @@ The following are the available options.
 			tt.SaveRom(outFileName);
 		}
 
-		public static void ShowErrors( ArrayList errors)
+        private static ArrayList sErrors = new ArrayList();
+
+        public static void AddError(string error)
+        {
+            sErrors.Add(error);
+        }
+
+        public static void ClearErrors()
+        {
+            sErrors.Clear();
+        }
+
+		public static void ShowErrors()
 		{
-			if( errors != null && errors.Count > 0 )
+			if (sErrors != null && sErrors.Count > 0)
 			{
 				StringBuilder sb = new StringBuilder(500);
-
-				foreach(string e in errors)
+				foreach (string e in sErrors)
 				{
-					sb.Append(e+"\n");
+					sb.Append(e + "\n");
 				}
-				ShowError( sb.ToString() );
+				ShowError(sb.ToString());
+				ClearErrors();
 			}
 		}
 

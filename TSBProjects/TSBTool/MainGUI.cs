@@ -980,11 +980,7 @@ namespace TSBTool
 			richTextBox1.SelectionColor = Color.Magenta;
 			richTextBox1.SelectionStart = 0;
 			richTextBox1.SelectionLength = 0;
-            if (tool.Errors != null && tool.Errors.Count > 0)
-            {
-                MainClass.ShowErrors(tool.Errors);
-                tool.Errors.Clear();
-            }
+            MainClass.ShowErrors();
 		}
 		/// <summary>
 		/// 

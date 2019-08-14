@@ -19,8 +19,6 @@ namespace TSBTool
 
 		bool ShowOffPref {get; set;}
 
-		ArrayList Errors {get; set; }
-
 		string GetKey();
 
 		string GetAll();
@@ -134,7 +132,7 @@ namespace TSBTool
 
 		void SetPuntReturner(string team, string position);
 
-		ArrayList ApplySchedule( ArrayList scheduleList );
+		void ApplySchedule( ArrayList scheduleList );
 
 		void SetReturnTeam(string team, string pos0, string pos1, string pos2);
 

@@ -72,11 +72,7 @@ namespace TSBTool
         private void mGetTeamButton_Click(object sender, EventArgs e)
         {
             mResultsTextBox.Text = Tool.GetTeamPlayers(mInputTextBox.Text.ToLower());
-            if (Tool.Errors.Count > 0)
-            {
-                MainClass.ShowErrors(Tool.Errors);
-                Tool.Errors.Clear();
-            }
+            MainClass.ShowErrors();
         }
 
         private void mSetByteLocUpDown_ValueChanged(object sender, EventArgs e)
@@ -243,7 +239,6 @@ LOS ANGELES:OAKLAND:2
                 string msg = null;
                 StringBuilder builder = new StringBuilder();
 
-                System.Collections.ArrayList errors = new System.Collections.ArrayList();
                 results = results.Replace("\r\n", "\n");
                 string[] lines = results.Split("\n".ToCharArray());
                 foreach (string line in lines)
@@ -253,7 +248,7 @@ LOS ANGELES:OAKLAND:2
                     string[] parts = line.Trim().Split(":".ToCharArray());
                     if (parts.Length > 3)
                     {
-                        errors.Add(String.Format("Error! Too many ':' characters on line>{0}", line));
+                        MainClass.AddError(String.Format("Error! Too many ':' characters on line>{0}", line));
                     }
                     else
                     {
@@ -265,16 +260,13 @@ LOS ANGELES:OAKLAND:2
                         }
                         msg = StaticUtils.ReplaceStringInRom(Tool.OutputRom, parts[0], parts[1], occur);
                         if (msg.StartsWith("Error"))
-                            errors.Add(msg);
+                            MainClass.AddError(msg);
                         else
                             builder.Append(msg);
                     }
                 }
                 mResultsTextBox.Text = builder.ToString();
-                if (errors.Count > 0)
-                {
-                    MainClass.ShowErrors(errors);
-                }
+                MainClass.ShowErrors();
             }
         }
 

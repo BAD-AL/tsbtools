@@ -1130,6 +1130,7 @@ namespace TSBTool
             this.m_FirstNameTextBox.Size = new System.Drawing.Size(152, 21);
             this.m_FirstNameTextBox.TabIndex = 3;
             this.m_FirstNameTextBox.TextChanged += new System.EventHandler(this.ValueChanged);
+            this.m_FirstNameTextBox.Leave += new System.EventHandler(this.m_FirstNameTextBox_Leave);
             // 
             // m_LastNameTextBox
             // 
@@ -1140,6 +1141,7 @@ namespace TSBTool
             this.m_LastNameTextBox.Size = new System.Drawing.Size(152, 21);
             this.m_LastNameTextBox.TabIndex = 4;
             this.m_LastNameTextBox.TextChanged += new System.EventHandler(this.ValueChanged);
+            this.m_LastNameTextBox.Leave += new System.EventHandler(this.m_LastNameTextBox_Leave);
             // 
             // m_PrevPicture
             // 
@@ -1234,7 +1236,7 @@ namespace TSBTool
             // AttributeForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(400, 273);
+            this.ClientSize = new System.Drawing.Size(400, 274);
             this.Controls.Add(this.m_AutoUpdateButton);
             this.Controls.Add(this.m_JerseyNumberUpDown);
             this.Controls.Add(this.m_CancelButton);
@@ -1821,6 +1823,16 @@ Please verify that this player's attributes are correct.", oldPlayer);
 		{
 			AutoUpdateRoster();
 		}
+
+        private void m_LastNameTextBox_Leave(object sender, EventArgs e)
+        {
+            m_LastNameTextBox.Text = m_LastNameTextBox.Text.ToUpper();
+        }
+
+        private void m_FirstNameTextBox_Leave(object sender, EventArgs e)
+        {
+            m_FirstNameTextBox.Text = m_FirstNameTextBox.Text.ToLower();
+        }
 
 	}
 }

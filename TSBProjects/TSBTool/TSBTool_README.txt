@@ -1,5 +1,11 @@
 TSBToolSupreme README
 ======================================================================================================
+TSBToolSupreme Version 1.2.0.1 (14 Aug 2019)
+1. Bug fix with player attribute form 
+	* First name forced to lowercase on focus lost
+	* Last name forced to UPPER case on focus lost
+
+======================================================================================================
 TSBToolSupreme Version 1.2.0.0 (11 Aug 2019)
 1. Confirmed mono Support
 2. 'ReplaceString' function.

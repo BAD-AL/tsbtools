@@ -279,12 +279,6 @@ namespace TSBTool
 			int location = weekOneStartLoc+ offset;
 			return location;
 		}
-
-		public ArrayList GetErrorMessages()
-		{
-			return errors;
-		}
-
 		
 		private void IncrementTeamGames(int teamIndex)
 		{

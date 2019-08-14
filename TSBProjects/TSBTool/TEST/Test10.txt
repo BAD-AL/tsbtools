@@ -1,2 +1,0 @@
-Manual tests:
-Hacks for each 28, 32 team rom type

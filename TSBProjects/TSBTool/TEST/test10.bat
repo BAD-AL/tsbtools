@@ -1,1 +1,0 @@
-start notepad.exe .\Test10.txt
