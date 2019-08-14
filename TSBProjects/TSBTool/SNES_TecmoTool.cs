@@ -2844,5 +2844,13 @@ Do you want to continue?",ROM_LENGTH),
             builder.Append("\r\n");
             return builder.ToString();
         }
+
+		public void ProcessText(string text)
+		{
+			InputParser parser = new InputParser(this);
+			text = text.Replace("\r\n", "\n");
+			string[] lines = text.Split("\n".ToCharArray());
+			parser.ProcessLines(lines);
+		}
 	}
 }

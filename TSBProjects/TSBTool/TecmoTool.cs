@@ -90,6 +90,7 @@ namespace TSBTool
 		public static  bool ShowPlaybook      = false;
 		public static  bool ShowColors        = false;
 		public static bool ShowTeamStrings    = false;
+		public static bool ShowProBowlRosters = false;
 
 		
 		private bool mShowOffPref = false;
@@ -2877,5 +2878,12 @@ Do you want to continue?",ROM_LENGTH, filename, len),
             return builder.ToString();
         }
 
+		public void ProcessText(string text)
+		{
+			InputParser parser = new InputParser(this);
+			text = text.Replace("\r\n", "\n");
+			string[] lines = text.Split("\n".ToCharArray());
+			parser.ProcessLines(lines);
+		}
 	}
 }

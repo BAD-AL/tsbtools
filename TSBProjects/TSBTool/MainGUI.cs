@@ -23,7 +23,7 @@ namespace TSBTool
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Panel panel2;
 		private RichTextBox richTextBox1;
-        private System.Windows.Forms.MenuItem menuItem9;
+        private System.Windows.Forms.MenuItem mainAboutItem;
         private IContainer components;
 		private System.Windows.Forms.MenuItem loadTSBMenuItem;
 		private MenuItem tsbSeasonGenMenuItem;
@@ -89,6 +89,8 @@ namespace TSBTool
 		//private string nesFilter = "nes files (*.nes)|*.nes|SNES files (*.smc)|*.smc";
 		private string nesFilter = "TSB files (*.nes;*.smc)|*.nes;*.smc";
 
+		private const string mReadMeFile = "TSBTool_README.txt";
+
 		public MainGUI(string romFileName, string dataFileName)
 		{
 			//
@@ -136,8 +138,23 @@ namespace TSBTool
 					seasonGen.MenuItems.Add( tsbSeasonGen_optionsMenuItem);
 					mainMenu1.MenuItems.Add(seasonGen);
 				}
+				if (File.Exists(mReadMeFile))
+				{
+					MenuItem readmeItem = new MenuItem("&View README");
+					readmeItem.Click += new EventHandler(readmeItem_Click);
+					mainAboutItem.MenuItems.Add(readmeItem);
+				}
 			}
 			catch {}
+		}
+
+		void readmeItem_Click(object sender, EventArgs e)
+		{
+			if (File.Exists(mReadMeFile))
+			{
+				string contents = File.ReadAllText(mReadMeFile);
+				RichTextDisplay.ShowMessage(mReadMeFile, contents, SystemIcons.Information, true, false);
+			}
 		}
 
         void richTextBox1_DragOver(object sender, DragEventArgs e)
@@ -273,126 +290,126 @@ namespace TSBTool
 		/// </summary>
 		private void InitializeComponent()
 		{
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainGUI));
-            this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.loadTSBMenuItem = new System.Windows.Forms.MenuItem();
-            this.LoadDataMenuItem = new System.Windows.Forms.MenuItem();
-            this.applyToRomMenuItem = new System.Windows.Forms.MenuItem();
-            this.mGetLocationsMenuItem = new System.Windows.Forms.MenuItem();
-            this.exitMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem11 = new System.Windows.Forms.MenuItem();
-            this.menuItem5 = new System.Windows.Forms.MenuItem();
-            this.viewTSBContentsMenuItem = new System.Windows.Forms.MenuItem();
-            this.showTeamStringsMenuItem = new System.Windows.Forms.MenuItem();
-            this.mProBowlMenuItem = new System.Windows.Forms.MenuItem();
-            this.testScheduleMenuItem = new System.Windows.Forms.MenuItem();
-            this.offensivePrefMenuItem = new System.Windows.Forms.MenuItem();
-            this.mOffensiveFormationsMenuItem = new System.Windows.Forms.MenuItem();
-            this.mPlaybookMenuItem = new System.Windows.Forms.MenuItem();
-            this.mColorsMenuItem = new System.Windows.Forms.MenuItem();
-            this.eolMenuItem = new System.Windows.Forms.MenuItem();
-            this.mEditPlayersMenuItem1 = new System.Windows.Forms.MenuItem();
-            this.mProwbowlMenuItem = new System.Windows.Forms.MenuItem();
-            this.mEditTeamsMenuItem2 = new System.Windows.Forms.MenuItem();
-            this.mDeleteCommasMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem2 = new System.Windows.Forms.MenuItem();
-            this.findMenuItem = new System.Windows.Forms.MenuItem();
-            this.findNextMenuItem = new System.Windows.Forms.MenuItem();
-            this.findPrevMenuItem = new System.Windows.Forms.MenuItem();
-            this.hacksMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.debugDialogMenuItem = new System.Windows.Forms.MenuItem();
-            this.mHackStompMenuItem = new System.Windows.Forms.MenuItem();
-            this.mSetPatchMenuItem = new System.Windows.Forms.MenuItem();
-            this.mScheduleMenuItem = new System.Windows.Forms.MenuItem();
-            this.mScheduleGUIMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem9 = new System.Windows.Forms.MenuItem();
-            this.aboutMenuItem = new System.Windows.Forms.MenuItem();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.statusBar1 = new System.Windows.Forms.StatusBar();
-            this.saveDataButton = new System.Windows.Forms.Button();
-            this.loadDataButton = new System.Windows.Forms.Button();
-            this.viewContentsBbutton = new System.Windows.Forms.Button();
-            this.loadTSBButton = new System.Windows.Forms.Button();
-            this.applyButton = new System.Windows.Forms.Button();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.mRichTextBoxontextMenu = new System.Windows.Forms.ContextMenu();
-            this.mCutMenuItem = new System.Windows.Forms.MenuItem();
-            this.mCopyMenuItem = new System.Windows.Forms.MenuItem();
-            this.mPasteMenuItem = new System.Windows.Forms.MenuItem();
-            this.mSelectAllMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem6 = new System.Windows.Forms.MenuItem();
-            this.mFintContextMenuItem = new System.Windows.Forms.MenuItem();
-            this.mFindNextContextMenuItem = new System.Windows.Forms.MenuItem();
-            this.mFindPrevContextMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem3 = new System.Windows.Forms.MenuItem();
-            this.mEditPlayersMenuItem = new System.Windows.Forms.MenuItem();
-            this.mEditTeamsMenuItem = new System.Windows.Forms.MenuItem();
-            this.mEditColorsMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem4 = new System.Windows.Forms.MenuItem();
-            this.mDeleteCommasMenuItem2 = new System.Windows.Forms.MenuItem();
-            this.mChangeFontItem = new System.Windows.Forms.MenuItem();
-            this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // mainMenu1
-            // 
-            this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainGUI));
+			this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
+			this.menuItem1 = new System.Windows.Forms.MenuItem();
+			this.loadTSBMenuItem = new System.Windows.Forms.MenuItem();
+			this.LoadDataMenuItem = new System.Windows.Forms.MenuItem();
+			this.applyToRomMenuItem = new System.Windows.Forms.MenuItem();
+			this.mGetLocationsMenuItem = new System.Windows.Forms.MenuItem();
+			this.exitMenuItem = new System.Windows.Forms.MenuItem();
+			this.menuItem11 = new System.Windows.Forms.MenuItem();
+			this.menuItem5 = new System.Windows.Forms.MenuItem();
+			this.viewTSBContentsMenuItem = new System.Windows.Forms.MenuItem();
+			this.showTeamStringsMenuItem = new System.Windows.Forms.MenuItem();
+			this.mProBowlMenuItem = new System.Windows.Forms.MenuItem();
+			this.testScheduleMenuItem = new System.Windows.Forms.MenuItem();
+			this.offensivePrefMenuItem = new System.Windows.Forms.MenuItem();
+			this.mOffensiveFormationsMenuItem = new System.Windows.Forms.MenuItem();
+			this.mPlaybookMenuItem = new System.Windows.Forms.MenuItem();
+			this.mColorsMenuItem = new System.Windows.Forms.MenuItem();
+			this.eolMenuItem = new System.Windows.Forms.MenuItem();
+			this.mEditPlayersMenuItem1 = new System.Windows.Forms.MenuItem();
+			this.mProwbowlMenuItem = new System.Windows.Forms.MenuItem();
+			this.mEditTeamsMenuItem2 = new System.Windows.Forms.MenuItem();
+			this.mDeleteCommasMenuItem = new System.Windows.Forms.MenuItem();
+			this.menuItem2 = new System.Windows.Forms.MenuItem();
+			this.findMenuItem = new System.Windows.Forms.MenuItem();
+			this.findNextMenuItem = new System.Windows.Forms.MenuItem();
+			this.findPrevMenuItem = new System.Windows.Forms.MenuItem();
+			this.hacksMainMenuItem = new System.Windows.Forms.MenuItem();
+			this.debugDialogMenuItem = new System.Windows.Forms.MenuItem();
+			this.mHackStompMenuItem = new System.Windows.Forms.MenuItem();
+			this.mSetPatchMenuItem = new System.Windows.Forms.MenuItem();
+			this.mScheduleMenuItem = new System.Windows.Forms.MenuItem();
+			this.mScheduleGUIMenuItem = new System.Windows.Forms.MenuItem();
+			this.mainAboutItem = new System.Windows.Forms.MenuItem();
+			this.aboutMenuItem = new System.Windows.Forms.MenuItem();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.statusBar1 = new System.Windows.Forms.StatusBar();
+			this.saveDataButton = new System.Windows.Forms.Button();
+			this.loadDataButton = new System.Windows.Forms.Button();
+			this.viewContentsBbutton = new System.Windows.Forms.Button();
+			this.loadTSBButton = new System.Windows.Forms.Button();
+			this.applyButton = new System.Windows.Forms.Button();
+			this.panel2 = new System.Windows.Forms.Panel();
+			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+			this.mRichTextBoxontextMenu = new System.Windows.Forms.ContextMenu();
+			this.mCutMenuItem = new System.Windows.Forms.MenuItem();
+			this.mCopyMenuItem = new System.Windows.Forms.MenuItem();
+			this.mPasteMenuItem = new System.Windows.Forms.MenuItem();
+			this.mSelectAllMenuItem = new System.Windows.Forms.MenuItem();
+			this.menuItem6 = new System.Windows.Forms.MenuItem();
+			this.mFintContextMenuItem = new System.Windows.Forms.MenuItem();
+			this.mFindNextContextMenuItem = new System.Windows.Forms.MenuItem();
+			this.mFindPrevContextMenuItem = new System.Windows.Forms.MenuItem();
+			this.menuItem3 = new System.Windows.Forms.MenuItem();
+			this.mEditPlayersMenuItem = new System.Windows.Forms.MenuItem();
+			this.mEditTeamsMenuItem = new System.Windows.Forms.MenuItem();
+			this.mEditColorsMenuItem = new System.Windows.Forms.MenuItem();
+			this.menuItem4 = new System.Windows.Forms.MenuItem();
+			this.mDeleteCommasMenuItem2 = new System.Windows.Forms.MenuItem();
+			this.mChangeFontItem = new System.Windows.Forms.MenuItem();
+			this.panel1.SuspendLayout();
+			this.panel2.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// mainMenu1
+			// 
+			this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem1,
             this.menuItem11,
             this.menuItem2,
             this.hacksMainMenuItem,
             this.mScheduleMenuItem,
-            this.menuItem9});
-            // 
-            // menuItem1
-            // 
-            this.menuItem1.Index = 0;
-            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.mainAboutItem});
+			// 
+			// menuItem1
+			// 
+			this.menuItem1.Index = 0;
+			this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.loadTSBMenuItem,
             this.LoadDataMenuItem,
             this.applyToRomMenuItem,
             this.mGetLocationsMenuItem,
             this.exitMenuItem});
-            this.menuItem1.Text = "&File";
-            // 
-            // loadTSBMenuItem
-            // 
-            this.loadTSBMenuItem.Index = 0;
-            this.loadTSBMenuItem.Text = "Load &TSB ROM";
-            this.loadTSBMenuItem.Click += new System.EventHandler(this.loadTSBMenuItem_Click);
-            // 
-            // LoadDataMenuItem
-            // 
-            this.LoadDataMenuItem.Index = 1;
-            this.LoadDataMenuItem.Text = "Load &Data file";
-            this.LoadDataMenuItem.Click += new System.EventHandler(this.LoadDataMenuItem_Click);
-            // 
-            // applyToRomMenuItem
-            // 
-            this.applyToRomMenuItem.Index = 2;
-            this.applyToRomMenuItem.Text = "&Apply To Rom";
-            this.applyToRomMenuItem.Click += new System.EventHandler(this.applyButton_Click);
-            // 
-            // mGetLocationsMenuItem
-            // 
-            this.mGetLocationsMenuItem.Index = 3;
-            this.mGetLocationsMenuItem.Text = "Get &Bytes";
-            this.mGetLocationsMenuItem.Click += new System.EventHandler(this.mGetLocationsMenuItem_Click);
-            // 
-            // exitMenuItem
-            // 
-            this.exitMenuItem.Index = 4;
-            this.exitMenuItem.Text = "E&xit";
-            this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
-            // 
-            // menuItem11
-            // 
-            this.menuItem11.Index = 1;
-            this.menuItem11.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.menuItem1.Text = "&File";
+			// 
+			// loadTSBMenuItem
+			// 
+			this.loadTSBMenuItem.Index = 0;
+			this.loadTSBMenuItem.Text = "Load &TSB ROM";
+			this.loadTSBMenuItem.Click += new System.EventHandler(this.loadTSBMenuItem_Click);
+			// 
+			// LoadDataMenuItem
+			// 
+			this.LoadDataMenuItem.Index = 1;
+			this.LoadDataMenuItem.Text = "Load &Data file";
+			this.LoadDataMenuItem.Click += new System.EventHandler(this.LoadDataMenuItem_Click);
+			// 
+			// applyToRomMenuItem
+			// 
+			this.applyToRomMenuItem.Index = 2;
+			this.applyToRomMenuItem.Text = "&Apply To Rom";
+			this.applyToRomMenuItem.Click += new System.EventHandler(this.applyButton_Click);
+			// 
+			// mGetLocationsMenuItem
+			// 
+			this.mGetLocationsMenuItem.Index = 3;
+			this.mGetLocationsMenuItem.Text = "Get &Bytes";
+			this.mGetLocationsMenuItem.Click += new System.EventHandler(this.mGetLocationsMenuItem_Click);
+			// 
+			// exitMenuItem
+			// 
+			this.exitMenuItem.Index = 4;
+			this.exitMenuItem.Text = "E&xit";
+			this.exitMenuItem.Click += new System.EventHandler(this.exitMenuItem_Click);
+			// 
+			// menuItem11
+			// 
+			this.menuItem11.Index = 1;
+			this.menuItem11.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem5,
             this.viewTSBContentsMenuItem,
             this.showTeamStringsMenuItem,
@@ -407,275 +424,275 @@ namespace TSBTool
             this.mProwbowlMenuItem,
             this.mEditTeamsMenuItem2,
             this.mDeleteCommasMenuItem});
-            this.menuItem11.Text = "&View";
-            // 
-            // menuItem5
-            // 
-            this.menuItem5.Index = 0;
-            this.menuItem5.Text = "Number &Guys Tool";
-            this.menuItem5.Click += new System.EventHandler(this.menuItem5_Click);
-            // 
-            // viewTSBContentsMenuItem
-            // 
-            this.viewTSBContentsMenuItem.Index = 1;
-            this.viewTSBContentsMenuItem.Text = "View TSB contents";
-            this.viewTSBContentsMenuItem.Click += new System.EventHandler(this.viewTSBContentsMenuItem_Click);
-            // 
-            // showTeamStringsMenuItem
-            // 
-            this.showTeamStringsMenuItem.Index = 2;
-            this.showTeamStringsMenuItem.Text = "Show Team Abb, City, Name";
-            this.showTeamStringsMenuItem.Click += new EventHandler(showTeamStringsMenuItem_Click);
-            // 
-            // mProBowlMenuItem
-            // 
-            this.mProBowlMenuItem.Checked = true;
-            this.mProBowlMenuItem.Index = 3;
-            this.mProBowlMenuItem.Text = "Show ProBowl Roster";
-            this.mProBowlMenuItem.Click += new System.EventHandler(this.mProBowlMenuItem_Click);
-            // 
-            // testScheduleMenuItem
-            // 
-            this.testScheduleMenuItem.Index = 4;
-            this.testScheduleMenuItem.Text = "Show Schedule Only";
-            this.testScheduleMenuItem.Click += new System.EventHandler(this.testScheduleMenuItem_Click);
-            // 
-            // offensivePrefMenuItem
-            // 
-            this.offensivePrefMenuItem.Checked = true;
-            this.offensivePrefMenuItem.Index = 5;
-            this.offensivePrefMenuItem.Text = "Show Offensive Team &Preference";
-            this.offensivePrefMenuItem.Click += new System.EventHandler(this.offensivePrefMenuItem_Click);
-            // 
-            // mOffensiveFormationsMenuItem
-            // 
-            this.mOffensiveFormationsMenuItem.Checked = true;
-            this.mOffensiveFormationsMenuItem.Index = 6;
-            this.mOffensiveFormationsMenuItem.Text = "Show Offensive Formaions";
-            this.mOffensiveFormationsMenuItem.Click += new System.EventHandler(this.mOffensiveFormationsMenuItem_Click);
-            // 
-            // mPlaybookMenuItem
-            // 
-            this.mPlaybookMenuItem.Checked = true;
-            this.mPlaybookMenuItem.Index = 7;
-            this.mPlaybookMenuItem.Text = "Show Playbooks";
-            this.mPlaybookMenuItem.Click += new System.EventHandler(this.mPlaybookMenuItem_Click);
-            // 
-            // mColorsMenuItem
-            // 
-            this.mColorsMenuItem.Index = 8;
-            this.mColorsMenuItem.Text = "Show &Colors";
-            this.mColorsMenuItem.Click += new System.EventHandler(this.mColorsMenuItem_Click);
-            // 
-            // eolMenuItem
-            // 
-            this.eolMenuItem.Checked = true;
-            this.eolMenuItem.Index = 9;
-            this.eolMenuItem.Text = "EOL= Windows Style (CR LF)";
-            this.eolMenuItem.Click += new System.EventHandler(this.eolMenuItem_Click);
-            // 
-            // mEditPlayersMenuItem1
-            // 
-            this.mEditPlayersMenuItem1.Index = 10;
-            this.mEditPlayersMenuItem1.Text = "&Edit Players";
-            this.mEditPlayersMenuItem1.Click += new System.EventHandler(this.EditPlayers_Click);
-            // 
-            // mProwbowlMenuItem
-            // 
-            this.mProwbowlMenuItem.Index = 11;
-            this.mProwbowlMenuItem.Text = "Edit &Pro Bowl";
-            this.mProwbowlMenuItem.Click += new System.EventHandler(this.mProwbowlMenuItem_Click);
-            // 
-            // mEditTeamsMenuItem2
-            // 
-            this.mEditTeamsMenuItem2.Index = 12;
-            this.mEditTeamsMenuItem2.Text = "Edit &Teams";
-            this.mEditTeamsMenuItem2.Click += new System.EventHandler(this.mEditTeamsMenuItem_Click);
-            // 
-            // mDeleteCommasMenuItem
-            // 
-            this.mDeleteCommasMenuItem.Index = 13;
-            this.mDeleteCommasMenuItem.Text = "&Delete Trailing Commas";
-            this.mDeleteCommasMenuItem.Click += new System.EventHandler(this.mDeleteCommasMenuItem_Click);
-            // 
-            // menuItem2
-            // 
-            this.menuItem2.Index = 2;
-            this.menuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.menuItem11.Text = "&View";
+			// 
+			// menuItem5
+			// 
+			this.menuItem5.Index = 0;
+			this.menuItem5.Text = "Number &Guys Tool";
+			this.menuItem5.Click += new System.EventHandler(this.menuItem5_Click);
+			// 
+			// viewTSBContentsMenuItem
+			// 
+			this.viewTSBContentsMenuItem.Index = 1;
+			this.viewTSBContentsMenuItem.Text = "View TSB contents";
+			this.viewTSBContentsMenuItem.Click += new System.EventHandler(this.viewTSBContentsMenuItem_Click);
+			// 
+			// showTeamStringsMenuItem
+			// 
+			this.showTeamStringsMenuItem.Index = 2;
+			this.showTeamStringsMenuItem.Text = "Show Team Abb, City, Name";
+			this.showTeamStringsMenuItem.Click += new System.EventHandler(this.showTeamStringsMenuItem_Click);
+			// 
+			// mProBowlMenuItem
+			// 
+			this.mProBowlMenuItem.Checked = true;
+			this.mProBowlMenuItem.Index = 3;
+			this.mProBowlMenuItem.Text = "Show ProBowl Roster";
+			this.mProBowlMenuItem.Click += new System.EventHandler(this.mProBowlMenuItem_Click);
+			// 
+			// testScheduleMenuItem
+			// 
+			this.testScheduleMenuItem.Index = 4;
+			this.testScheduleMenuItem.Text = "Show Schedule Only";
+			this.testScheduleMenuItem.Click += new System.EventHandler(this.testScheduleMenuItem_Click);
+			// 
+			// offensivePrefMenuItem
+			// 
+			this.offensivePrefMenuItem.Checked = true;
+			this.offensivePrefMenuItem.Index = 5;
+			this.offensivePrefMenuItem.Text = "Show Offensive Team &Preference";
+			this.offensivePrefMenuItem.Click += new System.EventHandler(this.offensivePrefMenuItem_Click);
+			// 
+			// mOffensiveFormationsMenuItem
+			// 
+			this.mOffensiveFormationsMenuItem.Checked = true;
+			this.mOffensiveFormationsMenuItem.Index = 6;
+			this.mOffensiveFormationsMenuItem.Text = "Show Offensive Formaions";
+			this.mOffensiveFormationsMenuItem.Click += new System.EventHandler(this.mOffensiveFormationsMenuItem_Click);
+			// 
+			// mPlaybookMenuItem
+			// 
+			this.mPlaybookMenuItem.Checked = true;
+			this.mPlaybookMenuItem.Index = 7;
+			this.mPlaybookMenuItem.Text = "Show Playbooks";
+			this.mPlaybookMenuItem.Click += new System.EventHandler(this.mPlaybookMenuItem_Click);
+			// 
+			// mColorsMenuItem
+			// 
+			this.mColorsMenuItem.Index = 8;
+			this.mColorsMenuItem.Text = "Show &Colors";
+			this.mColorsMenuItem.Click += new System.EventHandler(this.mColorsMenuItem_Click);
+			// 
+			// eolMenuItem
+			// 
+			this.eolMenuItem.Checked = true;
+			this.eolMenuItem.Index = 9;
+			this.eolMenuItem.Text = "EOL= Windows Style (CR LF)";
+			this.eolMenuItem.Click += new System.EventHandler(this.eolMenuItem_Click);
+			// 
+			// mEditPlayersMenuItem1
+			// 
+			this.mEditPlayersMenuItem1.Index = 10;
+			this.mEditPlayersMenuItem1.Text = "&Edit Players";
+			this.mEditPlayersMenuItem1.Click += new System.EventHandler(this.EditPlayers_Click);
+			// 
+			// mProwbowlMenuItem
+			// 
+			this.mProwbowlMenuItem.Index = 11;
+			this.mProwbowlMenuItem.Text = "Edit &Pro Bowl";
+			this.mProwbowlMenuItem.Click += new System.EventHandler(this.mProwbowlMenuItem_Click);
+			// 
+			// mEditTeamsMenuItem2
+			// 
+			this.mEditTeamsMenuItem2.Index = 12;
+			this.mEditTeamsMenuItem2.Text = "Edit &Teams";
+			this.mEditTeamsMenuItem2.Click += new System.EventHandler(this.mEditTeamsMenuItem_Click);
+			// 
+			// mDeleteCommasMenuItem
+			// 
+			this.mDeleteCommasMenuItem.Index = 13;
+			this.mDeleteCommasMenuItem.Text = "&Delete Trailing Commas";
+			this.mDeleteCommasMenuItem.Click += new System.EventHandler(this.mDeleteCommasMenuItem_Click);
+			// 
+			// menuItem2
+			// 
+			this.menuItem2.Index = 2;
+			this.menuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.findMenuItem,
             this.findNextMenuItem,
             this.findPrevMenuItem});
-            this.menuItem2.Text = "&Search";
-            // 
-            // findMenuItem
-            // 
-            this.findMenuItem.Index = 0;
-            this.findMenuItem.Text = "&Find    (Ctrl+F)";
-            this.findMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
-            // 
-            // findNextMenuItem
-            // 
-            this.findNextMenuItem.Index = 1;
-            this.findNextMenuItem.Text = "Find &Next  (F3)";
-            this.findNextMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
-            // 
-            // findPrevMenuItem
-            // 
-            this.findPrevMenuItem.Index = 2;
-            this.findPrevMenuItem.Text = "Find &Prev  (F2)";
-            this.findPrevMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
-            // 
-            // hacksMainMenuItem
-            // 
-            this.hacksMainMenuItem.Index = 3;
-            this.hacksMainMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.menuItem2.Text = "&Search";
+			// 
+			// findMenuItem
+			// 
+			this.findMenuItem.Index = 0;
+			this.findMenuItem.Text = "&Find    (Ctrl+F)";
+			this.findMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
+			// 
+			// findNextMenuItem
+			// 
+			this.findNextMenuItem.Index = 1;
+			this.findNextMenuItem.Text = "Find &Next  (F3)";
+			this.findNextMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
+			// 
+			// findPrevMenuItem
+			// 
+			this.findPrevMenuItem.Index = 2;
+			this.findPrevMenuItem.Text = "Find &Prev  (F2)";
+			this.findPrevMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
+			// 
+			// hacksMainMenuItem
+			// 
+			this.hacksMainMenuItem.Index = 3;
+			this.hacksMainMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.debugDialogMenuItem,
             this.mHackStompMenuItem,
             this.mSetPatchMenuItem});
-            this.hacksMainMenuItem.Text = "&Hacks";
-            // 
-            // debugDialogMenuItem
-            // 
-            this.debugDialogMenuItem.Index = 0;
-            this.debugDialogMenuItem.Text = "&Debug Dialog";
-            this.debugDialogMenuItem.Click += new System.EventHandler(this.debugDialogMenuItem_Click);
-            // 
-            // mHackStompMenuItem
-            // 
-            this.mHackStompMenuItem.Index = 1;
-            this.mHackStompMenuItem.Text = "&Check for \'SET\' commands setting values in the same locations";
-            this.mHackStompMenuItem.Click += new System.EventHandler(this.mHackStompMenuItem_Click);
-            // 
-            // mSetPatchMenuItem
-            // 
-            this.mSetPatchMenuItem.Index = 2;
-            this.mSetPatchMenuItem.Text = "Create \'SET\' patch";
-            this.mSetPatchMenuItem.Click += new System.EventHandler(this.mSetPatchMenuItem_Click);
-            // 
-            // mScheduleMenuItem
-            // 
-            this.mScheduleMenuItem.Index = 4;
-            this.mScheduleMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.hacksMainMenuItem.Text = "&Hacks";
+			// 
+			// debugDialogMenuItem
+			// 
+			this.debugDialogMenuItem.Index = 0;
+			this.debugDialogMenuItem.Text = "&Debug Dialog";
+			this.debugDialogMenuItem.Click += new System.EventHandler(this.debugDialogMenuItem_Click);
+			// 
+			// mHackStompMenuItem
+			// 
+			this.mHackStompMenuItem.Index = 1;
+			this.mHackStompMenuItem.Text = "&Check for \'SET\' commands setting values in the same locations";
+			this.mHackStompMenuItem.Click += new System.EventHandler(this.mHackStompMenuItem_Click);
+			// 
+			// mSetPatchMenuItem
+			// 
+			this.mSetPatchMenuItem.Index = 2;
+			this.mSetPatchMenuItem.Text = "Create \'SET\' patch";
+			this.mSetPatchMenuItem.Click += new System.EventHandler(this.mSetPatchMenuItem_Click);
+			// 
+			// mScheduleMenuItem
+			// 
+			this.mScheduleMenuItem.Index = 4;
+			this.mScheduleMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.mScheduleGUIMenuItem});
-            this.mScheduleMenuItem.Text = "&Schedule";
-            // 
-            // mScheduleGUIMenuItem
-            // 
-            this.mScheduleGUIMenuItem.Index = 0;
-            this.mScheduleGUIMenuItem.Text = "Schedule &GUI";
-            this.mScheduleGUIMenuItem.Click += new System.EventHandler(this.mScheduleGUIMenuItem_Click);
-            // 
-            // menuItem9
-            // 
-            this.menuItem9.Index = 5;
-            this.menuItem9.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.mScheduleMenuItem.Text = "&Schedule";
+			// 
+			// mScheduleGUIMenuItem
+			// 
+			this.mScheduleGUIMenuItem.Index = 0;
+			this.mScheduleGUIMenuItem.Text = "Schedule &GUI";
+			this.mScheduleGUIMenuItem.Click += new System.EventHandler(this.mScheduleGUIMenuItem_Click);
+			// 
+			// menuItem9
+			// 
+			this.mainAboutItem.Index = 5;
+			this.mainAboutItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.aboutMenuItem});
-            this.menuItem9.Text = "A&bout";
-            // 
-            // aboutMenuItem
-            // 
-            this.aboutMenuItem.Index = 0;
-            this.aboutMenuItem.Text = "About &TSBTool";
-            this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.statusBar1);
-            this.panel1.Controls.Add(this.saveDataButton);
-            this.panel1.Controls.Add(this.loadDataButton);
-            this.panel1.Controls.Add(this.viewContentsBbutton);
-            this.panel1.Controls.Add(this.loadTSBButton);
-            this.panel1.Controls.Add(this.applyButton);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 486);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(680, 72);
-            this.panel1.TabIndex = 0;
-            // 
-            // statusBar1
-            // 
-            this.statusBar1.Location = new System.Drawing.Point(0, 50);
-            this.statusBar1.Name = "statusBar1";
-            this.statusBar1.Size = new System.Drawing.Size(680, 22);
-            this.statusBar1.TabIndex = 5;
-            // 
-            // saveDataButton
-            // 
-            this.saveDataButton.Location = new System.Drawing.Point(276, 12);
-            this.saveDataButton.Name = "saveDataButton";
-            this.saveDataButton.Size = new System.Drawing.Size(128, 32);
-            this.saveDataButton.TabIndex = 2;
-            this.saveDataButton.Text = "&Save Data";
-            this.saveDataButton.Click += new System.EventHandler(this.saveDataButton_Click);
-            this.saveDataButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
-            // 
-            // loadDataButton
-            // 
-            this.loadDataButton.Location = new System.Drawing.Point(406, 12);
-            this.loadDataButton.Name = "loadDataButton";
-            this.loadDataButton.Size = new System.Drawing.Size(128, 32);
-            this.loadDataButton.TabIndex = 3;
-            this.loadDataButton.Text = "&Load Data";
-            this.loadDataButton.Click += new System.EventHandler(this.LoadDataMenuItem_Click);
-            this.loadDataButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
-            // 
-            // viewContentsBbutton
-            // 
-            this.viewContentsBbutton.Location = new System.Drawing.Point(146, 12);
-            this.viewContentsBbutton.Name = "viewContentsBbutton";
-            this.viewContentsBbutton.Size = new System.Drawing.Size(128, 32);
-            this.viewContentsBbutton.TabIndex = 1;
-            this.viewContentsBbutton.Text = "View &Contents";
-            this.viewContentsBbutton.Click += new System.EventHandler(this.viewTSBContentsMenuItem_Click);
-            this.viewContentsBbutton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
-            // 
-            // loadTSBButton
-            // 
-            this.loadTSBButton.Location = new System.Drawing.Point(16, 12);
-            this.loadTSBButton.Name = "loadTSBButton";
-            this.loadTSBButton.Size = new System.Drawing.Size(128, 32);
-            this.loadTSBButton.TabIndex = 0;
-            this.loadTSBButton.Text = "&Load TSB Rom       (nes or snes TSB1)";
-            this.loadTSBButton.Click += new System.EventHandler(this.loadTSBMenuItem_Click);
-            this.loadTSBButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
-            // 
-            // applyButton
-            // 
-            this.applyButton.Location = new System.Drawing.Point(536, 12);
-            this.applyButton.Name = "applyButton";
-            this.applyButton.Size = new System.Drawing.Size(128, 32);
-            this.applyButton.TabIndex = 4;
-            this.applyButton.Text = "&Apply to Rom";
-            this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
-            this.applyButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.richTextBox1);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(680, 486);
-            this.panel2.TabIndex = 1;
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.AcceptsTab = true;
-            this.richTextBox1.ContextMenu = this.mRichTextBoxontextMenu;
-            this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBox1.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(0, 0);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.richTextBox1.Size = new System.Drawing.Size(680, 486);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
-            this.richTextBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBox1_KeyDown);
-            this.richTextBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.richTextBox1_MouseDown);
-            // 
-            // mRichTextBoxontextMenu
-            // 
-            this.mRichTextBoxontextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.mainAboutItem.Text = "A&bout";
+			// 
+			// aboutMenuItem
+			// 
+			this.aboutMenuItem.Index = 0;
+			this.aboutMenuItem.Text = "About &TSBTool";
+			this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
+			// 
+			// panel1
+			// 
+			this.panel1.Controls.Add(this.statusBar1);
+			this.panel1.Controls.Add(this.saveDataButton);
+			this.panel1.Controls.Add(this.loadDataButton);
+			this.panel1.Controls.Add(this.viewContentsBbutton);
+			this.panel1.Controls.Add(this.loadTSBButton);
+			this.panel1.Controls.Add(this.applyButton);
+			this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.panel1.Location = new System.Drawing.Point(0, 486);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(680, 72);
+			this.panel1.TabIndex = 0;
+			// 
+			// statusBar1
+			// 
+			this.statusBar1.Location = new System.Drawing.Point(0, 50);
+			this.statusBar1.Name = "statusBar1";
+			this.statusBar1.Size = new System.Drawing.Size(680, 22);
+			this.statusBar1.TabIndex = 5;
+			// 
+			// saveDataButton
+			// 
+			this.saveDataButton.Location = new System.Drawing.Point(276, 12);
+			this.saveDataButton.Name = "saveDataButton";
+			this.saveDataButton.Size = new System.Drawing.Size(128, 32);
+			this.saveDataButton.TabIndex = 2;
+			this.saveDataButton.Text = "&Save Data";
+			this.saveDataButton.Click += new System.EventHandler(this.saveDataButton_Click);
+			this.saveDataButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
+			// 
+			// loadDataButton
+			// 
+			this.loadDataButton.Location = new System.Drawing.Point(406, 12);
+			this.loadDataButton.Name = "loadDataButton";
+			this.loadDataButton.Size = new System.Drawing.Size(128, 32);
+			this.loadDataButton.TabIndex = 3;
+			this.loadDataButton.Text = "&Load Data";
+			this.loadDataButton.Click += new System.EventHandler(this.LoadDataMenuItem_Click);
+			this.loadDataButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
+			// 
+			// viewContentsBbutton
+			// 
+			this.viewContentsBbutton.Location = new System.Drawing.Point(146, 12);
+			this.viewContentsBbutton.Name = "viewContentsBbutton";
+			this.viewContentsBbutton.Size = new System.Drawing.Size(128, 32);
+			this.viewContentsBbutton.TabIndex = 1;
+			this.viewContentsBbutton.Text = "View &Contents";
+			this.viewContentsBbutton.Click += new System.EventHandler(this.viewTSBContentsMenuItem_Click);
+			this.viewContentsBbutton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
+			// 
+			// loadTSBButton
+			// 
+			this.loadTSBButton.Location = new System.Drawing.Point(16, 12);
+			this.loadTSBButton.Name = "loadTSBButton";
+			this.loadTSBButton.Size = new System.Drawing.Size(128, 32);
+			this.loadTSBButton.TabIndex = 0;
+			this.loadTSBButton.Text = "&Load TSB Rom       (nes or snes TSB1)";
+			this.loadTSBButton.Click += new System.EventHandler(this.loadTSBMenuItem_Click);
+			this.loadTSBButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
+			// 
+			// applyButton
+			// 
+			this.applyButton.Location = new System.Drawing.Point(536, 12);
+			this.applyButton.Name = "applyButton";
+			this.applyButton.Size = new System.Drawing.Size(128, 32);
+			this.applyButton.TabIndex = 4;
+			this.applyButton.Text = "&Apply to Rom";
+			this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
+			this.applyButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
+			// 
+			// panel2
+			// 
+			this.panel2.Controls.Add(this.richTextBox1);
+			this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.panel2.Location = new System.Drawing.Point(0, 0);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(680, 486);
+			this.panel2.TabIndex = 1;
+			// 
+			// richTextBox1
+			// 
+			this.richTextBox1.AcceptsTab = true;
+			this.richTextBox1.ContextMenu = this.mRichTextBoxontextMenu;
+			this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.richTextBox1.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.richTextBox1.Location = new System.Drawing.Point(0, 0);
+			this.richTextBox1.Name = "richTextBox1";
+			this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+			this.richTextBox1.Size = new System.Drawing.Size(680, 486);
+			this.richTextBox1.TabIndex = 0;
+			this.richTextBox1.Text = "";
+			this.richTextBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBox1_KeyDown);
+			this.richTextBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.richTextBox1_MouseDown);
+			// 
+			// mRichTextBoxontextMenu
+			// 
+			this.mRichTextBoxontextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.mCutMenuItem,
             this.mCopyMenuItem,
             this.mPasteMenuItem,
@@ -691,110 +708,110 @@ namespace TSBTool
             this.menuItem4,
             this.mDeleteCommasMenuItem2,
             this.mChangeFontItem});
-            // 
-            // mCutMenuItem
-            // 
-            this.mCutMenuItem.Index = 0;
-            this.mCutMenuItem.Text = "C&ut       (Ctrl+X)";
-            this.mCutMenuItem.Click += new System.EventHandler(this.mCutMenuItem_Click);
-            // 
-            // mCopyMenuItem
-            // 
-            this.mCopyMenuItem.Index = 1;
-            this.mCopyMenuItem.Text = "&Copy    (Ctrl+C)";
-            this.mCopyMenuItem.Click += new System.EventHandler(this.mCopyMenuItem_Click);
-            // 
-            // mPasteMenuItem
-            // 
-            this.mPasteMenuItem.Index = 2;
-            this.mPasteMenuItem.Text = "&Paste   (Ctrl+V)";
-            this.mPasteMenuItem.Click += new System.EventHandler(this.mPasteMenuItem_Click);
-            // 
-            // mSelectAllMenuItem
-            // 
-            this.mSelectAllMenuItem.Index = 3;
-            this.mSelectAllMenuItem.Text = "Select &All  (Ctrl+A)";
-            this.mSelectAllMenuItem.Click += new System.EventHandler(this.mSelectAllMenuItem_Click);
-            // 
-            // menuItem6
-            // 
-            this.menuItem6.Index = 4;
-            this.menuItem6.Text = "-";
-            // 
-            // mFintContextMenuItem
-            // 
-            this.mFintContextMenuItem.Index = 5;
-            this.mFintContextMenuItem.Text = "&Find          (Ctrl+F)";
-            this.mFintContextMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
-            // 
-            // mFindNextContextMenuItem
-            // 
-            this.mFindNextContextMenuItem.Index = 6;
-            this.mFindNextContextMenuItem.Text = "Find &Next (F3)";
-            this.mFindNextContextMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
-            // 
-            // mFindPrevContextMenuItem
-            // 
-            this.mFindPrevContextMenuItem.Index = 7;
-            this.mFindPrevContextMenuItem.Text = "Find &Prev (F2)";
-            this.mFindPrevContextMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
-            // 
-            // menuItem3
-            // 
-            this.menuItem3.Index = 8;
-            this.menuItem3.Text = "-";
-            // 
-            // mEditPlayersMenuItem
-            // 
-            this.mEditPlayersMenuItem.Index = 9;
-            this.mEditPlayersMenuItem.Text = "Edit &Players";
-            this.mEditPlayersMenuItem.Click += new System.EventHandler(this.EditPlayers_Click);
-            // 
-            // mEditTeamsMenuItem
-            // 
-            this.mEditTeamsMenuItem.Index = 10;
-            this.mEditTeamsMenuItem.Text = "Edit &Teams";
-            this.mEditTeamsMenuItem.Click += new System.EventHandler(this.mEditTeamsMenuItem_Click);
-            // 
-            // mEditColorsMenuItem
-            // 
-            this.mEditColorsMenuItem.Index = 11;
-            this.mEditColorsMenuItem.Text = "Edit &Colors";
-            this.mEditColorsMenuItem.Click += new System.EventHandler(this.mEditColorsMenuItem_Click);
-            // 
-            // menuItem4
-            // 
-            this.menuItem4.Index = 12;
-            this.menuItem4.Text = "-";
-            // 
-            // mDeleteCommasMenuItem2
-            // 
-            this.mDeleteCommasMenuItem2.Index = 13;
-            this.mDeleteCommasMenuItem2.Text = "&Delete trailing commas ";
-            this.mDeleteCommasMenuItem2.Click += new System.EventHandler(this.mDeleteCommasMenuItem_Click);
-            // 
-            // mChangeFontItem
-            // 
-            this.mChangeFontItem.Index = 14;
-            this.mChangeFontItem.Text = "Change &Font (and resize form)";
-            this.mChangeFontItem.Click += new System.EventHandler(this.mChangeFontItem_Click);
-            // 
-            // MainGUI
-            // 
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(680, 558);
-            this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Menu = this.mainMenu1;
-            this.MinimumSize = new System.Drawing.Size(688, 200);
-            this.Name = "MainGUI";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "TSBTool Supreme";
-            this.Closing += new System.ComponentModel.CancelEventHandler(this.MainGUI_Closing);
-            this.panel1.ResumeLayout(false);
-            this.panel2.ResumeLayout(false);
-            this.ResumeLayout(false);
+			// 
+			// mCutMenuItem
+			// 
+			this.mCutMenuItem.Index = 0;
+			this.mCutMenuItem.Text = "C&ut       (Ctrl+X)";
+			this.mCutMenuItem.Click += new System.EventHandler(this.mCutMenuItem_Click);
+			// 
+			// mCopyMenuItem
+			// 
+			this.mCopyMenuItem.Index = 1;
+			this.mCopyMenuItem.Text = "&Copy    (Ctrl+C)";
+			this.mCopyMenuItem.Click += new System.EventHandler(this.mCopyMenuItem_Click);
+			// 
+			// mPasteMenuItem
+			// 
+			this.mPasteMenuItem.Index = 2;
+			this.mPasteMenuItem.Text = "&Paste   (Ctrl+V)";
+			this.mPasteMenuItem.Click += new System.EventHandler(this.mPasteMenuItem_Click);
+			// 
+			// mSelectAllMenuItem
+			// 
+			this.mSelectAllMenuItem.Index = 3;
+			this.mSelectAllMenuItem.Text = "Select &All  (Ctrl+A)";
+			this.mSelectAllMenuItem.Click += new System.EventHandler(this.mSelectAllMenuItem_Click);
+			// 
+			// menuItem6
+			// 
+			this.menuItem6.Index = 4;
+			this.menuItem6.Text = "-";
+			// 
+			// mFintContextMenuItem
+			// 
+			this.mFintContextMenuItem.Index = 5;
+			this.mFintContextMenuItem.Text = "&Find          (Ctrl+F)";
+			this.mFintContextMenuItem.Click += new System.EventHandler(this.findMenuItem_Click);
+			// 
+			// mFindNextContextMenuItem
+			// 
+			this.mFindNextContextMenuItem.Index = 6;
+			this.mFindNextContextMenuItem.Text = "Find &Next (F3)";
+			this.mFindNextContextMenuItem.Click += new System.EventHandler(this.findNextMenuItem_Click);
+			// 
+			// mFindPrevContextMenuItem
+			// 
+			this.mFindPrevContextMenuItem.Index = 7;
+			this.mFindPrevContextMenuItem.Text = "Find &Prev (F2)";
+			this.mFindPrevContextMenuItem.Click += new System.EventHandler(this.findPrevMenuItem_Click);
+			// 
+			// menuItem3
+			// 
+			this.menuItem3.Index = 8;
+			this.menuItem3.Text = "-";
+			// 
+			// mEditPlayersMenuItem
+			// 
+			this.mEditPlayersMenuItem.Index = 9;
+			this.mEditPlayersMenuItem.Text = "Edit &Players";
+			this.mEditPlayersMenuItem.Click += new System.EventHandler(this.EditPlayers_Click);
+			// 
+			// mEditTeamsMenuItem
+			// 
+			this.mEditTeamsMenuItem.Index = 10;
+			this.mEditTeamsMenuItem.Text = "Edit &Teams";
+			this.mEditTeamsMenuItem.Click += new System.EventHandler(this.mEditTeamsMenuItem_Click);
+			// 
+			// mEditColorsMenuItem
+			// 
+			this.mEditColorsMenuItem.Index = 11;
+			this.mEditColorsMenuItem.Text = "Edit &Colors";
+			this.mEditColorsMenuItem.Click += new System.EventHandler(this.mEditColorsMenuItem_Click);
+			// 
+			// menuItem4
+			// 
+			this.menuItem4.Index = 12;
+			this.menuItem4.Text = "-";
+			// 
+			// mDeleteCommasMenuItem2
+			// 
+			this.mDeleteCommasMenuItem2.Index = 13;
+			this.mDeleteCommasMenuItem2.Text = "&Delete trailing commas ";
+			this.mDeleteCommasMenuItem2.Click += new System.EventHandler(this.mDeleteCommasMenuItem_Click);
+			// 
+			// mChangeFontItem
+			// 
+			this.mChangeFontItem.Index = 14;
+			this.mChangeFontItem.Text = "Change &Font (and resize form)";
+			this.mChangeFontItem.Click += new System.EventHandler(this.mChangeFontItem_Click);
+			// 
+			// MainGUI
+			// 
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+			this.ClientSize = new System.Drawing.Size(680, 558);
+			this.Controls.Add(this.panel2);
+			this.Controls.Add(this.panel1);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.Menu = this.mainMenu1;
+			this.MinimumSize = new System.Drawing.Size(688, 200);
+			this.Name = "MainGUI";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+			this.Text = "TSBTool Supreme";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.MainGUI_Closing);
+			this.panel1.ResumeLayout(false);
+			this.panel2.ResumeLayout(false);
+			this.ResumeLayout(false);
 
 		}
 		#endregion
@@ -941,6 +958,7 @@ namespace TSBTool
 			TecmoTool.ShowPlaybook = mPlaybookMenuItem.Checked;
 			TecmoTool.ShowTeamFormation = mOffensiveFormationsMenuItem.Checked;
 			TecmoTool.ShowTeamStrings = showTeamStringsMenuItem.Checked;
+			TecmoTool.ShowProBowlRosters = mProBowlMenuItem.Checked;
 
 			string msg = 
 					"#  -> Double click on a team or player to bring up the All new Player/Team editing GUI.\n"+
@@ -952,7 +970,7 @@ namespace TSBTool
             string text = msg
                 +
                 tool.GetKey() + tool.GetAll();
-            if (mProBowlMenuItem.Checked)
+			if (TecmoTool.ShowProBowlRosters)
                 text += tool.GetProBowlPlayers();
 
             text += tool.GetSchedule();

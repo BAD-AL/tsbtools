@@ -318,5 +318,10 @@ LOS ANGELES:OAKLAND:2
                     team, Tool.GetTeamAbbreviation(index), Tool.GetTeamCity(index), Tool.GetTeamName(index));
             }
         }
+
+		private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show("This dialog is used for feature testing purposes");
+		}
     }
 }

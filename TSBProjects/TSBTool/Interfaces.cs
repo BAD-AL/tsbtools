@@ -169,6 +169,9 @@ namespace TSBTool
         /// </summary>
         string RomVersion { get; }
 
+		// for testing
+		void ProcessText(string text);
+
 	}
 
     public interface IAllStarPlayerControl 

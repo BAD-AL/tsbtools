@@ -31,7 +31,7 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyVersion("1.0.0.1")] // mono support + pro bowl form
 //[assembly: AssemblyVersion("1.0.0.2")]   // Schedule gui
 //[assembly: AssemblyVersion("1.0.0.3")]   // Hacks improvement
-[assembly: AssemblyVersion("1.0.0.4")]   // Works under Mono; DebugDialog added; 'ReplaceString' functionality; Get/Set Team name, city, abbrev.
+[assembly: AssemblyVersion("1.2.0.0")]   // Works under Mono; DebugDialog added; 'ReplaceString' functionality; Get/Set Team name, city, abbrev.
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

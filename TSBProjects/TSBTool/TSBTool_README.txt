@@ -1,6 +1,6 @@
 TSBToolSupreme README
 ======================================================================================================
-TSBToolSupreme Version 1.0.0.4 (11 Aug 2019)
+TSBToolSupreme Version 1.2.0.0 (11 Aug 2019)
 1. Confirmed mono Support
 2. 'ReplaceString' function.
 3. Get/Set team abbrv. City, Name
