@@ -7,159 +7,160 @@ using System.Collections.Generic;
 
 namespace TSBTool2
 {
-	/// <summary>
-	/// Summary description for InputParser.
-	/// </summary>
-	public class InputParser
-	{
-		private ITecmoTool tool;
-		private const int scheduleState = 0;
-		private const int rosterState   = 1;
-		private int currentState = 2;
-		public bool showSimError= false;
-		private List<string> errors = new List<string>();
-		int season = 1;
+    /// <summary>
+    /// Summary description for InputParser.
+    /// </summary>
+    public class InputParser
+    {
+        private ITecmoTool tool;
+        private const int scheduleState = 0;
+        private const int rosterState = 1;
+        private int currentState = 2;
+        public bool showSimError = false;
+        private List<string> errors = new List<string>();
+        int season = 1;
 
-		private static Regex teamRegex, weekRegex, gameRegex, numberRegex, 
-			posNameFaceRegex, simDataRegex, yearRegex, setRegex,
-			returnTeamRegex, offensiveFormationRegex, playbookRegex,
-			juiceRegex, homeRegex, awayRegex, divChampRegex, confChampRegex,
-			uniformUsageRegex, replaceStringRegex, teamStringsRegex, seasonRegex;
+        private static Regex teamRegex, weekRegex, gameRegex, numberRegex,
+            posNameFaceRegex, simDataRegex, yearRegex, setRegex,
+            returnTeamRegex, offensiveFormationRegex, playbookRegex,
+            juiceRegex, homeRegex, awayRegex, divChampRegex, confChampRegex,
+            uniformUsageRegex, replaceStringRegex, teamStringsRegex, seasonRegex;
 
-		private string currentTeam; //used for roster update
-		private List<string>scheduleList;
+        private string currentTeam; //used for roster update
+        private List<string> scheduleList;
 
-		public InputParser(ITecmoTool tool)
-		{
-			this.tool = tool;
-			currentTeam      = "bills";
-			Init();
-		}
+        public InputParser(ITecmoTool tool)
+        {
+            this.tool = tool;
+            currentTeam = "bills";
+            Init();
+        }
 
-		public InputParser()
-		{
-			currentTeam      = "bills";
-			Init();
-		}
+        public InputParser()
+        {
+            currentTeam = "bills";
+            Init();
+        }
 
-		private static void Init()
-		{
-			if( numberRegex == null )
-			{
-//				currentTeam      = "bills";
-				numberRegex      = new Regex("(#[0-9]{1,2})");
-				teamRegex        = new Regex("TEAM\\s*=\\s*([0-9a-z]+)");
-				simDataRegex     = new Regex("SimData=0[xX]([0-9a-fA-F][0-9a-fA-F])([0-3]?)");
-				weekRegex        = new Regex("WEEK ([1-9][0	-7]?)");
-				gameRegex        = new Regex("([0-9a-z]+)\\s+at\\s+([0-9a-z]+)");
-				posNameFaceRegex = new Regex("([A-Z]+[1-4]?)\\s*,\\s*([a-zA-Z \\.\\-]+),\\s*(face=0[xX][0-9a-fA-F]+\\s*,\\s*)?");
-				yearRegex        = new Regex("YEAR\\s*=\\s*([0-9]+)");
-				returnTeamRegex  = new Regex("RETURN_TEAM\\s+([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)");
-				setRegex         = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
-				offensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
-				playbookRegex    = new Regex("PLAYBOOK (R[1-8]{4})\\s*,\\s*(P[1-8]{4})");
-				juiceRegex       = new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)");
-				homeRegex        = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{6})");
-				awayRegex        = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{6})");
-				divChampRegex    = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
-				confChampRegex   = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
-				uniformUsageRegex= new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
-				replaceStringRegex = new Regex("ReplaceString\\(\\s*\"([A-Za-z0-9 .]+)\"\\s*,\\s*\"([A-Za-z .]+)\"\\s*(,\\s*([0-9]+))*\\s*\\)");
-				teamStringsRegex = new Regex("TEAM_ABB=([0-9A-Za-z. ]+),TEAM_CITY=([0-9A-Za-z .]+),TEAM_NAME=([0-9A-Za-z .]+)");
-                seasonRegex      = new Regex("SEASON\\s+([1-3])");
-			}
-//			colorsRegex      = new Regex(
-//                 "COLORS\\s*Home\\s*=\\s*(0x[0-9a-fA-F]{4})\\s*,\\s*Away\\s*=\\s*(0x[0-9a-fA-F]{4})\\s*,\\s*"+
-//				 "DivChamp\\s*=\\s*(0x[0-9a-fA-F]{10})\\s*,\\s*ConfChamp\\s*=\\s*(0x[0-9a-fA-F]{8})");
-			// use \/ regex for a custom Juice Setting.
-			//new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)|JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2}),\\s*([0-9]{1,2})\\s*\\)");
-		}
+        private static void Init()
+        {
+            if (numberRegex == null)
+            {
+                //				currentTeam      = "bills";
+                numberRegex = new Regex("(#[0-9]{1,2})");
+                teamRegex = new Regex("TEAM\\s*=\\s*([0-9a-z]+)");
+                simDataRegex = new Regex("SimData=0[xX]([0-9a-fA-F][0-9a-fA-F])([0-3]?)");
+                weekRegex = new Regex("WEEK ([1-9][0	-7]?)");
+                gameRegex = new Regex("([0-9a-z]+)\\s+at\\s+([0-9a-z]+)");
+                posNameFaceRegex = new Regex("([A-Z]+[1-4]?)\\s*,\\s*([a-zA-Z \\.\\-]+),\\s*(face=0[xX][0-9a-fA-F]+\\s*,\\s*)?");
+                yearRegex = new Regex("YEAR\\s*=\\s*([0-9]+)");
+                returnTeamRegex = new Regex("RETURN_TEAM\\s+([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)");
+                setRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
+                offensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
+                playbookRegex = new Regex("PLAYBOOK (R[1-8]{4})\\s*,\\s*(P[1-8]{4})");
+                juiceRegex = new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)");
+                homeRegex = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{6})");
+                awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{6})");
+                divChampRegex = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
+                confChampRegex = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
+                uniformUsageRegex = new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
+                replaceStringRegex = new Regex("ReplaceString\\(\\s*\"([A-Za-z0-9 .]+)\"\\s*,\\s*\"([A-Za-z .]+)\"\\s*(,\\s*([0-9]+))*\\s*\\)");
+                teamStringsRegex = new Regex("TEAM_ABB=([0-9A-Za-z. ]+),TEAM_CITY=([0-9A-Za-z .]+),TEAM_NAME=([0-9A-Za-z .]+)");
+                seasonRegex = new Regex("SEASON\\s+([1-3])");
+            }
+            //			colorsRegex      = new Regex(
+            //                 "COLORS\\s*Home\\s*=\\s*(0x[0-9a-fA-F]{4})\\s*,\\s*Away\\s*=\\s*(0x[0-9a-fA-F]{4})\\s*,\\s*"+
+            //				 "DivChamp\\s*=\\s*(0x[0-9a-fA-F]{10})\\s*,\\s*ConfChamp\\s*=\\s*(0x[0-9a-fA-F]{8})");
+            // use \/ regex for a custom Juice Setting.
+            //new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)|JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2}),\\s*([0-9]{1,2})\\s*\\)");
+        }
 
-		public void ProcessFile(string fileName)
-		{
-			try
-			{
-				StreamReader sr = new StreamReader(fileName);
-				string contents= sr.ReadToEnd();
-				sr.Close();
-				char[] chars = "\n\r".ToCharArray();
-				string[] lines = contents.Split(chars);
-				ProcessLines(lines);
-			}
-			catch(Exception e){
-				StaticUtils.ShowError(e.Message);
-			}	
-		}
+        public void ProcessFile(string fileName)
+        {
+            try
+            {
+                StreamReader sr = new StreamReader(fileName);
+                string contents = sr.ReadToEnd();
+                sr.Close();
+                char[] chars = "\n\r".ToCharArray();
+                string[] lines = contents.Split(chars);
+                ProcessLines(lines);
+            }
+            catch (Exception e)
+            {
+                StaticUtils.ShowError(e.Message);
+            }
+        }
 
-		public void ProcessText(string content)
-		{
-			content = content.Replace("\r\n", "\n");
-			string[] lines = content.Split(new char[] { '\n' });
-			ProcessLines(lines);
-		}
+        public void ProcessText(string content)
+        {
+            content = content.Replace("\r\n", "\n");
+            string[] lines = content.Split(new char[] { '\n' });
+            ProcessLines(lines);
+        }
 
-		public void ProcessLines(string[] lines)
-		{
-			int i =0;
-			try
-			{
-				for( i =0; i < lines.Length; i++)
-				{
-					ProcessLine(lines[i]);
-					//Console.WriteLine(i);
-				}
-				StaticUtils.ShowErrors();
-				ApplySchedule();
-			}
-			catch(Exception e)
-			{
-				StringBuilder sb = new StringBuilder(150);
-				sb.Append( "Error! ");
-				if( i < lines.Length )
-					sb.Append(string.Format("line #{0}:\t'{1}'",i, lines[i]));
-				sb.Append(e.Message);
-				sb.Append("\n");
-				sb.Append(e.StackTrace);
-//						"Error Processing line {0}:\t'{1}'.\n{2}\n{3}",
-//						i,lines[i], e.Message,e.StackTrace);
-				sb.Append("\n\nOperation aborted at this point. Data not applied.");
-				StaticUtils.ShowError(sb.ToString());
-			}
-		}
+        public void ProcessLines(string[] lines)
+        {
+            int i = 0;
+            try
+            {
+                for (i = 0; i < lines.Length; i++)
+                {
+                    ProcessLine(lines[i]);
+                    //Console.WriteLine(i);
+                }
+                StaticUtils.ShowErrors();
+                ApplySchedule();
+            }
+            catch (Exception e)
+            {
+                StringBuilder sb = new StringBuilder(150);
+                sb.Append("Error! ");
+                if (i < lines.Length)
+                    sb.Append(string.Format("line #{0}:\t'{1}'", i, lines[i]));
+                sb.Append(e.Message);
+                sb.Append("\n");
+                sb.Append(e.StackTrace);
+                //						"Error Processing line {0}:\t'{1}'.\n{2}\n{3}",
+                //						i,lines[i], e.Message,e.StackTrace);
+                sb.Append("\n\nOperation aborted at this point. Data not applied.");
+                StaticUtils.ShowError(sb.ToString());
+            }
+        }
 
-		protected virtual void ApplySchedule()
-		{
-			if( scheduleList != null )
-			{
-				tool.ApplySchedule(season, scheduleList);
-				StaticUtils.ShowErrors(  );
-				scheduleList = null;
-			}
-		}
+        protected virtual void ApplySchedule()
+        {
+            if (scheduleList != null)
+            {
+                tool.ApplySchedule(season, scheduleList);
+                StaticUtils.ShowErrors();
+                scheduleList = null;
+            }
+        }
 
-		public void ReadFromStdin()
-		{
-			string line= "";
-			int lineNumber = 0;
-			Console.WriteLine("Reading from standard in...");
-			try
-			{
-				while( (line=Console.ReadLine()) != null)
-				{
-					lineNumber++;
-					ProcessLine(line);
-					//Console.WriteLine("Line "+lineNumber);
-				}
-				StaticUtils.ShowErrors();
-				ApplySchedule();
-			}
-			catch(Exception e)
-			{
-				StaticUtils.ShowError(string.Format(
+        public void ReadFromStdin()
+        {
+            string line = "";
+            int lineNumber = 0;
+            Console.WriteLine("Reading from standard in...");
+            try
+            {
+                while ((line = Console.ReadLine()) != null)
+                {
+                    lineNumber++;
+                    ProcessLine(line);
+                    //Console.WriteLine("Line "+lineNumber);
+                }
+                StaticUtils.ShowErrors();
+                ApplySchedule();
+            }
+            catch (Exception e)
+            {
+                StaticUtils.ShowError(string.Format(
                  "Error Processing line {0}:'{1}'.\n{2}\n{3}",
-					lineNumber,line, e.Message,e.StackTrace));
-			}
-		}
+                    lineNumber, line, e.Message, e.StackTrace));
+            }
+        }
 
         public static String CheckTextForRedundentSetCommands(String input)
         {
@@ -176,14 +177,14 @@ namespace TSBTool2
             {
                 current = mc[i];
                 location1 = long.Parse(current.Groups[1].ToString().Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
-                valueLength1 = current.Groups[2].Length / 2 ;
-                for (int j = i+1; j < mc.Count; j++)
+                valueLength1 = current.Groups[2].Length / 2;
+                for (int j = i + 1; j < mc.Count; j++)
                 {
                     m = mc[j];
                     location2 = long.Parse(m.Groups[1].ToString().Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
-                    valueLength2 = m.Groups[2].Length / 2 ;
-                    if ((location2 >= location1 && location2 <= location1 + (valueLength1-2)) ||
-                        (location1 >= location2 && location1 <= location2 + (valueLength2-2))    )
+                    valueLength2 = m.Groups[2].Length / 2;
+                    if ((location2 >= location1 && location2 <= location1 + (valueLength1 - 2)) ||
+                        (location1 >= location2 && location1 <= location2 + (valueLength2 - 2)))
                     {
                         if (current.Groups[0].ToString() != m.Groups[0].ToString())
                         {
@@ -199,22 +200,22 @@ namespace TSBTool2
             return ret.ToString();
         }
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="line"></param>
-		protected virtual void ProcessLine(string line)
-		{
-			line = line.Trim();
-			Match m;
-            
-			if(line.StartsWith("#") || line == "" || line.ToLower().Trim().StartsWith("schedule") )
-				return;
-			else if( /*setRegex.Match(line) != Match.Empty )//*/
-                line.StartsWith("SET") )
-			{
-				tool.ApplySet(line);
-			}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="line"></param>
+        protected virtual void ProcessLine(string line)
+        {
+            line = line.Trim();
+            Match m;
+
+            if (line.StartsWith("#") || line == "" || line.ToLower().Trim().StartsWith("schedule"))
+                return;
+            else if ( /*setRegex.Match(line) != Match.Empty )//*/
+                line.StartsWith("SET"))
+            {
+                tool.ApplySet(line);
+            }
             else if ((m = seasonRegex.Match(line)) != Match.Empty)
             {
                 Int32.TryParse(m.Groups[1].ToString(), out season);
@@ -405,65 +406,65 @@ namespace TSBTool2
             {
                 errors.Add(string.Format("Garbage/orphin line not applied \"{0}\"", line));
             }
-		}
+        }
 
-		private void SetYear(string line)
-		{
-			Match m = yearRegex.Match(line);
-			string year = m.Groups[1].ToString();
-			if(year.Length < 1)
-			{
-				errors.Add(string.Format("'{0}' is not valid.",line));
-			}
-			else
-			{
-				tool.SetYear(year);
-				Console.WriteLine("Year set to '{0}'",year);
-			}
-		}
+        private void SetYear(string line)
+        {
+            Match m = yearRegex.Match(line);
+            string year = m.Groups[1].ToString();
+            if (year.Length < 1)
+            {
+                errors.Add(string.Format("'{0}' is not valid.", line));
+            }
+            else
+            {
+                tool.SetYear(year);
+                Console.WriteLine("Year set to '{0}'", year);
+            }
+        }
 
-		private string GetTeam(string line)
-		{
-			Match m = teamRegex.Match(line);
-			string team = m.Groups[1].ToString();
-			return team;
-		}
+        private string GetTeam(string line)
+        {
+            Match m = teamRegex.Match(line);
+            string team = m.Groups[1].ToString();
+            return team;
+        }
 
-		public int[] GetSimData(string line)
-		{
-			Match m = simDataRegex.Match(line);
-			//string data = m.Groups[2].ToString();
-			string data = m.Groups[1].ToString();
-			string simOffensePref = m.Groups[2].ToString();
-			int[] ret = {-1,-1};
+        public int[] GetSimData(string line)
+        {
+            Match m = simDataRegex.Match(line);
+            //string data = m.Groups[2].ToString();
+            string data = m.Groups[1].ToString();
+            string simOffensePref = m.Groups[2].ToString();
+            int[] ret = { -1, -1 };
 
-			if(data.Length > 0)
-			{
-				try
-				{
-					int simData = Int32.Parse(data,System.Globalization.NumberStyles.AllowHexSpecifier);
-					ret[0]=simData;
-				}
-				catch
-				{
-					errors.Add(string.Format("Error getting SimData with line '{0}'.",line));
-				}
-			}
+            if (data.Length > 0)
+            {
+                try
+                {
+                    int simData = Int32.Parse(data, System.Globalization.NumberStyles.AllowHexSpecifier);
+                    ret[0] = simData;
+                }
+                catch
+                {
+                    errors.Add(string.Format("Error getting SimData with line '{0}'.", line));
+                }
+            }
 
-			if(simOffensePref.Length > 0)
-			{
-				try
-				{
-					int so = Int32.Parse(simOffensePref);
-					ret[1] = so;
-				}
-				catch
-				{
-					errors.Add(string.Format("Error getting SimData with line '{0}'.",line));
-				}
-			}
-			return ret;
-		}
+            if (simOffensePref.Length > 0)
+            {
+                try
+                {
+                    int so = Int32.Parse(simOffensePref);
+                    ret[1] = so;
+                }
+                catch
+                {
+                    errors.Add(string.Format("Error getting SimData with line '{0}'.", line));
+                }
+            }
+            return ret;
+        }
 
         private void HandleSimData(string line)
         {
@@ -476,405 +477,407 @@ namespace TSBTool2
             }
         }
 
-		private string GetAwayTeam(string line)
-		{
-			Match m = gameRegex.Match(line);
-			string awayTeam = m.Groups[1].ToString();
-			return awayTeam;
-		}
-		
-		private string GetHomeTeam(string line)
-		{
-			Match m = gameRegex.Match(line);
-			string team = m.Groups[2].ToString();
-			return team;
-		}
+        private string GetAwayTeam(string line)
+        {
+            Match m = gameRegex.Match(line);
+            string awayTeam = m.Groups[1].ToString();
+            return awayTeam;
+        }
 
-		private int GetWeek(string line)
-		{
-			Match m = weekRegex.Match(line);
-			string week_str = m.Groups[1].ToString();
-			int ret = -1;
-			try{
-				ret = Int32.Parse(week_str);
-				ret--; // our week starts at 0
-			}
-			catch{
-				errors.Add(string.Format("Week '{0}' is invalid.",week_str));
-			}
-			return ret;
-		}
+        private string GetHomeTeam(string line)
+        {
+            Match m = gameRegex.Match(line);
+            string team = m.Groups[2].ToString();
+            return team;
+        }
 
-		private bool SetCurrentTeam(string team)
-		{
-			if (TSB2Tool.GetTeamIndex(team) < 0)
-			{//error condition
-				errors.Add(string.Format("Team '{0}' is Invalid.",team));
-				return false;
-			}
-			else
-				this.currentTeam = team;
-			return true;
-		}
+        private int GetWeek(string line)
+        {
+            Match m = weekRegex.Match(line);
+            string week_str = m.Groups[1].ToString();
+            int ret = -1;
+            try
+            {
+                ret = Int32.Parse(week_str);
+                ret--; // our week starts at 0
+            }
+            catch
+            {
+                errors.Add(string.Format("Week '{0}' is invalid.", week_str));
+            }
+            return ret;
+        }
 
-		protected virtual void UpdateRoster(string line)
-		{
-			if(line.StartsWith("KR"))
-				SetKickReturnMan(line);
-			else if(line.StartsWith("PR"))
-				SetPuntReturnMan(line);
-			/*else if(line.StartsWith("RETURN_TEAM"))
-			{
-				Match m = returnTeamRegex.Match(line);
-				if( m == Match.Empty )
-				{
-					errors.Add(string.Format(
-						"Error with line '{0}'.\n\tCorrect Syntax ='RETURN_TEAM POS1, POS2, POS3'",
-						line));
-				}
-				else
-				{
-					string pos1 = m.Groups[1].ToString();
-					string pos2 = m.Groups[2].ToString();
-					string pos3 = m.Groups[3].ToString();
-					tool.SetReturnTeam(currentTeam, pos1,pos2,pos3);
-				}
-			}*/
-			else
-			{
-				Match m = posNameFaceRegex.Match( line );
-				if( line.IndexOf("#") > -1 )
-				{
-					if( numberRegex.Match(line) == Match.Empty )
-					{
-						errors.Add(string.Format("ERROR! (jersey number) Line  {0}",line));
-						return;
-					}
-				}
-				string p = m.Groups[1].ToString();
-				if(  m != Match.Empty && tool.IsValidPosition(p) )
-				{
-					if(line.StartsWith("QB"))
-						SetQB(line);
-					else if(line.StartsWith("WR") || line.StartsWith("RB") ||
-						line.StartsWith("TE"))
-						SetSkillPlayer(line);
-					else if(line.StartsWith("C") || line.StartsWith("RG") || 
-						line.StartsWith("LG")    || line.StartsWith("RT") ||
-						line.StartsWith("LT"))
-					{
-						SetOLPlayer(line);
-					}
-					else if(line.IndexOf("LB") == 2 || line.IndexOf("CB") == 1 ||
-						line.StartsWith("RE") || line.StartsWith("LE")  ||
-						line.StartsWith("NT") || line.StartsWith("SS")  ||
-						line.StartsWith("FS") || line.StartsWith("DB")    )
-					{
-						SetDefensivePlayer(line);
-					}
-					else if( line.StartsWith("P") || line.StartsWith("K"))
-						SetKickPlayer(line);
-				}
-				else
-				{
-					errors.Add(string.Format("ERROR! With line \"{0}\"     team = {1}", line, currentTeam));
-				}
-			}
-		}
+        private bool SetCurrentTeam(string team)
+        {
+            if (TSB2Tool.GetTeamIndex(team) < 0)
+            {//error condition
+                errors.Add(string.Format("Team '{0}' is Invalid.", team));
+                return false;
+            }
+            else
+                this.currentTeam = team;
+            return true;
+        }
 
-		//QB1, chris MILLER, Face=0x33, #12, 25, 69, 13, 13, 31, 44, 50, 31 ,[2, 4, 3 ]
+        protected virtual void UpdateRoster(string line)
+        {
+            if (line.StartsWith("KR"))
+                SetKickReturnMan(line);
+            else if (line.StartsWith("PR"))
+                SetPuntReturnMan(line);
+            /*else if(line.StartsWith("RETURN_TEAM"))
+            {
+                Match m = returnTeamRegex.Match(line);
+                if( m == Match.Empty )
+                {
+                    errors.Add(string.Format(
+                        "Error with line '{0}'.\n\tCorrect Syntax ='RETURN_TEAM POS1, POS2, POS3'",
+                        line));
+                }
+                else
+                {
+                    string pos1 = m.Groups[1].ToString();
+                    string pos2 = m.Groups[2].ToString();
+                    string pos3 = m.Groups[3].ToString();
+                    tool.SetReturnTeam(currentTeam, pos1,pos2,pos3);
+                }
+            }*/
+            else
+            {
+                Match m = posNameFaceRegex.Match(line);
+                if (line.IndexOf("#") > -1)
+                {
+                    if (numberRegex.Match(line) == Match.Empty)
+                    {
+                        errors.Add(string.Format("ERROR! (jersey number) Line  {0}", line));
+                        return;
+                    }
+                }
+                string p = m.Groups[1].ToString();
+                if (m != Match.Empty && tool.IsValidPosition(p))
+                {
+                    if (line.StartsWith("QB"))
+                        SetQB(line);
+                    else if (line.StartsWith("WR") || line.StartsWith("RB") ||
+                        line.StartsWith("TE"))
+                        SetSkillPlayer(line);
+                    else if (line.StartsWith("C") || line.StartsWith("RG") ||
+                        line.StartsWith("LG") || line.StartsWith("RT") ||
+                        line.StartsWith("LT"))
+                    {
+                        SetOLPlayer(line);
+                    }
+                    else if (line.IndexOf("LB") == 2 || line.IndexOf("CB") == 1 ||
+                        line.StartsWith("RE") || line.StartsWith("LE") ||
+                        line.StartsWith("NT") || line.StartsWith("SS") ||
+                        line.StartsWith("FS") || line.StartsWith("DB"))
+                    {
+                        SetDefensivePlayer(line);
+                    }
+                    else if (line.StartsWith("P") || line.StartsWith("K"))
+                        SetKickPlayer(line);
+                }
+                else
+                {
+                    errors.Add(string.Format("ERROR! With line \"{0}\"     team = {1}", line, currentTeam));
+                }
+            }
+        }
 
-		private void SetQB(string line)
-		{
-			string fname = GetFirstName(line);
-			string lname = GetLastName(line);
-			string pos = GetPosition(line);
-			int face = GetFace(line);
-			int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
-			if(face > -1)
-				tool.SetFace(season, currentTeam,pos,face);
-			if( jerseyNumber < 0)
-			{
-				errors.Add(string.Format("Error with jersey number for '{0} {1}', setting to 0.",fname,lname));
-				jerseyNumber=0;
-			}
-			tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
+        //QB1, chris MILLER, Face=0x33, #12, 25, 69, 13, 13, 31, 44, 50, 31 ,[2, 4, 3 ]
 
-			byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
-			int[] simVals = GetSimVals(line);
-			if(vals != null && vals.Length > 9)
-				tool.SetQBAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7], vals[8], vals[9]);
-			else
-				errors.Add(string.Format("Warning! could not set ability data for {0} {1},",currentTeam,pos));
-			if(face > -1)
-				tool.SetFace(season, currentTeam, pos, face);
-			/*if(simVals != null)
-				tool.SetQBSimData(season, currentTeam, pos, simVals);*/
-			else if(showSimError)
-				errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));
-		}
-
-		private void SetSkillPlayer(string line)
-		{
-			string fname = GetFirstName(line);
-			string lname = GetLastName(line);
-			string pos = GetPosition(line);
-			int face = GetFace(line);
-			int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
-			tool.SetFace(season, currentTeam,pos,face);
-			tool.InsertPlayerName(season, currentTeam,pos,fname,lname,(byte)jerseyNumber);
+        private void SetQB(string line)
+        {
+            string fname = GetFirstName(line);
+            string lname = GetLastName(line);
+            string pos = GetPosition(line);
+            int face = GetFace(line);
+            int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
+            if (face > -1)
+                tool.SetFace(season, currentTeam, pos, face);
+            if (jerseyNumber < 0)
+            {
+                errors.Add(string.Format("Error with jersey number for '{0} {1}', setting to 0.", fname, lname));
+                jerseyNumber = 0;
+            }
+            tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
 
             byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
-			int[] simVals = GetSimVals(line);
-			if(vals != null && vals.Length > 5)
-				tool.SetSkillPlayerAbilities(season, currentTeam,pos,vals[0],vals[1],vals[2],vals[3],vals[4],vals[5], vals[6]);
-			else
-				errors.Add(string.Format("Warning! On line '{0}'. No player data specified.",line));
-			/*if(simVals!= null&& simVals.Length > 3)
-				tool.SetSkillSimData(currentTeam,pos,simVals);
-			else  if(showSimError)
-				errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));*/
-		}
+            int[] simVals = GetSimVals(line);
+            if (vals != null && vals.Length > 9)
+                tool.SetQBAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7], vals[8], vals[9]);
+            else
+                errors.Add(string.Format("Warning! could not set ability data for {0} {1},", currentTeam, pos));
+            if (face > -1)
+                tool.SetFace(season, currentTeam, pos, face);
+            /*if(simVals != null)
+                tool.SetQBSimData(season, currentTeam, pos, simVals);*/
+            else if (showSimError)
+                errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.", line));
+        }
 
-		private void SetOLPlayer(string line)
-		{
-			string fname = GetFirstName(line);
-			string lname = GetLastName(line);
-			string pos = GetPosition(line);
-			int face = GetFace(line);
-			int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
+        private void SetSkillPlayer(string line)
+        {
+            string fname = GetFirstName(line);
+            string lname = GetLastName(line);
+            string pos = GetPosition(line);
+            int face = GetFace(line);
+            int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
+            tool.SetFace(season, currentTeam, pos, face);
+            tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
+
             byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
-			
-			tool.SetFace(season,currentTeam,pos,face);
-			tool.InsertPlayerName(season,currentTeam,pos,fname,lname,(byte)jerseyNumber);
+            int[] simVals = GetSimVals(line);
+            if (vals != null && vals.Length > 5)
+                tool.SetSkillPlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
+            else
+                errors.Add(string.Format("Warning! On line '{0}'. No player data specified.", line));
+            /*if(simVals!= null&& simVals.Length > 3)
+                tool.SetSkillSimData(currentTeam,pos,simVals);
+            else  if(showSimError)
+                errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));*/
+        }
 
-			if(vals != null && vals.Length > 3)
-				tool.SetOLPlayerAbilities(season, currentTeam,pos,vals[0],vals[1],vals[2],vals[3], vals[4]);
-			else
-				errors.Add(string.Format("Warning! On line '{0}'. No player data specified.",line));
-		}
-
-		protected virtual void SetDefensivePlayer(string line)
-		{
-			string fname = GetFirstName(line);
-			string lname = GetLastName(line);
-			string pos = GetPosition(line);
-			int face = GetFace(line);
-			int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
+        private void SetOLPlayer(string line)
+        {
+            string fname = GetFirstName(line);
+            string lname = GetLastName(line);
+            string pos = GetPosition(line);
+            int face = GetFace(line);
+            int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
             byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
-			int[] simVals = GetSimVals(line);
-			
-			tool.SetFace(season, currentTeam,pos,face);
-			tool.InsertPlayerName(season,currentTeam,pos,fname,lname,(byte)jerseyNumber);
 
-			if(vals != null && vals.Length > 5)
-				tool.SetDefensivePlayerAbilities(season, currentTeam,pos,vals[0],vals[1],vals[2],vals[3],vals[4],vals[5], vals[6]);
-			else
-				errors.Add(string.Format("Warning! On line '{0}'. Invalid player attributes.",line));
-			/*if(simVals != null && simVals.Length > 1)
-				tool.SetDefensiveSimData(season, currentTeam,pos,simVals);
-			else if(showSimError)
-				errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));*/
-		}
+            tool.SetFace(season, currentTeam, pos, face);
+            tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
 
-		private void SetKickPlayer(string line)
-		{
-			string fname = GetFirstName(line);
-			string lname = GetLastName(line);
-			string pos = GetPosition(line);
-			int face = GetFace(line);
-			int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
+            if (vals != null && vals.Length > 3)
+                tool.SetOLPlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4]);
+            else
+                errors.Add(string.Format("Warning! On line '{0}'. No player data specified.", line));
+        }
+
+        protected virtual void SetDefensivePlayer(string line)
+        {
+            string fname = GetFirstName(line);
+            string lname = GetLastName(line);
+            string pos = GetPosition(line);
+            int face = GetFace(line);
+            int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
             byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
-			int[] simVals = GetSimVals(line);
-			
-			tool.SetFace(season,currentTeam,pos,face);
-			tool.InsertPlayerName(season,currentTeam,pos,fname,lname,(byte)jerseyNumber);
-			if (line.StartsWith("K"))
-			{
-				if (vals != null && vals.Length > 7)
-					tool.SetKickerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7]);
-			}
-			else
-			{
-				if (vals != null && vals.Length > 6)
-					tool.SetPunterAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
-			}
-			
-			//else
-			//	errors.Add(string.Format("Warning! On line '{0}'. No player data specified.",line));
-			//if(simVals != null && pos == "P")
-			//    tool.SetPuntingSimData(season,currentTeam, simVals[0]);
-			//else if(simVals != null && pos == "K")
-			//    tool.SetKickingSimData(season,currentTeam, simVals[0]);
-			//else if(showSimError)
-			//    errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));
-		}
+            int[] simVals = GetSimVals(line);
 
-		private static Regex KickRetMan = new Regex("^KR\\s*,\\s*([A-Z1-4]+)$");
-		private static Regex PuntRetMan = new Regex("^PR\\s*,\\s*([A-Z1-4]+)$");
+            tool.SetFace(season, currentTeam, pos, face);
+            tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
 
-		private void SetKickReturnMan(string line)
-		{
-			Match m = KickRetMan.Match(line);
-			if( m != Match.Empty )
-			{
-				string pos = m.Groups[1].ToString();
-				if( tool.IsValidPosition( pos ) )
-				{
-					//tool.SetKickReturner(currentTeam, pos);
-				}
-				else
-					errors.Add(string.Format("ERROR with line '{0}'.",line));
-			}
-		}
+            if (vals != null && vals.Length > 5)
+                tool.SetDefensivePlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
+            else
+                errors.Add(string.Format("Warning! On line '{0}'. Invalid player attributes.", line));
+            /*if(simVals != null && simVals.Length > 1)
+                tool.SetDefensiveSimData(season, currentTeam,pos,simVals);
+            else if(showSimError)
+                errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));*/
+        }
 
-		private void SetPuntReturnMan(string line)
-		{
-			Match m = PuntRetMan.Match(line);
-			if( m != Match.Empty )
-			{
-				string pos = m.Groups[1].ToString();
-				if( tool.IsValidPosition( pos ) )
-				{
-					//tool.SetPuntReturner(currentTeam, pos);
-				}
-				else
-					errors.Add(string.Format("ERROR with line '{0}'.",line));
-			}
-		}
+        private void SetKickPlayer(string line)
+        {
+            string fname = GetFirstName(line);
+            string lname = GetLastName(line);
+            string pos = GetPosition(line);
+            int face = GetFace(line);
+            int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
+            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
+            int[] simVals = GetSimVals(line);
 
-		/// <summary>
-		/// Expect line like '   [8, 9, 0 ]'
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		public int[] GetSimVals(string input)
-		{
-			if( input != null )
-			{
-				string stuff = input.Trim();
-				int start = stuff.IndexOf("[");
-				int end = stuff.IndexOf("]");
-				if(start > -1 && end > -1)
-				{
-					stuff = stuff.Substring(start+1,end-start-1);
-					return GetInts(stuff);
-				}
-			}
-			return null;
-		}
+            tool.SetFace(season, currentTeam, pos, face);
+            tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
+            if (line.StartsWith("K"))
+            {
+                if (vals != null && vals.Length > 7)
+                    tool.SetKickerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7]);
+            }
+            else
+            {
+                if (vals != null && vals.Length > 6)
+                    tool.SetPunterAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
+            }
 
-		public int[] GetInts(string input)
-		{
-			if( input != null )
-			{
-				int pound = input.IndexOf("#");
-				int brace = input.IndexOf("[");
-				if( pound > -1)
-					input = input.Substring(pound+3);
-				if(brace > -1)
-				{
-					brace = input.IndexOf("[");
-					input = input.Substring(0, brace);
-				}
-				char[] seps = new char[] {' ',',','\t'};  //" ,\t".ToCharArray();
-				string[] nums = input.Split(seps);
-				int j,count =0;
-				for(j=0; j < nums.Length; j++)
-					if(nums[j].Length > 0)
-						count++;
-				int[] result = new int[count];
-				j = 0;
-				
-				string s ="";
-				int i = 0;
-				try
-				{
-					for( i = 0 ; i < nums.Length; i++)
-					{
-						s = nums[i] as string;
-						if( s != null && s.Length > 0)
-							result[j++]=Int32.Parse(s);
-					}
-					return result;
-				}
-				catch(Exception e)
-				{
-					string error =String.Format("Error with input '{0}', {1}, was jersey number specified?",input,e.Message);
-					errors.Add(error);
-					//System.Windows.Forms.MessageBox.Show(error);
-				}
-			}
-			return null;
-		}
+            //else
+            //	errors.Add(string.Format("Warning! On line '{0}'. No player data specified.",line));
+            //if(simVals != null && pos == "P")
+            //    tool.SetPuntingSimData(season,currentTeam, simVals[0]);
+            //else if(simVals != null && pos == "K")
+            //    tool.SetKickingSimData(season,currentTeam, simVals[0]);
+            //else if(showSimError)
+            //    errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));
+        }
 
-		public int GetJerseyNumber(string line)
-		{
-			int ret = -1;
-			Regex jerseyRegex = new Regex("#([0-9]+)");
-			string num = jerseyRegex.Match(line).Groups[1].ToString();
-			try
-			{
-				ret = Int32.Parse(num,System.Globalization.NumberStyles.AllowHexSpecifier);
-			}
-			catch{ret = -1; }
-			return ret;
-		}
+        private static Regex KickRetMan = new Regex("^KR\\s*,\\s*([A-Z1-4]+)$");
+        private static Regex PuntRetMan = new Regex("^PR\\s*,\\s*([A-Z1-4]+)$");
 
-		public int GetFace(string line)
-		{
-			int ret = -1;
-			Regex hexRegex = new Regex("0[xX]([A-Fa-f0-9]+)");
-			Match m = hexRegex.Match(line);
-			if( m != Match.Empty )
-			{
-				string num = m.Groups[1].ToString();
-				try
-				{
-					ret = Int32.Parse(num,System.Globalization.NumberStyles.AllowHexSpecifier);
-				}
-				catch
-				{
-					ret = -1; 
-					errors.Add(string.Format("Face ERROR line '{0}'",line));
-				}
-			}
-			
-			return ret;
-		}
+        private void SetKickReturnMan(string line)
+        {
+            Match m = KickRetMan.Match(line);
+            if (m != Match.Empty)
+            {
+                string pos = m.Groups[1].ToString();
+                if (tool.IsValidPosition(pos))
+                {
+                    //tool.SetKickReturner(currentTeam, pos);
+                }
+                else
+                    errors.Add(string.Format("ERROR with line '{0}'.", line));
+            }
+        }
 
-		public string GetPosition(string line)
-		{
-			string pos = posNameFaceRegex.Match(line).Groups[1].ToString();
-			return pos;
-		}
+        private void SetPuntReturnMan(string line)
+        {
+            Match m = PuntRetMan.Match(line);
+            if (m != Match.Empty)
+            {
+                string pos = m.Groups[1].ToString();
+                if (tool.IsValidPosition(pos))
+                {
+                    //tool.SetPuntReturner(currentTeam, pos);
+                }
+                else
+                    errors.Add(string.Format("ERROR with line '{0}'.", line));
+            }
+        }
 
-		public string oldGetLastName(string line)
-		{
-			string ret ="";
-			Match m = posNameFaceRegex.Match(line);
-			if(m != Match.Empty )
-			{
-				string name = m.Groups[2].ToString().Trim();
-				int index = name.LastIndexOf(" ");
-				ret = name.Substring(index+1);
-			}
-			return ret;
-		}
+        /// <summary>
+        /// Expect line like '   [8, 9, 0 ]'
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public int[] GetSimVals(string input)
+        {
+            if (input != null)
+            {
+                string stuff = input.Trim();
+                int start = stuff.IndexOf("[");
+                int end = stuff.IndexOf("]");
+                if (start > -1 && end > -1)
+                {
+                    stuff = stuff.Substring(start + 1, end - start - 1);
+                    return GetInts(stuff);
+                }
+            }
+            return null;
+        }
 
-		public string oldGetFirstName(string line)
-		{
-			string ret ="";
-			Match m = posNameFaceRegex.Match(line);
-			if(m != Match.Empty )
-			{
-				string name = m.Groups[2].ToString().Trim();
-				int index = name.LastIndexOf(" ");
-				if( index > -1 && index < name.Length )
-					ret = name.Substring(0, index);
-			}
-			return ret;
-		}
+        public int[] GetInts(string input)
+        {
+            if (input != null)
+            {
+                int pound = input.IndexOf("#");
+                int brace = input.IndexOf("[");
+                if (pound > -1)
+                    input = input.Substring(pound + 3);
+                if (brace > -1)
+                {
+                    brace = input.IndexOf("[");
+                    input = input.Substring(0, brace);
+                }
+                char[] seps = new char[] { ' ', ',', '\t' };  //" ,\t".ToCharArray();
+                string[] nums = input.Split(seps);
+                int j, count = 0;
+                for (j = 0; j < nums.Length; j++)
+                    if (nums[j].Length > 0)
+                        count++;
+                int[] result = new int[count];
+                j = 0;
+
+                string s = "";
+                int i = 0;
+                try
+                {
+                    for (i = 0; i < nums.Length; i++)
+                    {
+                        s = nums[i] as string;
+                        if (s != null && s.Length > 0)
+                            result[j++] = Int32.Parse(s);
+                    }
+                    return result;
+                }
+                catch (Exception e)
+                {
+                    string error = String.Format("Error with input '{0}', {1}, was jersey number specified?", input, e.Message);
+                    errors.Add(error);
+                    //System.Windows.Forms.MessageBox.Show(error);
+                }
+            }
+            return null;
+        }
+
+        public int GetJerseyNumber(string line)
+        {
+            int ret = -1;
+            Regex jerseyRegex = new Regex("#([0-9]+)");
+            string num = jerseyRegex.Match(line).Groups[1].ToString();
+            try
+            {
+                ret = Int32.Parse(num, System.Globalization.NumberStyles.AllowHexSpecifier);
+            }
+            catch { ret = -1; }
+            return ret;
+        }
+
+        public int GetFace(string line)
+        {
+            int ret = -1;
+            Regex hexRegex = new Regex("0[xX]([A-Fa-f0-9]+)");
+            Match m = hexRegex.Match(line);
+            if (m != Match.Empty)
+            {
+                string num = m.Groups[1].ToString();
+                try
+                {
+                    ret = Int32.Parse(num, System.Globalization.NumberStyles.AllowHexSpecifier);
+                }
+                catch
+                {
+                    ret = -1;
+                    errors.Add(string.Format("Face ERROR line '{0}'", line));
+                }
+            }
+
+            return ret;
+        }
+
+        public string GetPosition(string line)
+        {
+            string pos = posNameFaceRegex.Match(line).Groups[1].ToString();
+            return pos;
+        }
+
+        public string oldGetLastName(string line)
+        {
+            string ret = "";
+            Match m = posNameFaceRegex.Match(line);
+            if (m != Match.Empty)
+            {
+                string name = m.Groups[2].ToString().Trim();
+                int index = name.LastIndexOf(" ");
+                ret = name.Substring(index + 1);
+            }
+            return ret;
+        }
+
+        public string oldGetFirstName(string line)
+        {
+            string ret = "";
+            Match m = posNameFaceRegex.Match(line);
+            if (m != Match.Empty)
+            {
+                string name = m.Groups[2].ToString().Trim();
+                int index = name.LastIndexOf(" ");
+                if (index > -1 && index < name.Length)
+                    ret = name.Substring(0, index);
+            }
+            return ret;
+        }
 
         Regex mFirstNameRegex = new Regex("([a-z. ]+)");
         Regex mLastNameRegex = new Regex(" ([A-Z. ]+)");
@@ -911,101 +914,101 @@ namespace TSBTool2
             return ret;
         }
 
-		
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="byteString">String in the format of a hex string (0123456789ABCDEF), must have
-		/// an even number of characters.</param>
-		/// <returns>The bytes.</returns>
-		public static byte[] GetBytesFromString(string byteString)
-		{
-			byte[] ret = null;
-			byte[] tmp = null;
-			string b;
-			if( byteString!= null && byteString.Length > 1 && (byteString.Length % 2) == 0)
-			{
-				tmp = new byte[byteString.Length/2];
-				for(int i =0; i < tmp.Length; i++)
-				{
-					b = byteString.Substring(i*2,2);
-					tmp[i] = byte.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
-				}
-				ret = tmp;
-			}
-			return ret;
-		}
 
-		public static string GetHomeUniformColorString(string line)
-		{
-			Init();
-			string tmp = string.Empty;
-			Match match = homeRegex.Match(line);
-			if( match != Match.Empty )
-			{
-				tmp = match.Groups[1].Value;
-			}
-			return tmp;
-		}
-		public static string GetAwayUniformColorString(string line)
-		{
-			Init();
-			string tmp = string.Empty;
-			Match match = awayRegex.Match(line);
-			if( match != Match.Empty )
-			{
-				tmp = match.Groups[1].Value;
-			}
-			return tmp;
-		}
-		public static string GetConfChampColorString(string line)
-		{
-			Init();
-			string tmp = string.Empty;
-			Match match = confChampRegex.Match(line);
-			if( match != Match.Empty )
-			{
-				tmp = match.Groups[1].Value;
-			}
-			return tmp;
-		}
-		public static string GetDivChampColorString(string line)
-		{
-			Init();
-			string tmp = string.Empty;
-			Match match = divChampRegex.Match(line);
-			if( match != Match.Empty )
-			{
-				tmp = match.Groups[1].Value;
-			}
-			return tmp;
-		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="byteString">String in the format of a hex string (0123456789ABCDEF), must have
+        /// an even number of characters.</param>
+        /// <returns>The bytes.</returns>
+        public static byte[] GetBytesFromString(string byteString)
+        {
+            byte[] ret = null;
+            byte[] tmp = null;
+            string b;
+            if (byteString != null && byteString.Length > 1 && (byteString.Length % 2) == 0)
+            {
+                tmp = new byte[byteString.Length / 2];
+                for (int i = 0; i < tmp.Length; i++)
+                {
+                    b = byteString.Substring(i * 2, 2);
+                    tmp[i] = byte.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
+                }
+                ret = tmp;
+            }
+            return ret;
+        }
 
-		public static string GetUniformUsageString(string line)
-		{
-			Init();
-			string tmp = string.Empty;
-			Match match = uniformUsageRegex.Match(line);
-			if( match != Match.Empty )
-			{
-				tmp = match.Groups[1].Value;
-			}
-			return tmp;
-		}
-		/// <summary>
-		/// Returns the text string passed, without thr trailing commas.
-		/// </summary>
-		/// <param name="text"></param>
-		/// <returns></returns>
-		public static string DeleteTrailingCommas(string text)
-		{
-			Regex rs = new Regex(",+\n");
-			Regex rrs = new Regex(",+$");
-			string ret = rs.Replace(text,"\n");
-			ret = rrs.Replace(ret,"");
+        public static string GetHomeUniformColorString(string line)
+        {
+            Init();
+            string tmp = string.Empty;
+            Match match = homeRegex.Match(line);
+            if (match != Match.Empty)
+            {
+                tmp = match.Groups[1].Value;
+            }
+            return tmp;
+        }
+        public static string GetAwayUniformColorString(string line)
+        {
+            Init();
+            string tmp = string.Empty;
+            Match match = awayRegex.Match(line);
+            if (match != Match.Empty)
+            {
+                tmp = match.Groups[1].Value;
+            }
+            return tmp;
+        }
+        public static string GetConfChampColorString(string line)
+        {
+            Init();
+            string tmp = string.Empty;
+            Match match = confChampRegex.Match(line);
+            if (match != Match.Empty)
+            {
+                tmp = match.Groups[1].Value;
+            }
+            return tmp;
+        }
+        public static string GetDivChampColorString(string line)
+        {
+            Init();
+            string tmp = string.Empty;
+            Match match = divChampRegex.Match(line);
+            if (match != Match.Empty)
+            {
+                tmp = match.Groups[1].Value;
+            }
+            return tmp;
+        }
 
-			return ret;
-		}
+        public static string GetUniformUsageString(string line)
+        {
+            Init();
+            string tmp = string.Empty;
+            Match match = uniformUsageRegex.Match(line);
+            if (match != Match.Empty)
+            {
+                tmp = match.Groups[1].Value;
+            }
+            return tmp;
+        }
+        /// <summary>
+        /// Returns the text string passed, without thr trailing commas.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string DeleteTrailingCommas(string text)
+        {
+            Regex rs = new Regex(",+\n");
+            Regex rrs = new Regex(",+$");
+            string ret = rs.Replace(text, "\n");
+            ret = rrs.Replace(ret, "");
 
-	}
+            return ret;
+        }
+
+    }
 }

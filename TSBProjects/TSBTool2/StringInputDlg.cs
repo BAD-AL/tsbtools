@@ -9,52 +9,52 @@ using System.Globalization;
 
 namespace TSBTool2
 {
-	/// <summary>
-	/// Summary description for StringInputDlg.
-	/// </summary>
-	public class StringInputDlg : System.Windows.Forms.Form
-	{
-		private System.Windows.Forms.Button okButton;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.TextBox userInput;
-		private string result = "";
-		private System.Windows.Forms.Button cancelButton;
-		/// <summary>
-		/// Required designer variable.
-		/// </summary>
-		private System.ComponentModel.Container components = null;
+    /// <summary>
+    /// Summary description for StringInputDlg.
+    /// </summary>
+    public class StringInputDlg : System.Windows.Forms.Form
+    {
+        private System.Windows.Forms.Button okButton;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox userInput;
+        private string result = "";
+        private System.Windows.Forms.Button cancelButton;
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.Container components = null;
 
-		public StringInputDlg(string title, string message, string initialText)
-		{
-			InitializeComponent();
-			this.Text= title;
-			this.label1.Text = message;
-			this.userInput.Text= initialText;
-			this.userInput.SelectAll();
-		}
+        public StringInputDlg(string title, string message, string initialText)
+        {
+            InitializeComponent();
+            this.Text = title;
+            this.label1.Text = message;
+            this.userInput.Text = initialText;
+            this.userInput.SelectAll();
+        }
 
-		public static string GetString(string title, string message)
-		{
-			StringInputDlg sid = new StringInputDlg(title, message,"");
-			sid.ShowDialog();
-			string ret = sid.getResult();
-			sid.Dispose();
-			return ret;
-		}
+        public static string GetString(string title, string message)
+        {
+            StringInputDlg sid = new StringInputDlg(title, message, "");
+            sid.ShowDialog();
+            string ret = sid.getResult();
+            sid.Dispose();
+            return ret;
+        }
 
-		public static string GetString(string title, string message, string initialText)
-		{
-			StringInputDlg sid = new StringInputDlg(title, message, initialText);
-			sid.ShowDialog();
-			string ret = sid.getResult();
-			sid.Dispose();
-			return ret;
-		}
+        public static string GetString(string title, string message, string initialText)
+        {
+            StringInputDlg sid = new StringInputDlg(title, message, initialText);
+            sid.ShowDialog();
+            string ret = sid.getResult();
+            sid.Dispose();
+            return ret;
+        }
 
-		public string getResult()
-		{
-			return result;
-		}
+        public string getResult()
+        {
+            return result;
+        }
 
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace TSBTool2
                                 throw new Exception("Invalid input.");
                             }
                         }
-                        catch (Exception )
+                        catch (Exception)
                         {
                             StaticUtils.ShowError(string.Format(
                                 "Error with '{0}'. Value '{1}' is invalid for range {2}",
@@ -193,28 +193,28 @@ namespace TSBTool2
         }
 
 
-		/// <summary>
-		/// Clean up any resources being used.
-		/// </summary>
-		protected override void Dispose( bool disposing )
-		{
-			if( disposing )
-			{
-				if(components != null)
-				{
-					components.Dispose();
-				}
-			}
-			base.Dispose( disposing );
-		}
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+            }
+            base.Dispose(disposing);
+        }
 
-		#region Windows Form Designer generated code
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
-		private void InitializeComponent()
-		{
+        #region Windows Form Designer generated code
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.userInput = new System.Windows.Forms.TextBox();
@@ -274,29 +274,29 @@ namespace TSBTool2
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
-		#endregion
+        }
+        #endregion
 
 
-		private void userInput_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e) 
-		{
-			if(e.KeyCode == Keys.Enter)
-			{
-				//result = userInput.Text;
-				okButton_Click(sender, new System.EventArgs());
-			}
-		}
+        private void userInput_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                //result = userInput.Text;
+                okButton_Click(sender, new System.EventArgs());
+            }
+        }
 
-		private void okButton_Click(object sender, System.EventArgs e) 
-		{
-			result = userInput.Text;
-			this.DialogResult = DialogResult.OK;
-		}
+        private void okButton_Click(object sender, System.EventArgs e)
+        {
+            result = userInput.Text;
+            this.DialogResult = DialogResult.OK;
+        }
 
-		private void cancelButton_Click(object sender, System.EventArgs e) 
-		{
-			result = "";
-			this.Close();
-		}
-	}
+        private void cancelButton_Click(object sender, System.EventArgs e)
+        {
+            result = "";
+            this.Close();
+        }
+    }
 }
