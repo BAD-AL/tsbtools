@@ -427,18 +427,48 @@ LOS ANGELES:OAKLAND:2
         private void listTSB2MenuItem_Click(object sender, EventArgs e)
         {
             mResultsTextBox.Clear();
-            TSB2Tool twoTool = new TSB2Tool(Tool.OutputRom);
             mResultsTextBox.AppendText("YEAR 1\n");
-            mResultsTextBox.AppendText(twoTool.GetPlayerStuff(1));
-            mResultsTextBox.AppendText(twoTool.GetSchedule(1));
+            mResultsTextBox.AppendText(Tool.GetTeamStuff(1));
+            mResultsTextBox.AppendText(Tool.GetSchedule(1));
 
             mResultsTextBox.AppendText("YEAR 2\n");
-            mResultsTextBox.AppendText(twoTool.GetPlayerStuff(2));
-            mResultsTextBox.AppendText(twoTool.GetSchedule(2));
+            mResultsTextBox.AppendText(Tool.GetTeamStuff(2));
+            mResultsTextBox.AppendText(Tool.GetSchedule(2));
 
             mResultsTextBox.AppendText("YEAR 3\n");
-            mResultsTextBox.AppendText(twoTool.GetPlayerStuff(3));
-            mResultsTextBox.AppendText(twoTool.GetSchedule(3));
+            mResultsTextBox.AppendText(Tool.GetTeamStuff(3));
+            mResultsTextBox.AppendText(Tool.GetSchedule(3));
+        }
+
+        private void playBookToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string team = StringInputDlg.GetString("Get Playbook", "Which Team?", "bills");
+            int index = TSB2Tool.teams.IndexOf(team);
+            if (index > -1 || team.ToUpper() == "AFC" || team.ToUpper() == "NFC")
+            {
+                mResultsTextBox.Clear();
+                mResultsTextBox.AppendText(team +"\n");
+                mResultsTextBox.AppendText(((TSB2Tool)Tool).GetPlaybook(1, team));
+            }
+            else
+                MessageBox.Show(team,"Invalid team!");
+            for (int i = 0; i < 17; i ++)
+            {
+                mResultsTextBox.AppendText(String.Format("TEAM = {0}\n", TSB2Tool.teams[i]));
+                mResultsTextBox.AppendText(String.Format(
+                    "PLAYBOOK R{0:X}{0:X}{0:X}{0:X}{0:X}{0:X}{0:X}{0:X}, P{1:X}{1:X}{1:X}{1:X}{1:X}{1:X}{1:X}{1:X}\n", i, i ));
+            }
+        }
+
+        private void playSelectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            /*mResultsTextBox.Clear();
+            string result =  PlaySelectForm.GetPlay("R1");
+            mResultsTextBox.AppendText("Selected play:" + result +"\n");*/
+
+            PlaySelectForm form = new PlaySelectForm();
+            form.ShowEditBox = true;
+            form.Show(this);
         }
     }
 }

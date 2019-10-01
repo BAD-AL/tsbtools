@@ -38,6 +38,7 @@
             this.mFindPrevMenuItem = new System.Windows.Forms.MenuItem();
             this.mSelectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.mClearMenuItem = new System.Windows.Forms.MenuItem();
+            this.mFontMenuItem = new System.Windows.Forms.MenuItem();
 
             this.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
 
@@ -89,10 +90,17 @@
             this.mClearMenuItem.Index = 8;
             this.mClearMenuItem.Text = "Clea&r";
             this.mClearMenuItem.Click += new System.EventHandler(this.ContextMenuItem_Click);
+            //
+            // this.mFontMenuItem
+            //
+            this.mFontMenuItem.Index = 9;
+            this.mFontMenuItem.Text = "Change &Font";
+            this.mFontMenuItem.Click += new System.EventHandler(this.ContextMenuItem_Click);
             // 
             // mContextMenu
             // 
             this.mContextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+                this.mFontMenuItem,
                 this.mCutMenuItem,
                 this.mCopyMenuItem,
                 this.mPasteMenuItem,
@@ -115,6 +123,7 @@
         private System.Windows.Forms.MenuItem mFindPrevMenuItem;
         private System.Windows.Forms.MenuItem mSelectAllMenuItem;
         private System.Windows.Forms.MenuItem mClearMenuItem;
+        private System.Windows.Forms.MenuItem mFontMenuItem;
         #endregion
     }
 }

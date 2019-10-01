@@ -13,6 +13,26 @@ namespace TSBTool2
     /// </summary>
     public static class StaticUtils
     {
+        private static Control form = null;
+
+        public static Image GetImage(string file)
+        {
+            Image ret = null;
+            try
+            {
+                if (form == null)
+                    form = new SearchTextBox();
+                System.IO.Stream s =
+                    form.GetType().Assembly.GetManifestResourceStream(file);
+                if (s != null)
+                    ret = Image.FromStream(s);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            return ret;
+        }
 
         /// <summary>
         /// Returns filename on 'OK' null on 'cancel'.
@@ -348,6 +368,8 @@ namespace TSBTool2
         {
             if (input == null)
                 return null;
+            if (input.Length > 2 &&(input.StartsWith("0x") || input.StartsWith("0X")))
+                input = input.Substring(2);
 
             byte[] ret = new byte[input.Length / 2];
             string b = "";

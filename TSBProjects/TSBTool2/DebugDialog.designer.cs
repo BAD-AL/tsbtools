@@ -60,6 +60,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.mToUpperCheckBox = new System.Windows.Forms.CheckBox();
             this.mCancelButton = new System.Windows.Forms.Button();
+            this.playBookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.playSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mResultsTextBox = new TSBTool2.SearchTextBox();
             this.menuStrip1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -151,7 +153,9 @@
             this.aboutToolStripMenuItem,
             this.tSB2StringsToolStripMenuItem,
             this.convertAttributesToBytesToolStripMenuItem,
-            this.getSpecialLocationsToolStripMenuItem});
+            this.getSpecialLocationsToolStripMenuItem,
+            this.playBookToolStripMenuItem,
+            this.playSelectToolStripMenuItem});
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.findToolStripMenuItem.Text = "Misc";
@@ -374,6 +378,20 @@
             this.mCancelButton.Text = "Cancel";
             this.mCancelButton.UseVisualStyleBackColor = true;
             // 
+            // playBookToolStripMenuItem
+            // 
+            this.playBookToolStripMenuItem.Name = "playBookToolStripMenuItem";
+            this.playBookToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.playBookToolStripMenuItem.Text = "PlayBook";
+            this.playBookToolStripMenuItem.Click += new System.EventHandler(this.playBookToolStripMenuItem_Click);
+            // 
+            // playSelectToolStripMenuItem
+            // 
+            this.playSelectToolStripMenuItem.Name = "playSelectToolStripMenuItem";
+            this.playSelectToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.playSelectToolStripMenuItem.Text = "Play Select";
+            this.playSelectToolStripMenuItem.Click += new System.EventHandler(this.playSelectToolStripMenuItem_Click);
+            // 
             // mResultsTextBox
             // 
             this.mResultsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -410,6 +428,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "DebugDialog";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Debug Dialog";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -455,5 +474,7 @@
 		private System.Windows.Forms.ToolStripMenuItem tSB2StringsToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem convertAttributesToBytesToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem getSpecialLocationsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem playBookToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem playSelectToolStripMenuItem;
     }
 }

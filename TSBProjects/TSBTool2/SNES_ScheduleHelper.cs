@@ -66,7 +66,7 @@ namespace TSBTool2
             week_game_count = 0;
             total_game_count = 0;
 
-            if (SNES_ScheduleHelper.AUTO_CORRECT_SCHEDULE)
+            if (SNES_ScheduleHelper.AUTO_CORRECT_SCHEDULE && gamesPerWeek.Length == 18)
             {
                 lines = Ensure18Weeks(lines);
             }
@@ -95,7 +95,7 @@ namespace TSBTool2
             }
             CloseWeek();// close week 18
 
-            if (week < 18)
+            if (week < 18 && gamesPerWeek.Length == 18)
             {
                 errors.Add("Warning! You didn't schedule all 18 weeks. The schedule could be messed up.");
             }

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace TSBTool2
 {
@@ -162,7 +163,7 @@ namespace TSBTool2
         private void debugDialogToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DebugDialog dlg = new DebugDialog(this.tool);
-            dlg.Show();
+            dlg.Show(this);
         }
 
         private void aboutTSBTool2ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -172,10 +173,138 @@ namespace TSBTool2
 It'll get better.
 It's mostly intended to assist those doing the discovery of TSB2 stuff.
 It likely has bugs.
-"
+Version " + MainClass.version
                 );
         }
 
+        private void mTextBox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            EditStuff();
+        }
+
+        private void EditStuff()
+        {
+            string line = GetLine(mTextBox.SelectionStart);
+            if (line == null)
+                return;
+            if (line.IndexOf("TEAM") > -1 || line.IndexOf("PLAYBOOK") > -1)
+            {
+                ModifyTeams();
+            }
+            //else if (line.IndexOf("COLORS") > -1)
+            //{
+            //    ModifyColors();
+            //}
+            //else if (line.StartsWith("AFC") || line.StartsWith("NFC"))
+            //{
+            //    mProwbowlMenuItem_Click(null, EventArgs.Empty);
+            //}
+            //else if (line.StartsWith("WEEK") || line.IndexOf(" at ") > -1)
+            //{
+            //    DisplayScheduleForm(GetWeekAtCaret());
+            //}
+            //else
+            //    EditPlayer();
+        }
+
+        private void ModifyTeams()
+        {
+            string team = GetTeam(mTextBox.SelectionStart);
+            ModifyTeams(team);
+        }
+        private string GetTeam(int textPosition)
+        {
+            string team = "bills";
+            Regex r = new Regex("TEAM\\s*=\\s*([a-zA-Z49]+)");
+            MatchCollection mc = r.Matches(mTextBox.Text);
+            Match theMatch = null;
+
+            foreach (Match m in mc)
+            {
+                if (m.Index > textPosition)
+                    break;
+                theMatch = m;
+            }
+
+            if (theMatch != null)
+            {
+                team = theMatch.Groups[1].Value;
+            }
+            return team;
+        }
+
+        private void ModifyTeams(string team)
+        {
+            TeamForm form = new TeamForm();
+            form.Data = mTextBox.Text;
+            form.CurrentTeam = team;
+
+            if (form.ShowDialog(this) == DialogResult.OK)
+            {
+                int index = mTextBox.SelectionStart;
+                SetText(form.Data);
+                if (mTextBox.Text.Length > index)
+                {
+                    mTextBox.SelectionStart = index;
+                    mTextBox.ScrollToCaret();
+                }
+            }
+            form.Dispose();
+        }
+
+        /// <summary>
+        /// returns the line that linePosition falls on
+        /// </summary>
+        /// <param name="textPosition"></param>
+        /// <returns></returns>
+        private string GetLine(int textPosition)
+        {
+            string ret = null;
+            if (textPosition < mTextBox.Text.Length)
+            {
+                int i = 0;
+                int lineStart = 0;
+                int posLen = 0;
+                for (i = textPosition; i > 0; i--)
+                {
+                    if (mTextBox.Text[i] == '\n')
+                    {
+                        lineStart = i + 1;
+                        break;
+                    }
+                }
+                i = lineStart;
+                if (i < mTextBox.Text.Length)
+                {
+                    char current = mTextBox.Text[i];
+                    while (i < mTextBox.Text.Length - 1 /*&& current != ' ' && 
+					current != ',' */
+                                      && current != '\n')
+                    {
+                        posLen++;
+                        i++;
+                        current = mTextBox.Text[i];
+                    }
+                    ret = mTextBox.Text.Substring(lineStart, posLen);
+                }
+            }
+            return ret;
+        }
+
+        private void playbooksToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TSB2Tool.ShowPlaybooks = playbooksToolStripMenuItem.Checked;
+        }
+
+        private void simDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TSB2Tool.ShowPlayerSimData = simDataToolStripMenuItem.Checked;
+        }
+
+        private void scheduleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TSB2Tool.ShowSchedule = scheduleToolStripMenuItem.Checked;
+        }
 
     }
 }

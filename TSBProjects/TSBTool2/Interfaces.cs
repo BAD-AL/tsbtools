@@ -42,13 +42,13 @@ namespace TSBTool2
         #endregion
 
         // Returns a string with all the players listed (for a given season, 1-3)
-        string GetPlayerStuff(int season);
+        string GetTeamStuff(int season);
 
         string GetSchedule(int season);
 
         void ApplySet(string line);
 
-        //void SetPlaybook(string team, string runs, string passes);
+        void SetPlaybook(int season, string team, string runs, string passes);
 
         //bool ApplyJuice(int week,int amount);
 
@@ -81,7 +81,7 @@ namespace TSBTool2
             byte coolness
             );
 
-        //void SetQBSimData(string team, string pos, int[] data);
+        void SetQBSimData(int season, string team, string pos, int[] data);
 
         void SetSkillPlayerAbilities(int season,
             string team,
@@ -95,7 +95,7 @@ namespace TSBTool2
             byte receptions
             );
 
-        //void SetSkillSimData(string team, string pos, int[] data);
+        void SetSkillSimData(int season, string team, string pos, int[] data);
 
         void SetOLPlayerAbilities(int season,
             string team,
@@ -119,7 +119,14 @@ namespace TSBTool2
             byte quickness
             );
 
-        //void SetDefensiveSimData(string team, string pos, int[] data);
+/*
+ My rough working theory based on messing with the sim data:
+    qb - 3 bytes (6 total) (bit 5 = passing, bit 6 = scramble)
+    rb/wr/te - 4 bytes (40 bytes)
+    18 defenders - 3 bytes each (sacks/int/tackles) (unlike TSB NES they are grouped per player) (54 bytes) - **CONFIRMED** 
+    kicker/punter/rush defense yards allowed /pass defense yards allowed  (last 4 bits/2 bytes) - **CONFIRMED** 
+That gets me to 102*/
+        void SetDefensiveSimData(int season, string team, string pos, int[] data);
 
         void SetKickerAbilities(int season,
             string team,
@@ -145,9 +152,9 @@ namespace TSBTool2
             byte kickingPower,
             byte avoidBlock
             );
-        //void SetPuntingSimData(string team, int data);
+        void SetPuntingSimData(int season, string team, byte data);
 
-        //void SetKickingSimData(string team, int data);
+        void SetKickingSimData(int season, string team, byte data);
 
         void SetKickReturner(int season, string team, string position);
 

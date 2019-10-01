@@ -65,12 +65,28 @@
     <Compile Include="InputParser.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="MainClass.cs" />
+    <Compile Include="PlaySelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PlaySelectForm.Designer.cs">
+      <DependentUpon>PlaySelectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TeamForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TeamForm.Designer.cs">
+      <DependentUpon>TeamForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="DebugDialog.resx">
       <DependentUpon>DebugDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlaySelectForm.resx">
+      <DependentUpon>PlaySelectForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -83,10 +99,19 @@
     <EmbeddedResource Include="StringInputDlg.resx">
       <DependentUpon>StringInputDlg.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="TeamForm.resx">
+      <DependentUpon>TeamForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Fonts\GF-TecmoNarrow.TTF" />
+    <EmbeddedResource Include="Fonts\GF-TecmoSet1.TTF" />
+    <EmbeddedResource Include="Fonts\GF-TecmoSet2.TTF" />
+    <EmbeddedResource Include="Fonts\TecmoRounedAllCaps.TTF" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -114,6 +139,23 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="afc.ico" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_Side.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_000.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_001.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_002.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_003.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_004.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_005.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_006.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_007.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_008.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_009.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_010.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_011.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_012.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_013.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_014.png" />
+    <EmbeddedResource Include="Playbook\TSB2_PB_015.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

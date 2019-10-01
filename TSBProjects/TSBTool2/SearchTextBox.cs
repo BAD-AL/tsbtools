@@ -46,10 +46,19 @@ namespace TSBTool2
                 this.Focus();
                 this.SelectAll();
             }
+            else if (source == mFontMenuItem)
+            {
+                FontDialog dlg = new FontDialog();
+                dlg.Font = this.Font;
+                if (dlg.ShowDialog() == DialogResult.OK)
+                    this.Font = dlg.Font;
+                dlg.Dispose();
+            }
             else if (source == mClearMenuItem)
                 this.Clear();
             else if (source == mFindMenuItem)
                 if (SetSearchString()) FindNextMatch();
+                
         }
 
 

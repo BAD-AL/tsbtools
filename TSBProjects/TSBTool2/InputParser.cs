@@ -17,14 +17,29 @@ namespace TSBTool2
         private const int rosterState = 1;
         private int currentState = 2;
         public bool showSimError = false;
-        private List<string> errors = new List<string>();
+        private static List<string> errors = new List<string>();
         int season = 1;
 
-        private static Regex teamRegex, weekRegex, gameRegex, numberRegex,
-            posNameFaceRegex, simDataRegex, yearRegex, setRegex,
-            returnTeamRegex, offensiveFormationRegex, playbookRegex,
-            juiceRegex, homeRegex, awayRegex, divChampRegex, confChampRegex,
-            uniformUsageRegex, replaceStringRegex, teamStringsRegex, seasonRegex;
+        internal static Regex numberRegex = new Regex("(#[0-9]{1,2})");
+        internal static Regex teamRegex = new Regex("TEAM\\s*=\\s*([0-9a-z]+)");
+        internal static Regex simDataRegex = new Regex("SimData=0[xX]([0-9a-fA-F][0-9a-fA-F])([0-3]?)");
+        internal static Regex weekRegex = new Regex("WEEK ([1-9][0	-7]?)");
+        internal static Regex gameRegex = new Regex("([0-9a-z]+)\\s+at\\s+([0-9a-z]+)");
+        internal static Regex posNameFaceRegex = new Regex("([A-Z]+[1-4]?)\\s*,\\s*([a-zA-Z \\.\\-]+),\\s*(face=0[xX][0-9a-fA-F]+\\s*,\\s*)?");
+        internal static Regex yearRegex = new Regex("YEAR\\s*=\\s*([0-9]+)");
+        internal static Regex returnTeamRegex = new Regex("RETURN_TEAM\\s+([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)");
+        internal static Regex setRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
+        internal static Regex offensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
+        internal static Regex playbookRegex = new Regex("PLAYBOOK\\s+(R[0-9A-Fa-f]+)\\s*,\\s*(P[0-9A-Fa-f]+)");
+        internal static Regex juiceRegex = new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)");
+        internal static Regex homeRegex = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{6})");
+        internal static Regex awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{6})");
+        internal static Regex divChampRegex = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
+        internal static Regex confChampRegex = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
+        internal static Regex uniformUsageRegex = new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
+        internal static Regex replaceStringRegex = new Regex("ReplaceString\\(\\s*\"([A-Za-z0-9 .]+)\"\\s*,\\s*\"([A-Za-z .]+)\"\\s*(,\\s*([0-9]+))*\\s*\\)");
+        internal static Regex teamStringsRegex = new Regex("TEAM_ABB=([0-9A-Za-z. ]+),TEAM_CITY=([0-9A-Za-z .]+),TEAM_NAME=([0-9A-Za-z .]+)");
+        internal static Regex seasonRegex = new Regex("SEASON\\s+([1-3])");
 
         private string currentTeam; //used for roster update
         private List<string> scheduleList;
@@ -33,46 +48,11 @@ namespace TSBTool2
         {
             this.tool = tool;
             currentTeam = "bills";
-            Init();
         }
 
         public InputParser()
         {
             currentTeam = "bills";
-            Init();
-        }
-
-        private static void Init()
-        {
-            if (numberRegex == null)
-            {
-                //				currentTeam      = "bills";
-                numberRegex = new Regex("(#[0-9]{1,2})");
-                teamRegex = new Regex("TEAM\\s*=\\s*([0-9a-z]+)");
-                simDataRegex = new Regex("SimData=0[xX]([0-9a-fA-F][0-9a-fA-F])([0-3]?)");
-                weekRegex = new Regex("WEEK ([1-9][0	-7]?)");
-                gameRegex = new Regex("([0-9a-z]+)\\s+at\\s+([0-9a-z]+)");
-                posNameFaceRegex = new Regex("([A-Z]+[1-4]?)\\s*,\\s*([a-zA-Z \\.\\-]+),\\s*(face=0[xX][0-9a-fA-F]+\\s*,\\s*)?");
-                yearRegex = new Regex("YEAR\\s*=\\s*([0-9]+)");
-                returnTeamRegex = new Regex("RETURN_TEAM\\s+([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)");
-                setRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
-                offensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
-                playbookRegex = new Regex("PLAYBOOK (R[1-8]{4})\\s*,\\s*(P[1-8]{4})");
-                juiceRegex = new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)");
-                homeRegex = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{6})");
-                awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{6})");
-                divChampRegex = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
-                confChampRegex = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
-                uniformUsageRegex = new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
-                replaceStringRegex = new Regex("ReplaceString\\(\\s*\"([A-Za-z0-9 .]+)\"\\s*,\\s*\"([A-Za-z .]+)\"\\s*(,\\s*([0-9]+))*\\s*\\)");
-                teamStringsRegex = new Regex("TEAM_ABB=([0-9A-Za-z. ]+),TEAM_CITY=([0-9A-Za-z .]+),TEAM_NAME=([0-9A-Za-z .]+)");
-                seasonRegex = new Regex("SEASON\\s+([1-3])");
-            }
-            //			colorsRegex      = new Regex(
-            //                 "COLORS\\s*Home\\s*=\\s*(0x[0-9a-fA-F]{4})\\s*,\\s*Away\\s*=\\s*(0x[0-9a-fA-F]{4})\\s*,\\s*"+
-            //				 "DivChamp\\s*=\\s*(0x[0-9a-fA-F]{10})\\s*,\\s*ConfChamp\\s*=\\s*(0x[0-9a-fA-F]{8})");
-            // use \/ regex for a custom Juice Setting.
-            //new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)|JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2}),\\s*([0-9]{1,2})\\s*\\)");
         }
 
         public void ProcessFile(string fileName)
@@ -218,24 +198,17 @@ namespace TSBTool2
             }
             else if ((m = seasonRegex.Match(line)) != Match.Empty)
             {
+                if (scheduleList != null && scheduleList.Count > 0)
+                    ApplySchedule();
                 Int32.TryParse(m.Groups[1].ToString(), out season);
             }
-            /*else if(line.StartsWith("PLAYBOOK"))
+            else if ((m = playbookRegex.Match(line)) != Match.Empty)
             {
-                Match m = playbookRegex.Match(line);
-                if( m != Match.Empty )
-                {
-                    string runs = m.Groups[1].ToString();
-                    string passes = m.Groups[2].ToString();
-                    tool.SetPlaybook(currentTeam, runs, passes);
-                }
-                else
-                {
-                    errors.Add(string.Format("ERROR Setting playbook for team {0}. Line '{1}' is Invalid",
-                        currentTeam, line));
-                }
+                string runs = m.Groups[1].ToString();
+                string passes = m.Groups[2].ToString();
+                tool.SetPlaybook(season, currentTeam, runs, passes);
             }
-            else if( (m = juiceRegex.Match(line)) != Match.Empty )
+            /*else if( (m = juiceRegex.Match(line)) != Match.Empty )
             {
                 string juiceWeek  = m.Groups[1].ToString();
                 int juiceAmt    = Int32.Parse(m.Groups[2].ToString());
@@ -334,6 +307,7 @@ namespace TSBTool2
             else if (teamRegex.Match(line) != Match.Empty)//line.StartsWith("TEAM") )
             {
                 //Console.WriteLine("'{0}' ", line);
+                
                 currentState = rosterState;
                 string team = GetTeam(line);
                 bool ret = SetCurrentTeam(team);
@@ -423,14 +397,14 @@ namespace TSBTool2
             }
         }
 
-        private string GetTeam(string line)
+        private static string GetTeam(string line)
         {
             Match m = teamRegex.Match(line);
             string team = m.Groups[1].ToString();
             return team;
         }
 
-        public int[] GetSimData(string line)
+        public static int[] GetSimData(string line)
         {
             Match m = simDataRegex.Match(line);
             //string data = m.Groups[2].ToString();
@@ -603,8 +577,8 @@ namespace TSBTool2
             }
             tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
 
-            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
-            int[] simVals = GetSimVals(line);
+            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line,false));
+            int[] simVals = GetSimVals(line, true);
             if (vals != null && vals.Length > 9)
                 tool.SetQBAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7], vals[8], vals[9]);
             else
@@ -627,8 +601,8 @@ namespace TSBTool2
             tool.SetFace(season, currentTeam, pos, face);
             tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
 
-            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
-            int[] simVals = GetSimVals(line);
+            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line, false));
+            int[] simVals = GetSimVals(line, true);
             if (vals != null && vals.Length > 5)
                 tool.SetSkillPlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
             else
@@ -646,7 +620,7 @@ namespace TSBTool2
             string pos = GetPosition(line);
             int face = GetFace(line);
             int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
-            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
+            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line, false));
 
             tool.SetFace(season, currentTeam, pos, face);
             tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
@@ -664,8 +638,8 @@ namespace TSBTool2
             string pos = GetPosition(line);
             int face = GetFace(line);
             int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
-            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
-            int[] simVals = GetSimVals(line);
+            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line, false));
+            int[] simVals = GetSimVals(line, true);
 
             tool.SetFace(season, currentTeam, pos, face);
             tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
@@ -674,10 +648,10 @@ namespace TSBTool2
                 tool.SetDefensivePlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
             else
                 errors.Add(string.Format("Warning! On line '{0}'. Invalid player attributes.", line));
-            /*if(simVals != null && simVals.Length > 1)
+            if(simVals != null && simVals.Length > 1)
                 tool.SetDefensiveSimData(season, currentTeam,pos,simVals);
             else if(showSimError)
-                errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));*/
+                errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));
         }
 
         private void SetKickPlayer(string line)
@@ -687,8 +661,8 @@ namespace TSBTool2
             string pos = GetPosition(line);
             int face = GetFace(line);
             int jerseyNumber = GetJerseyNumber(line);//will be in hex, not base 10
-            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line));
-            int[] simVals = GetSimVals(line);
+            byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line, false));
+            int[] simVals = GetSimVals(line,true);
 
             tool.SetFace(season, currentTeam, pos, face);
             tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
@@ -751,7 +725,7 @@ namespace TSBTool2
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public int[] GetSimVals(string input)
+        public static  int[] GetSimVals(string input, bool useHex)
         {
             if (input != null)
             {
@@ -761,16 +735,19 @@ namespace TSBTool2
                 if (start > -1 && end > -1)
                 {
                     stuff = stuff.Substring(start + 1, end - start - 1);
-                    return GetInts(stuff);
+                    return GetInts(stuff, useHex);
                 }
             }
             return null;
         }
 
-        public int[] GetInts(string input)
+        public static  int[] GetInts(string input, bool useHex)
         {
             if (input != null)
             {
+                System.Globalization.NumberStyles ns = System.Globalization.NumberStyles.None;
+                if(useHex)
+                    ns = System.Globalization.NumberStyles.AllowHexSpecifier;
                 int pound = input.IndexOf("#");
                 int brace = input.IndexOf("[");
                 if (pound > -1)
@@ -797,7 +774,7 @@ namespace TSBTool2
                     {
                         s = nums[i] as string;
                         if (s != null && s.Length > 0)
-                            result[j++] = Int32.Parse(s);
+                            result[j++] = Int32.Parse(s, ns);
                     }
                     return result;
                 }
@@ -811,7 +788,7 @@ namespace TSBTool2
             return null;
         }
 
-        public int GetJerseyNumber(string line)
+        public static  int GetJerseyNumber(string line)
         {
             int ret = -1;
             Regex jerseyRegex = new Regex("#([0-9]+)");
@@ -824,7 +801,7 @@ namespace TSBTool2
             return ret;
         }
 
-        public int GetFace(string line)
+        public static  int GetFace(string line)
         {
             int ret = -1;
             Regex hexRegex = new Regex("0[xX]([A-Fa-f0-9]+)");
@@ -846,13 +823,13 @@ namespace TSBTool2
             return ret;
         }
 
-        public string GetPosition(string line)
+        public static  string GetPosition(string line)
         {
             string pos = posNameFaceRegex.Match(line).Groups[1].ToString();
             return pos;
         }
 
-        public string oldGetLastName(string line)
+        public static  string oldGetLastName(string line)
         {
             string ret = "";
             Match m = posNameFaceRegex.Match(line);
@@ -865,7 +842,7 @@ namespace TSBTool2
             return ret;
         }
 
-        public string oldGetFirstName(string line)
+        public static  string oldGetFirstName(string line)
         {
             string ret = "";
             Match m = posNameFaceRegex.Match(line);
@@ -879,10 +856,10 @@ namespace TSBTool2
             return ret;
         }
 
-        Regex mFirstNameRegex = new Regex("([a-z. ]+)");
-        Regex mLastNameRegex = new Regex(" ([A-Z. ]+)");
+        private static Regex mFirstNameRegex = new Regex("([a-z. ]+)");
+        private static Regex mLastNameRegex = new Regex(" ([A-Z. ]+)");
 
-        public string GetLastName(string line)
+        public static  string GetLastName(string line)
         {
             string ret = "";
             Match m = posNameFaceRegex.Match(line);
@@ -898,7 +875,7 @@ namespace TSBTool2
             return ret;
         }
 
-        public string GetFirstName(string line)
+        public static  string GetFirstName(string line)
         {
             string ret = "";
             Match m = posNameFaceRegex.Match(line);
@@ -941,7 +918,6 @@ namespace TSBTool2
 
         public static string GetHomeUniformColorString(string line)
         {
-            Init();
             string tmp = string.Empty;
             Match match = homeRegex.Match(line);
             if (match != Match.Empty)
@@ -952,7 +928,6 @@ namespace TSBTool2
         }
         public static string GetAwayUniformColorString(string line)
         {
-            Init();
             string tmp = string.Empty;
             Match match = awayRegex.Match(line);
             if (match != Match.Empty)
@@ -963,7 +938,6 @@ namespace TSBTool2
         }
         public static string GetConfChampColorString(string line)
         {
-            Init();
             string tmp = string.Empty;
             Match match = confChampRegex.Match(line);
             if (match != Match.Empty)
@@ -974,7 +948,6 @@ namespace TSBTool2
         }
         public static string GetDivChampColorString(string line)
         {
-            Init();
             string tmp = string.Empty;
             Match match = divChampRegex.Match(line);
             if (match != Match.Empty)
@@ -986,7 +959,6 @@ namespace TSBTool2
 
         public static string GetUniformUsageString(string line)
         {
-            Init();
             string tmp = string.Empty;
             Match match = uniformUsageRegex.Match(line);
             if (match != Match.Empty)

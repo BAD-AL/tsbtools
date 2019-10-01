@@ -42,12 +42,16 @@
             this.season2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.season3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allSeasonsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutTSBTool2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mLoadButton = new System.Windows.Forms.Button();
             this.mViewContentsButton = new System.Windows.Forms.Button();
             this.mApplyButton = new System.Windows.Forms.Button();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.playbooksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.simDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mTextBox = new TSBTool2.SearchTextBox();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutTSBTool2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -55,6 +59,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
+            this.viewToolStripMenuItem,
             this.debugToolStripMenuItem,
             this.seasonToolStripMenuItem,
             this.aboutToolStripMenuItem});
@@ -113,7 +118,7 @@
             // debugDialogToolStripMenuItem
             // 
             this.debugDialogToolStripMenuItem.Name = "debugDialogToolStripMenuItem";
-            this.debugDialogToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.debugDialogToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
             this.debugDialogToolStripMenuItem.Text = "Debug Dialog";
             this.debugDialogToolStripMenuItem.Click += new System.EventHandler(this.debugDialogToolStripMenuItem_Click);
             // 
@@ -162,6 +167,21 @@
             this.allSeasonsToolStripMenuItem.Text = "All Seasons";
             this.allSeasonsToolStripMenuItem.Click += new System.EventHandler(this.seasonItemClicked);
             // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutTSBTool2ToolStripMenuItem});
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.aboutToolStripMenuItem.Text = "About";
+            // 
+            // aboutTSBTool2ToolStripMenuItem
+            // 
+            this.aboutTSBTool2ToolStripMenuItem.Name = "aboutTSBTool2ToolStripMenuItem";
+            this.aboutTSBTool2ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.aboutTSBTool2ToolStripMenuItem.Text = "About TSBTool2";
+            this.aboutTSBTool2ToolStripMenuItem.Click += new System.EventHandler(this.aboutTSBTool2ToolStripMenuItem_Click);
+            // 
             // mLoadButton
             // 
             this.mLoadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -195,6 +215,46 @@
             this.mApplyButton.UseVisualStyleBackColor = true;
             this.mApplyButton.Click += new System.EventHandler(this.mApplyButton_Click);
             // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.playbooksToolStripMenuItem,
+            this.simDataToolStripMenuItem,
+            this.scheduleToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "&View";
+            // 
+            // playbooksToolStripMenuItem
+            // 
+            this.playbooksToolStripMenuItem.Checked = true;
+            this.playbooksToolStripMenuItem.CheckOnClick = true;
+            this.playbooksToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.playbooksToolStripMenuItem.Name = "playbooksToolStripMenuItem";
+            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.playbooksToolStripMenuItem.Text = "Playbooks";
+            this.playbooksToolStripMenuItem.Click += new System.EventHandler(this.playbooksToolStripMenuItem_Click);
+            // 
+            // simDataToolStripMenuItem
+            // 
+            this.simDataToolStripMenuItem.Checked = true;
+            this.simDataToolStripMenuItem.CheckOnClick = true;
+            this.simDataToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.simDataToolStripMenuItem.Name = "simDataToolStripMenuItem";
+            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.simDataToolStripMenuItem.Text = "Sim Data";
+            this.simDataToolStripMenuItem.Click += new System.EventHandler(this.simDataToolStripMenuItem_Click);
+            // 
+            // scheduleToolStripMenuItem
+            // 
+            this.scheduleToolStripMenuItem.Checked = true;
+            this.scheduleToolStripMenuItem.CheckOnClick = true;
+            this.scheduleToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.scheduleToolStripMenuItem.Name = "scheduleToolStripMenuItem";
+            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.scheduleToolStripMenuItem.Text = "Schedule";
+            this.scheduleToolStripMenuItem.Click += new System.EventHandler(this.scheduleToolStripMenuItem_Click);
+            // 
             // mTextBox
             // 
             this.mTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -209,21 +269,7 @@
             this.mTextBox.StatusControl = null;
             this.mTextBox.TabIndex = 1;
             this.mTextBox.Text = "";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutTSBTool2ToolStripMenuItem});
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.aboutToolStripMenuItem.Text = "About";
-            // 
-            // aboutTSBTool2ToolStripMenuItem
-            // 
-            this.aboutTSBTool2ToolStripMenuItem.Name = "aboutTSBTool2ToolStripMenuItem";
-            this.aboutTSBTool2ToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
-            this.aboutTSBTool2ToolStripMenuItem.Text = "About TSBTool2";
-            this.aboutTSBTool2ToolStripMenuItem.Click += new System.EventHandler(this.aboutTSBTool2ToolStripMenuItem_Click);
+            this.mTextBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.mTextBox_MouseDoubleClick);
             // 
             // MainForm
             // 
@@ -267,6 +313,10 @@
         private System.Windows.Forms.ToolStripMenuItem allSeasonsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutTSBTool2ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem playbooksToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem simDataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scheduleToolStripMenuItem;
 	}
 }
 

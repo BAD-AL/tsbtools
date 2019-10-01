@@ -5,8 +5,16 @@ using System.Windows.Forms;
 
 namespace TSBTool2
 {
-	static class MainClass
+	public static class MainClass
 	{
+        public static string version 
+        {
+            get
+            {
+                return System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+            }
+        }
+
 		/// <summary>
 		/// The main entry point for the application.
 		/// </summary>
