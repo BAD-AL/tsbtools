@@ -86,40 +86,28 @@ namespace TSBTool2
         /// </summary>
         private void ShowTeamValues()
         {
+            if( !IsShowingPlaybook1)
+                ShowPlaybook(1);
+
             string team = m_TeamsComboBox.SelectedItem.ToString();
             string teamData = GetTeamString(team);
 
             if (teamData != null)
             {
-                //int[] vals = InputParser.GetSimData(teamData);
                 Regex simDataRegex = new Regex("SimData\\s*=\\s*(0x[0-9A-Fa-f]+)");
                 Match simMatch = simDataRegex.Match(teamData);
                 if (simMatch != Match.Empty)
                 {
-                    simDataTextBox.Text = simMatch.Groups[1].ToString();
+                    mSimDataTextBox.Text = simMatch.Groups[1].ToString();
                 }
-                //if (vals != null && vals[1] > -1 && vals[1] < 4)
-                //    m_OffensivePrefomComboBox.SelectedIndex = vals[1];
-
-                //byte[] simVals = GetNibbles(vals[0]);
-                //m_SimOffenseUpDown.Value = simVals[0];
-                //m_SimDefenseUpDown.Value = simVals[1];
-
-                //Match ofMatch = m_OffensiveFormationRegex.Match(teamData);
                 Match pbMatch = InputParser.playbookRegex.Match(teamData);
-                //if (ofMatch != Match.Empty)
-                //{
-                //    string val = ofMatch.Groups[1].ToString();
-                //    int index = m_FormationComboBox.Items.IndexOf(val);
-                //    if (index > -1)
-                //        m_FormationComboBox.SelectedIndex = index;
-                //}
                 if (pbMatch != Match.Empty)
                 {
                     string runs = pbMatch.Groups[1].ToString();
                     string passes = pbMatch.Groups[2].ToString();
                     SetRuns(1,runs);
                     SetPasses(1,passes);
+                    mPlaybookTextBox.Text = pbMatch.Groups[0].ToString();
                 }
                 Match teamStringsMatch = InputParser.teamStringsRegex.Match(teamData);
                 if (teamStringsMatch != Match.Empty)
@@ -129,7 +117,6 @@ namespace TSBTool2
                     mTeamNameTextBox.Text = teamStringsMatch.Groups[3].ToString();
                 }
             }
-            
         }
 
         private string mRuns = "";
@@ -186,9 +173,15 @@ namespace TSBTool2
         /// <returns></returns>
         private string GetCurrentTeamString()
         {
-            string ret = string.Format("TEAM = {0} SimData=0x{1}", m_TeamsComboBox.SelectedItem, simDataTextBox.Text);
+            string tmp = mSimDataTextBox.Text;
+            if (tmp.IndexOf("0x", StringComparison.InvariantCultureIgnoreCase) != 0)
+                tmp = "0x" + tmp;
+            string ret = string.Format("TEAM = {0} SimData={1}", m_TeamsComboBox.SelectedItem, tmp);
             if (mData.IndexOf("PLAYBOOK") > 3)
                 ret = ret + "\n" + GetCurrentPlaybook();
+            if (mData.IndexOf("TEAM_ABB") >  -1)
+                ret = ret +"\n" + string.Format("TEAM_ABB={0},TEAM_CITY={1},TEAM_NAME={2}",
+                    mAbbreviationTextBox.Text, mCityTextBox.Text, mTeamNameTextBox.Text);
 
             return ret;
         }
@@ -208,19 +201,32 @@ namespace TSBTool2
 
             if (teamIndex > -1 )
             {
-                int qb1Index = mData.IndexOf("QB1")-1;
+                int qb1Index = mData.IndexOf("QB1", teamIndex) - 1;
                 retVal = mData.Substring(teamIndex, qb1Index - teamIndex);
             }
             return retVal;
         }
+
+        private bool IsShowingPlaybook1 { get { return mPlaybook1Button.BackColor == mSelectedColor; } }
 
         private Color mSelectedColor = System.Drawing.Color.Gold;
         private Color mUnselectedColor = System.Drawing.Color.White;
 
         private void playbookButton_Click(object sender, EventArgs e)
         {
-        
             if (sender == mPlaybook1Button)
+                ShowPlaybook(1);
+            else
+                ShowPlaybook(2);
+        }
+
+        /// <summary>
+        /// Show the playbook
+        /// </summary>
+        /// <param name="num">1 or 2</param>
+        private void ShowPlaybook(int num)
+        {
+            if (num == 1)
             {
                 mPlaybook1Button.BackColor = mSelectedColor;
                 mPlaybook2Button.BackColor = mUnselectedColor;
@@ -254,6 +260,7 @@ namespace TSBTool2
                 pb.Tag = play;
                 UpdatePictureBoxes();
                 UpdatePlaybook();
+                UpdateData();
             }
         }
 
@@ -277,6 +284,16 @@ namespace TSBTool2
                 mPasses = mPasses.Substring(0, 4) + passes;
             }
             mPlaybookTextBox.Text = "PLAYBOOK " + mRuns +", "+ mPasses;
+        }
+
+        private void m_TeamsComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ShowTeamValues();
+        }
+
+        private void teamValueTextBox_Leave(object sender, EventArgs e)
+        {
+            UpdateData();
         }
 
     }

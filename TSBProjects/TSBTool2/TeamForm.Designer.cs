@@ -28,7 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.simDataTextBox = new System.Windows.Forms.TextBox();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TeamForm));
+            this.mSimDataTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.mPlaybookTextBox = new System.Windows.Forms.TextBox();
@@ -52,6 +53,7 @@
             this.mCityTextBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.mTeamNameTextBox = new System.Windows.Forms.TextBox();
+            this.mOkButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.R4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.R3)).BeginInit();
@@ -63,13 +65,14 @@
             ((System.ComponentModel.ISupportInitialize)(this.P1)).BeginInit();
             this.SuspendLayout();
             // 
-            // simDataTextBox
+            // mSimDataTextBox
             // 
-            this.simDataTextBox.BackColor = System.Drawing.Color.PaleTurquoise;
-            this.simDataTextBox.Location = new System.Drawing.Point(85, 511);
-            this.simDataTextBox.Name = "simDataTextBox";
-            this.simDataTextBox.Size = new System.Drawing.Size(86, 20);
-            this.simDataTextBox.TabIndex = 3;
+            this.mSimDataTextBox.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.mSimDataTextBox.Location = new System.Drawing.Point(85, 511);
+            this.mSimDataTextBox.Name = "mSimDataTextBox";
+            this.mSimDataTextBox.Size = new System.Drawing.Size(86, 20);
+            this.mSimDataTextBox.TabIndex = 3;
+            this.mSimDataTextBox.Leave += new System.EventHandler(this.teamValueTextBox_Leave);
             // 
             // label1
             // 
@@ -243,6 +246,7 @@
             this.m_TeamsComboBox.Name = "m_TeamsComboBox";
             this.m_TeamsComboBox.Size = new System.Drawing.Size(160, 26);
             this.m_TeamsComboBox.TabIndex = 0;
+            this.m_TeamsComboBox.SelectedIndexChanged += new System.EventHandler(this.m_TeamsComboBox_SelectedIndexChanged);
             // 
             // leftSidePanel
             // 
@@ -277,9 +281,9 @@
             this.mAbbreviationTextBox.BackColor = System.Drawing.Color.PaleTurquoise;
             this.mAbbreviationTextBox.Location = new System.Drawing.Point(54, 549);
             this.mAbbreviationTextBox.Name = "mAbbreviationTextBox";
-            this.mAbbreviationTextBox.ReadOnly = true;
             this.mAbbreviationTextBox.Size = new System.Drawing.Size(117, 20);
             this.mAbbreviationTextBox.TabIndex = 7;
+            this.mAbbreviationTextBox.Leave += new System.EventHandler(this.teamValueTextBox_Leave);
             // 
             // label4
             // 
@@ -296,9 +300,9 @@
             this.mCityTextBox.BackColor = System.Drawing.Color.PaleTurquoise;
             this.mCityTextBox.Location = new System.Drawing.Point(54, 575);
             this.mCityTextBox.Name = "mCityTextBox";
-            this.mCityTextBox.ReadOnly = true;
             this.mCityTextBox.Size = new System.Drawing.Size(117, 20);
             this.mCityTextBox.TabIndex = 9;
+            this.mCityTextBox.Leave += new System.EventHandler(this.teamValueTextBox_Leave);
             // 
             // label5
             // 
@@ -315,9 +319,21 @@
             this.mTeamNameTextBox.BackColor = System.Drawing.Color.PaleTurquoise;
             this.mTeamNameTextBox.Location = new System.Drawing.Point(54, 601);
             this.mTeamNameTextBox.Name = "mTeamNameTextBox";
-            this.mTeamNameTextBox.ReadOnly = true;
             this.mTeamNameTextBox.Size = new System.Drawing.Size(117, 20);
             this.mTeamNameTextBox.TabIndex = 11;
+            this.mTeamNameTextBox.Leave += new System.EventHandler(this.teamValueTextBox_Leave);
+            // 
+            // mOkButton
+            // 
+            this.mOkButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.mOkButton.BackColor = System.Drawing.Color.Silver;
+            this.mOkButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.mOkButton.Location = new System.Drawing.Point(601, 625);
+            this.mOkButton.Name = "mOkButton";
+            this.mOkButton.Size = new System.Drawing.Size(99, 30);
+            this.mOkButton.TabIndex = 13;
+            this.mOkButton.Text = "&OK";
+            this.mOkButton.UseVisualStyleBackColor = false;
             // 
             // TeamForm
             // 
@@ -326,6 +342,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(41)))), ((int)(((byte)(89)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(712, 667);
+            this.Controls.Add(this.mOkButton);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.mTeamNameTextBox);
             this.Controls.Add(this.label4);
@@ -335,12 +352,13 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.mPlaybookTextBox);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.simDataTextBox);
+            this.Controls.Add(this.mSimDataTextBox);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.leftSidePanel);
             this.Controls.Add(this.sidePanel);
             this.DoubleBuffered = true;
             this.ForeColor = System.Drawing.Color.White;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TeamForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Modify Team Attributes";
@@ -374,7 +392,7 @@
         private System.Windows.Forms.PictureBox R3;
         private System.Windows.Forms.PictureBox R2;
         private System.Windows.Forms.PictureBox R1;
-        private System.Windows.Forms.TextBox simDataTextBox;
+        private System.Windows.Forms.TextBox mSimDataTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox mPlaybookTextBox;
@@ -384,6 +402,7 @@
         private System.Windows.Forms.TextBox mCityTextBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox mTeamNameTextBox;
+        private System.Windows.Forms.Button mOkButton;
 
 
     }

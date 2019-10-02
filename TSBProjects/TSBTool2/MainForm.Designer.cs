@@ -35,6 +35,10 @@
             this.applyToROMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewContentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.playbooksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.simDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.seasonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,10 +51,6 @@
             this.mLoadButton = new System.Windows.Forms.Button();
             this.mViewContentsButton = new System.Windows.Forms.Button();
             this.mApplyButton = new System.Windows.Forms.Button();
-            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.playbooksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.simDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.scheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mTextBox = new TSBTool2.SearchTextBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -106,6 +106,46 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.exitToolStripMenuItem.Text = "&Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.playbooksToolStripMenuItem,
+            this.simDataToolStripMenuItem,
+            this.scheduleToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "&View";
+            // 
+            // playbooksToolStripMenuItem
+            // 
+            this.playbooksToolStripMenuItem.Checked = true;
+            this.playbooksToolStripMenuItem.CheckOnClick = true;
+            this.playbooksToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.playbooksToolStripMenuItem.Name = "playbooksToolStripMenuItem";
+            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.playbooksToolStripMenuItem.Text = "Playbooks";
+            this.playbooksToolStripMenuItem.Click += new System.EventHandler(this.playbooksToolStripMenuItem_Click);
+            // 
+            // simDataToolStripMenuItem
+            // 
+            this.simDataToolStripMenuItem.Checked = true;
+            this.simDataToolStripMenuItem.CheckOnClick = true;
+            this.simDataToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.simDataToolStripMenuItem.Name = "simDataToolStripMenuItem";
+            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.simDataToolStripMenuItem.Text = "Sim Data";
+            this.simDataToolStripMenuItem.Click += new System.EventHandler(this.simDataToolStripMenuItem_Click);
+            // 
+            // scheduleToolStripMenuItem
+            // 
+            this.scheduleToolStripMenuItem.Checked = true;
+            this.scheduleToolStripMenuItem.CheckOnClick = true;
+            this.scheduleToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.scheduleToolStripMenuItem.Name = "scheduleToolStripMenuItem";
+            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.scheduleToolStripMenuItem.Text = "Schedule";
+            this.scheduleToolStripMenuItem.Click += new System.EventHandler(this.scheduleToolStripMenuItem_Click);
             // 
             // debugToolStripMenuItem
             // 
@@ -214,46 +254,6 @@
             this.mApplyButton.Text = "Apply To Rom";
             this.mApplyButton.UseVisualStyleBackColor = true;
             this.mApplyButton.Click += new System.EventHandler(this.mApplyButton_Click);
-            // 
-            // viewToolStripMenuItem
-            // 
-            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.playbooksToolStripMenuItem,
-            this.simDataToolStripMenuItem,
-            this.scheduleToolStripMenuItem});
-            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.viewToolStripMenuItem.Text = "&View";
-            // 
-            // playbooksToolStripMenuItem
-            // 
-            this.playbooksToolStripMenuItem.Checked = true;
-            this.playbooksToolStripMenuItem.CheckOnClick = true;
-            this.playbooksToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.playbooksToolStripMenuItem.Name = "playbooksToolStripMenuItem";
-            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.playbooksToolStripMenuItem.Text = "Playbooks";
-            this.playbooksToolStripMenuItem.Click += new System.EventHandler(this.playbooksToolStripMenuItem_Click);
-            // 
-            // simDataToolStripMenuItem
-            // 
-            this.simDataToolStripMenuItem.Checked = true;
-            this.simDataToolStripMenuItem.CheckOnClick = true;
-            this.simDataToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.simDataToolStripMenuItem.Name = "simDataToolStripMenuItem";
-            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.simDataToolStripMenuItem.Text = "Sim Data";
-            this.simDataToolStripMenuItem.Click += new System.EventHandler(this.simDataToolStripMenuItem_Click);
-            // 
-            // scheduleToolStripMenuItem
-            // 
-            this.scheduleToolStripMenuItem.Checked = true;
-            this.scheduleToolStripMenuItem.CheckOnClick = true;
-            this.scheduleToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.scheduleToolStripMenuItem.Name = "scheduleToolStripMenuItem";
-            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.scheduleToolStripMenuItem.Text = "Schedule";
-            this.scheduleToolStripMenuItem.Click += new System.EventHandler(this.scheduleToolStripMenuItem_Click);
             // 
             // mTextBox
             // 
