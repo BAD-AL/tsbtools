@@ -12,9 +12,7 @@ namespace TSBTool2
     // RS RP MS HP __ __ BC RC BB __
     // Currently found: Player names, player attributes, team stringa
     // TODO:
-    // 1. Schedule
-    // 2. Sim data
-    // 3. Playbooks 
+    // 2. Sim data *
     // 4. NFL Records 
     // 5. TSBTool Text Converter
     public class TSB2Tool : ITecmoTool

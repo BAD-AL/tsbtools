@@ -585,5 +585,15 @@ namespace TSBTool2
             return stringStartingLocation;
         }
 
+        internal static string AreEqual(string str1, string str2)
+        {
+            string retVal = "";
+            if (str1 != str2)
+            {
+                retVal = string.Format("AreEqual:Failure '{0}' and '{1}'\n", str1, str2);
+                System.Diagnostics.Debugger.Log(1, "TEST", retVal);
+            }
+            return retVal;
+        }
     }
 }

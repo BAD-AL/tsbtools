@@ -785,12 +785,18 @@ Do you want to continue?",ROM_LENGTH, filename, len),
 
 		public virtual void SetTeamName(int teamIndex, string name)
 		{
-			SetTeamStringTableString(teamIndex + 64, name);
+            if(name.Length > 1)
+			    SetTeamStringTableString(teamIndex + 64, name);
+            else
+                MainClass.AddError("'SetTeamCity': team name must not be empty");
 		}
 
 		public virtual void SetTeamCity(int teamIndex, string city)
 		{
-			SetTeamStringTableString(teamIndex + 32, city);
+            if (city.Length > 1)
+                SetTeamStringTableString(teamIndex + 32, city);
+            else
+                MainClass.AddError("'SetTeamCity': city name must not be empty");
 		}
 
 		protected virtual int GetTeamStringTableStart()

@@ -470,5 +470,30 @@ LOS ANGELES:OAKLAND:2
             form.ShowEditBox = true;
             form.Show(this);
         }
+
+        private void conversionTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            mResultsTextBox.Clear();
+            mResultsTextBox.AppendText(
+                "TSB2Converter Tests--\n" +
+                TSB2Converter.TestQbTSB2Conversion()+
+                TSB2Converter.TestRbTSB2Conversion()+
+                TSB2Converter.TestDbTSB2Conversion()+
+                TSB2Converter.TestOlTSB2Conversion()+
+                TSB2Converter.TestDlTSB2Conversion() +
+                TSB2Converter.TestKickerTSB2Conversion()+
+                TSB2Converter.TestPunterTSB2Conversion()+
+                TSB2Converter.TestLbTSB2Conversion() +
+                "TSB1Converter Tests--\n"+
+                TSB1Converter.TestQbTSB1Conversion()+
+                TSB1Converter.TestRbTSB1Conversion()+
+                TSB1Converter.TestDbTSB1Conversion()+
+                TSB1Converter.TestOlTSB1Conversion()+
+                TSB1Converter.TestDlTSB1Conversion() +
+                TSB1Converter.TestKickerTSB1Conversion()+
+                TSB1Converter.TestPunterTSB1Conversion()+
+                TSB1Converter.TestLbTSB1Conversion() 
+                );
+        }
     }
 }

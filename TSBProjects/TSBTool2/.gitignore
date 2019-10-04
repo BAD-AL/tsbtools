@@ -1,4 +1,8 @@
 /obj/*
 /obj/Debug/*
 *.suo
+/bin/debug/HACKS/*
+/bin/debug/*.pdb
+/bin/debug/*.vshost.exe
+/bin/debug/*.manifest
 

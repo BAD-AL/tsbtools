@@ -131,8 +131,11 @@ namespace TSBTool2
             else
                 currentPlays = runs.Substring(5);
 
-            for (int i = 0; i < runBoxes.Length; i++)
-                runBoxes[i].Tag = currentPlays[i] + "";
+            if (currentPlays.Length > 3)
+            {
+                for (int i = 0; i < runBoxes.Length; i++)
+                    runBoxes[i].Tag = currentPlays[i] + "";
+            }
             UpdatePictureBoxes();
         }
 
@@ -144,9 +147,11 @@ namespace TSBTool2
                 currentPlays = passes.Substring(1, 4);
             else
                 currentPlays = passes.Substring(5);
-            
-            for(int i=0; i < passBoxes.Length; i++)
-                passBoxes[i].Tag = currentPlays[i] + "";
+            if (currentPlays.Length > 3)
+            {
+                for (int i = 0; i < passBoxes.Length; i++)
+                    passBoxes[i].Tag = currentPlays[i] + "";
+            }
             UpdatePictureBoxes();
         }
 

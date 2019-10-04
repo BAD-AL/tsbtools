@@ -12,7 +12,7 @@
     <AssemblyName>TSBTool2</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ApplicationIcon>KC.ico</ApplicationIcon>
+    <ApplicationIcon>Images\KC.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -65,6 +65,8 @@
     <Compile Include="InputParser.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="MainClass.cs" />
+    <Compile Include="TSB1SimAutoUpdater.cs" />
+    <Compile Include="TSBConverter.cs" />
     <Compile Include="PlaySelectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -139,13 +141,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\afc.ico" />
-    <Content Include="Images\KC.ico" />
     <Content Include="Images\NFC.ico" />
     <Content Include="Images\TSB2_SelectScreen.png" />
-    <Content Include="KC.ico" />
-    <Content Include="KCb.ico" />
-    <Content Include="NFC.ico" />
-    <Content Include="TSB2.ico" />
+    <Content Include="Images\KC.ico" />
+    <Content Include="Images\KCb.ico" />
+    <Content Include="TSB1Data.txt" />
+    <Content Include="Images\TSB2.ico" />
     <EmbeddedResource Include="Playbook\TSB2_PB_Side.png" />
     <EmbeddedResource Include="Playbook\TSB2_PB_000.png" />
     <EmbeddedResource Include="Playbook\TSB2_PB_001.png" />

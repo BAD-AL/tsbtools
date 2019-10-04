@@ -306,5 +306,48 @@ Version " + MainClass.version
             TSB2Tool.ShowSchedule = scheduleToolStripMenuItem.Checked;
         }
 
+        private void convertToTSB1DataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB1\nDo you wish to continue?",
+                "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                if (Check1Season())
+                {
+                    string data = mTextBox.Text;
+                    string output = TSB1Converter.ConvertToTSB1(data);
+                    SetText(output);
+                }
+                else
+                {
+                    MessageBox.Show("Could not convert multiple seasons. Please have only 1 season of data in the text area.", 
+                        "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private bool Check1Season()
+        {
+            string search = "SEASON ";
+            int count = 0;
+            int index = 0;
+            while ((index = mTextBox.Text.IndexOf(search, index)) > -1)
+            {
+                index++;
+                count++;
+            }
+            return count < 2;
+        }
+
+        private void convertToTSB2DataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB1\nDo you wish to continue?",
+                    "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                string data = mTextBox.Text;
+                string output = TSB2Converter.ConvertToTSB2(data);
+                SetText(output);
+            }
+        }
+
     }
 }

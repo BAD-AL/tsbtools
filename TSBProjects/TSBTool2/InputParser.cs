@@ -17,7 +17,6 @@ namespace TSBTool2
         private const int rosterState = 1;
         private int currentState = 2;
         public bool showSimError = false;
-        private static List<string> errors = new List<string>();
         int season = 1;
 
         internal static Regex numberRegex = new Regex("(#[0-9]{1,2})");
@@ -39,7 +38,7 @@ namespace TSBTool2
         internal static Regex uniformUsageRegex = new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
         internal static Regex replaceStringRegex = new Regex("ReplaceString\\(\\s*\"([A-Za-z0-9 .]+)\"\\s*,\\s*\"([A-Za-z .]+)\"\\s*(,\\s*([0-9]+))*\\s*\\)");
         internal static Regex teamStringsRegex = new Regex("TEAM_ABB=([0-9A-Za-z. ]+),TEAM_CITY=([0-9A-Za-z .]+),TEAM_NAME=([0-9A-Za-z .]+)");
-        internal static Regex seasonRegex = new Regex("SEASON\\s+([1-3])");
+        internal static Regex seasonRegex = new Regex("^\\s*SEASON\\s+([1-3])");
 
         private string currentTeam; //used for roster update
         private List<string> scheduleList;
@@ -87,7 +86,6 @@ namespace TSBTool2
                 for (i = 0; i < lines.Length; i++)
                 {
                     ProcessLine(lines[i]);
-                    //Console.WriteLine(i);
                 }
                 StaticUtils.ShowErrors();
                 ApplySchedule();
@@ -225,7 +223,7 @@ namespace TSBTool2
                     int week = Int32.Parse(juiceWeek)-1;
                     if( !tool.ApplyJuice(week, juiceAmt))
                     {
-                        errors.Add(string.Format("ERROR! Line = '{0}'",line));
+                        StaticUtils.AddError(string.Format("ERROR! Line = '{0}'",line));
                     }
                 }
             }*/
@@ -246,13 +244,13 @@ namespace TSBTool2
                     }
                     String msg = StaticUtils.ReplaceStringInRom(tool.OutputRom, find, replace, occur);
                     if (msg.StartsWith("Error"))
-                        errors.Add(msg);
+                        StaticUtils.AddError(msg);
                     else
                         Console.WriteLine(msg);
                 }
                 else
                 {
-                    errors.Add(String.Format("ERROR! Not enough info to use 'ReplaceString' function.Line={0}", line));
+                    StaticUtils.AddError(String.Format("ERROR! Not enough info to use 'ReplaceString' function.Line={0}", line));
                 }
             }
             else if (line.StartsWith("TEAM_ABB"))
@@ -313,8 +311,8 @@ namespace TSBTool2
                 bool ret = SetCurrentTeam(team);
                 if (!ret)
                 {
-                    errors.Add(string.Format("ERROR with line '{0}'.", line));
-                    errors.Add(string.Format("Team input must be in the form 'TEAM = team SimData=0x1F'"));
+                    StaticUtils.AddError(string.Format("ERROR with line '{0}'.", line));
+                    StaticUtils.AddError(string.Format("Team input must be in the form 'TEAM = team SimData=0x1F'"));
                     return;
                 }
                 HandleSimData(line);
@@ -324,13 +322,13 @@ namespace TSBTool2
                     if (simData[0] > -1)
                         tool.SetTeamSimData(currentTeam, (byte)simData[0]);
                     else
-                        errors.Add(string.Format("Warning: No sim data for team {0}", team));
+                        StaticUtils.AddError(string.Format("Warning: No sim data for team {0}", team));
 
                     if (simData[1] > -1)
                         tool.SetTeamSimOffensePref(currentTeam, simData[1]);
                 }
                 else
-                    errors.Add(string.Format("ERROR with line '{0}'.", line));
+                    StaticUtils.AddError(string.Format("ERROR with line '{0}'.", line));
 
                 /*Match oFormMatch = offensiveFormationRegex.Match(line);
                 if (oFormMatch != Match.Empty)
@@ -363,7 +361,7 @@ namespace TSBTool2
                     }
                     catch (Exception)
                     {
-                        errors.Add("Error processing line > " + line);
+                        StaticUtils.AddError("Error processing line > " + line);
                     }
                 }
             }*/
@@ -378,7 +376,7 @@ namespace TSBTool2
             }
             else
             {
-                errors.Add(string.Format("Garbage/orphin line not applied \"{0}\"", line));
+                StaticUtils.AddError(string.Format("Garbage/orphin line not applied \"{0}\"", line));
             }
         }
 
@@ -388,7 +386,7 @@ namespace TSBTool2
             string year = m.Groups[1].ToString();
             if (year.Length < 1)
             {
-                errors.Add(string.Format("'{0}' is not valid.", line));
+                StaticUtils.AddError(string.Format("'{0}' is not valid.", line));
             }
             else
             {
@@ -421,7 +419,7 @@ namespace TSBTool2
                 }
                 catch
                 {
-                    errors.Add(string.Format("Error getting SimData with line '{0}'.", line));
+                    StaticUtils.AddError(string.Format("Error getting SimData with line '{0}'.", line));
                 }
             }
 
@@ -434,7 +432,7 @@ namespace TSBTool2
                 }
                 catch
                 {
-                    errors.Add(string.Format("Error getting SimData with line '{0}'.", line));
+                    StaticUtils.AddError(string.Format("Error getting SimData with line '{0}'.", line));
                 }
             }
             return ret;
@@ -442,7 +440,7 @@ namespace TSBTool2
 
         private void HandleSimData(string line)
         {
-            Regex simDataRegex = new Regex("SimData\\s*=\\s*0[xX]([0-9a-fA-F]+)"); // try regx101.com , it's awesome!
+            Regex simDataRegex = new Regex("SimData\\s*=\\s*0[xX]([0-9a-fA-F]{2})"); // try regx101.com , it's awesome!
             Match m = simDataRegex.Match(line);
             if (m != Match.Empty)
             {
@@ -477,7 +475,7 @@ namespace TSBTool2
             }
             catch
             {
-                errors.Add(string.Format("Week '{0}' is invalid.", week_str));
+                StaticUtils.AddError(string.Format("Week '{0}' is invalid.", week_str));
             }
             return ret;
         }
@@ -486,7 +484,7 @@ namespace TSBTool2
         {
             if (TSB2Tool.GetTeamIndex(team) < 0)
             {//error condition
-                errors.Add(string.Format("Team '{0}' is Invalid.", team));
+                StaticUtils.AddError(string.Format("Team '{0}' is Invalid.", team));
                 return false;
             }
             else
@@ -505,7 +503,7 @@ namespace TSBTool2
                 Match m = returnTeamRegex.Match(line);
                 if( m == Match.Empty )
                 {
-                    errors.Add(string.Format(
+                    StaticUtils.AddError(string.Format(
                         "Error with line '{0}'.\n\tCorrect Syntax ='RETURN_TEAM POS1, POS2, POS3'",
                         line));
                 }
@@ -524,7 +522,7 @@ namespace TSBTool2
                 {
                     if (numberRegex.Match(line) == Match.Empty)
                     {
-                        errors.Add(string.Format("ERROR! (jersey number) Line  {0}", line));
+                        StaticUtils.AddError(string.Format("ERROR! (jersey number) Line  {0}", line));
                         return;
                     }
                 }
@@ -554,7 +552,7 @@ namespace TSBTool2
                 }
                 else
                 {
-                    errors.Add(string.Format("ERROR! With line \"{0}\"     team = {1}", line, currentTeam));
+                    StaticUtils.AddError(string.Format("ERROR! With line \"{0}\"     team = {1}", line, currentTeam));
                 }
             }
         }
@@ -572,7 +570,7 @@ namespace TSBTool2
                 tool.SetFace(season, currentTeam, pos, face);
             if (jerseyNumber < 0)
             {
-                errors.Add(string.Format("Error with jersey number for '{0} {1}', setting to 0.", fname, lname));
+                StaticUtils.AddError(string.Format("Error with jersey number for '{0} {1}', setting to 0.", fname, lname));
                 jerseyNumber = 0;
             }
             tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
@@ -582,13 +580,13 @@ namespace TSBTool2
             if (vals != null && vals.Length > 9)
                 tool.SetQBAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7], vals[8], vals[9]);
             else
-                errors.Add(string.Format("Warning! could not set ability data for {0} {1},", currentTeam, pos));
+                StaticUtils.AddError(string.Format("Warning! could not set ability data for {0} {1},", currentTeam, pos));
             if (face > -1)
                 tool.SetFace(season, currentTeam, pos, face);
             /*if(simVals != null)
                 tool.SetQBSimData(season, currentTeam, pos, simVals);*/
             else if (showSimError)
-                errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.", line));
+                StaticUtils.AddError(string.Format("Warning! On line '{0}'. No sim data specified.", line));
         }
 
         private void SetSkillPlayer(string line)
@@ -603,14 +601,14 @@ namespace TSBTool2
 
             byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line, false));
             int[] simVals = GetSimVals(line, true);
-            if (vals != null && vals.Length > 5)
+            if (vals != null && vals.Length > 6)
                 tool.SetSkillPlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
             else
-                errors.Add(string.Format("Warning! On line '{0}'. No player data specified.", line));
+                StaticUtils.AddError(string.Format("Warning! On line '{0}'. No player data specified.", line));
             /*if(simVals!= null&& simVals.Length > 3)
                 tool.SetSkillSimData(currentTeam,pos,simVals);
             else  if(showSimError)
-                errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));*/
+                StaticUtils.AddError(string.Format("Warning! On line '{0}'. No sim data specified.",line));*/
         }
 
         private void SetOLPlayer(string line)
@@ -628,7 +626,7 @@ namespace TSBTool2
             if (vals != null && vals.Length > 3)
                 tool.SetOLPlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4]);
             else
-                errors.Add(string.Format("Warning! On line '{0}'. No player data specified.", line));
+                StaticUtils.AddError(string.Format("Warning! On line '{0}'. No player data specified.", line));
         }
 
         protected virtual void SetDefensivePlayer(string line)
@@ -647,11 +645,11 @@ namespace TSBTool2
             if (vals != null && vals.Length > 5)
                 tool.SetDefensivePlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
             else
-                errors.Add(string.Format("Warning! On line '{0}'. Invalid player attributes.", line));
+                StaticUtils.AddError(string.Format("Warning! On line '{0}'. Invalid player attributes.", line));
             if(simVals != null && simVals.Length > 1)
                 tool.SetDefensiveSimData(season, currentTeam,pos,simVals);
             else if(showSimError)
-                errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));
+                StaticUtils.AddError(string.Format("Warning! On line '{0}'. No sim data specified.",line));
         }
 
         private void SetKickPlayer(string line)
@@ -678,13 +676,13 @@ namespace TSBTool2
             }
 
             //else
-            //	errors.Add(string.Format("Warning! On line '{0}'. No player data specified.",line));
+            //	StaticUtils.AddError(string.Format("Warning! On line '{0}'. No player data specified.",line));
             //if(simVals != null && pos == "P")
             //    tool.SetPuntingSimData(season,currentTeam, simVals[0]);
             //else if(simVals != null && pos == "K")
             //    tool.SetKickingSimData(season,currentTeam, simVals[0]);
             //else if(showSimError)
-            //    errors.Add(string.Format("Warning! On line '{0}'. No sim data specified.",line));
+            //    StaticUtils.AddError(string.Format("Warning! On line '{0}'. No sim data specified.",line));
         }
 
         private static Regex KickRetMan = new Regex("^KR\\s*,\\s*([A-Z1-4]+)$");
@@ -701,7 +699,7 @@ namespace TSBTool2
                     //tool.SetKickReturner(currentTeam, pos);
                 }
                 else
-                    errors.Add(string.Format("ERROR with line '{0}'.", line));
+                    StaticUtils.AddError(string.Format("ERROR with line '{0}'.", line));
             }
         }
 
@@ -716,7 +714,7 @@ namespace TSBTool2
                     //tool.SetPuntReturner(currentTeam, pos);
                 }
                 else
-                    errors.Add(string.Format("ERROR with line '{0}'.", line));
+                    StaticUtils.AddError(string.Format("ERROR with line '{0}'.", line));
             }
         }
 
@@ -757,7 +755,7 @@ namespace TSBTool2
                     brace = input.IndexOf("[");
                     input = input.Substring(0, brace);
                 }
-                char[] seps = new char[] { ' ', ',', '\t' };  //" ,\t".ToCharArray();
+                char[] seps = new char[] { ' ', ',', '\t' };
                 string[] nums = input.Split(seps);
                 int j, count = 0;
                 for (j = 0; j < nums.Length; j++)
@@ -781,8 +779,7 @@ namespace TSBTool2
                 catch (Exception e)
                 {
                     string error = String.Format("Error with input '{0}', {1}, was jersey number specified?", input, e.Message);
-                    errors.Add(error);
-                    //System.Windows.Forms.MessageBox.Show(error);
+                    StaticUtils.AddError(error);
                 }
             }
             return null;
@@ -816,7 +813,7 @@ namespace TSBTool2
                 catch
                 {
                     ret = -1;
-                    errors.Add(string.Format("Face ERROR line '{0}'", line));
+                    StaticUtils.AddError(string.Format("Face ERROR line '{0}'", line));
                 }
             }
 
