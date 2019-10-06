@@ -51,9 +51,13 @@
             this.mLoadButton = new System.Windows.Forms.Button();
             this.mViewContentsButton = new System.Windows.Forms.Button();
             this.mApplyButton = new System.Windows.Forms.Button();
-            this.convertToTSB1DataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.convertToTSB2DataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertToTSB1TextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertToTSB2TextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutConvertingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editPlayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mTextBox = new TSBTool2.SearchTextBox();
+            this.editTeamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,6 +68,7 @@
             this.viewToolStripMenuItem,
             this.debugToolStripMenuItem,
             this.seasonToolStripMenuItem,
+            this.convertToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -77,9 +82,7 @@
             this.openToolStripMenuItem,
             this.applyToROMToolStripMenuItem,
             this.viewContentsToolStripMenuItem,
-            this.exitToolStripMenuItem,
-            this.convertToTSB1DataToolStripMenuItem,
-            this.convertToTSB2DataToolStripMenuItem});
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -87,27 +90,27 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.openToolStripMenuItem.Text = "Load TSB2 ROM";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.handleLoad);
             // 
             // applyToROMToolStripMenuItem
             // 
             this.applyToROMToolStripMenuItem.Name = "applyToROMToolStripMenuItem";
-            this.applyToROMToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.applyToROMToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.applyToROMToolStripMenuItem.Text = "Apply To ROM";
             // 
             // viewContentsToolStripMenuItem
             // 
             this.viewContentsToolStripMenuItem.Name = "viewContentsToolStripMenuItem";
-            this.viewContentsToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.viewContentsToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.viewContentsToolStripMenuItem.Text = "View Contents";
             this.viewContentsToolStripMenuItem.Click += new System.EventHandler(this.viewContentsAction);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
             this.exitToolStripMenuItem.Text = "&Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -116,7 +119,9 @@
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.playbooksToolStripMenuItem,
             this.simDataToolStripMenuItem,
-            this.scheduleToolStripMenuItem});
+            this.scheduleToolStripMenuItem,
+            this.editPlayersToolStripMenuItem,
+            this.editTeamsToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "&View";
@@ -127,7 +132,7 @@
             this.playbooksToolStripMenuItem.CheckOnClick = true;
             this.playbooksToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.playbooksToolStripMenuItem.Name = "playbooksToolStripMenuItem";
-            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.playbooksToolStripMenuItem.Text = "Playbooks";
             this.playbooksToolStripMenuItem.Click += new System.EventHandler(this.playbooksToolStripMenuItem_Click);
             // 
@@ -137,7 +142,7 @@
             this.simDataToolStripMenuItem.CheckOnClick = true;
             this.simDataToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.simDataToolStripMenuItem.Name = "simDataToolStripMenuItem";
-            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.simDataToolStripMenuItem.Text = "Sim Data";
             this.simDataToolStripMenuItem.Click += new System.EventHandler(this.simDataToolStripMenuItem_Click);
             // 
@@ -147,7 +152,7 @@
             this.scheduleToolStripMenuItem.CheckOnClick = true;
             this.scheduleToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.scheduleToolStripMenuItem.Name = "scheduleToolStripMenuItem";
-            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(128, 22);
+            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scheduleToolStripMenuItem.Text = "Schedule";
             this.scheduleToolStripMenuItem.Click += new System.EventHandler(this.scheduleToolStripMenuItem_Click);
             // 
@@ -157,7 +162,7 @@
             this.debugDialogToolStripMenuItem});
             this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
             this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
-            this.debugToolStripMenuItem.Text = "Debug";
+            this.debugToolStripMenuItem.Text = "&Debug";
             // 
             // debugDialogToolStripMenuItem
             // 
@@ -175,7 +180,7 @@
             this.allSeasonsToolStripMenuItem});
             this.seasonToolStripMenuItem.Name = "seasonToolStripMenuItem";
             this.seasonToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
-            this.seasonToolStripMenuItem.Text = "Season";
+            this.seasonToolStripMenuItem.Text = "&Season";
             // 
             // season1ToolStripMenuItem
             // 
@@ -217,7 +222,7 @@
             this.aboutTSBTool2ToolStripMenuItem});
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.aboutToolStripMenuItem.Text = "About";
+            this.aboutToolStripMenuItem.Text = "&About";
             // 
             // aboutTSBTool2ToolStripMenuItem
             // 
@@ -259,19 +264,43 @@
             this.mApplyButton.UseVisualStyleBackColor = true;
             this.mApplyButton.Click += new System.EventHandler(this.mApplyButton_Click);
             // 
-            // convertToTSB1DataToolStripMenuItem
+            // convertToolStripMenuItem
             // 
-            this.convertToTSB1DataToolStripMenuItem.Name = "convertToTSB1DataToolStripMenuItem";
-            this.convertToTSB1DataToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
-            this.convertToTSB1DataToolStripMenuItem.Text = "Convert To TSB1 Data";
-            this.convertToTSB1DataToolStripMenuItem.Click += new System.EventHandler(this.convertToTSB1DataToolStripMenuItem_Click);
+            this.convertToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.convertToTSB1TextToolStripMenuItem,
+            this.convertToTSB2TextToolStripMenuItem,
+            this.aboutConvertingToolStripMenuItem});
+            this.convertToolStripMenuItem.Name = "convertToolStripMenuItem";
+            this.convertToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.convertToolStripMenuItem.Text = "&Convert";
             // 
-            // convertToTSB2DataToolStripMenuItem
+            // convertToTSB1TextToolStripMenuItem
             // 
-            this.convertToTSB2DataToolStripMenuItem.Name = "convertToTSB2DataToolStripMenuItem";
-            this.convertToTSB2DataToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
-            this.convertToTSB2DataToolStripMenuItem.Text = "Convert To TSB2 Data";
-            this.convertToTSB2DataToolStripMenuItem.Click += new System.EventHandler(this.convertToTSB2DataToolStripMenuItem_Click);
+            this.convertToTSB1TextToolStripMenuItem.Name = "convertToTSB1TextToolStripMenuItem";
+            this.convertToTSB1TextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.convertToTSB1TextToolStripMenuItem.Text = "Convert to TSB1 Text";
+            this.convertToTSB1TextToolStripMenuItem.Click += new System.EventHandler(this.convertToTSB1DataToolStripMenuItem_Click);
+            // 
+            // convertToTSB2TextToolStripMenuItem
+            // 
+            this.convertToTSB2TextToolStripMenuItem.Name = "convertToTSB2TextToolStripMenuItem";
+            this.convertToTSB2TextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.convertToTSB2TextToolStripMenuItem.Text = "Convert to TSB2 Text";
+            this.convertToTSB2TextToolStripMenuItem.Click += new System.EventHandler(this.convertToTSB2DataToolStripMenuItem_Click);
+            // 
+            // aboutConvertingToolStripMenuItem
+            // 
+            this.aboutConvertingToolStripMenuItem.Name = "aboutConvertingToolStripMenuItem";
+            this.aboutConvertingToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.aboutConvertingToolStripMenuItem.Text = "About Converting";
+            this.aboutConvertingToolStripMenuItem.Click += new System.EventHandler(this.aboutConvertingToolStripMenuItem_Click);
+            // 
+            // editPlayersToolStripMenuItem
+            // 
+            this.editPlayersToolStripMenuItem.Name = "editPlayersToolStripMenuItem";
+            this.editPlayersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editPlayersToolStripMenuItem.Text = "Edit &Players";
+            this.editPlayersToolStripMenuItem.Click += new System.EventHandler(this.editPlayersToolStripMenuItem_Click);
             // 
             // mTextBox
             // 
@@ -288,6 +317,13 @@
             this.mTextBox.TabIndex = 1;
             this.mTextBox.Text = "";
             this.mTextBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.mTextBox_MouseDoubleClick);
+            // 
+            // editTeamsToolStripMenuItem
+            // 
+            this.editTeamsToolStripMenuItem.Name = "editTeamsToolStripMenuItem";
+            this.editTeamsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editTeamsToolStripMenuItem.Text = "Edit &Teams";
+            this.editTeamsToolStripMenuItem.Click += new System.EventHandler(this.editTeamsToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -335,8 +371,12 @@
         private System.Windows.Forms.ToolStripMenuItem playbooksToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem simDataToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scheduleToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem convertToTSB1DataToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem convertToTSB2DataToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem convertToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem convertToTSB1TextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem convertToTSB2TextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutConvertingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editPlayersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editTeamsToolStripMenuItem;
 	}
 }
 

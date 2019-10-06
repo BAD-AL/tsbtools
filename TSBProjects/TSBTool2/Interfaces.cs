@@ -7,7 +7,7 @@ namespace TSBTool2
     {
         QB1 = 0, QB2, RB1, RB2, RB3, RB4, WR1, WR2, WR3, WR4,
         TE1, TE2, C, LG, RG, LT, RT,
-        RE, NT, LE, ROLB, RILB, LILB, LOLB, LB5, RCB, LCB, DB1, DB2, FS, SS, DB3,
+        RE, NT, LE, RE2, NT2, LE2, ROLB, RILB, LILB, LOLB, LB5, RCB, LCB, DB1, DB2, FS, SS, DB3,
         K, P
     }
 

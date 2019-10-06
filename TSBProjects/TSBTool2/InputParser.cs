@@ -24,7 +24,7 @@ namespace TSBTool2
         internal static Regex simDataRegex = new Regex("SimData=0[xX]([0-9a-fA-F][0-9a-fA-F])([0-3]?)");
         internal static Regex weekRegex = new Regex("WEEK ([1-9][0	-7]?)");
         internal static Regex gameRegex = new Regex("([0-9a-z]+)\\s+at\\s+([0-9a-z]+)");
-        internal static Regex posNameFaceRegex = new Regex("([A-Z]+[1-4]?)\\s*,\\s*([a-zA-Z \\.\\-]+),\\s*(face=0[xX][0-9a-fA-F]+\\s*,\\s*)?");
+        internal static Regex posNameFaceRegex = new Regex("([A-Z]+[1-5]?)\\s*,\\s*([a-zA-Z \\.\\-]+),\\s*(face=0[xX][0-9a-fA-F]+\\s*,\\s*)?");
         internal static Regex yearRegex = new Regex("YEAR\\s*=\\s*([0-9]+)");
         internal static Regex returnTeamRegex = new Regex("RETURN_TEAM\\s+([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)");
         internal static Regex setRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");

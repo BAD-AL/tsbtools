@@ -595,5 +595,36 @@ namespace TSBTool2
             }
             return retVal;
         }
+
+        private static Regex tsb1QB1Regex = new Regex(
+            "^QB1\\s*,[a-zA-Z 0-9]+\\s*,\\s*Face=0x[0-9]{1,2}\\s*,\\s*#[0-9]{1,2}\\s*,(\\s*[0-9]{1,2}\\s*,){7}(\\s*[0-9]{1,2}\\s*,?){1}(\\s*\\[|\\s*$)",
+             RegexOptions.Multiline);
+        
+        private static Regex tsb2QB1Regex = new Regex(
+            "^QB1\\s*,[a-zA-Z 0-9]+\\s*,\\s*Face=0x[0-9]{1,2}\\s*,\\s*#[0-9]{1,2}\\s*,(\\s*[0-9]{1,2}\\s*,){9}(\\s*[0-9]{1,2}\\s*,?){1}(\\s*\\[|\\s*$)",
+            RegexOptions.Multiline);
+
+        internal static bool IsTSB1Content(string data)
+        {
+            bool retVal = false;
+            MatchCollection mc = tsb1QB1Regex.Matches(data);
+            if (mc.Count > 0)
+            {
+                retVal = true;
+            }
+            return retVal;
+        }
+
+        internal static bool IsTSB2Content(string data)
+        {
+            bool retVal = false;
+            MatchCollection mc = tsb2QB1Regex.Matches(data);
+            if (mc.Count > 0)
+            {
+                retVal = true;
+            }
+            return retVal;
+        }
+
     }
 }

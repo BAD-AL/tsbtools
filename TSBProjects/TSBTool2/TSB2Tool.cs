@@ -14,7 +14,6 @@ namespace TSBTool2
     // TODO:
     // 2. Sim data *
     // 4. NFL Records 
-    // 5. TSBTool Text Converter
     public class TSB2Tool : ITecmoTool
     {
         public byte[] OutputRom { get; set; }
@@ -803,9 +802,13 @@ namespace TSBTool2
         public string GetKey()
         {
             return
-@"# Key 
+@"# TSBTool2 forum: https://tecmobowl.org/forums/topic/71051-initial-tsb2-snes-editor/
+# TSB2 Hacking documentation: https://tecmobowl.org/forums/topic/53028-tecmo-super-bowl-ii-hackingresource-documentation/
+# Key 
 # Team SimData is kinda unknown 
 # 'SET' commands are supported
+# Double click on a team name (or playbook) to bring up the edit Team GUI.
+# Double click on a player to bring up the edit player GUI.
 # Attribute Order
 # QBs   RS RP MS HP BB PS PC PA AR CO [sim vals]
 # Skill RS RP MS HP BB BC RC [sim vals]

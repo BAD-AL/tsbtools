@@ -273,5 +273,13 @@ namespace TSBTool2
             return ret;
         }
 
+        private void SearchTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            if (Environment.OSVersion.ToString().ToUpper().Contains("WINDOWS"))
+            {
+                System.Diagnostics.Process.Start(e.LinkText);
+            }
+        }
+
     }
 }

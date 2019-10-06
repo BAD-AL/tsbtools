@@ -28,9 +28,23 @@ namespace TSBTool2
             string[] lines = input.Split("\n".ToCharArray());
             StringBuilder builder = new StringBuilder(input.Length + lines.Length * 2);
             string tmp = "";
-            foreach (string line in lines)
+            string line="";
+            foreach (string theLine in lines)
             {
-                if (ShouldConvertPlayer(line))
+                line = theLine;
+                if (line.StartsWith("#RE2") || line.StartsWith("#NT2") || line.StartsWith("#LE2") || line.StartsWith("#LB5") || line.StartsWith("#DB3"))
+                {
+                    builder.Append(line.Substring(1));
+                }
+                else if (line.StartsWith("#PLAYBOOK") && InputParser.playbookRegex.Match(line) != Match.Empty)
+                {
+                    builder.Append(line.Substring(1));
+                }
+                else if (line.Trim().StartsWith("#"))
+                {
+                    builder.Append(line);
+                }
+                else if (ShouldConvertPlayer(line))
                 {
                     tmp = ConvertToTSB2Player(line);
                     builder.Append(tmp);
@@ -46,6 +60,7 @@ namespace TSBTool2
                 }
                 builder.Append("\n");
             }
+            StaticUtils.ShowErrors();
             string retVal = builder.ToString();
             return retVal;
         }
@@ -171,7 +186,10 @@ namespace TSBTool2
                 case "FS":
                 case "SS":
                 case "DB3":
-                    simVals = string.Format("[{0:X2},{1:X2},{2:X2}]", vals[0]*2, vals[1]*3, vals[0]*2);
+                    if (simVals.Length > 1)
+                        simVals = string.Format("[{0:X2},{1:X2},{2:X2}]", vals[0] * 2, vals[1] * 3, vals[0] * 2);
+                    else
+                        simVals = "[10,10,10]";
                     break;
                 case "K":
                 case "P":
@@ -184,10 +202,12 @@ namespace TSBTool2
 
         private static string GetCoolness(string name, string pa)
         {
-            if (name.IndexOf(' ') > -1)
+            int space = name.IndexOf(' ');
+            if ( space > -1)
             {
-                string lastName = name.Split(" ".ToCharArray())[1];
-                string coolGuys = "KELLY KOSAR MOON YOUNG MARINO MONTANA MANNING BRADY BREES MAHOMES RODGERS ROETHLISBERGER	BRADSHAW WILSON STAUBACH FOLES ";
+                string lastName = name.Substring(space).ToUpper();
+                string coolGuys = 
+                    " KELLY KOSAR MOON YOUNG ELWAY FAVRE MARINO MONTANA MANNING BRADY BREES MAHOMES RODGERS ROETHLISBERGER BRADSHAW WILSON STAUBACH FOLES UNITAS TARKENTON TESTAVERDE ";
                 if (coolGuys.IndexOf(lastName) > -1)
                     return "81";
             }
@@ -535,6 +555,13 @@ namespace TSBTool2
             return retVal;
         }
         #endregion
+
+        public static string CONVERT_MSG =
+@"Converting between TSB1 and TSB2 data is not exact and one does not 'un-do' the other.
+When converting from TSB1 --> TSB2 a 'Auto-update' sim data operation is performed (feature taken from TSBToolSupreme).
+At the time of this writing, we still don't know what the SimData in TSB2 does and the sim data it generates is kinda bogus.
+";
+
 
     }
 }

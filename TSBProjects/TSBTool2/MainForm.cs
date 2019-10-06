@@ -19,7 +19,8 @@ namespace TSBTool2
             InitializeComponent();
             state1();
         }
-
+        //"TSB files (*.nes;*.smc)|*.nes;*.smc";
+        //private string snesFilter = "TSB files (*.smc;*.smd)|*.smc;*.smd";
         private string snesFilter = "TSB files (*.smc)|*.smc";
 
         private void handleLoad(object sender, EventArgs e)
@@ -104,11 +105,16 @@ namespace TSBTool2
                 text += tool.GetAll();
 
             SetText(text);
-            mTextBox.SelectionStart = 0;
-            mTextBox.SelectionLength = tool.GetKey().Length - 1;
-            mTextBox.SelectionColor = Color.Magenta;
-            mTextBox.SelectionStart = 0;
-            mTextBox.SelectionLength = 0;
+            
+            int selLen = mTextBox.Text.IndexOf("SEASON");
+            if (selLen > 0)
+            {
+                mTextBox.SelectionStart = 0;
+                mTextBox.SelectionLength = selLen - 1;
+                mTextBox.SelectionColor = Color.Magenta;
+                mTextBox.SelectionStart = 0;
+                mTextBox.SelectionLength = 0;
+            }
             StaticUtils.ShowErrors();
         }
 
@@ -169,10 +175,9 @@ namespace TSBTool2
         private void aboutTSBTool2ToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show(
-@"You are using the PRE-ALPHA version of TSBTool2. 
-It'll get better.
-It's mostly intended to assist those doing the discovery of TSB2 stuff.
-It likely has bugs.
+@"You are using the ALPHA version of TSBTool2.
+It works on the SNES version of TSB2.
+We don't yet know what the sim data does.
 Version " + MainClass.version
                 );
         }
@@ -189,7 +194,7 @@ Version " + MainClass.version
                 return;
             if (line.IndexOf("TEAM") > -1 || line.IndexOf("PLAYBOOK") > -1)
             {
-                ModifyTeams();
+                EditTeams();
             }
             //else if (line.IndexOf("COLORS") > -1)
             //{
@@ -203,11 +208,11 @@ Version " + MainClass.version
             //{
             //    DisplayScheduleForm(GetWeekAtCaret());
             //}
-            //else
-            //    EditPlayer();
+            else
+                EditPlayer();
         }
 
-        private void ModifyTeams()
+        private void EditTeams()
         {
             string team = GetTeam(mTextBox.SelectionStart);
             ModifyTeams(team);
@@ -306,25 +311,6 @@ Version " + MainClass.version
             TSB2Tool.ShowSchedule = scheduleToolStripMenuItem.Checked;
         }
 
-        private void convertToTSB1DataToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB1\nDo you wish to continue?",
-                "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
-            {
-                if (Check1Season())
-                {
-                    string data = mTextBox.Text;
-                    string output = TSB1Converter.ConvertToTSB1(data);
-                    SetText(output);
-                }
-                else
-                {
-                    MessageBox.Show("Could not convert multiple seasons. Please have only 1 season of data in the text area.", 
-                        "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-        }
-
         private bool Check1Season()
         {
             string search = "SEASON ";
@@ -338,15 +324,114 @@ Version " + MainClass.version
             return count < 2;
         }
 
+        private void convertToTSB1DataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!StaticUtils.IsTSB2Content(mTextBox.Text))
+            {
+                DialogResult result = MessageBox.Show("The text does not appear to be TSB2 Content. Do you still want to continue?",
+                    "Incorrect content detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.No)
+                    return;
+            }
+            if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB1\nDo you wish to continue?",
+                "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                if (Check1Season())
+                {
+                    string output = TSB1Converter.ConvertToTSB1(mTextBox.Text);
+                    SetText(output);
+                }
+                else
+                {
+                    MessageBox.Show("Could not convert multiple seasons. Please have only 1 season of data in the text area.", 
+                        "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
         private void convertToTSB2DataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB1\nDo you wish to continue?",
+            if (!StaticUtils.IsTSB1Content(mTextBox.Text))
+            {
+                DialogResult result = MessageBox.Show("The text does not appear to be TSB1 Content. Do you still want to continue?", 
+                    "Incorrect content detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.No)
+                    return;
+            }
+            if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB2\nDo you wish to continue?",
                     "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
-                string data = mTextBox.Text;
-                string output = TSB2Converter.ConvertToTSB2(data);
+                string output = TSB2Converter.ConvertToTSB2(mTextBox.Text);
                 SetText(output);
             }
+        }
+
+        private void aboutConvertingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(TSB1Converter.CONVERT_MSG);
+        }
+
+        private void EditPlayer()
+        {
+            int pos = mTextBox.SelectionStart;
+            int lineStart = 0;
+            int posLen = 0;
+            string position = "QB1";
+            string team = "bills";
+
+            if (pos > 0 && pos < mTextBox.Text.Length)
+            {
+                int i = 0;
+                for (i = pos; i > 0; i--)
+                {
+                    if (mTextBox.Text[i] == '\n')
+                    {
+                        lineStart = i + 1;
+                        break;
+                    }
+                }
+                i = lineStart;
+                char current = mTextBox.Text[i];
+                while (i < mTextBox.Text.Length && current != ' ' &&
+                    current != ',' && current != '\n')
+                {
+                    posLen++;
+                    i++;
+                    current = mTextBox.Text[i];
+                }
+                position = mTextBox.Text.Substring(lineStart, posLen);
+
+                team = GetTeam(pos);
+                ModifyPlayers(team, position);
+            }
+        }
+
+        private void ModifyPlayers(string team, string position)
+        {
+            ModifyPlayerForm form = new ModifyPlayerForm();
+            form.Data = mTextBox.Text;
+            form.CurrentTeam = team;
+            form.CurrentPosition = position;
+            
+            if (form.ShowDialog(this) == DialogResult.OK)
+            {
+                int spot2 = mTextBox.SelectionStart;
+                SetText(form.Data);
+                if (mTextBox.Text.Length > spot2)
+                {
+                    mTextBox.SelectionStart = spot2;
+                }
+            }
+        }
+
+        private void editPlayersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EditPlayer();
+        }
+
+        private void editTeamsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EditTeams();
         }
 
     }

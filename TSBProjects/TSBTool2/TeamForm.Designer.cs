@@ -54,6 +54,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.mTeamNameTextBox = new System.Windows.Forms.TextBox();
             this.mOkButton = new System.Windows.Forms.Button();
+            this.mCancelButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.R4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.R3)).BeginInit();
@@ -96,7 +97,7 @@
             // 
             // mPlaybookTextBox
             // 
-            this.mPlaybookTextBox.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.mPlaybookTextBox.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.mPlaybookTextBox.Location = new System.Drawing.Point(352, 514);
             this.mPlaybookTextBox.Name = "mPlaybookTextBox";
             this.mPlaybookTextBox.ReadOnly = true;
@@ -328,12 +329,24 @@
             this.mOkButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.mOkButton.BackColor = System.Drawing.Color.Silver;
             this.mOkButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.mOkButton.Location = new System.Drawing.Point(601, 625);
+            this.mOkButton.Location = new System.Drawing.Point(496, 625);
             this.mOkButton.Name = "mOkButton";
             this.mOkButton.Size = new System.Drawing.Size(99, 30);
             this.mOkButton.TabIndex = 13;
             this.mOkButton.Text = "&OK";
             this.mOkButton.UseVisualStyleBackColor = false;
+            // 
+            // mCancelButton
+            // 
+            this.mCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.mCancelButton.BackColor = System.Drawing.Color.Silver;
+            this.mCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.mCancelButton.Location = new System.Drawing.Point(601, 625);
+            this.mCancelButton.Name = "mCancelButton";
+            this.mCancelButton.Size = new System.Drawing.Size(99, 30);
+            this.mCancelButton.TabIndex = 14;
+            this.mCancelButton.Text = "&Cancel";
+            this.mCancelButton.UseVisualStyleBackColor = false;
             // 
             // TeamForm
             // 
@@ -342,6 +355,7 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(41)))), ((int)(((byte)(89)))));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(712, 667);
+            this.Controls.Add(this.mCancelButton);
             this.Controls.Add(this.mOkButton);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.mTeamNameTextBox);
@@ -403,6 +417,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox mTeamNameTextBox;
         private System.Windows.Forms.Button mOkButton;
+        private System.Windows.Forms.Button mCancelButton;
 
 
     }

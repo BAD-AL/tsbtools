@@ -181,7 +181,7 @@ namespace TSBTool2
             string tmp = mSimDataTextBox.Text;
             if (tmp.IndexOf("0x", StringComparison.InvariantCultureIgnoreCase) != 0)
                 tmp = "0x" + tmp;
-            string ret = string.Format("TEAM = {0} SimData={1}", m_TeamsComboBox.SelectedItem, tmp);
+            string ret = string.Format("TEAM = {0},SimData={1}", m_TeamsComboBox.SelectedItem, tmp);
             if (mData.IndexOf("PLAYBOOK") > 3)
                 ret = ret + "\n" + GetCurrentPlaybook();
             if (mData.IndexOf("TEAM_ABB") >  -1)
