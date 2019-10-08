@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace TSBTool2
 {
+    //TODO: TSB2 <--> TSB3 converter
     /// 0     1     2     3       4  5   6   7    8  9   10  11    12          13        14
     /// pos, name, face, number, RS, RP, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].
     /// QB1,qb BILLS, Face=0x52, #0, 25, 69, 13, 13, 56, 81, 81, 81 ,[3, 12, 3 ] *tsb1PlayerLine

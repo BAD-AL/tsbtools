@@ -69,16 +69,17 @@ namespace TSBTool2
         void SetQBAbilities(int season,
             string team,
             string qb,
-            byte runningSpeed,
-            byte rushingPower,
-            byte maxSpeed,
-            byte hittingPower,
-            byte bodyBalance,
-            byte passingSpeed,
-            byte passControl,
-            byte accuracy,
-            byte avoidRush,
-            byte coolness
+            byte[] abilities
+            //byte runningSpeed,
+            //byte rushingPower,
+            //byte maxSpeed,
+            //byte hittingPower,
+            //byte bodyBalance,
+            //byte passingSpeed,
+            //byte passControl,
+            //byte accuracy,
+            //byte avoidRush,
+            //byte coolness
             );
 
         void SetQBSimData(int season, string team, string pos, int[] data);
@@ -86,13 +87,14 @@ namespace TSBTool2
         void SetSkillPlayerAbilities(int season,
             string team,
             string pos,
-            byte runningSpeed,
-            byte rushingPower,
-            byte maxSpeed,
-            byte hittingPower,
-            byte bodyBalance,
-            byte ballControl,
-            byte receptions
+            byte[] abilities
+            //byte runningSpeed,
+            //byte rushingPower,
+            //byte maxSpeed,
+            //byte hittingPower,
+            //byte bodyBalance,
+            //byte ballControl,
+            //byte receptions
             );
 
         void SetSkillSimData(int season, string team, string pos, int[] data);
@@ -100,23 +102,25 @@ namespace TSBTool2
         void SetOLPlayerAbilities(int season,
             string team,
             string pos,
-            byte runningSpeed,
-            byte rushingPower,
-            byte maxSpeed,
-            byte hittingPower,
-            byte bodyBalance
+            byte[] abilities
+            //byte runningSpeed,
+            //byte rushingPower,
+            //byte maxSpeed,
+            //byte hittingPower,
+            //byte bodyBalance
             );
 
         void SetDefensivePlayerAbilities(int season,
             string team,
             string pos,
-            byte runningSpeed,
-            byte rushingPower,
-            byte maxSpeed,
-            byte hittingPower,
-            byte bodyBalance,
-            byte interceptions,
-            byte quickness
+            byte[] abilities
+            //byte runningSpeed,
+            //byte rushingPower,
+            //byte maxSpeed,
+            //byte hittingPower,
+            //byte bodyBalance,
+            //byte interceptions,
+            //byte quickness
             );
 
 /*
@@ -131,26 +135,28 @@ That gets me to 102*/
         void SetKickerAbilities(int season,
             string team,
             string pos,
-            byte runningSpeed,
-            byte rushingPower,
-            byte maxSpeed,
-            byte hittingPower,
-            byte bodyBalance,
-            byte kickingPower,
-            byte kickingAccuracy,
-            byte avoidBlock
+            byte[] abilities
+            //byte runningSpeed,
+            //byte rushingPower,
+            //byte maxSpeed,
+            //byte hittingPower,
+            //byte bodyBalance,
+            //byte kickingPower,
+            //byte kickingAccuracy,
+            //byte avoidBlock
             );
 
         void SetPunterAbilities(int season,
             string team,
             string pos,
-            byte runningSpeed,
-            byte rushingPower,
-            byte maxSpeed,
-            byte hittingPower,
-            byte bodyBalance,
-            byte kickingPower,
-            byte avoidBlock
+            byte[] abilities
+            //byte runningSpeed,
+            //byte rushingPower,
+            //byte maxSpeed,
+            //byte hittingPower,
+            //byte bodyBalance,
+            //byte kickingPower,
+            //byte avoidBlock
             );
         void SetPuntingSimData(int season, string team, byte data);
 
@@ -162,7 +168,7 @@ That gets me to 102*/
 
         void ApplySchedule(int season, List<string> scheduleList);
 
-        bool Init(string fileName);
+        //bool Init(string fileName);
 
         //void SetHomeUniform(string team, string colorString);
 

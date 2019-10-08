@@ -18,7 +18,6 @@ namespace TSBTool2
         public static bool AUTO_CORRECT_SCHEDULE = true;
 
         private int weekOneStartLoc = 0x15f3be;//0x329db;
-        private List<string> errors;
         private int[] teamGames;
 
         int week, week_game_count, total_game_count;
@@ -26,18 +25,30 @@ namespace TSBTool2
 
 
         private int[] gamesPerWeek = { 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14 };
-        private byte[] outputRom;
+        //private byte[] outputRom;
+        private ITecmoTool mTool;
 
-        public SNES_ScheduleHelper(byte[] outputRom)
+        public SNES_ScheduleHelper(ITecmoTool tool)
         {
-            this.outputRom = outputRom;
-            errors = new List<string>();
+            this.mTool = tool;
         }
 
-        public void SetWeekOneLocation(int loc, int[] gamesPerWeek)
+        private List<string> Teams = null;
+        private int GetTeamIndex(string team)
+        {
+            return Teams.IndexOf(team);
+        }
+
+        private string GetTeamFromIndex(int index)
+        {
+            return Teams[index];
+        }
+
+        public void SetWeekOneLocation(int loc, int[] gamesPerWeek, List<string> teams)
         {
             this.weekOneStartLoc = loc;
             this.gamesPerWeek = gamesPerWeek;
+            this.Teams = teams;
         }
 
         private void CloseWeek()
@@ -82,7 +93,7 @@ namespace TSBTool2
                 {
                     if (week > 18)
                     {
-                        errors.Add("Error! You can have only 18 weeks in a season.");
+                        StaticUtils.AddError("Error! You can have a maximum of 18 weeks in a season.");
                         break;
                     }
                     CloseWeek();
@@ -97,7 +108,7 @@ namespace TSBTool2
 
             if (week < 18 && gamesPerWeek.Length == 18)
             {
-                errors.Add("Warning! You didn't schedule all 18 weeks. The schedule could be messed up.");
+                StaticUtils.AddError("Warning! You didn't schedule all 18 weeks. The schedule could be messed up.");
             }
             if (teamGames != null)
             {
@@ -105,9 +116,9 @@ namespace TSBTool2
                 {
                     if (teamGames[i] != 16)
                     {
-                        errors.Add(string.Format(
+                        StaticUtils.AddError(string.Format(
                             "Warning! The {0} have {1} games scheduled.",
-                            TSB2Tool.GetTeamFromIndex(i), teamGames[i]));
+                            GetTeamFromIndex(i), teamGames[i]));
                     }
                 }
             }
@@ -128,10 +139,10 @@ namespace TSBTool2
             {
                 awayTeam = m.Groups[1].ToString();
                 homeTeam = m.Groups[2].ToString();
-                if (week_game_count > 13)
+                if (week_game_count > Teams.Count/2)
                 {
-                    errors.Add(string.Format(
-                        "Error! Week {0}: You can have no more than 14 games in a week.", week + 1));
+                    StaticUtils.AddError(string.Format(
+                        "Error! Week {0}: You can have no more than {1} games in a week.", week + 1, Teams.Count / 2));
                     ret = false;
                 }
                 else if (ScheduleGame(awayTeam, homeTeam, week, week_game_count))
@@ -141,10 +152,11 @@ namespace TSBTool2
                 }
 
             }
-            if (total_game_count + week_game_count > 224)
+            int total_possible_games = (Teams.Count / 2) * 16;
+            if (total_game_count + week_game_count > total_possible_games) //224 for 28 teams
             {
-                errors.Add(string.Format(
-                    "Warning! Week {0}: There are more than 224 games scheduled.", week + 1));
+                StaticUtils.AddError(string.Format(
+                    "Warning! Week {0}: There are more than {1} games scheduled.", week + 1, total_possible_games));
             }
             return ret;
         }
@@ -159,31 +171,31 @@ namespace TSBTool2
         /// <param name="gameOfWeek"></param>
         public bool ScheduleGame(string awayTeam, string homeTeam, int week, int gameOfWeek)
         {
-            int awayIndex = TSB2Tool.GetTeamIndex(awayTeam);
-            int homeIndex = TSB2Tool.GetTeamIndex(homeTeam);
+            int awayIndex = GetTeamIndex(awayTeam);
+            int homeIndex = GetTeamIndex(homeTeam);
 
             if (awayIndex == -1 || homeIndex == -1)
             {
-                errors.Add(string.Format("Error! Week {2}: Game '{0} at {1}'", awayTeam, homeTeam, week + 1));
+                StaticUtils.AddError(string.Format("Error! Week {2}: Game '{0} at {1}'", awayTeam, homeTeam, week + 1));
                 return false;
             }
 
-            if (awayIndex == homeIndex && awayIndex < 28)
+            if (awayIndex == homeIndex && awayIndex < Teams.Count)
             {
-                errors.Add(string.Format(
+                StaticUtils.AddError(string.Format(
                     "Warning! Week {0}: The {1} are scheduled to play against themselves.", week + 1, awayTeam));
             }
 
             if (week < 0 || week > 17)
             {
-                errors.Add(string.Format("Week {0} is not valid. Weeks range 1 - 18.", week + 1));
+                StaticUtils.AddError(string.Format("Week {0} is not valid. Weeks range 1 - 18.", week + 1));
                 return false;
             }
             if (GameLocation(week, gameOfWeek) < 0)
             {
-                errors.Add(string.Format("Game {0} for week {1} is not valid. Valid games for week {1} are 0-{2}.",
+                StaticUtils.AddError(string.Format("Game {0} for week {1} is not valid. Valid games for week {1} are 0-{2}.",
                     gameOfWeek, week, gamesPerWeek[week] - 1));
-                errors.Add(string.Format("{0} at {1}", awayTeam, homeTeam));
+                StaticUtils.AddError(string.Format("{0} at {1}", awayTeam, homeTeam));
             }
 
             ScheduleGame(awayIndex, homeIndex, week, gameOfWeek);
@@ -198,9 +210,9 @@ namespace TSBTool2
             int location = GameLocation(week, gameOfWeek);
             if (location > 0)
             {
-                outputRom[location] = (byte)awayTeamIndex;
-                outputRom[location + 1] = (byte)homeTeamIndex;
-                if (awayTeamIndex < 28)
+                mTool.SetByte(location, (byte)awayTeamIndex);
+                mTool.SetByte(location + 1, (byte)homeTeamIndex);
+                if (awayTeamIndex < Teams.Count)
                 {
                     IncrementTeamGames(awayTeamIndex);
                     IncrementTeamGames(homeTeamIndex);
@@ -208,7 +220,7 @@ namespace TSBTool2
             }
             /*else
             {
-                errors.Add(string.Format("INVALID game for ROM. Week={0} Game of Week ={1}",
+                StaticUtils.AddError(string.Format("INVALID game for ROM. Week={0} Game of Week ={1}",
                     week,gameOfWeek);
             }*/
         }
@@ -225,15 +237,15 @@ namespace TSBTool2
             int location = GameLocation(week, gameOfWeek);
             if (location == -1)
                 return null;
-            int awayIndex = outputRom[location];
-            int homeIndex = outputRom[location + 1];
+            int awayIndex = mTool.OutputRom[location];
+            int homeIndex = mTool.OutputRom[location + 1];
             string ret = "";
 
-            if (awayIndex < 28)
+            if (awayIndex < Teams.Count)
             {
                 ret = string.Format("{0} at {1}",
-                    TSB2Tool.GetTeamFromIndex(awayIndex),
-                    TSB2Tool.GetTeamFromIndex(homeIndex));
+                    GetTeamFromIndex(awayIndex),
+                    GetTeamFromIndex(homeIndex));
             }
             return ret;
         }
@@ -292,7 +304,7 @@ namespace TSBTool2
         private void IncrementTeamGames(int teamIndex)
         {
             if (teamGames == null)
-                teamGames = new int[28];
+                teamGames = new int[Teams.Count];
             //Console.WriteLine("IncrementTeamGames team index = "+teamIndex);
             if (teamIndex < teamGames.Length)
                 teamGames[teamIndex]++;

@@ -47,6 +47,7 @@
             this.getSpecialLocationsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.playBookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.playSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.conversionTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mGetTeamButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -63,7 +64,7 @@
             this.mToUpperCheckBox = new System.Windows.Forms.CheckBox();
             this.mCancelButton = new System.Windows.Forms.Button();
             this.mResultsTextBox = new TSBTool2.SearchTextBox();
-            this.conversionTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scheduleHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mSetByteLocUpDown)).BeginInit();
@@ -157,7 +158,8 @@
             this.getSpecialLocationsToolStripMenuItem,
             this.playBookToolStripMenuItem,
             this.playSelectToolStripMenuItem,
-            this.conversionTestToolStripMenuItem});
+            this.conversionTestToolStripMenuItem,
+            this.scheduleHelpToolStripMenuItem});
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
             this.findToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.findToolStripMenuItem.Text = "Misc";
@@ -223,6 +225,13 @@
             this.playSelectToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
             this.playSelectToolStripMenuItem.Text = "Play Select";
             this.playSelectToolStripMenuItem.Click += new System.EventHandler(this.playSelectToolStripMenuItem_Click);
+            // 
+            // conversionTestToolStripMenuItem
+            // 
+            this.conversionTestToolStripMenuItem.Name = "conversionTestToolStripMenuItem";
+            this.conversionTestToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.conversionTestToolStripMenuItem.Text = "Conversion Test";
+            this.conversionTestToolStripMenuItem.Click += new System.EventHandler(this.conversionTestToolStripMenuItem_Click);
             // 
             // mGetTeamButton
             // 
@@ -409,12 +418,12 @@
             this.mResultsTextBox.TabIndex = 3;
             this.mResultsTextBox.Text = "";
             // 
-            // conversionTestToolStripMenuItem
+            // scheduleHelpToolStripMenuItem
             // 
-            this.conversionTestToolStripMenuItem.Name = "conversionTestToolStripMenuItem";
-            this.conversionTestToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
-            this.conversionTestToolStripMenuItem.Text = "Conversion Test";
-            this.conversionTestToolStripMenuItem.Click += new System.EventHandler(this.conversionTestToolStripMenuItem_Click);
+            this.scheduleHelpToolStripMenuItem.Name = "scheduleHelpToolStripMenuItem";
+            this.scheduleHelpToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.scheduleHelpToolStripMenuItem.Text = "ScheduleHelp";
+            this.scheduleHelpToolStripMenuItem.Click += new System.EventHandler(this.scheduleHelpToolStripMenuItem_Click);
             // 
             // DebugDialog
             // 
@@ -486,5 +495,6 @@
         private System.Windows.Forms.ToolStripMenuItem playBookToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem playSelectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem conversionTestToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scheduleHelpToolStripMenuItem;
     }
 }

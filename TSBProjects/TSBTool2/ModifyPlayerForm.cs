@@ -76,6 +76,8 @@ namespace TSBTool2
 
         private StateEnum m_CurrentState = StateEnum.QB;
 		private int m_ImageNumber = 0x00;
+        private Label m_AgilityLabel;
+        private ComboBox m_AgilityBox;
         private string m_Data = "";
 
 		/// <summary>
@@ -95,6 +97,21 @@ namespace TSBTool2
 				}
 			}
 		}
+
+        public string RomVersion
+        {
+            //"SNES_TSB2", "SNES_TSB3", "GENESIS_TSB2", "GENESIS_TSB3"
+            set
+            {
+                if (value.Contains("TSB2"))
+                {
+                    m_AgilityLabel.Visible = false;
+                    m_AgilityBox.Visible = false;
+                    m_AgilityBox.Enabled = false;
+                    m_Attributes.Remove(m_AgilityBox);
+                }
+            }
+        }
 
 		private void SetupTeams()
 		{
@@ -175,6 +192,7 @@ namespace TSBTool2
                 m_MSBox,
                 m_HPBox,
                 m_BBBox,
+                m_AgilityBox,
                 m_PS_BC_PI_KABox,
                 m_PC_REC_QU_KABox,
                 m_ACCBox,
@@ -599,6 +617,8 @@ namespace TSBTool2
             this.m_CancelButton = new System.Windows.Forms.Button();
             this.m_JerseyNumberUpDown = new System.Windows.Forms.NumericUpDown();
             this.m_AutoUpdateButton = new System.Windows.Forms.Button();
+            this.m_AgilityLabel = new System.Windows.Forms.Label();
+            this.m_AgilityBox = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.m_FaceBox)).BeginInit();
             this.mSimBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.m_Sim4UpDown)).BeginInit();
@@ -887,7 +907,7 @@ namespace TSBTool2
             "88",
             "94",
             "100"});
-            this.m_ACCBox.Location = new System.Drawing.Point(370, 35);
+            this.m_ACCBox.Location = new System.Drawing.Point(391, 35);
             this.m_ACCBox.Name = "m_ACCBox";
             this.m_ACCBox.Size = new System.Drawing.Size(43, 21);
             this.m_ACCBox.TabIndex = 20;
@@ -913,7 +933,7 @@ namespace TSBTool2
             "88",
             "94",
             "100"});
-            this.m_PC_REC_QU_KABox.Location = new System.Drawing.Point(322, 35);
+            this.m_PC_REC_QU_KABox.Location = new System.Drawing.Point(343, 35);
             this.m_PC_REC_QU_KABox.Name = "m_PC_REC_QU_KABox";
             this.m_PC_REC_QU_KABox.Size = new System.Drawing.Size(43, 21);
             this.m_PC_REC_QU_KABox.TabIndex = 15;
@@ -939,7 +959,7 @@ namespace TSBTool2
             "88",
             "94",
             "100"});
-            this.m_PS_BC_PI_KABox.Location = new System.Drawing.Point(274, 35);
+            this.m_PS_BC_PI_KABox.Location = new System.Drawing.Point(295, 35);
             this.m_PS_BC_PI_KABox.Name = "m_PS_BC_PI_KABox";
             this.m_PS_BC_PI_KABox.Size = new System.Drawing.Size(43, 21);
             this.m_PS_BC_PI_KABox.TabIndex = 10;
@@ -947,7 +967,7 @@ namespace TSBTool2
             // 
             // m_A3Label
             // 
-            this.m_A3Label.Location = new System.Drawing.Point(370, 16);
+            this.m_A3Label.Location = new System.Drawing.Point(391, 16);
             this.m_A3Label.Name = "m_A3Label";
             this.m_A3Label.Size = new System.Drawing.Size(40, 15);
             this.m_A3Label.TabIndex = 20;
@@ -956,7 +976,7 @@ namespace TSBTool2
             // 
             // m_A2Label
             // 
-            this.m_A2Label.Location = new System.Drawing.Point(322, 16);
+            this.m_A2Label.Location = new System.Drawing.Point(343, 16);
             this.m_A2Label.Name = "m_A2Label";
             this.m_A2Label.Size = new System.Drawing.Size(40, 15);
             this.m_A2Label.TabIndex = 19;
@@ -965,7 +985,7 @@ namespace TSBTool2
             // 
             // m_A1Label
             // 
-            this.m_A1Label.Location = new System.Drawing.Point(274, 16);
+            this.m_A1Label.Location = new System.Drawing.Point(295, 16);
             this.m_A1Label.Name = "m_A1Label";
             this.m_A1Label.Size = new System.Drawing.Size(40, 15);
             this.m_A1Label.TabIndex = 18;
@@ -1088,6 +1108,8 @@ namespace TSBTool2
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.m_AgilityLabel);
+            this.groupBox1.Controls.Add(this.m_AgilityBox);
             this.groupBox1.Controls.Add(this.m_CoolBox);
             this.groupBox1.Controls.Add(this.m_CoolnessLabel);
             this.groupBox1.Controls.Add(this.label8);
@@ -1135,7 +1157,7 @@ namespace TSBTool2
             "88",
             "94",
             "100"});
-            this.m_CoolBox.Location = new System.Drawing.Point(467, 35);
+            this.m_CoolBox.Location = new System.Drawing.Point(488, 35);
             this.m_CoolBox.Name = "m_CoolBox";
             this.m_CoolBox.Size = new System.Drawing.Size(43, 21);
             this.m_CoolBox.TabIndex = 30;
@@ -1143,7 +1165,7 @@ namespace TSBTool2
             // 
             // m_CoolnessLabel
             // 
-            this.m_CoolnessLabel.Location = new System.Drawing.Point(467, 16);
+            this.m_CoolnessLabel.Location = new System.Drawing.Point(488, 16);
             this.m_CoolnessLabel.Name = "m_CoolnessLabel";
             this.m_CoolnessLabel.Size = new System.Drawing.Size(40, 15);
             this.m_CoolnessLabel.TabIndex = 26;
@@ -1205,7 +1227,7 @@ namespace TSBTool2
             "88",
             "94",
             "100"});
-            this.m_ARBox.Location = new System.Drawing.Point(418, 35);
+            this.m_ARBox.Location = new System.Drawing.Point(439, 35);
             this.m_ARBox.Name = "m_ARBox";
             this.m_ARBox.Size = new System.Drawing.Size(43, 21);
             this.m_ARBox.TabIndex = 25;
@@ -1213,7 +1235,7 @@ namespace TSBTool2
             // 
             // m_A4Label
             // 
-            this.m_A4Label.Location = new System.Drawing.Point(418, 16);
+            this.m_A4Label.Location = new System.Drawing.Point(439, 16);
             this.m_A4Label.Name = "m_A4Label";
             this.m_A4Label.Size = new System.Drawing.Size(40, 15);
             this.m_A4Label.TabIndex = 22;
@@ -1369,6 +1391,41 @@ namespace TSBTool2
             this.m_AutoUpdateButton.UseVisualStyleBackColor = false;
             this.m_AutoUpdateButton.Visible = false;
             this.m_AutoUpdateButton.Click += new System.EventHandler(this.m_AutoUpdateButton_Click);
+            // 
+            // m_AgilityLabel
+            // 
+            this.m_AgilityLabel.Location = new System.Drawing.Point(247, 15);
+            this.m_AgilityLabel.Name = "m_AgilityLabel";
+            this.m_AgilityLabel.Size = new System.Drawing.Size(40, 15);
+            this.m_AgilityLabel.TabIndex = 32;
+            this.m_AgilityLabel.Text = "AG";
+            this.m_AgilityLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // m_AgilityBox
+            // 
+            this.m_AgilityBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.m_AgilityBox.Items.AddRange(new object[] {
+            "6",
+            "13",
+            "19",
+            "25",
+            "31",
+            "38",
+            "44",
+            "50",
+            "56",
+            "63",
+            "69",
+            "75",
+            "81",
+            "88",
+            "94",
+            "100"});
+            this.m_AgilityBox.Location = new System.Drawing.Point(247, 34);
+            this.m_AgilityBox.Name = "m_AgilityBox";
+            this.m_AgilityBox.Size = new System.Drawing.Size(43, 21);
+            this.m_AgilityBox.TabIndex = 9;
+            this.m_AgilityBox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
             // 
             // ModifyPlayerForm
             // 

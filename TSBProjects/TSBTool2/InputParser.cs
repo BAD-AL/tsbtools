@@ -578,7 +578,7 @@ namespace TSBTool2
             byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line,false));
             int[] simVals = GetSimVals(line, true);
             if (vals != null && vals.Length > 9)
-                tool.SetQBAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7], vals[8], vals[9]);
+                tool.SetQBAbilities(season, currentTeam, pos, vals);
             else
                 StaticUtils.AddError(string.Format("Warning! could not set ability data for {0} {1},", currentTeam, pos));
             if (face > -1)
@@ -602,7 +602,7 @@ namespace TSBTool2
             byte[] vals = StaticUtils.GetTsbAbilities(GetInts(line, false));
             int[] simVals = GetSimVals(line, true);
             if (vals != null && vals.Length > 6)
-                tool.SetSkillPlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
+                tool.SetSkillPlayerAbilities(season, currentTeam, pos, vals);
             else
                 StaticUtils.AddError(string.Format("Warning! On line '{0}'. No player data specified.", line));
             /*if(simVals!= null&& simVals.Length > 3)
@@ -624,7 +624,7 @@ namespace TSBTool2
             tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
 
             if (vals != null && vals.Length > 3)
-                tool.SetOLPlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4]);
+                tool.SetOLPlayerAbilities(season, currentTeam, pos, vals);
             else
                 StaticUtils.AddError(string.Format("Warning! On line '{0}'. No player data specified.", line));
         }
@@ -643,7 +643,7 @@ namespace TSBTool2
             tool.InsertPlayerName(season, currentTeam, pos, fname, lname, (byte)jerseyNumber);
 
             if (vals != null && vals.Length > 5)
-                tool.SetDefensivePlayerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
+                tool.SetDefensivePlayerAbilities(season, currentTeam, pos, vals);
             else
                 StaticUtils.AddError(string.Format("Warning! On line '{0}'. Invalid player attributes.", line));
             if(simVals != null && simVals.Length > 1)
@@ -667,12 +667,12 @@ namespace TSBTool2
             if (line.StartsWith("K"))
             {
                 if (vals != null && vals.Length > 7)
-                    tool.SetKickerAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7]);
+                    tool.SetKickerAbilities(season, currentTeam, pos, vals);
             }
             else
             {
                 if (vals != null && vals.Length > 6)
-                    tool.SetPunterAbilities(season, currentTeam, pos, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);
+                    tool.SetPunterAbilities(season, currentTeam, pos, vals);
             }
 
             //else

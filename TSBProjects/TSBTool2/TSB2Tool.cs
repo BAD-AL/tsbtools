@@ -14,8 +14,24 @@ namespace TSBTool2
     // TODO:
     // 2. Sim data *
     // 4. NFL Records 
+    // 5. Pro Bowl
+    // 6. PR KR
     public class TSB2Tool : ITecmoTool
     {
+        public static bool IsTecmoSuperBowl2Rom(byte[] rom)
+        {
+            bool retVal = false;
+            if (rom != null && rom.Length > 0)
+            {
+                List<long> results = StaticUtils.FindStringInFile("CONSECUTIVE", rom, 0x1be4e0, 0x1bef20);
+                if (results.Count > 0)
+                {
+                    retVal = true;
+                }
+            }
+            return retVal;
+        }
+
         public byte[] OutputRom { get; set; }
 
         public static bool ShowPlayerSimData = true;
@@ -24,41 +40,41 @@ namespace TSBTool2
 
         #region Special Locations SNES TSB2
         //https://tecmobowl.org/forums/topic/53028-tecmo-super-bowl-ii-hackingresource-documentation/
-        const int BYTES_PER_PLAYER = 5;
-        const int BYTES_PER_QB = 6;
+        protected int BYTES_PER_PLAYER = 5;
+        protected int BYTES_PER_QB = 6;
 
-        const int NAME_TABLE_SIZE = 0x4798;
+        protected int NAME_TABLE_SIZE = 0x4798;
 
-        int BANK_1_PLAYER_ATTRIBUTES_START = 0x1ec800;
-        int BANK_2_PLAYER_ATTRIBUTES_START = 0x1f4800;
-        int BANK_3_PLAYER_ATTRIBUTES_START = 0x1fc800;
+        protected int BANK_1_PLAYER_ATTRIBUTES_START = 0x1ec800;
+        protected int BANK_2_PLAYER_ATTRIBUTES_START = 0x1f4800;
+        protected int BANK_3_PLAYER_ATTRIBUTES_START = 0x1fc800;
 
         // name_string_table_1
-        int tsb2_name_string_table_1_first_ptr = 0x1e8038;
-        int tsb2_name_string_table_1_offset = 0x1e0000;
+        protected int tsb2_name_string_table_1_first_ptr = 0x1e8038;
+        protected int tsb2_name_string_table_1_offset = 0x1e0000;
 
         // name string table 2
-        int tsb2_name_string_table_2_first_ptr = 0x1f0038;
-        int tsb2_name_string_table_2_offset = 0x1e8000;
+        protected int tsb2_name_string_table_2_first_ptr = 0x1f0038;
+        protected int tsb2_name_string_table_2_offset = 0x1e8000;
 
         // name string table 3
-        int tsb2_name_string_table_3_first_ptr = 0x1f8038;
-        int tsb2_name_string_table_3_offset = 0x1f0000;
+        protected int tsb2_name_string_table_3_first_ptr = 0x1f8038;
+        protected int tsb2_name_string_table_3_offset = 0x1f0000;
 
         // Team name String table
-        int tsb2_team_name_string_table_first_ptr = 0x7000;
-        int tsb2_team_name_string_table_offset = -32768;
-        const int TEAM_NAME_STRING_TABLE_SIZE = 0x5c0;
+        protected int tsb2_team_name_string_table_first_ptr = 0x7000;
+        protected int tsb2_team_name_string_table_offset = -32768;
+        protected int TEAM_NAME_STRING_TABLE_SIZE = 0x5c0;
 
-        int schedule_start_1992 = 0x16f00c; //data=050D060114130A0C1900
-        int schedule_start_1993 = 0x16f204; //data=0300050602010904160B 
-        int schedule_start_1994 = 0x16f418; //data=1119181406050E080701 
+        protected int schedule_start_season_1 = 0x16f00c; //data=050D060114130A0C1900
+        protected int schedule_start_season_2 = 0x16f204; //data=0300050602010904160B 
+        protected int schedule_start_season_3 = 0x16f418; //data=1119181406050E080701 
 
-        int team_sim_start_1992 = 0x1EE000;
-        int team_sim_start_1993 = 0x1F6000;
-        int team_sim_start_1994 = 0x1FE000;
+        protected int team_sim_start_season_1 = 0x1EE000;
+        protected int team_sim_start_season_2 = 0x1F6000;
+        protected int team_sim_start_season_3 = 0x1FE000;
 
-        const int team_sim_size = 102;
+        protected int team_sim_size = 102;
 
         // Playbooks 
         /*  The order goes  * From Knobbe 
@@ -67,13 +83,13 @@ namespace TSBTool2
             28 teams from 93  :
             28 teams from 94  :
          */
-        int playbook_team_size = 8;// bytes, 1 nibble per play, 16 total plays; League size = E0
-        int[] playbook_start = { 
+        protected int playbook_team_size = 8;// bytes, 1 nibble per play, 16 total plays; League size = E0
+        protected int[] playbook_start = { 
             0xE5D26,// 1992 
             0xE5E16,
             0xE5F06
         };
-        const int pro_bowl_playbook = 0x5E07;
+        protected int pro_bowl_playbook = 0x5E07;
         #endregion
 
         public static List<string> positionNames = new List<string>(){ 
@@ -97,14 +113,67 @@ namespace TSBTool2
         public TSB2Tool(byte[] rom)
         {
             this.OutputRom = rom;
+            Init();
+        }
+        public TSB2Tool()
+        {
+            Init();
         }
 
-        public bool Init(string fileName)
+        private void Init()
         {
-            OutputRom = StaticUtils.ReadRom(fileName);
-            return OutputRom != null;
+            BYTES_PER_PLAYER = 5;
+            BYTES_PER_QB = 6;
+
+            NAME_TABLE_SIZE = 0x4798;
+
+            BANK_1_PLAYER_ATTRIBUTES_START = 0x1ec800;
+            BANK_2_PLAYER_ATTRIBUTES_START = 0x1f4800;
+            BANK_3_PLAYER_ATTRIBUTES_START = 0x1fc800;
+
+            // name_string_table_1
+            tsb2_name_string_table_1_first_ptr = 0x1e8038;
+            tsb2_name_string_table_1_offset = 0x1e0000;
+
+            // name string table 2
+            tsb2_name_string_table_2_first_ptr = 0x1f0038;
+            tsb2_name_string_table_2_offset = 0x1e8000;
+
+            // name string table 3
+            tsb2_name_string_table_3_first_ptr = 0x1f8038;
+            tsb2_name_string_table_3_offset = 0x1f0000;
+
+            // Team name String table
+            tsb2_team_name_string_table_first_ptr = 0x7000;
+            tsb2_team_name_string_table_offset = -32768;
+            TEAM_NAME_STRING_TABLE_SIZE = 0x5c0;
+
+            schedule_start_season_1 = 0x16f00c; //data=050D060114130A0C1900
+            schedule_start_season_2 = 0x16f204; //data=0300050602010904160B 
+            schedule_start_season_3 = 0x16f418; //data=1119181406050E080701 
+
+            team_sim_start_season_1 = 0x1EE000;
+            team_sim_start_season_2 = 0x1F6000;
+            team_sim_start_season_3 = 0x1FE000;
+
+            team_sim_size = 102;
+
+            teams = new List<string>(){
+			    "bills",   "colts",  "dolphins", "patriots",  "jets",
+			    "bengals", "browns", "oilers",   "steelers",
+			    "broncos", "chiefs", "raiders",  "chargers",  "seahawks",
+			    "cowboys", "giants", "eagles",   "cardinals", "redskins",
+			    "bears",   "lions",  "packers",  "vikings",   "buccaneers",
+			    "falcons", "rams",   "saints",   "49ers"
+		    };
         }
-        public string RomVersion { get { return "SNES_TSB2"; } }
+
+        //public virtual bool Init(string fileName)
+        //{
+        //    OutputRom = StaticUtils.ReadRom(fileName);
+        //    return OutputRom != null;
+        //}
+        public virtual string RomVersion { get { return "SNES_TSB2"; } }
 
         // use this instead of directoy setting data in OutputRom
         public void SetByte(int location, byte b) 
@@ -114,16 +183,16 @@ namespace TSBTool2
 
         public bool IsValidPosition(string pos) { return positionNames.IndexOf(pos) > -1; }
 
-        private int[] eighteenGames = new int[] { 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14 };
-        private int[] seventeenGames = new int[] { 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14 };
-        public string GetSchedule(int season)
+        private int[] eighteenWeeks = new int[] { 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14 };
+        private int[] seventeenWeeks = new int[] { 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14 };
+        public virtual string GetSchedule(int season)
         {
-            SNES_ScheduleHelper helper = new SNES_ScheduleHelper(this.OutputRom);
+            SNES_ScheduleHelper helper = new SNES_ScheduleHelper(this);
             switch (season)
             {
-                case 1: helper.SetWeekOneLocation(schedule_start_1992, seventeenGames); break;
-                case 2: helper.SetWeekOneLocation(schedule_start_1993, eighteenGames); break;
-                case 3: helper.SetWeekOneLocation(schedule_start_1994, seventeenGames); break;
+                case 1: helper.SetWeekOneLocation(schedule_start_season_1, seventeenWeeks, teams); break;
+                case 2: helper.SetWeekOneLocation(schedule_start_season_2, eighteenWeeks, teams); break;
+                case 3: helper.SetWeekOneLocation(schedule_start_season_3, seventeenWeeks, teams); break;
             }
             return helper.GetSchedule();
         }
@@ -136,7 +205,7 @@ namespace TSBTool2
             return retVal;
         }
 
-        private int GetPlayerAttributeLocation(int season, string team, string position)
+        protected virtual int GetPlayerAttributeLocation(int season, string team, string position)
         {
             int retVal = -1;
             int attributeStart = BANK_3_PLAYER_ATTRIBUTES_START;
@@ -183,7 +252,7 @@ namespace TSBTool2
         }
         #region Get specific Attributes
 
-        private string GetQBAbilities(int season, // (season = 1-3)
+        protected virtual string GetQBAbilities(int season, // (season = 1-3)
             string team, string position)
         {
             int location = GetPlayerAttributeLocation(season, team, position);
@@ -208,25 +277,27 @@ namespace TSBTool2
             return retVal;
         }
 
-        public void SetQBAbilities(int season,
-            string team, string qb,
-            byte runningSpeed, byte rushingPower, byte maxSpeed, byte hittingPower,
-            byte bodyBalance,
-            byte passingSpeed, byte passControl, byte accuracy,
-            byte avoidRush, byte coolness)
+        public virtual void SetQBAbilities(int season,
+            string team, string qb, byte[] abilities)
+            //byte runningSpeed, byte rushingPower, 
+            //byte maxSpeed, byte hittingPower,
+            //byte bodyBalance,
+            //byte passingSpeed, byte passControl, 
+            //byte accuracy, byte avoidRush, 
+            //byte coolness)
         {
             StaticUtils.CheckTSB2Args(season, team);
             if (qb != "QB1" && qb != "QB2") throw new ArgumentException("Invalid qb position " + qb);
 
             int location = GetPlayerAttributeLocation(season, team, qb);
-            byte rs_rp = StaticUtils.CombineNibbles(runningSpeed, rushingPower);
-            byte ms_hp = StaticUtils.CombineNibbles(maxSpeed, hittingPower);
-            byte ps_pc = StaticUtils.CombineNibbles(passingSpeed, passControl);
-            byte pa_ar = StaticUtils.CombineNibbles(accuracy, avoidRush);
+            byte rs_rp = StaticUtils.CombineNibbles(abilities[0], abilities[1]);
+            byte ms_hp = StaticUtils.CombineNibbles(abilities[2], abilities[3]);
+            byte ps_pc = StaticUtils.CombineNibbles(abilities[5], abilities[6]);
+            byte pa_ar = StaticUtils.CombineNibbles(abilities[7], abilities[8]);
             byte unk1 = StaticUtils.GetFirstNibble(OutputRom[location + 5]);
-            byte unk1_co = StaticUtils.CombineNibbles(unk1, coolness);
+            byte unk1_co = StaticUtils.CombineNibbles(unk1, abilities[9]);
             byte unk2 = StaticUtils.GetSecondNibble(OutputRom[location + 6]);
-            byte bb_unk2 = StaticUtils.CombineNibbles(bodyBalance, unk2);
+            byte bb_unk2 = StaticUtils.CombineNibbles(abilities[4], unk2);
             SetByte(location, rs_rp);
             SetByte(location + 1, ms_hp);
             SetByte(location + 3, ps_pc);
@@ -235,7 +306,7 @@ namespace TSBTool2
             SetByte(location + 6, bb_unk2);
         }
 
-        private string GetOLPlayerAbilities(int season, // (season = 1-3)
+        protected virtual string GetOLPlayerAbilities(int season, // (season = 1-3)
             string team, string position)
         {
             int location = GetPlayerAttributeLocation(season, team, position);
@@ -250,26 +321,26 @@ namespace TSBTool2
             return retVal;
         }
 
-        public void SetOLPlayerAbilities(int season, string team, string pos,
-            byte runningSpeed, byte rushingPower,
-            byte maxSpeed, byte hittingPower,
-            byte bodyBalance)
+        public virtual void SetOLPlayerAbilities(int season, string team, string pos, byte[] abilities)
+            //byte runningSpeed, byte rushingPower,
+            //byte maxSpeed, byte hittingPower,
+            //byte bodyBalance)
         {
             StaticUtils.CheckTSB2Args(season, team);
             int posIndex = positionNames.IndexOf(pos);
             if (posIndex < 12 || posIndex > 16) throw new ArgumentException("Invalid position argument! (takes C,RG,RT,LG,LT) " + pos);
 
             int location = GetPlayerAttributeLocation(season, team, pos);
-            byte rs_rp = StaticUtils.CombineNibbles(runningSpeed, rushingPower);
-            byte ms_hp = StaticUtils.CombineNibbles(maxSpeed, hittingPower);
+            byte rs_rp = StaticUtils.CombineNibbles(abilities[0], abilities[1]);
+            byte ms_hp = StaticUtils.CombineNibbles(abilities[2], abilities[3]);
             byte unk1 = StaticUtils.GetSecondNibble(OutputRom[location + 3]);
-            byte bb_unk1 = StaticUtils.CombineNibbles(bodyBalance, unk1);
+            byte bb_unk1 = StaticUtils.CombineNibbles(abilities[4], unk1);
             SetByte(location, rs_rp);
             SetByte(location + 1, ms_hp);
             SetByte(location + 3, bb_unk1);
         }
 
-        private string GetKickerAbilities(int season, // (season = 1-3)
+        protected virtual string GetKickerAbilities(int season, // (season = 1-3)
             string team, string position)
         {
             int location = GetPlayerAttributeLocation(season, team, position);
@@ -292,24 +363,24 @@ namespace TSBTool2
             return retVal;
         }
 
-        public void SetKickerAbilities(int season, string team, string position,
-            byte runningSpeed, byte rushingPower,
-            byte maxSpeed, byte hittingPower,
-            byte bodyBalance,
-            byte kickingPower,
-            byte kickingAccuracy, byte avoidBlock)
+        public virtual void SetKickerAbilities(int season, string team, string position,byte[] abilities)
+            //byte runningSpeed, byte rushingPower,
+            //byte maxSpeed, byte hittingPower,
+            //byte bodyBalance,
+            //byte kickingPower,
+            //byte kickingAccuracy, byte avoidBlock)
         {
             StaticUtils.CheckTSB2Args(season, team);
             if (position != "K") throw new ArgumentException("Invalid position argument! (takes K) " + position);
 
             int location = GetPlayerAttributeLocation(season, team, position);
-            byte rs_rp = StaticUtils.CombineNibbles(runningSpeed, rushingPower);
-            byte ms_hp = StaticUtils.CombineNibbles(maxSpeed, hittingPower);
+            byte rs_rp = StaticUtils.CombineNibbles(abilities[0], abilities[1]);
+            byte ms_hp = StaticUtils.CombineNibbles(abilities[2], abilities[3]);
             byte unk1 = StaticUtils.GetFirstNibble(OutputRom[location + 3]);
-            byte unk1_kp = StaticUtils.CombineNibbles(unk1, kickingPower);
-            byte ka_ab = StaticUtils.CombineNibbles(kickingAccuracy, avoidBlock);
+            byte unk1_kp = StaticUtils.CombineNibbles(unk1, abilities[5]);
+            byte ka_ab = StaticUtils.CombineNibbles(abilities[6], abilities[7]);
             byte unk2 = StaticUtils.GetSecondNibble(OutputRom[location + 5]);
-            byte bb_unk2 = StaticUtils.CombineNibbles(bodyBalance, unk2);
+            byte bb_unk2 = StaticUtils.CombineNibbles(abilities[4], unk2);
 
             SetByte(location, rs_rp);
             SetByte(location + 1, ms_hp);
@@ -318,7 +389,7 @@ namespace TSBTool2
             SetByte(location + 5, bb_unk2);
         }
 
-        private string GetPunterAbilities(int season, // (season = 1-3)
+        protected virtual string GetPunterAbilities(int season, // (season = 1-3)
             string team, string position)
         {
             int location = GetPlayerAttributeLocation(season, team, position);
@@ -340,30 +411,30 @@ namespace TSBTool2
             return retVal;
         }
 
-        public void SetPunterAbilities(int season, string team, string position,
-            byte runningSpeed, byte rushingPower,
-            byte maxSpeed, byte hittingPower,
-            byte bodyBalance,
-            byte kickingPower, byte avoidBlock)
+        public virtual void SetPunterAbilities(int season, string team, string position, byte[] abilities)
+            //byte runningSpeed, byte rushingPower,
+            //byte maxSpeed, byte hittingPower,
+            //byte bodyBalance,
+            //byte kickingPower, byte avoidBlock)
         {
             StaticUtils.CheckTSB2Args(season, team);
             if (position != "P") throw new ArgumentException("Invalid position argument! (takes P) " + position);
 
             int location = GetPlayerAttributeLocation(season, team, position);
-            byte rs_rp = StaticUtils.CombineNibbles(runningSpeed, rushingPower);
-            byte ms_hp = StaticUtils.CombineNibbles(maxSpeed, hittingPower);
-            byte kp_ab = StaticUtils.CombineNibbles(kickingPower, avoidBlock);
+            byte rs_rp = StaticUtils.CombineNibbles(abilities[0], abilities[1]);
+            byte ms_hp = StaticUtils.CombineNibbles(abilities[2], abilities[3]);
+            byte kp_ab = StaticUtils.CombineNibbles(abilities[5], abilities[6]);
             byte unk1 = StaticUtils.GetSecondNibble(OutputRom[location + 4]);
-            byte bb_unk1 = StaticUtils.CombineNibbles(bodyBalance, unk1);
+            byte bb_unk1 = StaticUtils.CombineNibbles(abilities[4], unk1);
 
             SetByte(location, rs_rp);
             SetByte(location + 1, ms_hp);
             SetByte(location + 3, kp_ab);
             SetByte(location + 4, bb_unk1);
         }
-        #endregion
+        
 
-        public string GetPlayerAbilities(int season, // (season = 1-3)
+        public virtual string GetPlayerAbilities(int season, // (season = 1-3)
             string team, string position)
         {
             switch (position)
@@ -382,6 +453,11 @@ namespace TSBTool2
                 case "P":
                     return GetPunterAbilities(season, team, position);
             }
+            return GetSkill_DefPlayerAbilities(season, team, position);
+        }
+
+        protected virtual string GetSkill_DefPlayerAbilities(int season, string team, string position)
+        {
             // RB attributes (nibbles):
             // RS RP MS HP __ __ BC RC BB __
             int location = GetPlayerAttributeLocation(season, team, position);
@@ -401,56 +477,57 @@ namespace TSBTool2
                 location = GetSimLocation(season, team, position);
                 retVal += String.Format("[{0:X2},{1:X2},{2:X2}", OutputRom[location], OutputRom[location + 1], OutputRom[location + 2]);
                 if (positionNames.IndexOf(position) < 13)
-                    retVal += (","+OutputRom[location + 3].ToString("X2"));
+                    retVal += ("," + OutputRom[location + 3].ToString("X2"));
                 retVal += "]";
             }
             return retVal;
         }
 
-        public void SetSkillPlayerAbilities(int season, // (season = 1-3)
-            string team, string position,
-            byte runningSpeed, byte rushingPower,
-            byte maxSpeed, byte hittingPower,
-            byte bodyBalance,
-            byte ballControl, byte receptions)
+        public virtual void SetSkillPlayerAbilities(int season, // (season = 1-3)
+            string team, string position, byte[] abilities)
+            //byte runningSpeed, byte rushingPower,
+            //byte maxSpeed, byte hittingPower,
+            //byte bodyBalance,
+            //byte ballControl, byte receptions)
         {
             StaticUtils.CheckTSB2Args(season, team);
             int posIndex = positionNames.IndexOf(position); //2-11
             if (posIndex < 2 || posIndex > 11) throw new ArgumentException("Invalid position argument! (takes RB1=TE2)" + position);
 
             int location = GetPlayerAttributeLocation(season, team, position);
-            byte rs_rp = StaticUtils.CombineNibbles(runningSpeed, rushingPower);
-            byte ms_hp = StaticUtils.CombineNibbles(maxSpeed, hittingPower);
-            byte bc_rec = StaticUtils.CombineNibbles(ballControl, receptions);
+            byte rs_rp = StaticUtils.CombineNibbles(abilities[0], abilities[1]);
+            byte ms_hp = StaticUtils.CombineNibbles(abilities[2], abilities[3]);
+            byte bc_rec = StaticUtils.CombineNibbles(abilities[5], abilities[6]);
             byte unk1 = StaticUtils.GetSecondNibble(OutputRom[location + 4]);
-            byte bb_unk1 = StaticUtils.CombineNibbles(bodyBalance, unk1);
+            byte bb_unk1 = StaticUtils.CombineNibbles(abilities[4], unk1);
             SetByte(location, rs_rp);
             SetByte(location + 1, ms_hp);
             SetByte(location + 3, bc_rec);
             SetByte(location + 4, bb_unk1);
         }
 
-        public void SetDefensivePlayerAbilities(int season, string team, string position,
-            byte runningSpeed, byte rushingPower,
-            byte maxSpeed, byte hittingPower,
-            byte bodyBalance,
-            byte interceptions, byte quickness)
+        public virtual void SetDefensivePlayerAbilities(int season, string team, string position,byte[] abilities)
+            //byte runningSpeed, byte rushingPower,
+            //byte maxSpeed, byte hittingPower,
+            //byte bodyBalance,
+            //byte interceptions, byte quickness)
         {
             StaticUtils.CheckTSB2Args(season, team);
             int posIndex = positionNames.IndexOf(position); //17-34
             if (posIndex < 17 || posIndex > 34) throw new ArgumentException("Invalid position argument! (takes RE-DB3)" + position);
 
             int location = GetPlayerAttributeLocation(season, team, position);
-            byte rs_rp = StaticUtils.CombineNibbles(runningSpeed, rushingPower);
-            byte ms_hp = StaticUtils.CombineNibbles(maxSpeed, hittingPower);
-            byte pi_qu = StaticUtils.CombineNibbles(interceptions, quickness);
+            byte rs_rp = StaticUtils.CombineNibbles(abilities[0], abilities[1]);
+            byte ms_hp = StaticUtils.CombineNibbles(abilities[2], abilities[3]);
+            byte pi_qu = StaticUtils.CombineNibbles(abilities[5], abilities[6]);
             byte unk1 = StaticUtils.GetSecondNibble(OutputRom[location + 4]);
-            byte bb_unk1 = StaticUtils.CombineNibbles(bodyBalance, unk1);
+            byte bb_unk1 = StaticUtils.CombineNibbles(abilities[4], unk1);
             SetByte(location, rs_rp);
             SetByte(location + 1, ms_hp);
             SetByte(location + 3, pi_qu);
             SetByte(location + 4, bb_unk1);
         }
+        #endregion
 
         // called 'GetFace()' for historical purpose, first nibble is race (0=white, 8=black); not sure what the second nibble is
         private byte GetFace(int season,
@@ -545,16 +622,16 @@ namespace TSBTool2
             return retVal;
         }
 
-        private int GetSimLocation(int season, string team, string position)
+        protected int GetSimLocation(int season, string team, string position)
         {
             StaticUtils.CheckTSB2Args(season, team);
             int index = teams.IndexOf(team);
             int location = index * team_sim_size;
             switch (season)
             {
-                case 1: location += team_sim_start_1992; break;
-                case 2: location += team_sim_start_1993; break;
-                case 3: location += team_sim_start_1994; break;
+                case 1: location += team_sim_start_season_1; break;
+                case 2: location += team_sim_start_season_2; break;
+                case 3: location += team_sim_start_season_3; break;
             }
             switch (position)
             {
@@ -799,7 +876,7 @@ namespace TSBTool2
         }
 
 
-        public string GetKey()
+        public virtual string GetKey()
         {
             return
 @"# TSBTool2 forum: https://tecmobowl.org/forums/topic/71051-initial-tsb2-snes-editor/
@@ -819,7 +896,7 @@ namespace TSBTool2
 ";
         }
 
-        public string GetAll()
+        public virtual string GetAll()
         {
             StringBuilder builder = new StringBuilder(10000);
             builder.Append("SEASON 1\n");
@@ -839,7 +916,7 @@ namespace TSBTool2
             return builder.ToString();
         }
 
-        public string GetAll(int season)
+        public virtual string GetAll(int season)
         {
             StringBuilder builder = new StringBuilder(5000);
             builder.Append("SEASON ");
@@ -851,24 +928,24 @@ namespace TSBTool2
             return builder.ToString();
         }
 
-        public void SetKickReturner(int season, string team, string position)
+        public virtual void SetKickReturner(int season, string team, string position)
         {
             //TODO
         }
 
-        public void SetPuntReturner(int season, string team, string position)
+        public virtual void SetPuntReturner(int season, string team, string position)
         {
             //TODO
         }
 
-        public void ApplySchedule(int season, List<string> scheduleList)
+        public virtual void ApplySchedule(int season, List<string> scheduleList)
         {
-            SNES_ScheduleHelper helper = new SNES_ScheduleHelper(this.OutputRom);
+            SNES_ScheduleHelper helper = new SNES_ScheduleHelper(this);
             switch (season)
             {
-                case 1: helper.SetWeekOneLocation(schedule_start_1992, seventeenGames); break;
-                case 2: helper.SetWeekOneLocation(schedule_start_1993, eighteenGames); break;
-                case 3: helper.SetWeekOneLocation(schedule_start_1994, seventeenGames); break;
+                case 1: helper.SetWeekOneLocation(schedule_start_season_1, seventeenWeeks, teams); break;
+                case 2: helper.SetWeekOneLocation(schedule_start_season_2, eighteenWeeks, teams); break;
+                case 3: helper.SetWeekOneLocation(schedule_start_season_3, seventeenWeeks, teams); break;
             }
             helper.ApplySchedule(scheduleList);
         }

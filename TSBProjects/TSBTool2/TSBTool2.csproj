@@ -69,6 +69,7 @@
     <Compile Include="Interfaces.cs" />
     <Compile Include="MainClass.cs" />
     <Compile Include="TSB1SimAutoUpdater.cs" />
+    <Compile Include="TSB3Tool.cs" />
     <Compile Include="TSBConverter.cs" />
     <Compile Include="PlaySelectForm.cs">
       <SubType>Form</SubType>

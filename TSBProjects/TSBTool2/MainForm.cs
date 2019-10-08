@@ -31,23 +31,30 @@ namespace TSBTool2
 
         private void LoadROM(string filename)
         {
-            tool = new TSB2Tool(null);
-            if (filename != null)
+            byte[] rom = StaticUtils.ReadRom(filename);
+            if (TSB2Tool.IsTecmoSuperBowl2Rom(rom))
+                tool = new TSB2Tool(rom);
+            else if (TSB3Tool.IsTecmoSuperBowl3Rom(rom))
+                tool = new TSB3Tool(rom);
+            else
             {
-                tool.Init(filename);
-                if (tool.OutputRom != null)
+                if (MessageBox.Show("Are you sure this is a Valid TSB2 ROM?",
+                    "Does not seem to be a TSBII or TSBIII rom", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
-                    state2();
-                    UpdateTitle(filename);
+                    if (MessageBox.Show("Is this a TSBII ROM?",
+                    "Does not seem to be a TSBII or TSBIII rom", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        tool = new TSB2Tool(rom);
+                    else
+                        tool = new TSB3Tool(rom);
                 }
-                else if (tool.Init(filename))
-                {
-                    state2();
-                    UpdateTitle(filename);
-                }
-                else
-                    state1();
             }
+            if (tool.OutputRom != null)
+            {
+                state2();
+                UpdateTitle(filename);
+            }
+            else
+                state1();
         }
 
         private void UpdateTitle(string filename)
@@ -409,6 +416,7 @@ Version " + MainClass.version
         private void ModifyPlayers(string team, string position)
         {
             ModifyPlayerForm form = new ModifyPlayerForm();
+            form.RomVersion = tool.RomVersion;
             form.Data = mTextBox.Text;
             form.CurrentTeam = team;
             form.CurrentPosition = position;

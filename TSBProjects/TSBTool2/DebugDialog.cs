@@ -341,7 +341,7 @@ LOS ANGELES:OAKLAND:2
 
         int tsb2_num_players = 1035;
         // name_string_table_1
-        int tsb2_name_string_table_1_first_ptr = 0x1e8038;
+        int tsb2_name_string_table_1_first_ptr = 0x1e8038 + 24;
         int tsb2_name_string_table_1_offset = 0x1e0000;
 
         // name string table 2
@@ -494,6 +494,22 @@ LOS ANGELES:OAKLAND:2
                 TSB1Converter.TestPunterTSB1Conversion()+
                 TSB1Converter.TestLbTSB1Conversion() 
                 );
+        }
+
+        private void scheduleHelpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<int> indexes = new List<int>()
+            {
+                0x07, 0x02,0x06,0x01,
+                0x08,0x09,0x1d,0x1b,0x19,0x1a,0x18,0x12,0x1c,0x15,0x16,0x05,0x04,0x00,0x0a,0x0c,
+                0x0b,0x0e,0x11,0x13,0x14,0x17,0x03,0x0d,0x0f,0x10
+            };
+            mResultsTextBox.Clear();
+            for (int i = 0; i < indexes.Count; i += 2)
+            {
+                mResultsTextBox.AppendText(string.Format("{0} at {1}\n", 
+                    TSB3Tool.scheduleTeamOrder[indexes[i]], TSB3Tool.scheduleTeamOrder[indexes[i+1]]));
+            }
         }
     }
 }

@@ -39,6 +39,8 @@
             this.playbooksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.simDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.scheduleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editPlayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editTeamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.seasonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,18 +48,16 @@
             this.season2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.season3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allSeasonsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertToTSB1TextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertToTSB2TextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutConvertingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutTSBTool2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mLoadButton = new System.Windows.Forms.Button();
             this.mViewContentsButton = new System.Windows.Forms.Button();
             this.mApplyButton = new System.Windows.Forms.Button();
-            this.convertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.convertToTSB1TextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.convertToTSB2TextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutConvertingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editPlayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mTextBox = new TSBTool2.SearchTextBox();
-            this.editTeamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -132,7 +132,7 @@
             this.playbooksToolStripMenuItem.CheckOnClick = true;
             this.playbooksToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.playbooksToolStripMenuItem.Name = "playbooksToolStripMenuItem";
-            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.playbooksToolStripMenuItem.Text = "Playbooks";
             this.playbooksToolStripMenuItem.Click += new System.EventHandler(this.playbooksToolStripMenuItem_Click);
             // 
@@ -142,7 +142,7 @@
             this.simDataToolStripMenuItem.CheckOnClick = true;
             this.simDataToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.simDataToolStripMenuItem.Name = "simDataToolStripMenuItem";
-            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.simDataToolStripMenuItem.Text = "Sim Data";
             this.simDataToolStripMenuItem.Click += new System.EventHandler(this.simDataToolStripMenuItem_Click);
             // 
@@ -152,9 +152,23 @@
             this.scheduleToolStripMenuItem.CheckOnClick = true;
             this.scheduleToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.scheduleToolStripMenuItem.Name = "scheduleToolStripMenuItem";
-            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.scheduleToolStripMenuItem.Text = "Schedule";
             this.scheduleToolStripMenuItem.Click += new System.EventHandler(this.scheduleToolStripMenuItem_Click);
+            // 
+            // editPlayersToolStripMenuItem
+            // 
+            this.editPlayersToolStripMenuItem.Name = "editPlayersToolStripMenuItem";
+            this.editPlayersToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.editPlayersToolStripMenuItem.Text = "Edit &Players";
+            this.editPlayersToolStripMenuItem.Click += new System.EventHandler(this.editPlayersToolStripMenuItem_Click);
+            // 
+            // editTeamsToolStripMenuItem
+            // 
+            this.editTeamsToolStripMenuItem.Name = "editTeamsToolStripMenuItem";
+            this.editTeamsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.editTeamsToolStripMenuItem.Text = "Edit &Teams";
+            this.editTeamsToolStripMenuItem.Click += new System.EventHandler(this.editTeamsToolStripMenuItem_Click);
             // 
             // debugToolStripMenuItem
             // 
@@ -216,54 +230,6 @@
             this.allSeasonsToolStripMenuItem.Text = "All Seasons";
             this.allSeasonsToolStripMenuItem.Click += new System.EventHandler(this.seasonItemClicked);
             // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutTSBTool2ToolStripMenuItem});
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
-            this.aboutToolStripMenuItem.Text = "&About";
-            // 
-            // aboutTSBTool2ToolStripMenuItem
-            // 
-            this.aboutTSBTool2ToolStripMenuItem.Name = "aboutTSBTool2ToolStripMenuItem";
-            this.aboutTSBTool2ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.aboutTSBTool2ToolStripMenuItem.Text = "About TSBTool2";
-            this.aboutTSBTool2ToolStripMenuItem.Click += new System.EventHandler(this.aboutTSBTool2ToolStripMenuItem_Click);
-            // 
-            // mLoadButton
-            // 
-            this.mLoadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.mLoadButton.Location = new System.Drawing.Point(2, 447);
-            this.mLoadButton.Name = "mLoadButton";
-            this.mLoadButton.Size = new System.Drawing.Size(143, 37);
-            this.mLoadButton.TabIndex = 2;
-            this.mLoadButton.Text = "Load TSB2 ROM";
-            this.mLoadButton.UseVisualStyleBackColor = true;
-            this.mLoadButton.Click += new System.EventHandler(this.handleLoad);
-            // 
-            // mViewContentsButton
-            // 
-            this.mViewContentsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.mViewContentsButton.Location = new System.Drawing.Point(149, 447);
-            this.mViewContentsButton.Name = "mViewContentsButton";
-            this.mViewContentsButton.Size = new System.Drawing.Size(143, 37);
-            this.mViewContentsButton.TabIndex = 3;
-            this.mViewContentsButton.Text = "View Contents";
-            this.mViewContentsButton.UseVisualStyleBackColor = true;
-            this.mViewContentsButton.Click += new System.EventHandler(this.viewContentsAction);
-            // 
-            // mApplyButton
-            // 
-            this.mApplyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.mApplyButton.Location = new System.Drawing.Point(546, 447);
-            this.mApplyButton.Name = "mApplyButton";
-            this.mApplyButton.Size = new System.Drawing.Size(143, 37);
-            this.mApplyButton.TabIndex = 4;
-            this.mApplyButton.Text = "Apply To Rom";
-            this.mApplyButton.UseVisualStyleBackColor = true;
-            this.mApplyButton.Click += new System.EventHandler(this.mApplyButton_Click);
-            // 
             // convertToolStripMenuItem
             // 
             this.convertToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -295,12 +261,53 @@
             this.aboutConvertingToolStripMenuItem.Text = "About Converting";
             this.aboutConvertingToolStripMenuItem.Click += new System.EventHandler(this.aboutConvertingToolStripMenuItem_Click);
             // 
-            // editPlayersToolStripMenuItem
+            // aboutToolStripMenuItem
             // 
-            this.editPlayersToolStripMenuItem.Name = "editPlayersToolStripMenuItem";
-            this.editPlayersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.editPlayersToolStripMenuItem.Text = "Edit &Players";
-            this.editPlayersToolStripMenuItem.Click += new System.EventHandler(this.editPlayersToolStripMenuItem_Click);
+            this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutTSBTool2ToolStripMenuItem});
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+            this.aboutToolStripMenuItem.Text = "&About";
+            // 
+            // aboutTSBTool2ToolStripMenuItem
+            // 
+            this.aboutTSBTool2ToolStripMenuItem.Name = "aboutTSBTool2ToolStripMenuItem";
+            this.aboutTSBTool2ToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.aboutTSBTool2ToolStripMenuItem.Text = "About TSBTool2";
+            this.aboutTSBTool2ToolStripMenuItem.Click += new System.EventHandler(this.aboutTSBTool2ToolStripMenuItem_Click);
+            // 
+            // mLoadButton
+            // 
+            this.mLoadButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.mLoadButton.Location = new System.Drawing.Point(2, 447);
+            this.mLoadButton.Name = "mLoadButton";
+            this.mLoadButton.Size = new System.Drawing.Size(191, 37);
+            this.mLoadButton.TabIndex = 2;
+            this.mLoadButton.Text = "Load TSB2 or TSB3  ROM";
+            this.mLoadButton.UseVisualStyleBackColor = true;
+            this.mLoadButton.Click += new System.EventHandler(this.handleLoad);
+            // 
+            // mViewContentsButton
+            // 
+            this.mViewContentsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.mViewContentsButton.Location = new System.Drawing.Point(199, 447);
+            this.mViewContentsButton.Name = "mViewContentsButton";
+            this.mViewContentsButton.Size = new System.Drawing.Size(143, 37);
+            this.mViewContentsButton.TabIndex = 3;
+            this.mViewContentsButton.Text = "View Contents";
+            this.mViewContentsButton.UseVisualStyleBackColor = true;
+            this.mViewContentsButton.Click += new System.EventHandler(this.viewContentsAction);
+            // 
+            // mApplyButton
+            // 
+            this.mApplyButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.mApplyButton.Location = new System.Drawing.Point(546, 447);
+            this.mApplyButton.Name = "mApplyButton";
+            this.mApplyButton.Size = new System.Drawing.Size(143, 37);
+            this.mApplyButton.TabIndex = 4;
+            this.mApplyButton.Text = "Apply To Rom";
+            this.mApplyButton.UseVisualStyleBackColor = true;
+            this.mApplyButton.Click += new System.EventHandler(this.mApplyButton_Click);
             // 
             // mTextBox
             // 
@@ -317,13 +324,6 @@
             this.mTextBox.TabIndex = 1;
             this.mTextBox.Text = "";
             this.mTextBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.mTextBox_MouseDoubleClick);
-            // 
-            // editTeamsToolStripMenuItem
-            // 
-            this.editTeamsToolStripMenuItem.Name = "editTeamsToolStripMenuItem";
-            this.editTeamsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.editTeamsToolStripMenuItem.Text = "Edit &Teams";
-            this.editTeamsToolStripMenuItem.Click += new System.EventHandler(this.editTeamsToolStripMenuItem_Click);
             // 
             // MainForm
             // 
