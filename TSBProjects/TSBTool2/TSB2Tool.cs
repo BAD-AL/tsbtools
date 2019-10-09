@@ -266,6 +266,7 @@ namespace TSBTool2
             byte ar = StaticUtils.GetSecondNibble(OutputRom[location + 4]);
             byte co = StaticUtils.GetSecondNibble(OutputRom[location + 5]);
             byte bb = StaticUtils.GetFirstNibble(OutputRom[location + 6]);
+            byte sp = StaticUtils.GetSecondNibble(OutputRom[location + 6]); // sim pocket??
 
             byte[] attrs = new byte[] { rs, rp, ms, hp, bb, ps, pc, pa, ar, co };
             string retVal = StaticUtils.MapAttributes(attrs); // +String.Format("|{0:x2} {1:x2} {2:x2} {3:x2} {4:x2} {5:x2} {6:x2} ", OutputRom[location], OutputRom[location + 1], OutputRom[location + 2], OutputRom[location + 3], OutputRom[location + 4], OutputRom[location + 5], OutputRom[location + 6]);
@@ -530,7 +531,7 @@ namespace TSBTool2
         #endregion
 
         // called 'GetFace()' for historical purpose, first nibble is race (0=white, 8=black); not sure what the second nibble is
-        private byte GetFace(int season,
+        protected virtual byte GetFace(int season,
             string team, string position)
         {
             int location = GetPlayerAttributeLocation(season, team, position) + 2;
@@ -626,13 +627,15 @@ namespace TSBTool2
         {
             StaticUtils.CheckTSB2Args(season, team);
             int index = teams.IndexOf(team);
-            int location = index * team_sim_size;
+            //int location = index * team_sim_size;
+            int ptr_location = index * 2;
             switch (season)
             {
-                case 1: location += team_sim_start_season_1; break;
-                case 2: location += team_sim_start_season_2; break;
-                case 3: location += team_sim_start_season_3; break;
+                case 1: ptr_location += team_sim_start_season_1; break;
+                case 2: ptr_location += team_sim_start_season_2; break;
+                case 3: ptr_location += team_sim_start_season_3; break;
             }
+            int location = 0x1e0000 + (OutputRom[ptr_location + 1] << 8) + OutputRom[ptr_location];
             switch (position)
             {
                 case "QB1": break;
@@ -692,7 +695,7 @@ namespace TSBTool2
         }
 
 
-        public void SetSkillSimData(int season, string team, string pos, int[] data)
+        public virtual void SetSkillSimData(int season, string team, string pos, int[] data)
         {
             int loc = GetSimLocation(season, team, pos);
             for (int i = 0; i < data.Length; i++)
@@ -750,24 +753,29 @@ namespace TSBTool2
         {
             StaticUtils.CheckTSB2Args(season, team);
             StringBuilder builder = new StringBuilder();
-            byte playerNumber = 0;
-            byte face = 0;
 
             foreach (string position in positionNames)
             {
-                builder.Append(position);
-                builder.Append(",");
-                builder.Append(GetPlayerName(season, team, position, out playerNumber));
-                builder.Append(",");
-                face = GetFace(season, team, position);
-                builder.Append(String.Format("Face=0x{0:x2},#{1:x},", face, playerNumber));
-                builder.Append(GetPlayerAbilities(season, team, position));
-                builder.Append("\n");
+                GetPlayer(season, team, builder, position);
             }
             builder.Append("\n");
 
             string retVal = builder.ToString();
             return retVal;
+        }
+
+        internal virtual void GetPlayer(int season, string team, StringBuilder builder, string position)
+        {
+            byte playerNumber = 0;
+            byte face = 0;
+            builder.Append(position);
+            builder.Append(",");
+            builder.Append(GetPlayerName(season, team, position, out playerNumber));
+            builder.Append(",");
+            face = GetFace(season, team, position);
+            builder.Append(String.Format("Face=0x{0:x2},#{1:x},", face, playerNumber));
+            builder.Append(GetPlayerAbilities(season, team, position));
+            builder.Append("\n");
         }
 
         public virtual string GetTeamName(int teamIndex)
@@ -784,7 +792,8 @@ namespace TSBTool2
         {
             string retVal = StaticUtils.GetStringTableString(OutputRom, teamIndex, tsb2_team_name_string_table_first_ptr, tsb2_team_name_string_table_offset).Substring(5);
             int lastSpace = retVal.LastIndexOf(' ');
-            retVal = retVal.Substring(0, lastSpace);
+            if (lastSpace > -1)
+                retVal = retVal.Substring(0, lastSpace);
             return retVal;
         }
 
@@ -797,20 +806,29 @@ namespace TSBTool2
 
         public virtual void SetTeamAbbreviation(int teamIndex, string abb)
         {
-            string teamString = String.Format("{0}*{1} {2}*", abb, GetTeamCity(teamIndex), GetTeamName(teamIndex));
-            StaticUtils.SetStringTableString(OutputRom, teamIndex, teamString, tsb2_team_name_string_table_first_ptr, tsb2_team_name_string_table_offset, 30, TEAM_NAME_STRING_TABLE_SIZE);
+            if (abb != null && abb.Length > 0)
+            {
+                string teamString = String.Format("{0}*{1} {2}*", abb, GetTeamCity(teamIndex), GetTeamName(teamIndex));
+                StaticUtils.SetStringTableString(OutputRom, teamIndex, teamString, tsb2_team_name_string_table_first_ptr, tsb2_team_name_string_table_offset, 30, TEAM_NAME_STRING_TABLE_SIZE);
+            }
         }
 
         public virtual void SetTeamName(int teamIndex, string name)
         {
-            string teamString = String.Format("{0}*{1} {2}*", GetTeamAbbreviation(teamIndex), GetTeamCity(teamIndex), name);
-            StaticUtils.SetStringTableString(OutputRom, teamIndex, teamString, tsb2_team_name_string_table_first_ptr, tsb2_team_name_string_table_offset, 30, TEAM_NAME_STRING_TABLE_SIZE);
+            if (name != null && name.Length > 0)
+            {
+                string teamString = String.Format("{0}*{1} {2}*", GetTeamAbbreviation(teamIndex), GetTeamCity(teamIndex), name);
+                StaticUtils.SetStringTableString(OutputRom, teamIndex, teamString, tsb2_team_name_string_table_first_ptr, tsb2_team_name_string_table_offset, 30, TEAM_NAME_STRING_TABLE_SIZE);
+            }
         }
 
         public virtual void SetTeamCity(int teamIndex, string city)
         {
-            string teamString = String.Format("{0}*{1} {2}*", GetTeamAbbreviation(teamIndex), city, GetTeamName(teamIndex));
-            StaticUtils.SetStringTableString(OutputRom, teamIndex, teamString, tsb2_team_name_string_table_first_ptr, tsb2_team_name_string_table_offset, 30, TEAM_NAME_STRING_TABLE_SIZE);
+            if (city != null && city.Length > 0)
+            {
+                string teamString = String.Format("{0}*{1} {2}*", GetTeamAbbreviation(teamIndex), city, GetTeamName(teamIndex));
+                StaticUtils.SetStringTableString(OutputRom, teamIndex, teamString, tsb2_team_name_string_table_first_ptr, tsb2_team_name_string_table_offset, 30, TEAM_NAME_STRING_TABLE_SIZE);
+            }
         }
 
         public static int GetTeamIndex(string team) { return teams.IndexOf(team); }

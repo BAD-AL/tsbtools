@@ -48,6 +48,7 @@
             this.playBookToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.playSelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.conversionTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.scheduleHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mGetTeamButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -63,8 +64,21 @@
             this.label1 = new System.Windows.Forms.Label();
             this.mToUpperCheckBox = new System.Windows.Forms.CheckBox();
             this.mCancelButton = new System.Windows.Forms.Button();
+            this.getPositionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.getNowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.qbsItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rbsItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wrsItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tesItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.olItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dlItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.lbsItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cbsItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.sItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.kItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mResultsTextBox = new TSBTool2.SearchTextBox();
-            this.scheduleHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.teamItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mSetByteLocUpDown)).BeginInit();
@@ -108,7 +122,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miscToolStripMenuItem,
-            this.findToolStripMenuItem});
+            this.findToolStripMenuItem,
+            this.getPositionsToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(522, 24);
@@ -232,6 +247,13 @@
             this.conversionTestToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
             this.conversionTestToolStripMenuItem.Text = "Conversion Test";
             this.conversionTestToolStripMenuItem.Click += new System.EventHandler(this.conversionTestToolStripMenuItem_Click);
+            // 
+            // scheduleHelpToolStripMenuItem
+            // 
+            this.scheduleHelpToolStripMenuItem.Name = "scheduleHelpToolStripMenuItem";
+            this.scheduleHelpToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.scheduleHelpToolStripMenuItem.Text = "ScheduleHelp";
+            this.scheduleHelpToolStripMenuItem.Click += new System.EventHandler(this.scheduleHelpToolStripMenuItem_Click);
             // 
             // mGetTeamButton
             // 
@@ -403,8 +425,115 @@
             this.mCancelButton.Text = "Cancel";
             this.mCancelButton.UseVisualStyleBackColor = true;
             // 
+            // getPositionsToolStripMenuItem
+            // 
+            this.getPositionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.getNowToolStripMenuItem,
+            this.qbsItem,
+            this.rbsItem,
+            this.wrsItem,
+            this.tesItem,
+            this.olItem,
+            this.dlItem,
+            this.lbsItem,
+            this.cbsItem,
+            this.sItem,
+            this.kItem,
+            this.pItem,
+            this.teamItem});
+            this.getPositionsToolStripMenuItem.Name = "getPositionsToolStripMenuItem";
+            this.getPositionsToolStripMenuItem.Size = new System.Drawing.Size(88, 20);
+            this.getPositionsToolStripMenuItem.Text = "Get Positions";
+            // 
+            // getNowToolStripMenuItem
+            // 
+            this.getNowToolStripMenuItem.Name = "getNowToolStripMenuItem";
+            this.getNowToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.getNowToolStripMenuItem.Text = "Get Now";
+            this.getNowToolStripMenuItem.Click += new System.EventHandler(this.getNowToolStripMenuItem_Click);
+            // 
+            // qbsItem
+            // 
+            this.qbsItem.Checked = true;
+            this.qbsItem.CheckOnClick = true;
+            this.qbsItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.qbsItem.Name = "qbsItem";
+            this.qbsItem.Size = new System.Drawing.Size(181, 22);
+            this.qbsItem.Text = "QBs";
+            // 
+            // rbsItem
+            // 
+            this.rbsItem.CheckOnClick = true;
+            this.rbsItem.Name = "rbsItem";
+            this.rbsItem.Size = new System.Drawing.Size(181, 22);
+            this.rbsItem.Text = "RBs";
+            // 
+            // wrsItem
+            // 
+            this.wrsItem.CheckOnClick = true;
+            this.wrsItem.Name = "wrsItem";
+            this.wrsItem.Size = new System.Drawing.Size(181, 22);
+            this.wrsItem.Text = "WRs";
+            // 
+            // tesItem
+            // 
+            this.tesItem.CheckOnClick = true;
+            this.tesItem.Name = "tesItem";
+            this.tesItem.Size = new System.Drawing.Size(181, 22);
+            this.tesItem.Text = "TEs";
+            // 
+            // olItem
+            // 
+            this.olItem.CheckOnClick = true;
+            this.olItem.Name = "olItem";
+            this.olItem.Size = new System.Drawing.Size(181, 22);
+            this.olItem.Text = "OL";
+            // 
+            // dlItem
+            // 
+            this.dlItem.CheckOnClick = true;
+            this.dlItem.Name = "dlItem";
+            this.dlItem.Size = new System.Drawing.Size(181, 22);
+            this.dlItem.Text = "DL";
+            // 
+            // lbsItem
+            // 
+            this.lbsItem.CheckOnClick = true;
+            this.lbsItem.Name = "lbsItem";
+            this.lbsItem.Size = new System.Drawing.Size(181, 22);
+            this.lbsItem.Text = "LBs";
+            // 
+            // cbsItem
+            // 
+            this.cbsItem.CheckOnClick = true;
+            this.cbsItem.Name = "cbsItem";
+            this.cbsItem.Size = new System.Drawing.Size(181, 22);
+            this.cbsItem.Text = "CBs";
+            // 
+            // sItem
+            // 
+            this.sItem.CheckOnClick = true;
+            this.sItem.Name = "sItem";
+            this.sItem.Size = new System.Drawing.Size(181, 22);
+            this.sItem.Text = "Safety";
+            // 
+            // kItem
+            // 
+            this.kItem.CheckOnClick = true;
+            this.kItem.Name = "kItem";
+            this.kItem.Size = new System.Drawing.Size(181, 22);
+            this.kItem.Text = "K";
+            // 
+            // pItem
+            // 
+            this.pItem.CheckOnClick = true;
+            this.pItem.Name = "pItem";
+            this.pItem.Size = new System.Drawing.Size(181, 22);
+            this.pItem.Text = "P";
+            // 
             // mResultsTextBox
             // 
+            this.mResultsTextBox.AcceptsTab = true;
             this.mResultsTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
@@ -418,12 +547,12 @@
             this.mResultsTextBox.TabIndex = 3;
             this.mResultsTextBox.Text = "";
             // 
-            // scheduleHelpToolStripMenuItem
+            // teamItem
             // 
-            this.scheduleHelpToolStripMenuItem.Name = "scheduleHelpToolStripMenuItem";
-            this.scheduleHelpToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
-            this.scheduleHelpToolStripMenuItem.Text = "ScheduleHelp";
-            this.scheduleHelpToolStripMenuItem.Click += new System.EventHandler(this.scheduleHelpToolStripMenuItem_Click);
+            this.teamItem.CheckOnClick = true;
+            this.teamItem.Name = "teamItem";
+            this.teamItem.Size = new System.Drawing.Size(181, 22);
+            this.teamItem.Text = "Include Team Name";
             // 
             // DebugDialog
             // 
@@ -496,5 +625,19 @@
         private System.Windows.Forms.ToolStripMenuItem playSelectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem conversionTestToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem scheduleHelpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem getPositionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem getNowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem qbsItem;
+        private System.Windows.Forms.ToolStripMenuItem rbsItem;
+        private System.Windows.Forms.ToolStripMenuItem wrsItem;
+        private System.Windows.Forms.ToolStripMenuItem tesItem;
+        private System.Windows.Forms.ToolStripMenuItem olItem;
+        private System.Windows.Forms.ToolStripMenuItem dlItem;
+        private System.Windows.Forms.ToolStripMenuItem lbsItem;
+        private System.Windows.Forms.ToolStripMenuItem cbsItem;
+        private System.Windows.Forms.ToolStripMenuItem sItem;
+        private System.Windows.Forms.ToolStripMenuItem kItem;
+        private System.Windows.Forms.ToolStripMenuItem pItem;
+        private System.Windows.Forms.ToolStripMenuItem teamItem;
     }
 }

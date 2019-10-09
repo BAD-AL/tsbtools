@@ -20,7 +20,7 @@ namespace TSBTool2
         int season = 1;
 
         internal static Regex numberRegex = new Regex("(#[0-9]{1,2})");
-        internal static Regex teamRegex = new Regex("TEAM\\s*=\\s*([0-9a-z]+)");
+        internal static Regex teamRegex = new Regex("TEAM\\s*=\\s*([0-9a-zAT]+)");
         internal static Regex simDataRegex = new Regex("SimData=0[xX]([0-9a-fA-F][0-9a-fA-F])([0-3]?)");
         internal static Regex weekRegex = new Regex("WEEK ([1-9][0	-7]?)");
         internal static Regex gameRegex = new Regex("([0-9a-z]+)\\s+at\\s+([0-9a-z]+)");

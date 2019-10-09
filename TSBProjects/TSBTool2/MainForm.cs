@@ -26,7 +26,8 @@ namespace TSBTool2
         private void handleLoad(object sender, EventArgs e)
         {
             string filename = StaticUtils.GetFileName(snesFilter, false);
-            LoadROM(filename);
+            if( filename != null)
+                LoadROM(filename);
         }
 
         private void LoadROM(string filename)
@@ -48,7 +49,7 @@ namespace TSBTool2
                         tool = new TSB3Tool(rom);
                 }
             }
-            if (tool.OutputRom != null)
+            if (tool != null && tool.OutputRom != null)
             {
                 state2();
                 UpdateTitle(filename);
@@ -101,7 +102,8 @@ namespace TSBTool2
 
         private void ViewContents()
         {
-            string text = tool.GetKey();
+            string key  = tool.GetKey();
+            string text = "";
             if (season1ToolStripMenuItem.Checked)
                 text += tool.GetAll(1);
             else if (season2ToolStripMenuItem.Checked)
@@ -110,8 +112,7 @@ namespace TSBTool2
                 text += tool.GetAll(3);
             else if (allSeasonsToolStripMenuItem.Checked)
                 text += tool.GetAll();
-
-            SetText(text);
+            SetText(key + text);
             
             int selLen = mTextBox.Text.IndexOf("SEASON");
             if (selLen > 0)
@@ -183,8 +184,7 @@ namespace TSBTool2
         {
             MessageBox.Show(
 @"You are using the ALPHA version of TSBTool2.
-It works on the SNES version of TSB2.
-We don't yet know what the sim data does.
+It works on the SNES version of TSB2 & TSB3.
 Version " + MainClass.version
                 );
         }

@@ -151,6 +151,9 @@
     <Content Include="Images\TSB2_SelectScreen.png" />
     <Content Include="Images\KC.ico" />
     <Content Include="Images\KCb.ico" />
+    <EmbeddedResource Include="SimData.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <Content Include="TSB1Data.txt" />
     <Content Include="Images\TSB2.ico" />
     <EmbeddedResource Include="ModifyPlayerForm.resx">

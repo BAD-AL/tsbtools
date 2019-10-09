@@ -511,5 +511,103 @@ LOS ANGELES:OAKLAND:2
                     TSB3Tool.scheduleTeamOrder[indexes[i]], TSB3Tool.scheduleTeamOrder[indexes[i+1]]));
             }
         }
+
+        private void getNowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TSB2Tool twoTool = (TSB2Tool)Tool;
+            StringBuilder builder = new StringBuilder();
+
+            if (twoTool.RomVersion.Contains("TSB2"))
+            {
+                builder.Append("\nSEASON 1\n");
+                GetPlayerStuff(twoTool, 1, builder);
+                builder.Append("\nSEASON 2\n");
+                GetPlayerStuff(twoTool, 2, builder);
+                builder.Append("\nSEASON 3\n");
+                GetPlayerStuff(twoTool, 3, builder);
+            }
+            else
+                GetPlayerStuff(twoTool, 1, builder);
+            
+            string text = builder.ToString();
+            text = text.Replace("#", "\t#");
+            mResultsTextBox.Text = text;
+        }
+
+        private void GetPlayerStuff(TSB2Tool twoTool, int season, StringBuilder builder)
+        {
+            foreach (string team in TSB2Tool.teams)
+            {
+                if (teamItem.Checked)
+                    builder.Append("***" + team + "***\n");
+                if (qbsItem.Checked)
+                {
+                    twoTool.GetPlayer(season, team, builder, "QB1");
+                    twoTool.GetPlayer(season, team, builder, "QB2");
+                }
+                if (rbsItem.Checked)
+                {
+                    twoTool.GetPlayer(season, team, builder, "RB1");
+                    twoTool.GetPlayer(season, team, builder, "RB2");
+                    twoTool.GetPlayer(season, team, builder, "RB3");
+                    twoTool.GetPlayer(season, team, builder, "RB4");
+                }
+                if (wrsItem.Checked)
+                {
+                    twoTool.GetPlayer(season, team, builder, "WR1");
+                    twoTool.GetPlayer(season, team, builder, "WR2");
+                    twoTool.GetPlayer(season, team, builder, "WR3");
+                    twoTool.GetPlayer(season, team, builder, "WR4");
+                }
+                if (tesItem.Checked)
+                {
+                    twoTool.GetPlayer(season, team, builder, "TE1");
+                    twoTool.GetPlayer(season, team, builder, "TE2");
+                }
+                if (olItem.Checked)
+                {
+                    twoTool.GetPlayer(season, team, builder, "C");
+                    twoTool.GetPlayer(season, team, builder, "LG");
+                    twoTool.GetPlayer(season, team, builder, "RG");
+                    twoTool.GetPlayer(season, team, builder, "LT");
+                    twoTool.GetPlayer(season, team, builder, "RT");
+                }
+                if (dlItem.Checked)
+                {
+                    twoTool.GetPlayer(season, team, builder, "RE");
+                    twoTool.GetPlayer(season, team, builder, "NT");
+                    twoTool.GetPlayer(season, team, builder, "LE");
+                    twoTool.GetPlayer(season, team, builder, "RE2");
+                    twoTool.GetPlayer(season, team, builder, "NT2");
+                    twoTool.GetPlayer(season, team, builder, "LE2");
+                }
+                if (lbsItem.Checked)
+                {
+                    twoTool.GetPlayer(season, team, builder, "ROLB");
+                    twoTool.GetPlayer(season, team, builder, "RILB");
+                    twoTool.GetPlayer(season, team, builder, "LILB");
+                    twoTool.GetPlayer(season, team, builder, "LOLB");
+                    twoTool.GetPlayer(season, team, builder, "LB5");
+                }
+                if (cbsItem.Checked)
+                {
+                    twoTool.GetPlayer(season, team, builder, "RCB");
+                    twoTool.GetPlayer(season, team, builder, "LCB");
+                    twoTool.GetPlayer(season, team, builder, "DB1");
+                    twoTool.GetPlayer(season, team, builder, "DB2");
+                }
+                if (sItem.Checked)
+                {
+                    twoTool.GetPlayer(season, team, builder, "FS");
+                    twoTool.GetPlayer(season, team, builder, "SS");
+                    twoTool.GetPlayer(season, team, builder, "DB3");
+                }
+                if (kItem.Checked)
+                    twoTool.GetPlayer(season, team, builder, "K");
+                if (pItem.Checked)
+                    twoTool.GetPlayer(season, team, builder, "P");
+
+            }
+        }
     }
 }

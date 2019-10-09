@@ -71,12 +71,28 @@ namespace TSBTool2
                 "broncos", "chiefs", "raiders", "chargers", "seahawks",
                 "cardinals", "cowboys", "giants", "eagles", "redskins",
                 "bears", "lions", "packers", "vikings", "buccaneers",
-                "falcons", "panthers", "saints", "rams", "49ers"
+                "falcons", "panthers", "saints", "rams", "49ers", "freeAgents", "allTime"
             };
-
-
+        }
+        
+        internal override void GetPlayer(int season, string team, StringBuilder builder, string position)
+        {
+            base.GetPlayer(1, team, builder, position);
         }
 
+        protected override byte GetFace(int season, string team, string position)
+        {
+            int location = GetPlayerAttributeLocation(season, team, position) + 3;
+            byte retVal = OutputRom[location];
+            return retVal;
+        }
+        
+        public override void SetFace(int season, string team, string position, int face)
+        {
+            StaticUtils.CheckTSB2Args(season, team, position);
+            int location = GetPlayerAttributeLocation(season, team, position) + 3;
+            SetByte(location, (byte)face);
+        }
 
         protected override string GetQBAbilities(int season, // (season = 1-3)
             string team, string position)
@@ -88,19 +104,19 @@ namespace TSBTool2
             byte hp = StaticUtils.GetSecondNibble(OutputRom[location + 1]);
             byte bb = StaticUtils.GetFirstNibble(OutputRom[location + 2]);
             byte ag = StaticUtils.GetSecondNibble(OutputRom[location + 2]);
-
             byte ps = StaticUtils.GetFirstNibble(OutputRom[location + 4]);
             byte pc = StaticUtils.GetSecondNibble(OutputRom[location + 4]);
             byte pa = StaticUtils.GetFirstNibble(OutputRom[location + 5]);
             byte ar = StaticUtils.GetSecondNibble(OutputRom[location + 5]);
             byte co = StaticUtils.GetFirstNibble(OutputRom[location + 6]);
+            byte sp = StaticUtils.GetSecondNibble(OutputRom[location + 6]); //sim pocket? maybe do more research for this one.
 
             byte[] attrs = new byte[] { rs, rp, ms, hp, bb, ag, ps, pc, pa, ar, co };
             string retVal = StaticUtils.MapAttributes(attrs); // +String.Format("|{0:x2} {1:x2} {2:x2} {3:x2} {4:x2} {5:x2} {6:x2} ", OutputRom[location], OutputRom[location + 1], OutputRom[location + 2], OutputRom[location + 3], OutputRom[location + 4], OutputRom[location + 5], OutputRom[location + 6]);
             if (ShowPlayerSimData)
             {
                 location = GetSimLocation(1, team, position);
-                retVal += String.Format("[{0:X2},{1:X2},{2:X2}]", OutputRom[location], OutputRom[location + 1], OutputRom[location + 2]);
+                retVal += String.Format("[{0:X2},{1:X2},{2:X2}]",OutputRom[location], OutputRom[location + 1], OutputRom[location + 2]);
             }
             return retVal;
         }

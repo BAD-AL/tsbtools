@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Collections.Generic;
+using System.IO;
 
 namespace TSBTool2
 {
@@ -79,6 +80,7 @@ namespace TSBTool2
         private Label m_AgilityLabel;
         private ComboBox m_AgilityBox;
         private string m_Data = "";
+        private Button mAboutButton;
 
 		/// <summary>
 		/// The text data to work on and retrieve.
@@ -97,18 +99,21 @@ namespace TSBTool2
 				}
 			}
 		}
-
+        private string mRomVersion = "";
         public string RomVersion
         {
             //"SNES_TSB2", "SNES_TSB3", "GENESIS_TSB2", "GENESIS_TSB3"
             set
             {
+                mRomVersion = value;
                 if (value.Contains("TSB2"))
                 {
                     m_AgilityLabel.Visible = false;
                     m_AgilityBox.Visible = false;
                     m_AgilityBox.Enabled = false;
                     m_Attributes.Remove(m_AgilityBox);
+                    m_NextPicture.Visible = false;
+                    m_PrevPicture.Visible = false;
                 }
             }
         }
@@ -597,6 +602,8 @@ namespace TSBTool2
             this.m_Sim2UpDown = new System.Windows.Forms.NumericUpDown();
             this.m_Sim1UpDown = new System.Windows.Forms.NumericUpDown();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.m_AgilityLabel = new System.Windows.Forms.Label();
+            this.m_AgilityBox = new System.Windows.Forms.ComboBox();
             this.m_CoolBox = new System.Windows.Forms.ComboBox();
             this.m_CoolnessLabel = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
@@ -617,8 +624,7 @@ namespace TSBTool2
             this.m_CancelButton = new System.Windows.Forms.Button();
             this.m_JerseyNumberUpDown = new System.Windows.Forms.NumericUpDown();
             this.m_AutoUpdateButton = new System.Windows.Forms.Button();
-            this.m_AgilityLabel = new System.Windows.Forms.Label();
-            this.m_AgilityBox = new System.Windows.Forms.ComboBox();
+            this.mAboutButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.m_FaceBox)).BeginInit();
             this.mSimBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.m_Sim4UpDown)).BeginInit();
@@ -1032,6 +1038,7 @@ namespace TSBTool2
             // 
             this.mSimBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.mSimBox.Controls.Add(this.mAboutButton);
             this.mSimBox.Controls.Add(this.m_Sim4UpDown);
             this.mSimBox.Controls.Add(this.m_Sim3UpDown);
             this.mSimBox.Controls.Add(this.m_Sim2UpDown);
@@ -1136,6 +1143,41 @@ namespace TSBTool2
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Attributes";
+            // 
+            // m_AgilityLabel
+            // 
+            this.m_AgilityLabel.Location = new System.Drawing.Point(247, 15);
+            this.m_AgilityLabel.Name = "m_AgilityLabel";
+            this.m_AgilityLabel.Size = new System.Drawing.Size(40, 15);
+            this.m_AgilityLabel.TabIndex = 32;
+            this.m_AgilityLabel.Text = "AG";
+            this.m_AgilityLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // m_AgilityBox
+            // 
+            this.m_AgilityBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.m_AgilityBox.Items.AddRange(new object[] {
+            "6",
+            "13",
+            "19",
+            "25",
+            "31",
+            "38",
+            "44",
+            "50",
+            "56",
+            "63",
+            "69",
+            "75",
+            "81",
+            "88",
+            "94",
+            "100"});
+            this.m_AgilityBox.Location = new System.Drawing.Point(247, 34);
+            this.m_AgilityBox.Name = "m_AgilityBox";
+            this.m_AgilityBox.Size = new System.Drawing.Size(43, 21);
+            this.m_AgilityBox.TabIndex = 9;
+            this.m_AgilityBox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
             // 
             // m_CoolBox
             // 
@@ -1302,7 +1344,6 @@ namespace TSBTool2
             this.m_PrevPicture.Size = new System.Drawing.Size(32, 18);
             this.m_PrevPicture.TabIndex = 15;
             this.m_PrevPicture.Text = "\\/";
-            this.m_PrevPicture.Visible = false;
             this.m_PrevPicture.Click += new System.EventHandler(this.m_PrevPicture_Click);
             // 
             // m_NextPicture
@@ -1313,7 +1354,6 @@ namespace TSBTool2
             this.m_NextPicture.Size = new System.Drawing.Size(32, 18);
             this.m_NextPicture.TabIndex = 16;
             this.m_NextPicture.Text = "/\\";
-            this.m_NextPicture.Visible = false;
             this.m_NextPicture.Click += new System.EventHandler(this.m_NextPicture_Click);
             // 
             // m_FaceLabel
@@ -1392,40 +1432,15 @@ namespace TSBTool2
             this.m_AutoUpdateButton.Visible = false;
             this.m_AutoUpdateButton.Click += new System.EventHandler(this.m_AutoUpdateButton_Click);
             // 
-            // m_AgilityLabel
+            // mAboutButton
             // 
-            this.m_AgilityLabel.Location = new System.Drawing.Point(247, 15);
-            this.m_AgilityLabel.Name = "m_AgilityLabel";
-            this.m_AgilityLabel.Size = new System.Drawing.Size(40, 15);
-            this.m_AgilityLabel.TabIndex = 32;
-            this.m_AgilityLabel.Text = "AG";
-            this.m_AgilityLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // m_AgilityBox
-            // 
-            this.m_AgilityBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.m_AgilityBox.Items.AddRange(new object[] {
-            "6",
-            "13",
-            "19",
-            "25",
-            "31",
-            "38",
-            "44",
-            "50",
-            "56",
-            "63",
-            "69",
-            "75",
-            "81",
-            "88",
-            "94",
-            "100"});
-            this.m_AgilityBox.Location = new System.Drawing.Point(247, 34);
-            this.m_AgilityBox.Name = "m_AgilityBox";
-            this.m_AgilityBox.Size = new System.Drawing.Size(43, 21);
-            this.m_AgilityBox.TabIndex = 9;
-            this.m_AgilityBox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
+            this.mAboutButton.Location = new System.Drawing.Point(359, 16);
+            this.mAboutButton.Name = "mAboutButton";
+            this.mAboutButton.Size = new System.Drawing.Size(75, 48);
+            this.mAboutButton.TabIndex = 28;
+            this.mAboutButton.Text = "About SimData";
+            this.mAboutButton.UseVisualStyleBackColor = true;
+            this.mAboutButton.Click += new System.EventHandler(this.mAboutButton_Click);
             // 
             // ModifyPlayerForm
             // 
@@ -1567,9 +1582,9 @@ namespace TSBTool2
 		private void m_PrevPicture_Click(object sender, System.EventArgs e)
 		{
 			if( m_ImageNumber == 0x00 )
-				m_ImageNumber = 0xD4;
+				m_ImageNumber = 0x8F;
 			else if( m_ImageNumber == 0x80 )
-				m_ImageNumber = 0x52;
+				m_ImageNumber = 0x0F;
 			else
 				m_ImageNumber--;
 			ShowCurrentFace();
@@ -1582,9 +1597,9 @@ namespace TSBTool2
 		/// <param name="e"></param>
 		private void m_NextPicture_Click(object sender, System.EventArgs e)
 		{
-			if( m_ImageNumber == 0xD4 )
+			if( m_ImageNumber == 0x8F )
 				m_ImageNumber = 0;
-			else if( m_ImageNumber == 0x52 )
+			else if( m_ImageNumber == 0x0F )
 				m_ImageNumber = 0x80;
 			else
 				m_ImageNumber++;
@@ -1761,6 +1776,14 @@ Please verify that this player's attributes are correct.", oldPlayer);
         private void m_FirstNameTextBox_Leave(object sender, EventArgs e)
         {
             m_FirstNameTextBox.Text = m_FirstNameTextBox.Text.ToLower();
+        }
+
+        private void mAboutButton_Click(object sender, EventArgs e)
+        {
+            StreamReader reader = new StreamReader(
+                this.GetType().Assembly.GetManifestResourceStream("TSBTool2.SimData.txt"));
+            string content = reader.ReadToEnd();
+            RichTextDisplay.ShowText("Sim Info", content, SystemIcons.Question, true, false);
         }
 	}
 }
