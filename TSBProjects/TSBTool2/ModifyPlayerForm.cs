@@ -597,6 +597,7 @@ namespace TSBTool2
             this.m_Sim2Label = new System.Windows.Forms.Label();
             this.m_Sim1Label = new System.Windows.Forms.Label();
             this.mSimBox = new System.Windows.Forms.GroupBox();
+            this.mAboutButton = new System.Windows.Forms.Button();
             this.m_Sim4UpDown = new System.Windows.Forms.NumericUpDown();
             this.m_Sim3UpDown = new System.Windows.Forms.NumericUpDown();
             this.m_Sim2UpDown = new System.Windows.Forms.NumericUpDown();
@@ -624,7 +625,6 @@ namespace TSBTool2
             this.m_CancelButton = new System.Windows.Forms.Button();
             this.m_JerseyNumberUpDown = new System.Windows.Forms.NumericUpDown();
             this.m_AutoUpdateButton = new System.Windows.Forms.Button();
-            this.mAboutButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.m_FaceBox)).BeginInit();
             this.mSimBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.m_Sim4UpDown)).BeginInit();
@@ -1054,6 +1054,16 @@ namespace TSBTool2
             this.mSimBox.TabStop = false;
             this.mSimBox.Text = "Sim attributes";
             // 
+            // mAboutButton
+            // 
+            this.mAboutButton.Location = new System.Drawing.Point(359, 16);
+            this.mAboutButton.Name = "mAboutButton";
+            this.mAboutButton.Size = new System.Drawing.Size(75, 48);
+            this.mAboutButton.TabIndex = 28;
+            this.mAboutButton.Text = "About SimData";
+            this.mAboutButton.UseVisualStyleBackColor = true;
+            this.mAboutButton.Click += new System.EventHandler(this.mAboutButton_Click);
+            // 
             // m_Sim4UpDown
             // 
             this.m_Sim4UpDown.Hexadecimal = true;
@@ -1429,22 +1439,12 @@ namespace TSBTool2
             this.m_AutoUpdateButton.TabIndex = 18;
             this.m_AutoUpdateButton.Text = "&Auto Update All Player Sim Attributes";
             this.m_AutoUpdateButton.UseVisualStyleBackColor = false;
-            this.m_AutoUpdateButton.Visible = false;
             this.m_AutoUpdateButton.Click += new System.EventHandler(this.m_AutoUpdateButton_Click);
-            // 
-            // mAboutButton
-            // 
-            this.mAboutButton.Location = new System.Drawing.Point(359, 16);
-            this.mAboutButton.Name = "mAboutButton";
-            this.mAboutButton.Size = new System.Drawing.Size(75, 48);
-            this.mAboutButton.TabIndex = 28;
-            this.mAboutButton.Text = "About SimData";
-            this.mAboutButton.UseVisualStyleBackColor = true;
-            this.mAboutButton.Click += new System.EventHandler(this.mAboutButton_Click);
             // 
             // ModifyPlayerForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.CancelButton = this.m_CancelButton;
             this.ClientSize = new System.Drawing.Size(544, 289);
             this.Controls.Add(this.m_AutoUpdateButton);
             this.Controls.Add(this.m_JerseyNumberUpDown);
@@ -1757,7 +1757,8 @@ Please verify that this player's attributes are correct.", oldPlayer);
 		/// </summary>
 		private void AutoUpdatePlayerSim()
 		{
-            MessageBox.Show("NotImplemented");
+            string stuff = TSBXSimAutoUpdater.AutoUpdatePlayerSimData(this.m_Data, mRomVersion);
+            m_Data = stuff;
 		}
 
 		private void ValueChanged(object sender, System.EventArgs e)

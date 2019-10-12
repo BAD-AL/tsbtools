@@ -42,7 +42,7 @@ namespace TSBTool2
         #endregion
 
         // Returns a string with all the players listed (for a given season, 1-3)
-        string GetTeamStuff(int season);
+        string GetTeams(int season);
 
         string GetSchedule(int season);
 
@@ -190,9 +190,9 @@ That gets me to 102*/
 
         //string GetChampColors(string team);
 
-        //String GetProBowlPlayers();
+        //String GetProBowlPlayers(int season);
 
-        //void SetProBowlPlayer(int season, Conference conf, String proBowlPos, String fromTeam, TSBPlayer fromTeamPos);
+        void SetProBowlPlayer(int season, Conference conf, String proBowlPos, String fromTeam, TSBPlayer fromTeamPos);
 
         /// <summary>
         /// "SNES_TSB2", "SNES_TSB3", "GENESIS_TSB2", "GENESIS_TSB3"

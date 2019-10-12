@@ -220,7 +220,7 @@ Please verify that this player's attributes are correct.", oldPlayer);
 						newValue  = string.Format( 
 							"{0}, {1} {2}, Face=0x{3:x}, #{4:x}, {5}, {6}, {7}, {8}, {9}, {10} ,[{11}, {12} ,{13}, {14} ]",
 							position, fName, lName, face, jerseyNumber, attrs[0], attrs[1],attrs[2],attrs[3],
-							attrs[4],attrs[5],simRush, simCatch, simPR, simKR);
+                            attrs[4], attrs[5], simRush, simCatch, simCatch, simCatch);// Tecmonster thinks we should just use simCatch for the last 3 sim attrs
 					}
 					break;
 				case "WR1": case "WR2": 
@@ -235,7 +235,7 @@ Please verify that this player's attributes are correct.", oldPlayer);
 						newValue  = string.Format( 
 							"{0}, {1} {2}, Face=0x{3:x}, #{4:x}, {5}, {6}, {7}, {8}, {9}, {10} ,[{11}, {12} ,{13}, {14} ]",
 							position, fName, lName, face, jerseyNumber, attrs[0], attrs[1],attrs[2],attrs[3],
-							attrs[4],attrs[5],simRush, simCatch, simPR, simKR);
+                            attrs[4], attrs[5], simRush, simCatch, simCatch, simCatch);// Tecmonster thinks we should just use simCatch for the last 3 sim attrs
 					}
 					break;
 				case "P": case "K":

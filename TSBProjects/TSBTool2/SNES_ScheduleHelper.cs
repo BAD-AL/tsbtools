@@ -26,7 +26,7 @@ namespace TSBTool2
 
         private int[] gamesPerWeek = { 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14 };
         //private byte[] outputRom;
-        private ITecmoTool mTool;
+        protected ITecmoTool mTool;
 
         public SNES_ScheduleHelper(ITecmoTool tool)
         {
@@ -286,7 +286,7 @@ namespace TSBTool2
             return sb.ToString();
         }
 
-        private int GameLocation(int week, int gameOfweek)
+        protected virtual int GameLocation(int week, int gameOfweek)
         {
             if (week < 0 || week > gamesPerWeek.Length - 1 ||
                 gameOfweek > gamesPerWeek[week] || gameOfweek < 0)

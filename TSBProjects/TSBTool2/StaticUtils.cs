@@ -22,10 +22,27 @@ namespace TSBTool2
             {
                 if (form == null)
                     form = new SearchTextBox();
-                System.IO.Stream s =
-                    form.GetType().Assembly.GetManifestResourceStream(file);
+                System.IO.Stream s = form.GetType().Assembly.GetManifestResourceStream(file);
                 if (s != null)
                     ret = Image.FromStream(s);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            return ret;
+        }
+
+        public static string GetEmbeddedTextFile(string file)
+        {
+            string ret = null;
+            try
+            {
+                if (form == null)
+                    form = new SearchTextBox();
+                System.IO.Stream s = form.GetType().Assembly.GetManifestResourceStream(file);
+                if (s != null)
+                    ret = new StreamReader(s).ReadToEnd();
             }
             catch (Exception e)
             {
@@ -200,6 +217,11 @@ namespace TSBTool2
             return retVal;
         }
 
+        /// <summary>
+        /// Get the index (0-F) ability for the input
+        /// </summary>
+        /// <param name="ab">the ability</param>
+        /// <returns>(0x0-0xF)</returns>
         public static byte GetTSBAbility(int ab)
         {
             byte ret = 0;
@@ -225,6 +247,11 @@ namespace TSBTool2
             return ret;
         }
 
+        /// <summary>
+        /// takes 0x03 --> 25
+        /// </summary>
+        /// <param name="ab">0x00 - 0x0F</param>
+        /// <returns>A TSB ability (6,13,19,25,31,38,44,50,56,63,69,75,81,88,94,100)</returns>
         public static byte MapAbilityToTSBValue(int ab)
         {
             byte ret = 0;
@@ -603,6 +630,9 @@ namespace TSBTool2
         private static Regex tsb2QB1Regex = new Regex(
             "^QB1\\s*,[a-zA-Z 0-9]+\\s*,\\s*Face=0x[0-9]{1,2}\\s*,\\s*#[0-9]{1,2}\\s*,(\\s*[0-9]{1,2}\\s*,){9}(\\s*[0-9]{1,2}\\s*,?){1}(\\s*\\[|\\s*$)",
             RegexOptions.Multiline);
+        private static Regex tsb3QB1Regex = new Regex(
+            "^QB1\\s*,[a-zA-Z 0-9\\.]+\\s*,\\s*Face=0x[08][0-9A-Fa-f]{1}\\s*,\\s*#[0-9]{1,2}\\s*,(\\s*[0-9]{1,2}\\s*,){10}(\\s*[0-9]{1,2}\\s*,?){1}(\\s*\\[|\\s*$)",
+            RegexOptions.Multiline);
 
         internal static bool IsTSB1Content(string data)
         {
@@ -619,6 +649,17 @@ namespace TSBTool2
         {
             bool retVal = false;
             MatchCollection mc = tsb2QB1Regex.Matches(data);
+            if (mc.Count > 0)
+            {
+                retVal = true;
+            }
+            return retVal;
+        }
+
+        internal static bool IsTSB3Content(string data)
+        {
+            bool retVal = false;
+            MatchCollection mc = tsb3QB1Regex.Matches(data);
             if (mc.Count > 0)
             {
                 retVal = true;

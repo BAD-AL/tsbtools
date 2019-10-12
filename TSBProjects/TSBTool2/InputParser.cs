@@ -24,7 +24,7 @@ namespace TSBTool2
         internal static Regex simDataRegex = new Regex("SimData=0[xX]([0-9a-fA-F][0-9a-fA-F])([0-3]?)");
         internal static Regex weekRegex = new Regex("WEEK ([1-9][0	-7]?)");
         internal static Regex gameRegex = new Regex("([0-9a-z]+)\\s+at\\s+([0-9a-z]+)");
-        internal static Regex posNameFaceRegex = new Regex("([A-Z]+[1-5]?)\\s*,\\s*([a-zA-Z \\.\\-]+),\\s*(face=0[xX][0-9a-fA-F]+\\s*,\\s*)?");
+        internal static Regex posNameFaceRegex = new Regex("([A-Z]+[1-5]?)\\s*,\\s*([a-zA-Z \\.\\-]+),\\s*(Face=0[xX][0-9a-fA-F]+\\s*,\\s*)");
         internal static Regex yearRegex = new Regex("YEAR\\s*=\\s*([0-9]+)");
         internal static Regex returnTeamRegex = new Regex("RETURN_TEAM\\s+([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)");
         internal static Regex setRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
@@ -348,14 +348,14 @@ namespace TSBTool2
             {
                 SetYear(line);
             }
-            /*else if (line.StartsWith("AFC") || line.StartsWith("NFC"))
+            else if (line.StartsWith("AFC") || line.StartsWith("NFC"))
             {
                 String[] parts = line.Replace(" ", "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 if (parts != null && parts.Length > 3)
                 {
                     try
                     {
-                        tool.SetProBowlPlayer((Conference)Enum.Parse(typeof(Conference), parts[0]),
+                        tool.SetProBowlPlayer(season, (Conference)Enum.Parse(typeof(Conference), parts[0]),
                             parts[1], parts[2],
                             (TSBPlayer)Enum.Parse(typeof(TSBPlayer), parts[3]));
                     }
@@ -364,7 +364,7 @@ namespace TSBTool2
                         StaticUtils.AddError("Error processing line > " + line);
                     }
                 }
-            }*/
+            }
             else if (currentState == scheduleState)
             {
                 if (scheduleList != null)
@@ -696,7 +696,7 @@ namespace TSBTool2
                 string pos = m.Groups[1].ToString();
                 if (tool.IsValidPosition(pos))
                 {
-                    //tool.SetKickReturner(currentTeam, pos);
+                    tool.SetKickReturner(season, currentTeam, pos);
                 }
                 else
                     StaticUtils.AddError(string.Format("ERROR with line '{0}'.", line));
@@ -711,7 +711,7 @@ namespace TSBTool2
                 string pos = m.Groups[1].ToString();
                 if (tool.IsValidPosition(pos))
                 {
-                    //tool.SetPuntReturner(currentTeam, pos);
+                    tool.SetPuntReturner(season, currentTeam, pos);
                 }
                 else
                     StaticUtils.AddError(string.Format("ERROR with line '{0}'.", line));

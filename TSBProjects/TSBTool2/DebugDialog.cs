@@ -69,6 +69,10 @@ namespace TSBTool2
                 FindLocations();
                 e.Handled = true;
             }
+            else if (e.KeyCode == Keys.C && e.Control )
+            {
+                Compute();
+            }
         }
 
         private void mGetTeamButton_Click(object sender, EventArgs e)
@@ -428,15 +432,15 @@ LOS ANGELES:OAKLAND:2
         {
             mResultsTextBox.Clear();
             mResultsTextBox.AppendText("YEAR 1\n");
-            mResultsTextBox.AppendText(Tool.GetTeamStuff(1));
+            mResultsTextBox.AppendText(Tool.GetTeams(1));
             mResultsTextBox.AppendText(Tool.GetSchedule(1));
 
             mResultsTextBox.AppendText("YEAR 2\n");
-            mResultsTextBox.AppendText(Tool.GetTeamStuff(2));
+            mResultsTextBox.AppendText(Tool.GetTeams(2));
             mResultsTextBox.AppendText(Tool.GetSchedule(2));
 
             mResultsTextBox.AppendText("YEAR 3\n");
-            mResultsTextBox.AppendText(Tool.GetTeamStuff(3));
+            mResultsTextBox.AppendText(Tool.GetTeams(3));
             mResultsTextBox.AppendText(Tool.GetSchedule(3));
         }
 
@@ -607,6 +611,37 @@ LOS ANGELES:OAKLAND:2
                 if (pItem.Checked)
                     twoTool.GetPlayer(season, team, builder, "P");
 
+            }
+        }
+
+        private void checkAllToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            bool check = !qbsItem.Checked;
+            teamItem.Checked = qbsItem.Checked = rbsItem.Checked = wrsItem.Checked = tesItem.Checked =
+                olItem.Checked = dlItem.Checked = lbsItem.Checked = cbsItem.Checked = sItem.Checked = 
+                kItem.Checked = pItem.Checked = check;
+
+        }
+
+        private void runComputeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Compute();
+        }
+
+        private void Compute()
+        {
+            DataTable table = new DataTable();
+            mResultsTextBox.Clear();
+            mResultsTextBox.AppendText("Running compute on '");
+            mResultsTextBox.AppendText(mInputTextBox.Text + "'\n");
+
+            try
+            {
+                mResultsTextBox.AppendText(table.Compute(mInputTextBox.Text, "").ToString());
+            }
+            catch (Exception ex)
+            {
+                mResultsTextBox.AppendText(ex.ToString());
             }
         }
     }

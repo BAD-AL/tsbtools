@@ -318,6 +318,11 @@ Version " + MainClass.version
             TSB2Tool.ShowSchedule = scheduleToolStripMenuItem.Checked;
         }
 
+        private void proBowlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TSB2Tool.ShowProBowlRosters = proBowlToolStripMenuItem.Checked;
+        }
+
         private bool Check1Season()
         {
             string search = "SEASON ";
@@ -331,7 +336,7 @@ Version " + MainClass.version
             return count < 2;
         }
 
-        private void convertToTSB1DataToolStripMenuItem_Click(object sender, EventArgs e)
+        private void tsb2ToTsb1tem_Click(object sender, EventArgs e)
         {
             if (!StaticUtils.IsTSB2Content(mTextBox.Text))
             {
@@ -345,7 +350,7 @@ Version " + MainClass.version
             {
                 if (Check1Season())
                 {
-                    string output = TSB1Converter.ConvertToTSB1(mTextBox.Text);
+                    string output = TSB1Converter.ConvertToTSB1FromTSB2(mTextBox.Text);
                     SetText(output);
                 }
                 else
@@ -356,7 +361,7 @@ Version " + MainClass.version
             }
         }
 
-        private void convertToTSB2DataToolStripMenuItem_Click(object sender, EventArgs e)
+        private void tsb1ToTsb2Item_Click(object sender, EventArgs e)
         {
             if (!StaticUtils.IsTSB1Content(mTextBox.Text))
             {
@@ -368,7 +373,43 @@ Version " + MainClass.version
             if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB2\nDo you wish to continue?",
                     "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
-                string output = TSB2Converter.ConvertToTSB2(mTextBox.Text);
+                string output = TSB2Converter.ConvertToTSB2FromTSB1(mTextBox.Text);
+                SetText(output);
+            }
+        }
+
+
+        private void tsb3ToTsb2Item_Click(object sender, EventArgs e)
+        {
+            if (!StaticUtils.IsTSB3Content(mTextBox.Text))
+            {
+                DialogResult result = MessageBox.Show("The text does not appear to be TSB3 Content. Do you still want to continue?",
+                    "Incorrect content detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.No)
+                    return;
+            }
+            if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB2\nDo you wish to continue?",
+                    "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                string output = TSB2Converter.ConvertToTSB2FromTSB3(mTextBox.Text);
+                SetText(output);
+            }
+        }
+
+
+        private void tsb2ToTsb3Item_Click(object sender, EventArgs e)
+        {
+            if (!StaticUtils.IsTSB2Content(mTextBox.Text))
+            {
+                DialogResult result = MessageBox.Show("The text does not appear to be TSB2 Content. Do you still want to continue?",
+                    "Incorrect content detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.No)
+                    return;
+            }
+            if (MessageBox.Show("Warning! This is a text change operation, the text will be changed to a format compatible with TSB3\nDo you wish to continue?",
+                    "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                string output = TSB3Converter.ConvertToTSB3FromTSB2(mTextBox.Text);
                 SetText(output);
             }
         }
@@ -416,7 +457,12 @@ Version " + MainClass.version
         private void ModifyPlayers(string team, string position)
         {
             ModifyPlayerForm form = new ModifyPlayerForm();
-            form.RomVersion = tool.RomVersion;
+            if (StaticUtils.IsTSB3Content(mTextBox.Text))
+                form.RomVersion = "SNES_TSB3";
+            else if (StaticUtils.IsTSB2Content(mTextBox.Text))
+                form.RomVersion = "SNES_TSB2";
+            else
+                form.RomVersion = tool.RomVersion;
             form.Data = mTextBox.Text;
             form.CurrentTeam = team;
             form.CurrentPosition = position;
@@ -442,5 +488,34 @@ Version " + MainClass.version
             EditTeams();
         }
 
+        private void loadTextFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.InitialDirectory = ".";
+            string fileName = null;
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+                fileName = dlg.FileName;
+            dlg.Dispose();
+
+            if (fileName != null)
+            {
+                this.mTextBox.LoadFile(fileName, RichTextBoxStreamType.PlainText);
+            }
+        }
+
+        private void saveTextFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.InitialDirectory = ".";
+            string fileName = null;
+            if (dlg.ShowDialog(this) == DialogResult.OK)
+                fileName = dlg.FileName;
+            dlg.Dispose();
+
+            if (fileName != null)
+            {
+                this.mTextBox.SaveFile(fileName, RichTextBoxStreamType.PlainText);
+            }
+        }
     }
 }

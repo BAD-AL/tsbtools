@@ -68,7 +68,9 @@
     <Compile Include="InputParser.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="MainClass.cs" />
+    <Compile Include="SNES_TSB3_ScheduleHelper.cs" />
     <Compile Include="TSB1SimAutoUpdater.cs" />
+    <Compile Include="TSBXSimAutoUpdater.cs" />
     <Compile Include="TSB3Tool.cs" />
     <Compile Include="TSBConverter.cs" />
     <Compile Include="PlaySelectForm.cs">
@@ -146,6 +148,13 @@
   <ItemGroup>
     <EmbeddedResource Include="Images\00.png" />
     <EmbeddedResource Include="Images\80.png" />
+    <EmbeddedResource Include="Formulas\FAP_Formulas.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Formulas\SIM_Formulas.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <Content Include="HACKING_INFO.txt" />
     <Content Include="Images\afc.ico" />
     <Content Include="Images\NFC.ico" />
     <Content Include="Images\TSB2_SelectScreen.png" />
@@ -154,8 +163,10 @@
     <EmbeddedResource Include="SimData.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-    <Content Include="TSB1Data.txt" />
+    <Content Include="TextData\TSB1Data.txt" />
     <Content Include="Images\TSB2.ico" />
+    <Content Include="TextData\TSB2Data.txt" />
+    <Content Include="TextData\TSB3Data.txt" />
     <EmbeddedResource Include="ModifyPlayerForm.resx">
       <DependentUpon>ModifyPlayerForm.cs</DependentUpon>
       <SubType>Designer</SubType>

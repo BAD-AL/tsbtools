@@ -12,10 +12,7 @@ namespace TSBTool2
     // RS RP MS HP __ __ BC RC BB __
     // Currently found: Player names, player attributes, team stringa
     // TODO:
-    // 2. Sim data *
-    // 4. NFL Records 
-    // 5. Pro Bowl
-    // 6. PR KR
+    // 4. NFL Records ?
     public class TSB2Tool : ITecmoTool
     {
         public static bool IsTecmoSuperBowl2Rom(byte[] rom)
@@ -37,44 +34,52 @@ namespace TSBTool2
         public static bool ShowPlayerSimData = true;
         public static bool ShowPlaybooks = true;
         public static bool ShowSchedule = true;
+        public static bool ShowProBowlRosters = true;
 
         #region Special Locations SNES TSB2
         //https://tecmobowl.org/forums/topic/53028-tecmo-super-bowl-ii-hackingresource-documentation/
-        protected int BYTES_PER_PLAYER = 5;
+        const int BYTES_PER_PLAYER = 5;
         protected int BYTES_PER_QB = 6;
 
-        protected int NAME_TABLE_SIZE = 0x4798;
+        const int NAME_TABLE_SIZE = 0x4798;
 
-        protected int BANK_1_PLAYER_ATTRIBUTES_START = 0x1ec800;
-        protected int BANK_2_PLAYER_ATTRIBUTES_START = 0x1f4800;
-        protected int BANK_3_PLAYER_ATTRIBUTES_START = 0x1fc800;
+        const int BANK_1_PLAYER_ATTRIBUTES_START = 0x1ec800;
+        const int BANK_2_PLAYER_ATTRIBUTES_START = 0x1f4800;
+        const int BANK_3_PLAYER_ATTRIBUTES_START = 0x1fc800;
 
         // name_string_table_1
         protected int tsb2_name_string_table_1_first_ptr = 0x1e8038;
-        protected int tsb2_name_string_table_1_offset = 0x1e0000;
+        const int tsb2_name_string_table_1_offset = 0x1e0000;
 
         // name string table 2
-        protected int tsb2_name_string_table_2_first_ptr = 0x1f0038;
-        protected int tsb2_name_string_table_2_offset = 0x1e8000;
+        const int tsb2_name_string_table_2_first_ptr = 0x1f0038;
+        const int tsb2_name_string_table_2_offset = 0x1e8000;
 
         // name string table 3
-        protected int tsb2_name_string_table_3_first_ptr = 0x1f8038;
-        protected int tsb2_name_string_table_3_offset = 0x1f0000;
+        const int tsb2_name_string_table_3_first_ptr = 0x1f8038;
+        const int tsb2_name_string_table_3_offset = 0x1f0000;
 
         // Team name String table
-        protected int tsb2_team_name_string_table_first_ptr = 0x7000;
-        protected int tsb2_team_name_string_table_offset = -32768;
-        protected int TEAM_NAME_STRING_TABLE_SIZE = 0x5c0;
+        const int tsb2_team_name_string_table_first_ptr = 0x7000;
+        const int tsb2_team_name_string_table_offset = -32768;
+        const int TEAM_NAME_STRING_TABLE_SIZE = 0x5C0;
 
-        protected int schedule_start_season_1 = 0x16f00c; //data=050D060114130A0C1900
-        protected int schedule_start_season_2 = 0x16f204; //data=0300050602010904160B 
-        protected int schedule_start_season_3 = 0x16f418; //data=1119181406050E080701 
+        protected const int schedule_start_season_1 = 0x16F00C; //data=050D060114130A0C1900
+        const int schedule_start_season_2 = 0x16F204; //data=0300050602010904160B 
+        const int schedule_start_season_3 = 0x16F418; //data=1119181406050E080701 
 
-        protected int team_sim_start_season_1 = 0x1EE000;
-        protected int team_sim_start_season_2 = 0x1F6000;
-        protected int team_sim_start_season_3 = 0x1FE000;
+        const int team_sim_start_season_1 = 0x1EE000;  // pointers
+        const int team_sim_start_season_2 = 0x1F6000;
+        const int team_sim_start_season_3 = 0x1FE000;
 
-        protected int team_sim_size = 102;
+        const int team_sim_size = 102;
+
+        protected int bills_kr_loc_season_1 = 0xE51DA; // 0xE50AA; // TSB3
+        const int bills_kr_loc_season_2 = 0xE5216;
+        const int bills_kr_loc_season_3 = 0xE5252;
+        // bills_kr_loc = 0xe50AB 
+        // colts_kr_loc = 0xe50AC 
+        // colts_kr_loc = 0xe50AD
 
         // Playbooks 
         /*  The order goes  * From Knobbe 
@@ -83,12 +88,17 @@ namespace TSBTool2
             28 teams from 93  :
             28 teams from 94  :
          */
-        protected int playbook_team_size = 8;// bytes, 1 nibble per play, 16 total plays; League size = E0
+        const int playbook_team_size = 8;// bytes, 1 nibble per play, 16 total plays; League size = E0
         protected int[] playbook_start = { 
             0xE5D26,// 1992 
             0xE5E16,
             0xE5F06
         };
+        
+        const int pro_bowl_ptr_location_season_1 = 0xE5000; // season 1
+        const int pro_bowl_ptr_location_season_2 = 0xE5002; // season 1
+        const int pro_bowl_ptr_location_season_3 = 0xE5004; // season 1
+        
         protected int pro_bowl_playbook = 0x5E07;
         #endregion
 
@@ -122,42 +132,10 @@ namespace TSBTool2
 
         private void Init()
         {
-            BYTES_PER_PLAYER = 5;
             BYTES_PER_QB = 6;
-
-            NAME_TABLE_SIZE = 0x4798;
-
-            BANK_1_PLAYER_ATTRIBUTES_START = 0x1ec800;
-            BANK_2_PLAYER_ATTRIBUTES_START = 0x1f4800;
-            BANK_3_PLAYER_ATTRIBUTES_START = 0x1fc800;
-
             // name_string_table_1
             tsb2_name_string_table_1_first_ptr = 0x1e8038;
-            tsb2_name_string_table_1_offset = 0x1e0000;
-
-            // name string table 2
-            tsb2_name_string_table_2_first_ptr = 0x1f0038;
-            tsb2_name_string_table_2_offset = 0x1e8000;
-
-            // name string table 3
-            tsb2_name_string_table_3_first_ptr = 0x1f8038;
-            tsb2_name_string_table_3_offset = 0x1f0000;
-
-            // Team name String table
-            tsb2_team_name_string_table_first_ptr = 0x7000;
-            tsb2_team_name_string_table_offset = -32768;
-            TEAM_NAME_STRING_TABLE_SIZE = 0x5c0;
-
-            schedule_start_season_1 = 0x16f00c; //data=050D060114130A0C1900
-            schedule_start_season_2 = 0x16f204; //data=0300050602010904160B 
-            schedule_start_season_3 = 0x16f418; //data=1119181406050E080701 
-
-            team_sim_start_season_1 = 0x1EE000;
-            team_sim_start_season_2 = 0x1F6000;
-            team_sim_start_season_3 = 0x1FE000;
-
-            team_sim_size = 102;
-
+            
             teams = new List<string>(){
 			    "bills",   "colts",  "dolphins", "patriots",  "jets",
 			    "bengals", "browns", "oilers",   "steelers",
@@ -168,11 +146,6 @@ namespace TSBTool2
 		    };
         }
 
-        //public virtual bool Init(string fileName)
-        //{
-        //    OutputRom = StaticUtils.ReadRom(fileName);
-        //    return OutputRom != null;
-        //}
         public virtual string RomVersion { get { return "SNES_TSB2"; } }
 
         // use this instead of directoy setting data in OutputRom
@@ -543,7 +516,10 @@ namespace TSBTool2
         {
             StaticUtils.CheckTSB2Args(season, team, position);
             int location = GetPlayerAttributeLocation(season, team, position) + 2;
-            SetByte(location, (byte)face);
+            byte lowNibble = StaticUtils.GetSecondNibble(OutputRom[location]);
+            byte highNibble = StaticUtils.GetFirstNibble((byte)face);
+            byte face_b = StaticUtils.CombineNibbles(highNibble, lowNibble);
+            SetByte(location, face_b);
         }
 
         public string GetPlayerName(int season, string team, string position, out byte playerNumber)
@@ -598,29 +574,90 @@ namespace TSBTool2
             StaticUtils.SetStringTableString(OutputRom, playerIndex, insertThis, first_ptr, offset, stringsInTable, NAME_TABLE_SIZE);
         }
 
-        public string GetTeamStuff(int season)
+        public string GetTeams(int season)
         {
             StringBuilder builder = new StringBuilder();
-            string team = "";
-            for (int i = 0; i < teams.Count; i++)
+            foreach(string team in teams)
+                GetTeam(season, team, builder);
+            if (ShowProBowlRosters)
             {
-                team = teams[i];
-                builder.Append("TEAM = ");
-                builder.Append(team);
-                builder.Append(",");
-                builder.Append(GetTeamSimData(season, team));
-                builder.Append("\n");
-                if (ShowPlaybooks)
-                {
-                    builder.Append(GetPlaybook(season, team));
-                    builder.Append("\n");
-                }
-                builder.Append(String.Format("TEAM_ABB={0},TEAM_CITY={1},TEAM_NAME={2}\n",
-                    GetTeamAbbreviation(i), GetTeamCity(i), GetTeamName(i)));
-                builder.Append(GetTeamPlayers(season, team));
+                GetProBowlTeam(season, Conference.AFC, builder);
+                GetProBowlTeam(season, Conference.NFC, builder);
             }
             string retVal = builder.ToString();
             return retVal;
+        }
+
+        private void GetTeam(int season, string team, StringBuilder builder)
+        {
+            int i = teams.IndexOf(team);
+            builder.Append("TEAM = ");
+            builder.Append(team);
+            builder.Append(",");
+            builder.Append(GetTeamSimData(season, team));
+            builder.Append("\n");
+            if (ShowPlaybooks)
+            {
+                builder.Append(GetPlaybook(season, team));
+                builder.Append("\n");
+            }
+            builder.Append(String.Format("TEAM_ABB={0},TEAM_CITY={1},TEAM_NAME={2}\n",
+                GetTeamAbbreviation(i), GetTeamCity(i), GetTeamName(i)));
+            builder.Append(GetTeamPlayers(season, team));
+        }
+
+        // QB1,004A  (74)  Marino is the 74th player
+        // conf, proBowlPos, team, pos
+        // AFC,QB2,oilers,QB1
+        private void GetProBowlTeam(int season, Conference conf, StringBuilder builder)
+        {
+            int location = GetProbowlTeamLocation(season, conf);
+            builder.Append(String.Format("# {0} ProBowl players\n", conf.ToString()));
+            string team = "";
+            string playerPos = "";
+            int playerPositionIndex = -1;
+            int playerIndex = -1;
+            int teamIndex = -1;
+            foreach (string pos in positionNames)
+            {
+                playerIndex = (OutputRom[location + 1] << 8) + OutputRom[location];
+                teamIndex = playerIndex / positionNames.Count;
+                playerPositionIndex = playerIndex % positionNames.Count;
+                playerPos = positionNames[playerPositionIndex];
+                team = teams[teamIndex];
+                builder.Append(string.Format("{0},{1},{2},{3}\n", conf.ToString(),pos,team,playerPos));
+                //builder.Append(String.Format("{0},{1:X2}{2:X2}  ({3})\n",pos, OutputRom[location + 1], OutputRom[location],(OutputRom[location + 1]<<8) + OutputRom[location]));
+                location += 2;
+            }
+            builder.Append("\n");
+        }
+
+        
+        public void SetProBowlPlayer(int season, Conference conf, String proBowlPos, String fromTeam, TSBPlayer fromTeamPos)
+        {
+            int playerIndex = teams.IndexOf(fromTeam) * positionNames.Count + (int)fromTeamPos;
+            int location = GetProbowlTeamLocation(season, conf) + 2 * positionNames.IndexOf(proBowlPos);
+            // pi:0x004a ==> 4a 00
+            byte b1 = (byte)(playerIndex >> 8);
+            byte b2 = (byte)(playerIndex & 0x00FF);
+            SetByte(location, b2);
+            SetByte(location + 1, b1);
+        }
+
+        private int GetProbowlTeamLocation(int season, Conference conf)
+        {
+            int ptr_location = pro_bowl_ptr_location_season_1;
+            switch (season)
+            {
+                case 2: ptr_location = pro_bowl_ptr_location_season_2; break;
+                case 3: ptr_location = pro_bowl_ptr_location_season_3; break;
+            }
+            if (conf == Conference.NFC)
+                ptr_location += 6;
+            int location = (OutputRom[ptr_location + 1] << 8) + OutputRom[ptr_location];
+            int offset = 0xD8000; //0xd012 + offset = 0xe5012: 
+            location += offset;
+            return location;
         }
 
         protected int GetSimLocation(int season, string team, string position)
@@ -694,7 +731,6 @@ namespace TSBTool2
             }
         }
 
-
         public virtual void SetSkillSimData(int season, string team, string pos, int[] data)
         {
             int loc = GetSimLocation(season, team, pos);
@@ -758,7 +794,11 @@ namespace TSBTool2
             {
                 GetPlayer(season, team, builder, position);
             }
-            builder.Append("\n");
+            builder.Append("KR,");
+            builder.Append(GetKickReturner(season, team));
+            builder.Append("\nPR,");
+            builder.Append(GetPuntReturner(season, team));
+            builder.Append("\n\n");
 
             string retVal = builder.ToString();
             return retVal;
@@ -834,15 +874,28 @@ namespace TSBTool2
         public static int GetTeamIndex(string team) { return teams.IndexOf(team); }
         public static string GetTeamFromIndex(int i) { return teams[i]; }
 
+        public virtual int GetPlaybookLocation(int season, string team)
+        {
+            int playbookLocation = -1;
+            if (team.ToUpper() == "AFC")
+                playbookLocation = playbook_start[0] + 28 * playbook_team_size;
+            else if (team.ToUpper() == "NFC")
+                playbookLocation = playbook_start[0] + 29 * playbook_team_size;
+            else
+            {
+                StaticUtils.CheckTSB2Args(season, team);
+                playbookLocation = playbook_start[season - 1] + teams.IndexOf(team) * playbook_team_size;
+            }
+            return playbookLocation;
+        }
+
         /// <summary>
         /// runs = r12345678
         /// pass = p12345678
         /// </summary>
         public void SetPlaybook(int season, string team, string runs, string passes)
         {
-            //TODO: Special case AFC & NFC
-            StaticUtils.CheckTSB2Args(season, team);
-            int playbookLocation = playbook_start[season - 1] + teams.IndexOf(team) *playbook_team_size;
+            int playbookLocation = GetPlaybookLocation(season, team);
             byte[] runBytes = StaticUtils.GetHexBytes(runs.Substring(1));
             byte[] passBytes = StaticUtils.GetHexBytes(passes.Substring(1));
             // playbook 1
@@ -869,16 +922,7 @@ namespace TSBTool2
 
         public string GetPlaybook(int season, string team)
         {
-            int playbookLocation = -1;
-            if( team.ToUpper() == "AFC" )
-                playbookLocation = playbook_start[0] + 28 * playbook_team_size;
-            else if (team.ToUpper() == "NFC")
-                playbookLocation = playbook_start[0] + 29 * playbook_team_size;
-            else
-            {
-                StaticUtils.CheckTSB2Args(season, team);
-                playbookLocation = playbook_start[season - 1] + teams.IndexOf(team) * playbook_team_size;
-            }
+            int playbookLocation = GetPlaybookLocation(season, team);
             string retVal = string.Format("PLAYBOOK R{0:X2}{1:X2}{2:X2}{3:X2}, P{4:X2}{5:X2}{6:X2}{7:X2} ",
                 OutputRom[playbookLocation],    OutputRom[playbookLocation + 1], // runs
                 OutputRom[playbookLocation + 4],OutputRom[playbookLocation + 5],
@@ -890,7 +934,7 @@ namespace TSBTool2
 
         public void SetYear(string year)
         {
-            //TODO
+            //TODO ???
         }
 
 
@@ -900,10 +944,10 @@ namespace TSBTool2
 @"# TSBTool2 forum: https://tecmobowl.org/forums/topic/71051-initial-tsb2-snes-editor/
 # TSB2 Hacking documentation: https://tecmobowl.org/forums/topic/53028-tecmo-super-bowl-ii-hackingresource-documentation/
 # Key 
-# Team SimData is kinda unknown 
 # 'SET' commands are supported
 # Double click on a team name (or playbook) to bring up the edit Team GUI.
-# Double click on a player to bring up the edit player GUI.
+# Double click on a player to bring up the edit player GUI (Click 'Sim Data'
+#   button to find out more on Sim Data).
 # Attribute Order
 # QBs   RS RP MS HP BB PS PC PA AR CO [sim vals]
 # Skill RS RP MS HP BB BC RC [sim vals]
@@ -918,17 +962,17 @@ namespace TSBTool2
         {
             StringBuilder builder = new StringBuilder(10000);
             builder.Append("SEASON 1\n");
-            builder.Append(GetTeamStuff(1));
+            builder.Append(GetTeams(1));
             if(ShowSchedule)
                 builder.Append(GetSchedule(1));
 
             builder.Append("SEASON 2\n");
-            builder.Append(GetTeamStuff(2));
+            builder.Append(GetTeams(2));
             if (ShowSchedule)
                 builder.Append(GetSchedule(2));
 
             builder.Append("SEASON 3\n");
-            builder.Append(GetTeamStuff(3));
+            builder.Append(GetTeams(3));
             if (ShowSchedule)
                 builder.Append(GetSchedule(3));
             return builder.ToString();
@@ -940,20 +984,52 @@ namespace TSBTool2
             builder.Append("SEASON ");
             builder.Append(season);
             builder.Append("\n");
-            builder.Append(GetTeamStuff(season));
+            builder.Append(GetTeams(season));
             if (ShowSchedule)
                 builder.Append(GetSchedule(season));
             return builder.ToString();
         }
 
-        public virtual void SetKickReturner(int season, string team, string position)
+        protected virtual int GetKickReturnLocation(int season, string team)
         {
-            //TODO
+            int location = bills_kr_loc_season_1;
+            switch (season)
+            {
+                case 2: location = bills_kr_loc_season_2; break;
+                case 3: location = bills_kr_loc_season_3; break; 
+            }
+            location += (2 * teams.IndexOf(team));
+            return location;
         }
 
-        public virtual void SetPuntReturner(int season, string team, string position)
+        public void SetKickReturner(int season, string team, string position)
         {
-            //TODO
+            int location = GetKickReturnLocation(season, team);
+            int pos_num = positionNames.IndexOf(position);
+            SetByte(location, (byte)pos_num);
+        }
+
+        public void SetPuntReturner(int season, string team, string position)
+        {
+            int location = 1 + GetKickReturnLocation(season, team);
+            int pos_num = positionNames.IndexOf(position);
+            SetByte(location, (byte)pos_num);
+        }
+
+        protected string GetPuntReturner(int season, string team)
+        {
+            int location = 1 + GetKickReturnLocation(season, team);
+            int pos_num = OutputRom[location];
+            string pos = positionNames[pos_num];
+            return pos;
+        }
+
+        protected string GetKickReturner(int season, string team)
+        {
+            int location = GetKickReturnLocation(season, team);
+            int pos_num = OutputRom[location];
+            string pos = positionNames[pos_num];
+            return pos;
         }
 
         public virtual void ApplySchedule(int season, List<string> scheduleList)

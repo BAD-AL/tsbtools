@@ -347,6 +347,7 @@ namespace TSBTool2
             // RichTextDisplay
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.CancelButton = this.mCancelButton;
             this.ClientSize = new System.Drawing.Size(692, 566);
             this.Controls.Add(this.mOkButton);
             this.Controls.Add(this.mCancelButton);

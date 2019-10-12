@@ -6,9 +6,7 @@ using System.Text;
 namespace TSBTool2
 {
     // TODO: 
-    // Free Agents.
     // handle Player Photos
-    // TSB3 Schedule Handling
     public class TSB3Tool : TSBTool2.TSB2Tool
     {
         public static bool IsTecmoSuperBowl3Rom(byte[] rom)
@@ -44,27 +42,16 @@ namespace TSBTool2
                 "49ers", "saints", "falcons", "rams", "panthers",  
             };
 
+        /// <summary>
+        /// Overrides for setting up locations
+        /// </summary>
         private void Init()
         {
-            BYTES_PER_PLAYER = 5; // SAME as TSB2
             BYTES_PER_QB = 7;
-            NAME_TABLE_SIZE = 0x4798; // SAME as TSB2
-            BANK_1_PLAYER_ATTRIBUTES_START = 0x1ec800;// same as TSB2 
             // name_string_table_1
             tsb2_name_string_table_1_first_ptr = 0x1e8038 + 8;
-            tsb2_name_string_table_1_offset = 0x1e0000; // SAME as TSB2 
+            bills_kr_loc_season_1 =  0xE50AA; // TSB3
 
-            // Team name String table
-            tsb2_team_name_string_table_first_ptr = 0x7000;// SAME as TSB2
-            tsb2_team_name_string_table_offset = -32768;// SAME as TSB2
-            TEAM_NAME_STRING_TABLE_SIZE = 0x5c0;// We'll go with the same size here as TSB2
-
-            schedule_start_season_1 = 0x16f00c; //data=050D060114130A0C1900 // SAME as TSB2
-
-            team_sim_start_season_1 = 0x1EE000; //???
-
-            team_sim_size = 102;
-            //return base.Init(fileName);
             teams = new List<string>(){
                 "bills", "colts", "dolphins", "patriots", "jets",
                 "bengals", "browns", "oilers", "jaguars", "steelers",
@@ -73,6 +60,27 @@ namespace TSBTool2
                 "bears", "lions", "packers", "vikings", "buccaneers",
                 "falcons", "panthers", "saints", "rams", "49ers", "freeAgents", "allTime"
             };
+        }
+
+
+        public override string GetKey()
+        {
+            return
+@"# TSBTool2 forum: https://tecmobowl.org/forums/topic/71051-initial-tsb2-snes-editor/
+# TSBIII Hacking documentation: https://tecmobowl.org/forums/topic/53029-tecmo-super-bowl-iii-hackingresource-documentation/
+# Key 
+# 'SET' commands are supported
+# Double click on a team name (or playbook) to bring up the edit Team GUI.
+# Double click on a player to bring up the edit player GUI (Click 'Sim Data'
+#   button to find out more on Sim Data).
+# Attribute Order
+# QBs   RS RP MS HP BB AG PS PC PA AR CO [sim vals]
+# Skill RS RP MS HP BB AG BC RC [sim vals]
+# OL    RS RP MS HP BB AG 
+# DEF   RS RP MS HP BB AG PI QU [sim vals]
+# K     RS RP MS HP BB AG KP KA AB [sim val]
+# P     RS RP MS HP BB AG KP AB [sim val]
+";
         }
         
         internal override void GetPlayer(int season, string team, StringBuilder builder, string position)
@@ -215,7 +223,7 @@ namespace TSBTool2
             byte kp_ka = StaticUtils.CombineNibbles(abilities[6], abilities[7]);
             
             byte unk1 = StaticUtils.GetSecondNibble(OutputRom[location + 5]);
-            byte ab_unk1 = StaticUtils.CombineNibbles(abilities[8], unk1);// TODO: check this function
+            byte ab_unk1 = StaticUtils.CombineNibbles(abilities[8], unk1);
 
             SetByte(location    , rs_rp);
             SetByte(location + 1, ms_hp);
@@ -237,7 +245,7 @@ namespace TSBTool2
             byte ag = StaticUtils.GetSecondNibble(OutputRom[location + 2]);
 
             byte kp = StaticUtils.GetFirstNibble(OutputRom[location + 4]);
-            byte ab = StaticUtils.GetSecondNibble(OutputRom[location + 4]); // TODO: check this function
+            byte ab = StaticUtils.GetSecondNibble(OutputRom[location + 4]);
             
             byte[] attrs = new byte[] { rs, rp, ms, hp, bb, ag, kp, ab };
             string retVal = StaticUtils.MapAttributes(attrs);
@@ -350,14 +358,14 @@ namespace TSBTool2
 
         public override string GetSchedule(int season)
         {
-            SNES_ScheduleHelper helper = new SNES_ScheduleHelper(this);
+            SNES_TSB3_ScheduleHelper helper = new SNES_TSB3_ScheduleHelper(this);
             helper.SetWeekOneLocation(schedule_start_season_1, seventeenWeeks, scheduleTeamOrder);
             return helper.GetSchedule();
         }
 
         public override void ApplySchedule(int season, List<string> scheduleList)
         {
-            SNES_ScheduleHelper helper = new SNES_ScheduleHelper(this);
+            SNES_TSB3_ScheduleHelper helper = new SNES_TSB3_ScheduleHelper(this);
             helper.SetWeekOneLocation(schedule_start_season_1, seventeenWeeks, scheduleTeamOrder);
             helper.ApplySchedule(scheduleList);
         }
