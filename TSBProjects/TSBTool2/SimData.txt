@@ -1,29 +1,34 @@
-﻿#Sim data Guide
-#https://tecmobowl.org/forums/topic/2968-simulation-hex-values-for-tsb-iii-snes/
-#FYI: nibble = hex digit
-#Free Agent Value (TSB3 only): Is used in simming. Higher is better. 
-#	It is the second nibble of 'Face'. Example: Face=0x89 --> Free Agent value = 9
-#*********QBs*********
-#QB byte 1 Sim Carries [00-1C]: Higher value => More rushes & less pass attempts
-#QB Byte 2 Sim Rushing ability[00-08]:  00=> Marino, 08=> Steve Young
-#QB byte 3, nibble 1 Passing ability (completion %)[1-F]: 1 => Scott Zolak, F => Steve Young
-#QB byte 3, nibble 2 sim scramble[0-3]: 0 => Dan Marino, 3 => Randall Cunningham
-#
-#*********Skill Players*********
-#Byte 1: Rushing Ability [00-AD]
-#Byte 2: Sim Carries [00-0B]
-#Byte 3: Sim Return  ????
-#Byte 4 nibble 1: Sim yards per catch
-#Byte 4 nibble 2: Sim catches 
-#
-#*********Defense*********
-#Byte 1: Sim Sacking 
-#Byte 2: Sim Interception
-#Byte 3: Sim Tackling 
-#
-#*********K/P*********
-#Nibble 1: Kicking/punting ability
-#
-#****************************************************************************
-#If you run tests and find out more about TSB2 or TSB3 sim attributes, please 
-#comment in the forum mentioned above.
+﻿Sim data Guide
+https://tecmobowl.org/forums/topic/2968-simulation-hex-values-for-tsb-iii-snes/
+FYI: nibble = hex digit
+Free Agent Value (TSB3 only): Is used in simming. Higher is better. 
+	It is the second nibble of 'Face'. Example: Face=0x89 --> Free Agent value = 9
+*********QBs*********
+QB byte 1 Sim Carries [00-1C]: Higher value => More rushes & less pass attempts
+QB Byte 2 Sim Rushing ability[00-08]:  00=> Marino, 08=> Steve Young
+QB byte 3, nibble 1 Passing ability (completion %)[1-F]: 1 => Scott Zolak, F => Steve Young
+QB byte 3, nibble 2 sim scramble[0-3]: 0 => Dan Marino, 3 => Randall Cunningham
+
+*********Skill Players*********
+Byte 1: Rushing Ability [00-AD]
+Byte 2: Sim Carries [00-0B]
+Byte 3: Sim Return  ????
+Byte 4 nibble 1: Sim yards per catch
+Byte 4 nibble 2: Sim catches 
+
+*********Defense*********
+Byte 1: Sim Sacking 
+Byte 2: Sim Interception
+Byte 3: Sim Tackling 
+
+*********K/P*********
+Nibble 1: Kicking/punting ability
+
+****************************************************************************
+If you run tests and find out more about TSB2 or TSB3 sim attributes, please 
+comment in the forum mentioned above.
+
+*************** AUTO UPDATE SIM VALUES *************************************
+The 'Auto Update Sim'  Formulas are located in 'Formulas\SIM_Formulas.txt'
+The 'Free agent point' Formulas are located in 'Formulas\FAP_Formulas.txt'
+If those files are not present, TSBTool2 will use the default values (which are stored internally).

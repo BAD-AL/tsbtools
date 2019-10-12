@@ -734,7 +734,17 @@ When converting from TSB1 --> TSB2 a 'Auto-update' sim data operation is perform
             {
                 formula = formula.Replace(sub_parts[i].Trim(), parts[i]);
             }
-            double result =(double)sDataTable.Compute(formula, "");
+            double result = 0;
+            try
+            {
+                string r = sDataTable.Compute(formula, "").ToString();
+                result = Double.Parse(r);
+            }
+            catch (Exception)
+            {
+                throw new ArgumentException(String.Format(
+                    "Error calculating FreeAgentPoints for '{0}' Tried to compute:'{1}'", input, formula));
+            }
             byte fap = (byte)Math.Round(result);
             if (fap < 0) fap = 0;
             else if (fap > 0x0F) fap = 0x0F;

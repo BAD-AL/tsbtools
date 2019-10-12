@@ -53,6 +53,8 @@ namespace TSBTool2
             {
                 state2();
                 UpdateTitle(filename);
+                if (!tool.RomVersion.Contains("TSB2"))
+                    seasonToolStripMenuItem.Enabled = false;
             }
             else
                 state1();
@@ -203,6 +205,8 @@ Version " + MainClass.version
             {
                 EditTeams();
             }
+            else if (line.StartsWith("AFC") || line.StartsWith("NFC"))
+                EditProBowlPlayers();
             //else if (line.IndexOf("COLORS") > -1)
             //{
             //    ModifyColors();
@@ -409,8 +413,15 @@ Version " + MainClass.version
             if (MessageBox.Show("Warning! This is a text change operation, the text will be changed to a format compatible with TSB3\nDo you wish to continue?",
                     "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
-                string output = TSB3Converter.ConvertToTSB3FromTSB2(mTextBox.Text);
-                SetText(output);
+                try
+                {
+                    string output = TSB3Converter.ConvertToTSB3FromTSB2(mTextBox.Text);
+                    SetText(output);
+                }
+                catch(Exception ex)
+                {
+                    StaticUtils.ShowError(ex.ToString());
+                }
             }
         }
 
@@ -488,6 +499,25 @@ Version " + MainClass.version
             EditTeams();
         }
 
+        private void EditProBowlPlayers()
+        {
+            try
+            {
+                AllStarForm form = new AllStarForm();
+                form.Data = mTextBox.Text;
+                if (form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    SetText(form.Data);
+                }
+                form.Dispose();
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(String.Concat("Error in ALLStarForm. \n", err.Message, "\n", err.StackTrace), "Error!!",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void loadTextFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
@@ -516,6 +546,11 @@ Version " + MainClass.version
             {
                 this.mTextBox.SaveFile(fileName, RichTextBoxStreamType.PlainText);
             }
+        }
+
+        private void editProBowlToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            EditProBowlPlayers();
         }
     }
 }

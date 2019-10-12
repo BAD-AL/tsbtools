@@ -1,4 +1,4 @@
-﻿namespace TSBTool
+﻿namespace TSBTool2
 {
     partial class AllStarForm
     {
@@ -33,9 +33,9 @@
             this.mCancelButton = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.mAFCConfrenceControl = new TSBTool.AllStarConfrenceControl();
+            this.mAFCConfrenceControl = new TSBTool2.AllStarConfrenceControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.mNFCConfrenceControl = new TSBTool.AllStarConfrenceControl();
+            this.mNFCConfrenceControl = new TSBTool2.AllStarConfrenceControl();
             this.mToggleNumberOfComboBoxesButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -95,7 +95,7 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.mAFCConfrenceControl.AutoScroll = true;
-            this.mAFCConfrenceControl.Conference = TSBTool.Conference.AFC;
+            this.mAFCConfrenceControl.Conference = TSBTool2.Conference.AFC;
             this.mAFCConfrenceControl.Data = null;
             this.mAFCConfrenceControl.Location = new System.Drawing.Point(3, 3);
             this.mAFCConfrenceControl.Name = "mAFCConfrenceControl";
@@ -120,7 +120,7 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.mNFCConfrenceControl.AutoScroll = true;
-            this.mNFCConfrenceControl.Conference = TSBTool.Conference.NFC;
+            this.mNFCConfrenceControl.Conference = TSBTool2.Conference.NFC;
             this.mNFCConfrenceControl.Data = null;
             this.mNFCConfrenceControl.Location = new System.Drawing.Point(3, 3);
             this.mNFCConfrenceControl.Name = "mNFCConfrenceControl";

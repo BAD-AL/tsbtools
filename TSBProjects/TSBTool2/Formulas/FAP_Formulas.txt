@@ -7,6 +7,9 @@
 # DEF   RS RP MS HP BB AG PI QU [sim vals]
 # K     RS RP MS HP BB AG KP KA AB [sim val]
 # P     RS RP MS HP BB AG KP AB [sim val]
+#
+# No Hex values allowed in formulas
+
 FAP_QB: (PS+PC+AR)/15
 FAP_RB: ((MS+BC+RC)-110)/4
 FAP_WR: ((RC -38 + MS - 38)/3) -2

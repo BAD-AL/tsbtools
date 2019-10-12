@@ -34,6 +34,8 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.applyToROMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewContentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadTextFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveTextFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.playbooksToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,16 +55,15 @@
             this.convertToTSB2TextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertToTSB1TextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tsb3ToTsb2Item = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsb2ToTsb3Item = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutConvertingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutTSBTool2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mLoadButton = new System.Windows.Forms.Button();
             this.mViewContentsButton = new System.Windows.Forms.Button();
             this.mApplyButton = new System.Windows.Forms.Button();
-            this.loadTextFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveTextFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mTextBox = new TSBTool2.SearchTextBox();
-            this.tsb2ToTsb3Item = new System.Windows.Forms.ToolStripMenuItem();
+            this.editProBowlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -114,6 +115,20 @@
             this.viewContentsToolStripMenuItem.Text = "View Contents";
             this.viewContentsToolStripMenuItem.Click += new System.EventHandler(this.viewContentsAction);
             // 
+            // loadTextFileToolStripMenuItem
+            // 
+            this.loadTextFileToolStripMenuItem.Name = "loadTextFileToolStripMenuItem";
+            this.loadTextFileToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.loadTextFileToolStripMenuItem.Text = "Load Text File";
+            this.loadTextFileToolStripMenuItem.Click += new System.EventHandler(this.loadTextFileToolStripMenuItem_Click);
+            // 
+            // saveTextFileToolStripMenuItem
+            // 
+            this.saveTextFileToolStripMenuItem.Name = "saveTextFileToolStripMenuItem";
+            this.saveTextFileToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
+            this.saveTextFileToolStripMenuItem.Text = "Save Text File";
+            this.saveTextFileToolStripMenuItem.Click += new System.EventHandler(this.saveTextFileToolStripMenuItem_Click);
+            // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
@@ -129,7 +144,8 @@
             this.scheduleToolStripMenuItem,
             this.proBowlToolStripMenuItem,
             this.editPlayersToolStripMenuItem,
-            this.editTeamsToolStripMenuItem});
+            this.editTeamsToolStripMenuItem,
+            this.editProBowlToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "&View";
@@ -140,7 +156,7 @@
             this.playbooksToolStripMenuItem.CheckOnClick = true;
             this.playbooksToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.playbooksToolStripMenuItem.Name = "playbooksToolStripMenuItem";
-            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.playbooksToolStripMenuItem.Text = "Playbooks";
             this.playbooksToolStripMenuItem.Click += new System.EventHandler(this.playbooksToolStripMenuItem_Click);
             // 
@@ -150,7 +166,7 @@
             this.simDataToolStripMenuItem.CheckOnClick = true;
             this.simDataToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.simDataToolStripMenuItem.Name = "simDataToolStripMenuItem";
-            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.simDataToolStripMenuItem.Text = "Sim Data";
             this.simDataToolStripMenuItem.Click += new System.EventHandler(this.simDataToolStripMenuItem_Click);
             // 
@@ -160,7 +176,7 @@
             this.scheduleToolStripMenuItem.CheckOnClick = true;
             this.scheduleToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.scheduleToolStripMenuItem.Name = "scheduleToolStripMenuItem";
-            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scheduleToolStripMenuItem.Text = "Schedule";
             this.scheduleToolStripMenuItem.Click += new System.EventHandler(this.scheduleToolStripMenuItem_Click);
             // 
@@ -170,21 +186,21 @@
             this.proBowlToolStripMenuItem.CheckOnClick = true;
             this.proBowlToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.proBowlToolStripMenuItem.Name = "proBowlToolStripMenuItem";
-            this.proBowlToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.proBowlToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.proBowlToolStripMenuItem.Text = "Pro Bowl";
             this.proBowlToolStripMenuItem.Click += new System.EventHandler(this.proBowlToolStripMenuItem_Click);
             // 
             // editPlayersToolStripMenuItem
             // 
             this.editPlayersToolStripMenuItem.Name = "editPlayersToolStripMenuItem";
-            this.editPlayersToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.editPlayersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.editPlayersToolStripMenuItem.Text = "Edit &Players";
             this.editPlayersToolStripMenuItem.Click += new System.EventHandler(this.editPlayersToolStripMenuItem_Click);
             // 
             // editTeamsToolStripMenuItem
             // 
             this.editTeamsToolStripMenuItem.Name = "editTeamsToolStripMenuItem";
-            this.editTeamsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.editTeamsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.editTeamsToolStripMenuItem.Text = "Edit &Teams";
             this.editTeamsToolStripMenuItem.Click += new System.EventHandler(this.editTeamsToolStripMenuItem_Click);
             // 
@@ -281,6 +297,13 @@
             this.tsb3ToTsb2Item.Text = "TSB3 --> TSB2";
             this.tsb3ToTsb2Item.Click += new System.EventHandler(this.tsb3ToTsb2Item_Click);
             // 
+            // tsb2ToTsb3Item
+            // 
+            this.tsb2ToTsb3Item.Name = "tsb2ToTsb3Item";
+            this.tsb2ToTsb3Item.Size = new System.Drawing.Size(169, 22);
+            this.tsb2ToTsb3Item.Text = "TSB2 --> TSB3";
+            this.tsb2ToTsb3Item.Click += new System.EventHandler(this.tsb2ToTsb3Item_Click);
+            // 
             // aboutConvertingToolStripMenuItem
             // 
             this.aboutConvertingToolStripMenuItem.Name = "aboutConvertingToolStripMenuItem";
@@ -336,20 +359,6 @@
             this.mApplyButton.UseVisualStyleBackColor = true;
             this.mApplyButton.Click += new System.EventHandler(this.mApplyButton_Click);
             // 
-            // loadTextFileToolStripMenuItem
-            // 
-            this.loadTextFileToolStripMenuItem.Name = "loadTextFileToolStripMenuItem";
-            this.loadTextFileToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.loadTextFileToolStripMenuItem.Text = "Load Text File";
-            this.loadTextFileToolStripMenuItem.Click += new System.EventHandler(this.loadTextFileToolStripMenuItem_Click);
-            // 
-            // saveTextFileToolStripMenuItem
-            // 
-            this.saveTextFileToolStripMenuItem.Name = "saveTextFileToolStripMenuItem";
-            this.saveTextFileToolStripMenuItem.Size = new System.Drawing.Size(159, 22);
-            this.saveTextFileToolStripMenuItem.Text = "Save Text File";
-            this.saveTextFileToolStripMenuItem.Click += new System.EventHandler(this.saveTextFileToolStripMenuItem_Click);
-            // 
             // mTextBox
             // 
             this.mTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -366,12 +375,12 @@
             this.mTextBox.Text = "";
             this.mTextBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.mTextBox_MouseDoubleClick);
             // 
-            // tsb2ToTsb3Item
+            // editProBowlToolStripMenuItem
             // 
-            this.tsb2ToTsb3Item.Name = "tsb2ToTsb3Item";
-            this.tsb2ToTsb3Item.Size = new System.Drawing.Size(169, 22);
-            this.tsb2ToTsb3Item.Text = "TSB2 --> TSB3";
-            this.tsb2ToTsb3Item.Click += new System.EventHandler(this.tsb2ToTsb3Item_Click);
+            this.editProBowlToolStripMenuItem.Name = "editProBowlToolStripMenuItem";
+            this.editProBowlToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editProBowlToolStripMenuItem.Text = "Edit Pro Bowl";
+            this.editProBowlToolStripMenuItem.Click += new System.EventHandler(this.editProBowlToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -430,6 +439,7 @@
         private System.Windows.Forms.ToolStripMenuItem loadTextFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveTextFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tsb2ToTsb3Item;
+        private System.Windows.Forms.ToolStripMenuItem editProBowlToolStripMenuItem;
 	}
 }
 

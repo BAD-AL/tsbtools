@@ -31,7 +31,18 @@ namespace TSBTool2
                 if (line.StartsWith("#"))
                     builder.Append(line);
                 else if (IsPlayerLine(line))
-                    builder.Append(UpdatePlayerSimValues(line, gameVersion));
+                {
+                    try
+                    {
+                        builder.Append(UpdatePlayerSimValues(line, gameVersion));
+                    }
+                    catch (Exception ex)
+                    {
+                        StaticUtils.ShowError("Error Processing line: " + line + 
+                            "\nOperation not applied" + ex.ToString());
+                        return text;
+                    }
+                }
                 else
                     builder.Append(line);
 
@@ -151,14 +162,23 @@ namespace TSBTool2
 
         private static double Calculate(string formulaName, string substString, string[] playerParts, int min, int max)
         {
+            double result = 0;
             string formula = GetFormula(formulaName);
             string[] sub_parts = substString.Split(",".ToCharArray());
             for (int i = 4; i < sub_parts.Length; i++) // start at 'RS'
             {
                 formula = formula.Replace(sub_parts[i].Trim(), playerParts[i]);
             }
-            string r = sDataTable.Compute(formula, "").ToString();
-            double result = Double.Parse(r);
+            try
+            {
+                string r = sDataTable.Compute(formula, "").ToString();
+                result = Double.Parse(r);
+            }
+            catch (Exception )
+            {
+                throw new ArgumentException(String.Format(
+                    "Error processing formula '{0}'\nTrying to calculate:'{1}'", formulaName, formula));
+            }
             if (result < min)
                 result = min;
             else if (result > max)
@@ -172,7 +192,7 @@ namespace TSBTool2
             Regex formulaRegex = new Regex(String.Format("^\\s*{0}\\s*:\\s*(.*)$", formulaName), RegexOptions.Multiline);
             Match m = formulaRegex.Match(SimFormulas);
             if (m != Match.Empty)
-                retVal = m.Groups[1].ToString();
+                retVal = m.Groups[1].ToString().Trim();
             return retVal;
         }
 

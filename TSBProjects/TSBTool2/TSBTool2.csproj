@@ -50,6 +50,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AllStarConfrenceControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AllStarConfrenceControl.designer.cs">
+      <DependentUpon>AllStarConfrenceControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AllStarForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AllStarForm.designer.cs">
+      <DependentUpon>AllStarForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AllstarPlayerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AllstarPlayerControl.designer.cs">
+      <DependentUpon>AllstarPlayerControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ModifyPlayerForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -146,6 +164,18 @@
     <Compile Include="TSB2Tool.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AllStarConfrenceControl.resx">
+      <DependentUpon>AllStarConfrenceControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AllStarForm.resx">
+      <DependentUpon>AllStarForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AllstarPlayerControl.resx">
+      <DependentUpon>AllstarPlayerControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Images\00.png" />
     <EmbeddedResource Include="Images\80.png" />
     <EmbeddedResource Include="Formulas\FAP_Formulas.txt">

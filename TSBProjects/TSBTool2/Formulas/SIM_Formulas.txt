@@ -9,6 +9,7 @@
 # P     RS RP MS HP BB AG KP AB [sim val]
 # Allowed operations:
 # https://docs.microsoft.com/en-us/dotnet/api/system.data.datacolumn.expression?redirectedfrom=MSDN&view=netframework-3.5#System_Data_DataColumn_Expression
+# No Hex values allowed in formulas 
 #*********QBs*********
 #QB SIM CARY [00-1C]: Higher value => More rushes & less pass attempts
 #QB SIM RUSHING QB Byte 2 Sim Rushing ability[00-08]:  00=> Marino, 08=> Steve Young
