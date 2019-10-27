@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using TSBTool2;
 
-namespace TSBTool2
+namespace TSBTool2_UI
 {
     public partial class TeamForm : Form
     {
@@ -299,6 +299,31 @@ namespace TSBTool2
         private void teamValueTextBox_Leave(object sender, EventArgs e)
         {
             UpdateData();
+        }
+
+        private void updateTeamsSimButton_Click(object sender, EventArgs e)
+        {
+            DefensiveSimUpdater dsu = new DefensiveSimUpdater();
+            dsu.Data = mData;
+            List<string> teams = new List<string>( m_TeamsComboBox.Items.Count);
+            foreach (object team in m_TeamsComboBox.Items) teams.Add(team.ToString());
+            dsu.UpdateTeamsSimDefense(1, teams);
+            this.mData = dsu.Data;
+        }
+
+        private void updateTeamSimData_Click(object sender, EventArgs e)
+        {
+            DefensiveSimUpdater dsu = new DefensiveSimUpdater();
+            dsu.Data = mData;
+            try
+            {
+                string result = "0x" + dsu.UpdateTeamSimDefense(1, CurrentTeam).ToUpper();
+                mSimDataTextBox.Text = result;
+            }
+            catch (Exception ex)
+            {
+                StaticUtils.ShowError(ex.ToString());
+            }
         }
 
     }

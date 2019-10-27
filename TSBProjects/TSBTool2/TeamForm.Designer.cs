@@ -1,4 +1,4 @@
-﻿namespace TSBTool2
+﻿namespace TSBTool2_UI
 {
     partial class TeamForm
     {
@@ -55,6 +55,8 @@
             this.mTeamNameTextBox = new System.Windows.Forms.TextBox();
             this.mOkButton = new System.Windows.Forms.Button();
             this.mCancelButton = new System.Windows.Forms.Button();
+            this.mAutoUpdateTeamSimDataButton = new System.Windows.Forms.Button();
+            this.updateTeamSimData = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.R4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.R3)).BeginInit();
@@ -89,7 +91,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(269, 517);
+            this.label2.Location = new System.Drawing.Point(247, 517);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(72, 16);
             this.label2.TabIndex = 6;
@@ -98,7 +100,7 @@
             // mPlaybookTextBox
             // 
             this.mPlaybookTextBox.BackColor = System.Drawing.SystemColors.InactiveCaption;
-            this.mPlaybookTextBox.Location = new System.Drawing.Point(352, 514);
+            this.mPlaybookTextBox.Location = new System.Drawing.Point(330, 514);
             this.mPlaybookTextBox.Name = "mPlaybookTextBox";
             this.mPlaybookTextBox.ReadOnly = true;
             this.mPlaybookTextBox.Size = new System.Drawing.Size(222, 20);
@@ -348,6 +350,28 @@
             this.mCancelButton.Text = "&Cancel";
             this.mCancelButton.UseVisualStyleBackColor = false;
             // 
+            // mAutoUpdateTeamSimDataButton
+            // 
+            this.mAutoUpdateTeamSimDataButton.BackColor = System.Drawing.Color.DodgerBlue;
+            this.mAutoUpdateTeamSimDataButton.Location = new System.Drawing.Point(333, 575);
+            this.mAutoUpdateTeamSimDataButton.Name = "mAutoUpdateTeamSimDataButton";
+            this.mAutoUpdateTeamSimDataButton.Size = new System.Drawing.Size(142, 58);
+            this.mAutoUpdateTeamSimDataButton.TabIndex = 15;
+            this.mAutoUpdateTeamSimDataButton.Text = "Auto Update All Teams Sim Data";
+            this.mAutoUpdateTeamSimDataButton.UseVisualStyleBackColor = false;
+            this.mAutoUpdateTeamSimDataButton.Click += new System.EventHandler(this.updateTeamsSimButton_Click);
+            // 
+            // updateTeamSimData
+            // 
+            this.updateTeamSimData.BackColor = System.Drawing.Color.DodgerBlue;
+            this.updateTeamSimData.Location = new System.Drawing.Point(330, 537);
+            this.updateTeamSimData.Name = "updateTeamSimData";
+            this.updateTeamSimData.Size = new System.Drawing.Size(145, 32);
+            this.updateTeamSimData.TabIndex = 16;
+            this.updateTeamSimData.Text = "Update Team Sim Data";
+            this.updateTeamSimData.UseVisualStyleBackColor = false;
+            this.updateTeamSimData.Click += new System.EventHandler(this.updateTeamSimData_Click);
+            // 
             // TeamForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -356,6 +380,8 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.CancelButton = this.mCancelButton;
             this.ClientSize = new System.Drawing.Size(712, 667);
+            this.Controls.Add(this.updateTeamSimData);
+            this.Controls.Add(this.mAutoUpdateTeamSimDataButton);
             this.Controls.Add(this.mCancelButton);
             this.Controls.Add(this.mOkButton);
             this.Controls.Add(this.label5);
@@ -419,6 +445,8 @@
         private System.Windows.Forms.TextBox mTeamNameTextBox;
         private System.Windows.Forms.Button mOkButton;
         private System.Windows.Forms.Button mCancelButton;
+        private System.Windows.Forms.Button mAutoUpdateTeamSimDataButton;
+        private System.Windows.Forms.Button updateTeamSimData;
 
 
     }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Data;
 
 namespace TSBTool2
 {
@@ -21,7 +22,7 @@ namespace TSBTool2
             try
             {
                 if (form == null)
-                    form = new SearchTextBox();
+                    form = new TSBTool2_UI.SearchTextBox();
                 System.IO.Stream s = form.GetType().Assembly.GetManifestResourceStream(file);
                 if (s != null)
                     ret = Image.FromStream(s);
@@ -33,13 +34,20 @@ namespace TSBTool2
             return ret;
         }
 
+        private static DataTable sDataTable = new DataTable();
+        public static string Compute(string formula)
+        {
+            string r = sDataTable.Compute(formula, "").ToString();
+            return r;
+        }
+
         public static string GetEmbeddedTextFile(string file)
         {
             string ret = null;
             try
             {
                 if (form == null)
-                    form = new SearchTextBox();
+                    form = new TSBTool2_UI.SearchTextBox();
                 System.IO.Stream s = form.GetType().Assembly.GetManifestResourceStream(file);
                 if (s != null)
                     ret = new StreamReader(s).ReadToEnd();
@@ -328,7 +336,7 @@ namespace TSBTool2
                 if (line.IndexOf(RomVersion, StringComparison.OrdinalIgnoreCase) > -1)
                 {
                     // good to go! apply it
-                    string simpleSetLine = StringInputDlg.PromptForSetUserInput(line);
+                    string simpleSetLine = TSBTool2_UI.StringInputDlg.PromptForSetUserInput(line);
                     if (!string.IsNullOrEmpty(simpleSetLine))
                     {
                         ApplySet(simpleSetLine, tool);
@@ -439,13 +447,7 @@ namespace TSBTool2
 
         public static void ShowError(string error)
         {
-            MessageBox.Show(null, error, "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            /*if (MainClass.GUI_MODE)
-            {
-                MessageBox.Show(null, error, "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-                Console.Error.WriteLine(error);*/
+            TSBTool2_UI.RichTextDisplay.ShowMessage("Error!", error, SystemIcons.Error, false, false);
         }
 
 
@@ -665,6 +667,20 @@ namespace TSBTool2
                 retVal = true;
             }
             return retVal;
+        }
+
+        /// <summary>
+        /// Returns the content type (TSB1, TSB2, TSB3, Unknown)
+        /// </summary>
+        internal static TSBContentType GetContentType(string data)
+        {
+            if (IsTSB1Content(data))
+                return TSBContentType.TSB1;
+            if (IsTSB2Content(data))
+                return TSBContentType.TSB2;
+            if (IsTSB3Content(data))
+                return TSBContentType.TSB3;
+            return TSBContentType.Unknown;
         }
 
     }

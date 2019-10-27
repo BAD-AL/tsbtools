@@ -941,7 +941,7 @@ namespace TSBTool2
         public virtual string GetKey()
         {
             return
-@"# TSBTool2 forum: https://tecmobowl.org/forums/topic/71051-initial-tsb2-snes-editor/
+@"# TSBTool2 forum: https://tecmobowl.org/forums/topic/71072-tsbii-tsbiii-editor-tsbtool2/
 # TSB2 Hacking documentation: https://tecmobowl.org/forums/topic/53028-tecmo-super-bowl-ii-hackingresource-documentation/
 # Key 
 # 'SET' commands are supported

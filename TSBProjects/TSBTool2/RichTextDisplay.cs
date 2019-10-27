@@ -4,7 +4,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace TSBTool2
+namespace TSBTool2_UI
 {
 	/// <summary>
 	/// Summary description for RichTextDisplay.

@@ -1,4 +1,4 @@
-﻿namespace TSBTool2
+﻿namespace TSBTool2_UI
 {
     partial class AllstarPlayerControl
     {

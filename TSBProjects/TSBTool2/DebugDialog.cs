@@ -5,8 +5,9 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using TSBTool2;
 
-namespace TSBTool2
+namespace TSBTool2_UI
 {
     public partial class DebugDialog : Form
     {
@@ -155,10 +156,9 @@ namespace TSBTool2
 
         private void mathTestToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DataTable tab = new DataTable();
             try
             {
-                Object result = tab.Compute(mResultsTextBox.Text, "");
+                Object result = StaticUtils.Compute(mResultsTextBox.Text);
                 mResultsTextBox.Text = result.ToString();
             }
             catch (Exception ex)
@@ -630,14 +630,13 @@ LOS ANGELES:OAKLAND:2
 
         private void Compute()
         {
-            DataTable table = new DataTable();
             mResultsTextBox.Clear();
             mResultsTextBox.AppendText("Running compute on '");
             mResultsTextBox.AppendText(mInputTextBox.Text + "'\n");
 
             try
             {
-                mResultsTextBox.AppendText(table.Compute(mInputTextBox.Text, "").ToString());
+                mResultsTextBox.AppendText(StaticUtils.Compute(mInputTextBox.Text).ToString());
             }
             catch (Exception ex)
             {

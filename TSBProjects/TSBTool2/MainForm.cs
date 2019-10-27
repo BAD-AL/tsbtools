@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using TSBTool2;
 
-namespace TSBTool2
+namespace TSBTool2_UI
 {
     public partial class MainForm : Form
     {
@@ -39,7 +39,7 @@ namespace TSBTool2
                 tool = new TSB3Tool(rom);
             else
             {
-                if (MessageBox.Show("Are you sure this is a Valid TSB2 ROM?",
+                if (MessageBox.Show("Are you sure this is a Valid TSB2 or TSB3 ROM?",
                     "Does not seem to be a TSBII or TSBIII rom", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
                     if (MessageBox.Show("Is this a TSBII ROM?",
@@ -164,6 +164,23 @@ namespace TSBTool2
 
         private void ApplyData()
         {
+            int index = mTextBox.Text.IndexOf("QB1,");
+            if (index > -1)
+            {
+                string contentType = StaticUtils.GetContentType(mTextBox.Text).ToString();
+                if (!tool.RomVersion.Contains(contentType))
+                {
+                    if (MessageBox.Show(String.Format(
+@"The content type shows as '{0}'. The ROM loaded is of type '{1}'
+It is recommended that you try to convert (Convert menu) the content to {1}.
+This will probably not go well, do you wish to try anyway?",
+                        contentType, tool.RomVersion), "Warning",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+            }
             string saveToFilename = StaticUtils.GetFileName(snesFilter, true);
             if (saveToFilename != null)
             {
@@ -468,12 +485,8 @@ Version " + MainClass.version
         private void ModifyPlayers(string team, string position)
         {
             ModifyPlayerForm form = new ModifyPlayerForm();
-            if (StaticUtils.IsTSB3Content(mTextBox.Text))
-                form.RomVersion = "SNES_TSB3";
-            else if (StaticUtils.IsTSB2Content(mTextBox.Text))
-                form.RomVersion = "SNES_TSB2";
-            else
-                form.RomVersion = tool.RomVersion;
+            form.RomVersion = StaticUtils.GetContentType(mTextBox.Text);
+
             form.Data = mTextBox.Text;
             form.CurrentTeam = team;
             form.CurrentPosition = position;

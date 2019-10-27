@@ -6,8 +6,9 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Globalization;
+using TSBTool2;
 
-namespace TSBTool2
+namespace TSBTool2_UI
 {
     /// <summary>
     /// Summary description for StringInputDlg.

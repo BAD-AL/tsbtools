@@ -1,4 +1,4 @@
-﻿namespace TSBTool2
+﻿namespace TSBTool2_UI
 {
     partial class DebugDialog
     {
@@ -81,7 +81,7 @@
             this.mCancelButton = new System.Windows.Forms.Button();
             this.computeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runComputeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mResultsTextBox = new TSBTool2.SearchTextBox();
+            this.mResultsTextBox = new TSBTool2_UI.SearchTextBox();
             this.menuStrip1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mSetByteLocUpDown)).BeginInit();

@@ -13,6 +13,14 @@ namespace TSBTool2
         K, P
     }
 
+    public enum TSBContentType
+    {
+        Unknown,
+        TSB1,
+        TSB2,
+        TSB3
+    }
+
     public enum Conference { AFC, NFC }
 
     public interface ITecmoTool
@@ -197,7 +205,7 @@ That gets me to 102*/
         void SetProBowlPlayer(int season, Conference conf, String proBowlPos, String fromTeam, TSBPlayer fromTeamPos);
 
         /// <summary>
-        /// "SNES_TSB2", "SNES_TSB3", "GENESIS_TSB2", "GENESIS_TSB3"
+        /// "TSB1", "SNES_TSB2", "SNES_TSB3", "GENESIS_TSB2", "GENESIS_TSB3"
         /// </summary>
         string RomVersion { get; }
 
@@ -206,13 +214,16 @@ That gets me to 102*/
 
     }
 
+}
 
+namespace TSBTool2_UI
+{
     public interface IAllStarPlayerControl
     {
-        Conference Conference { get; set; }
+        TSBTool2.Conference Conference { get; set; }
 
         String Data { get; set; }
-        TSBPlayer PlayerPosition { get; set; }
+        TSBTool2.TSBPlayer PlayerPosition { get; set; }
 
         void ReInitialize();
     }

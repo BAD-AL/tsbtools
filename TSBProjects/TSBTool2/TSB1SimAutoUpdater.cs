@@ -257,7 +257,7 @@ Please verify that this player's attributes are correct.", oldPlayer);
 
 		private void UpdateTeamSimPassDefense(string team)
 		{
-			string re   = GetPlayerString(team, "RE");
+            string re   = GetPlayerString(team, "RE");
 			string le   = GetPlayerString(team, "LE");
 			string nt   = GetPlayerString(team, "NT");
 			string lolb = GetPlayerString(team, "LOLB");
@@ -303,6 +303,34 @@ Please verify that this player's attributes are correct.", oldPlayer);
 			ReplacePlayer(team, lcb,  ReplaceSimAttr(lcb,  2, passDef[5]));
 			ReplacePlayer(team, fs,   ReplaceSimAttr(fs,   2, passDef[6]));
 			ReplacePlayer(team, ss,   ReplaceSimAttr(ss,   2, passDef[7]));
+
+            int overallSimPassDef = 0;
+            if (reAttrs[2] > 49) overallSimPassDef++; if (reAttrs[4] > 49) overallSimPassDef++;
+            if (leAttrs[2] > 49) overallSimPassDef++; if (leAttrs[4] > 49) overallSimPassDef++;
+            if (ntAttrs[2] > 49) overallSimPassDef++; if (ntAttrs[4] > 49) overallSimPassDef++;
+            if (lolbAttrs[2] > 49) overallSimPassDef++; if (lolbAttrs[4] > 49) overallSimPassDef++;
+            if (lilbAttrs[2] > 49) overallSimPassDef++; if (lilbAttrs[4] > 49) overallSimPassDef++;
+            if (rilbAttrs[2] > 49) overallSimPassDef++; if (rilbAttrs[4] > 49) overallSimPassDef++;
+            if (rolbAttrs[2] > 49) overallSimPassDef++; if (rolbAttrs[4] > 49) overallSimPassDef++;
+            if (rcbAttrs[2] > 49) overallSimPassDef++; if (rcbAttrs[4] > 49) overallSimPassDef++;
+            if (lcbAttrs[2] > 49) overallSimPassDef++; if (lcbAttrs[4] > 49) overallSimPassDef++;
+            if (fsAttrs[2] > 49) overallSimPassDef++; if (fsAttrs[4] > 49) overallSimPassDef++;
+            if (ssAttrs[2] > 49) overallSimPassDef++; if (ssAttrs[4] > 49) overallSimPassDef++;
+
+            string pattern = String.Format("TEAM\\s*=\\s*{0}\\s*,\\s*SimData\\s*=\\s*0x([0-9a-fA-F]{{2}})", team);
+            Regex teamSimRegex = new Regex(pattern);
+            Match m = teamSimRegex.Match(mData);
+            if (m != Match.Empty)
+            {
+                string p = m.Groups[1].ToString()[0] + overallSimPassDef.ToString("x");
+                string start = mData.Substring(0, m.Groups[1].Index);
+                string last = mData.Substring(m.Groups[1].Index + 2);
+                StringBuilder tmp = new StringBuilder(mData.Length + 20);
+                tmp.Append(start);
+                tmp.Append(p);
+                tmp.Append(last);
+                mData = tmp.ToString();
+            }
 		}
 		
 		private void UpdateTeamSimPassRush(string team)
@@ -356,6 +384,34 @@ Please verify that this player's attributes are correct.", oldPlayer);
 			ReplacePlayer(team, fs,   ReplaceSimAttr(fs,   1, 0));
 			ReplacePlayer(team, ss,   ReplaceSimAttr(ss,   1, rushDef[7]));
 
+            int overallSimRushDef = 0;
+            if (reAttrs[2] > 49) overallSimRushDef++; if (reAttrs[3] > 49) overallSimRushDef++;
+            if (leAttrs[2] > 49) overallSimRushDef++; if (leAttrs[3] > 49) overallSimRushDef++;
+            if (ntAttrs[2] > 49) overallSimRushDef++; if (ntAttrs[3] > 49) overallSimRushDef++;
+            if (lolbAttrs[2] > 49) overallSimRushDef++; if (lolbAttrs[3] > 49) overallSimRushDef++;
+            if (lilbAttrs[2] > 49) overallSimRushDef++; if (lilbAttrs[3] > 49) overallSimRushDef++;
+            if (rilbAttrs[2] > 49) overallSimRushDef++; if (rilbAttrs[3] > 49) overallSimRushDef++;
+            if (rolbAttrs[2] > 49) overallSimRushDef++; if (rolbAttrs[3] > 49) overallSimRushDef++;
+            if (rcbAttrs[2] > 49) overallSimRushDef++; if (rcbAttrs[3] > 49) overallSimRushDef++;
+            if (lcbAttrs[2] > 49) overallSimRushDef++; if (lcbAttrs[3] > 49) overallSimRushDef++;
+            if (fsAttrs[2] > 49) overallSimRushDef++; if (fsAttrs[3] > 49) overallSimRushDef++;
+            if (ssAttrs[2] > 49) overallSimRushDef++; if (ssAttrs[3] > 49) overallSimRushDef++;
+            if (overallSimRushDef > 0x0f)
+                overallSimRushDef = 0xf;
+            string pattern = String.Format("TEAM\\s*=\\s*{0}\\s*,\\s*SimData\\s*=\\s*0x([0-9a-fA-F]{{2}})", team);
+            Regex teamSimRegex = new Regex(pattern);
+            Match m = teamSimRegex.Match(mData);
+            if (m != Match.Empty)
+            {
+                string p = overallSimRushDef.ToString("x")+ m.Groups[1].ToString().Substring(1);
+                string start = mData.Substring(0, m.Groups[1].Index);
+                string last = mData.Substring(m.Groups[1].Index + 2);
+                StringBuilder tmp = new StringBuilder(mData.Length + 20);
+                tmp.Append(start);
+                tmp.Append(p);
+                tmp.Append(last);
+                mData = tmp.ToString();
+            }
 		}
 
 		Regex m_SimRegex = null;

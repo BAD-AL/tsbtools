@@ -1,4 +1,4 @@
-﻿namespace TSBTool2
+﻿namespace TSBTool2_UI
 {
     partial class AllStarForm
     {
@@ -33,9 +33,9 @@
             this.mCancelButton = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.mAFCConfrenceControl = new TSBTool2.AllStarConfrenceControl();
+            this.mAFCConfrenceControl = new TSBTool2_UI.AllStarConfrenceControl();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.mNFCConfrenceControl = new TSBTool2.AllStarConfrenceControl();
+            this.mNFCConfrenceControl = new TSBTool2_UI.AllStarConfrenceControl();
             this.mToggleNumberOfComboBoxesButton = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();

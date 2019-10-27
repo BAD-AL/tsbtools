@@ -66,7 +66,7 @@ namespace TSBTool2
         public override string GetKey()
         {
             return
-@"# TSBTool2 forum: https://tecmobowl.org/forums/topic/71051-initial-tsb2-snes-editor/
+@"# TSBTool2 forum: https://tecmobowl.org/forums/topic/71072-tsbii-tsbiii-editor-tsbtool2/
 # TSBIII Hacking documentation: https://tecmobowl.org/forums/topic/53029-tecmo-super-bowl-iii-hackingresource-documentation/
 # Key 
 # 'SET' commands are supported

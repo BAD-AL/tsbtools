@@ -1,4 +1,4 @@
-﻿namespace TSBTool2
+﻿namespace TSBTool2_UI
 {
 	partial class MainForm
 	{
@@ -62,7 +62,7 @@
             this.mLoadButton = new System.Windows.Forms.Button();
             this.mViewContentsButton = new System.Windows.Forms.Button();
             this.mApplyButton = new System.Windows.Forms.Button();
-            this.mTextBox = new TSBTool2.SearchTextBox();
+            this.mTextBox = new TSBTool2_UI.SearchTextBox();
             this.editProBowlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();

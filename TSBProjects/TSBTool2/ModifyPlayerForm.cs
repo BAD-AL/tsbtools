@@ -6,8 +6,9 @@ using System.Text.RegularExpressions;
 using System.Text;
 using System.Collections.Generic;
 using System.IO;
+using TSBTool2;
 
-namespace TSBTool2
+namespace TSBTool2_UI
 {
 	public enum StateEnum
 	{
@@ -69,7 +70,7 @@ namespace TSBTool2
 		private System.Windows.Forms.TextBox m_LastNameTextBox;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Button m_PrevPlayerButton;
-        private Label label8;
+        private Label m_BBLabel;
         private ComboBox m_BBBox;
         private ComboBox m_CoolBox;
         private Label m_CoolnessLabel;
@@ -99,14 +100,14 @@ namespace TSBTool2
 				}
 			}
 		}
-        private string mRomVersion = "";
-        public string RomVersion
+        private TSBContentType mRomVersion = TSBContentType.Unknown;
+        public TSBContentType RomVersion
         {
             //"SNES_TSB2", "SNES_TSB3", "GENESIS_TSB2", "GENESIS_TSB3"
             set
             {
                 mRomVersion = value;
-                if (value.Contains("TSB2"))
+                if (value == TSBContentType.TSB2 || value == TSBContentType.TSB1)
                 {
                     m_AgilityLabel.Visible = false;
                     m_AgilityBox.Visible = false;
@@ -114,6 +115,14 @@ namespace TSBTool2
                     m_Attributes.Remove(m_AgilityBox);
                     m_NextPicture.Visible = false;
                     m_PrevPicture.Visible = false;
+                }
+                if (value == TSBContentType.TSB1)
+                {
+                    m_BBBox.Visible = false;
+                    m_BBLabel.Visible = false;
+                    m_Attributes.Remove(m_BBBox);
+                    m_NextPicture.Visible = true;
+                    m_PrevPicture.Visible = true;
                 }
             }
         }
@@ -607,7 +616,7 @@ namespace TSBTool2
             this.m_AgilityBox = new System.Windows.Forms.ComboBox();
             this.m_CoolBox = new System.Windows.Forms.ComboBox();
             this.m_CoolnessLabel = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
+            this.m_BBLabel = new System.Windows.Forms.Label();
             this.m_BBBox = new System.Windows.Forms.ComboBox();
             this.m_ARBox = new System.Windows.Forms.ComboBox();
             this.m_A4Label = new System.Windows.Forms.Label();
@@ -1129,7 +1138,7 @@ namespace TSBTool2
             this.groupBox1.Controls.Add(this.m_AgilityBox);
             this.groupBox1.Controls.Add(this.m_CoolBox);
             this.groupBox1.Controls.Add(this.m_CoolnessLabel);
-            this.groupBox1.Controls.Add(this.label8);
+            this.groupBox1.Controls.Add(this.m_BBLabel);
             this.groupBox1.Controls.Add(this.m_BBBox);
             this.groupBox1.Controls.Add(this.m_ARBox);
             this.groupBox1.Controls.Add(this.m_A4Label);
@@ -1224,14 +1233,14 @@ namespace TSBTool2
             this.m_CoolnessLabel.Text = "COOL";
             this.m_CoolnessLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label8
+            // m_BBLabel
             // 
-            this.label8.Location = new System.Drawing.Point(198, 16);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(40, 15);
-            this.label8.TabIndex = 24;
-            this.label8.Text = "BB";
-            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.m_BBLabel.Location = new System.Drawing.Point(198, 16);
+            this.m_BBLabel.Name = "m_BBLabel";
+            this.m_BBLabel.Size = new System.Drawing.Size(40, 15);
+            this.m_BBLabel.TabIndex = 24;
+            this.m_BBLabel.Text = "BB";
+            this.m_BBLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // m_BBBox
             // 

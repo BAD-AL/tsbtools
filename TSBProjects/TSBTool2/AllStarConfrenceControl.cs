@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Text;
 using System.Windows.Forms;
+using TSBTool2;
 
-namespace TSBTool2
+namespace TSBTool2_UI
 {
     public partial class AllStarConfrenceControl : UserControl
     {

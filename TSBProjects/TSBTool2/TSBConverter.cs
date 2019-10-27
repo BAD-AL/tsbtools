@@ -52,10 +52,12 @@ namespace TSBTool2
         public static String ConvertToTSB2FromTSB1(string input)
         {
             input = input.Replace("\r\n", "\n");
+            input = input.Replace("titans", "oilers");
             string[] lines = input.Split("\n".ToCharArray());
             StringBuilder builder = new StringBuilder(input.Length + lines.Length * 2);
             string tmp = "";
             string line="";
+
             foreach (string theLine in lines)
             {
                 line = theLine;
@@ -93,7 +95,7 @@ namespace TSBTool2
             }
             StaticUtils.ShowErrors();
             string retVal = builder.ToString();
-            retVal = TSBXSimAutoUpdater.AutoUpdatePlayerSimData(retVal,"TSB2");
+            retVal = TSBXSimAutoUpdater.AutoUpdatePlayerSimData(retVal,TSBContentType.TSB2 );
             return retVal;
         }
 
@@ -711,8 +713,7 @@ When converting from TSB1 --> TSB2 a 'Auto-update' sim data operation is perform
             retVal = UpdateFreeAgentValue(sb.ToString().Replace(",,", ","));
             return retVal;
         }
-        private static System.Data.DataTable sDataTable = new System.Data.DataTable();
-
+        
         public static string UpdateFreeAgentValue(string input)
         {
             int simIndex = input.IndexOf("[");
@@ -737,7 +738,7 @@ When converting from TSB1 --> TSB2 a 'Auto-update' sim data operation is perform
             double result = 0;
             try
             {
-                string r = sDataTable.Compute(formula, "").ToString();
+                string r = StaticUtils.Compute(formula).ToString();
                 result = Double.Parse(r);
             }
             catch (Exception)
