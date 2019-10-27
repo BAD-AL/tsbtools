@@ -32,7 +32,8 @@ namespace PlayProto
 				try
 				{
 					mFileName = value;
-					mImage = Image.FromFile(mFileName);
+					//mImage = Image.FromFile(mFileName);
+                    mImage = GetImage( "PlayProto.Tiles." +mFileName);
 				}
 				catch
 				{
@@ -40,6 +41,22 @@ namespace PlayProto
 				}
 			}
 		}
+
+        private Image GetImage(string file)
+        {
+            Image ret = null;
+            try
+            {
+                System.IO.Stream s = this.GetType().Assembly.GetManifestResourceStream(file);
+                if (s != null)
+                    ret = Image.FromStream(s);
+            }
+            catch (Exception e)
+            {
+                System.Windows.Forms.MessageBox.Show(e.Message);
+            }
+            return ret;
+        }
 
 		/// <summary>
 		/// if FileName = "jarjar.bmp", this property will return "jarjar".

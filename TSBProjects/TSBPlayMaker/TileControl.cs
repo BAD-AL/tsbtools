@@ -95,7 +95,23 @@ namespace PlayProto
 		}
 		private void AddTiles()
 		{
-			string[] files = Directory.GetFiles(".\\Tiles", "*.bmp");
+			//string[] files = Directory.GetFiles(".\\Tiles", "*.bmp");
+            string[] files = {
+                "00.BMP", "01.BMP", "8D.BMP", "8E.BMP", "8F.BMP", "90.BMP", "91.BMP", "92.BMP",
+                "93.BMP","94.BMP","95.BMP","96.BMP","97.BMP","98.BMP","99.BMP","9A.BMP",
+                "9B.BMP","9C.BMP","9D.BMP","9E.BMP","9F.BMP","A0.BMP","A1.BMP","A2.BMP",
+                "A3.BMP","A4.BMP","A5.BMP","A6.BMP","A7.BMP","A8.BMP","A9.BMP","AA.BMP",
+                "AB.BMP","AC.BMP","AD.BMP","AE.BMP","AF.BMP","B0.BMP","B1.BMP","B2.BMP",
+                "B3.BMP","B4.BMP","B5.BMP","B6.BMP","B7.BMP","B8.BMP","B9.BMP","BA.BMP",
+                "BB.BMP","BC.BMP","BD.BMP","BE.BMP","BF.BMP","C0.BMP","C1.BMP","C2.BMP",
+                "C3.BMP","C4.BMP","C5.BMP","C6.BMP","C7.BMP","C8.BMP","C9.BMP","CA.BMP",
+                "CB.BMP","CC.BMP","CD.BMP","CE.BMP","CF.BMP","D0.BMP","D1.BMP","D2.BMP",
+                "D3.BMP","D4.BMP","D5.BMP","D6.BMP","D7.BMP","D8.BMP","D9.BMP","DA.BMP",
+                "DB.BMP","DC.BMP","DD.BMP","DE.BMP","DF.BMP","E0.BMP","E1.BMP","E2.BMP",
+                "E3.BMP","E4.BMP","E5.BMP","E6.BMP","E7.BMP","E8.BMP","E9.BMP","EA.BMP",
+                "EB.BMP","EC.BMP","ED.BMP","EE.BMP","EF.BMP","F0.BMP","F1.BMP","F2.BMP",
+                "F3.BMP","F4.BMP","F5.BMP","F6.BMP","F7.BMP","F8.BMP","F9.BMP","FA.BMP",
+                "FB.BMP","FC.BMP","FD.BMP","FE.BMP","FF.BMP"};
 
 			mTilePanel.AddTiles(files);
 		}

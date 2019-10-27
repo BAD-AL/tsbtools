@@ -39,7 +39,7 @@ namespace PlayProto
 "Get Def pattern",
 "Get Def Plays",
 //"Spreadsheet Test",
-"Grid Test",
+//"Grid Test",
 "Pattern Reader (jstout program output)",
 "BurdDogDefense",
 "Get bytes [start address, #bytes]",
@@ -239,9 +239,9 @@ namespace PlayProto
 //					case "Spreadsheet Test":
 //						SpreadSheetTest();
 //						break;
-					case "Grid Test":
-						GridTest();
-						break;
+                    //case "Grid Test":
+                    //    GridTest();
+                    //    break;
 					case "Pattern Reader (jstout program output)":
 						DoPatternReader();
 						break;
@@ -309,28 +309,28 @@ namespace PlayProto
 			}
 		}
 
-		private void GridTest()
-		{
-			FlexGridForm form = new FlexGridForm();
-			form.PopulateData( MainForm.TheOffensePanel.PatternNames);
-			form.SetColumnHeadders(UtilityClass.OffensivePlayers);
+        //private void GridTest()
+        //{
+        //    FlexGridForm form = new FlexGridForm();
+        //    form.PopulateData( MainForm.TheOffensePanel.PatternNames);
+        //    form.SetColumnHeadders(UtilityClass.OffensivePlayers);
 
-			string[] passPlayNames = new string[32];
-			for(int i =0; i < passPlayNames.Length; i++)
-			{
-				passPlayNames[i] = MainForm.mPlayTool.GetPlayName(32+i);
-			}
-			form.SetRowTitles(passPlayNames);
+        //    string[] passPlayNames = new string[32];
+        //    for(int i =0; i < passPlayNames.Length; i++)
+        //    {
+        //        passPlayNames[i] = MainForm.mPlayTool.GetPlayName(32+i);
+        //    }
+        //    form.SetRowTitles(passPlayNames);
 
-			if( form.ShowDialog(this) == DialogResult.OK )
-			{
-				m_ResultsRichTextBox.Text = string.Format(
-					"row = {0} col = {1}",
-					form.SelectedRow,
-					form.SelectedCol
-					);
-			}
-		}
+        //    if( form.ShowDialog(this) == DialogResult.OK )
+        //    {
+        //        m_ResultsRichTextBox.Text = string.Format(
+        //            "row = {0} col = {1}",
+        //            form.SelectedRow,
+        //            form.SelectedCol
+        //            );
+        //    }
+        //}
 
 		private void FieldFormTest()
 		{
