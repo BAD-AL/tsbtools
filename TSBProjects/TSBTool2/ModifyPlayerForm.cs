@@ -191,16 +191,14 @@ namespace TSBTool2_UI
 		private System.Windows.Forms.ComboBox m_ACCBox;
 		private System.Windows.Forms.ComboBox m_ARBox;
 		private System.Windows.Forms.Label m_A4Label;
-		private SimStuff m_SimStuff = null;
-
+		
 		public ModifyPlayerForm()
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			m_SimStuff = new SimStuff();
-            m_Attributes = new List<ComboBox>(){
+		    m_Attributes = new List<ComboBox>(){
 			    m_RSBox,
                 m_RPBox,
                 m_MSBox,
@@ -1552,21 +1550,37 @@ namespace TSBTool2_UI
 		/// </summary>
 		private void ShowCurrentFace()
 		{
-            string whiteGuy = "TSBTool2.Images.00.png";
-            string blackGuy = "TSBTool2.Images.80.png";
-            string file = blackGuy;
-
-            if (m_ImageNumber < 0x80)
-                file = whiteGuy;
-
-            Image face = StaticUtils.GetImage(file);
-            if (face != null)
+            if (mRomVersion == TSBContentType.TSB1)
             {
-                m_FaceBox.Image = face;
-                m_FaceLabel.Text = string.Format("{0:x2}", m_ImageNumber).ToUpper();
+                string file = "TSBTool2.FACES." + string.Format("{0:x2}.BMP", m_ImageNumber).ToUpper();
+
+                Image face = StaticUtils.GetImage(file);
+                if (face != null)
+                {
+                    m_FaceBox.Image = face;
+                    m_FaceLabel.Text = string.Format("{0:x2}", m_ImageNumber).ToUpper();
+                }
+                else
+                    MessageBox.Show("Problem with " + file);
             }
             else
-                MessageBox.Show("Problem with " + file);
+            {
+                string whiteGuy = "TSBTool2.Images.00.png";
+                string blackGuy = "TSBTool2.Images.80.png";
+                string file = blackGuy;
+
+                if (m_ImageNumber < 0x80)
+                    file = whiteGuy;
+
+                Image face = StaticUtils.GetImage(file);
+                if (face != null)
+                {
+                    m_FaceBox.Image = face;
+                    m_FaceLabel.Text = string.Format("{0:x2}", m_ImageNumber).ToUpper();
+                }
+                else
+                    MessageBox.Show("Problem with " + file);
+            }
 		}
 
 		/// <summary>
@@ -1590,12 +1604,24 @@ namespace TSBTool2_UI
 		/// <param name="e"></param>
 		private void m_PrevPicture_Click(object sender, System.EventArgs e)
 		{
-			if( m_ImageNumber == 0x00 )
-				m_ImageNumber = 0x8F;
-			else if( m_ImageNumber == 0x80 )
-				m_ImageNumber = 0x0F;
-			else
-				m_ImageNumber--;
+            if (mRomVersion == TSBContentType.TSB1)
+            {
+                if (m_ImageNumber == 0x00)
+                    m_ImageNumber = 0xD4;
+                else if (m_ImageNumber == 0x80)
+                    m_ImageNumber = 0x52;
+                else
+                    m_ImageNumber--;
+            }
+            else
+            {
+                if (m_ImageNumber == 0x00)
+                    m_ImageNumber = 0x8F;
+                else if (m_ImageNumber == 0x80)
+                    m_ImageNumber = 0x0F;
+                else
+                    m_ImageNumber--;
+            }
 			ShowCurrentFace();
 		}
 
@@ -1606,12 +1632,24 @@ namespace TSBTool2_UI
 		/// <param name="e"></param>
 		private void m_NextPicture_Click(object sender, System.EventArgs e)
 		{
-			if( m_ImageNumber == 0x8F )
-				m_ImageNumber = 0;
-			else if( m_ImageNumber == 0x0F )
-				m_ImageNumber = 0x80;
-			else
-				m_ImageNumber++;
+            if (mRomVersion == TSBContentType.TSB1)
+            {
+                if (m_ImageNumber == 0xD4)
+                    m_ImageNumber = 0;
+                else if (m_ImageNumber == 0x52)
+                    m_ImageNumber = 0x80;
+                else
+                    m_ImageNumber++;
+            }
+            else
+            {
+                if (m_ImageNumber == 0x8F)
+                    m_ImageNumber = 0;
+                else if (m_ImageNumber == 0x0F)
+                    m_ImageNumber = 0x80;
+                else
+                    m_ImageNumber++;
+            }
 			ShowCurrentFace();
 		}
 
@@ -1709,13 +1747,33 @@ Please verify that this player's attributes are correct.", oldPlayer);
 		/// <param name="e"></param>
 		private void m_FaceBox_Click(object sender, System.EventArgs e)
 		{
-            // toggle race
-            if (m_ImageNumber < 0x80) // it's currently a white guy
-                m_ImageNumber = 0x80 + (m_ImageNumber & 0x0F);
+            if (mRomVersion == TSBContentType.TSB1)
+            {
+                FaceForm form = new FaceForm();
+                try
+                {
+                    form.ShowDialog(this);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                }
+                if (form.ImageIndex > -1)
+                {
+                    m_ImageNumber = form.ImageIndex;
+                    ShowCurrentFace();
+                }
+            }
             else
-                m_ImageNumber = 0x0F & m_ImageNumber;
-            ShowCurrentFace();
-            ReplacePlayer();
+            {
+                // toggle race
+                if (m_ImageNumber < 0x80) // it's currently a white guy
+                    m_ImageNumber = 0x80 + (m_ImageNumber & 0x0F);
+                else
+                    m_ImageNumber = 0x0F & m_ImageNumber;
+                ShowCurrentFace();
+                ReplacePlayer();
+            }
 		}
 
 		/// <summary>
@@ -1766,7 +1824,15 @@ Please verify that this player's attributes are correct.", oldPlayer);
 		/// </summary>
 		private void AutoUpdatePlayerSim()
 		{
-            string stuff = TSBXSimAutoUpdater.AutoUpdatePlayerSimData(this.m_Data, mRomVersion);
+            string stuff = "";
+            if (mRomVersion == TSBContentType.TSB1)
+            {
+                stuff = TecmonsterTSB1SimAutoUpdater.AutoUpdatePlayerSimData(this.m_Data);
+            }
+            else
+            {
+                stuff = TSBXSimAutoUpdater.AutoUpdatePlayerSimData(this.m_Data, mRomVersion);
+            }
             m_Data = stuff;
 		}
 

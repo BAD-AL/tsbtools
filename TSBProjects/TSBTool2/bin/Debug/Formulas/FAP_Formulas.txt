@@ -1,0 +1,23 @@
+﻿# Free Agent point formulas
+# Min will be 0; Max will be F 
+# Attribute Order
+# QBs   RS RP MS HP BB AG PS PC PA AR CO [sim vals]
+# Skill RS RP MS HP BB AG BC RC [sim vals]
+# OL    RS RP MS HP BB AG 
+# DEF   RS RP MS HP BB AG PI QU [sim vals]
+# K     RS RP MS HP BB AG KP KA AB [sim val]
+# P     RS RP MS HP BB AG KP AB [sim val]
+#
+# No Hex values allowed in formulas
+
+FAP_QB: (PS+PC+AR)/15
+FAP_RB: ((MS+BC+RC)-110)/4
+FAP_WR: ((RC -38 + MS - 38)/3) -2
+FAP_TE: ((RC -25 + MS - 25)/3) +1
+FAP_OL: (HP -44)/2
+FAP_DL: (MS + HP -50) / 6
+FAP_LB: (MS-31 + HP-31)/4
+FAP_CB: (MS-31 + PI-25)/5
+FAP_S: (MS-31 + PI-25 + HP-31)/7
+FAP_K: KA/6
+FAP_P: (KP-31)/6

@@ -739,6 +739,11 @@ namespace TSBTool2
             return null;
         }
 
+        public static int[] GetInts(string input)
+        {
+            return GetInts(input, false);
+        }
+
         public static  int[] GetInts(string input, bool useHex)
         {
             if (input != null)

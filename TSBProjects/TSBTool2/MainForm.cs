@@ -20,14 +20,30 @@ namespace TSBTool2_UI
             state1();
         }
         //"TSB files (*.nes;*.smc)|*.nes;*.smc";
-        //private string snesFilter = "TSB files (*.smc;*.smd)|*.smc;*.smd";
+        private string tsbFilter = "TSB files (*.nes;*.smc)|*.nes;*.smc";
         private string snesFilter = "TSB files (*.smc)|*.smc";
+
+        private string FileFilter
+        {
+            get
+            {
+                if (HasTSBToolSupreme())
+                    return tsbFilter;
+                else
+                    return snesFilter;
+            }
+        }
 
         private void handleLoad(object sender, EventArgs e)
         {
-            string filename = StaticUtils.GetFileName(snesFilter, false);
+            string filename = StaticUtils.GetFileName(FileFilter, false);
             if( filename != null)
                 LoadROM(filename);
+        }
+
+        private bool HasTSBToolSupreme()
+        {
+            return System.IO.File.Exists("TSBToolSupreme.exe");
         }
 
         private void LoadROM(string filename)
@@ -37,6 +53,17 @@ namespace TSBTool2_UI
                 tool = new TSB2Tool(rom);
             else if (TSB3Tool.IsTecmoSuperBowl3Rom(rom))
                 tool = new TSB3Tool(rom);
+            else if (HasTSBToolSupreme() && TSB1Tool.IsTecmoSuperBowl1Rom(rom))
+            {
+                if (MessageBox.Show(this, "Do you wish to display the contents of this TSB1 ROM?", "Show Contents", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    string contents = TSB1Tool.GetTSB1Content(filename);
+                    SetText(contents);
+                    this.Text = string.Format("TSBTool2   '{0}' Loaded   ({1})", filename, 
+                        StaticUtils.GetContentType(contents).ToString());
+                    tool = null;
+                }
+            }
             else
             {
                 if (MessageBox.Show("Are you sure this is a Valid TSB2 or TSB3 ROM?",
@@ -130,6 +157,7 @@ namespace TSBTool2_UI
 
         private void SetText(string text)
         {
+            //string header = "#" + StaticUtils.GetContentType(text).ToString() +" content\n";
             this.mTextBox.Text = text;
             mTextBox.SelectAll();
             mTextBox.SelectionColor = Color.Black;
@@ -181,7 +209,7 @@ This will probably not go well, do you wish to try anyway?",
                     }
                 }
             }
-            string saveToFilename = StaticUtils.GetFileName(snesFilter, true);
+            string saveToFilename = StaticUtils.GetFileName(FileFilter, true);
             if (saveToFilename != null)
             {
                 string[] lines = mTextBox.Lines;
@@ -268,21 +296,29 @@ Version " + MainClass.version
 
         private void ModifyTeams(string team)
         {
-            TeamForm form = new TeamForm();
-            form.Data = mTextBox.Text;
-            form.CurrentTeam = team;
-
-            if (form.ShowDialog(this) == DialogResult.OK)
+            TSBContentType t = StaticUtils.GetContentType(this.mTextBox.Text);
+            if (t == TSBContentType.TSB2 || t == TSBContentType.TSB3)
             {
-                int index = mTextBox.SelectionStart;
-                SetText(form.Data);
-                if (mTextBox.Text.Length > index)
+                TeamForm form = new TeamForm();
+                form.Data = mTextBox.Text;
+                form.CurrentTeam = team;
+
+                if (form.ShowDialog(this) == DialogResult.OK)
                 {
-                    mTextBox.SelectionStart = index;
-                    mTextBox.ScrollToCaret();
+                    int index = mTextBox.SelectionStart;
+                    SetText(form.Data);
+                    if (mTextBox.Text.Length > index)
+                    {
+                        mTextBox.SelectionStart = index;
+                        mTextBox.ScrollToCaret();
+                    }
                 }
+                form.Dispose();
             }
-            form.Dispose();
+            else if (t == TSBContentType.TSB1 && HasTSBToolSupreme())
+            {
+                MessageBox.Show("Cannot edit TSB1 teams in TSBTool2.\n     (But you can edit players)");
+            }
         }
 
         /// <summary>

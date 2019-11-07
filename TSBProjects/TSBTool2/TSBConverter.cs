@@ -462,7 +462,7 @@ namespace TSBTool2
                 }
                 builder.Append("\n");
             }
-            string retVal = TSB1SimAutoUpdater.AutoUpdatePlayerSimData( builder.ToString());
+            string retVal = TecmonsterTSB1SimAutoUpdater.AutoUpdatePlayerSimData( builder.ToString());
             return retVal;
         }
 

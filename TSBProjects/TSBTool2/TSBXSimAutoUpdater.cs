@@ -21,10 +21,13 @@ namespace TSBTool2
         public static string AutoUpdatePlayerSimData(string text, TSBContentType gameVersion)
         {
             ReloadFormulas();
-            if (gameVersion == TSBContentType.TSB3 )
-                sSubLines = sSubLinesTSB3; // TSB# has the 'AG' attribute.
-            else
-                sSubLines = sSubLinesTSB2;
+            switch (gameVersion)
+            {
+                case TSBContentType.TSB2: sSubLines = sSubLinesTSB2; break;
+                case TSBContentType.TSB3: sSubLines = sSubLinesTSB3; break;
+                default: throw new ArgumentException("TSBXSimAutoUpdater: Incorrect version " + gameVersion.ToString());
+            }
+            
             TSB3Converter.ReloadFormulas();
             StringBuilder builder = new StringBuilder(text.Length);
             string[] lines = text.Split("\n".ToCharArray());
@@ -234,199 +237,13 @@ namespace TSBTool2
             { "P","P,name         ,face    , JN,RS,RP,MS,HP,BB,KP,AB"}
         };
 
-    }
-
-    public class DefensiveSimUpdater
-    {
-        private string mData = "";
-
-        public string Data
-        {
-            get { return mData; }
-            set { mData = value; }
-        }
-
-        /// <summary>
-        /// Gets a player 'line' from m_Data from 'team' playing 'position'.
-        /// </summary>
-        /// <param name="team"></param>
-        /// <param name="position"></param>
-        /// <returns></returns>
-        private int[] GetPlayerInts(int season, string team, string position)
-        {
-            string pattern = "TEAM\\s*=\\s*" + team;
-            Regex findTeamRegex = new Regex(pattern);
-            Match m = findTeamRegex.Match(mData);
-            if (m != Match.Empty)
-            {
-                int teamIndex = m.Index;
-                if (teamIndex == -1)
-                    return null;
-                int playerIndex = -1;
-                Regex endLineRegex = new Regex(string.Format("\n\\s*{0}\\s*,", position));
-                Match eol = endLineRegex.Match(mData, teamIndex);
-                if (eol != Match.Empty)
-                    playerIndex = eol.Index;
-                playerIndex++;
-
-                if (playerIndex == 0)
-                    return null;
-                int lineEnd = mData.IndexOf("\n", playerIndex);
-                string playerLine = mData.Substring(playerIndex, lineEnd - playerIndex);
-                return InputParser.GetInts(playerLine, false);
-            }
-            return null;
-        }
-
-        private int GetPiIndex(string data)
-		{
-			int retVal = 4; //TSB1
-			switch(StaticUtils.GetContentType(data))
-			{
-				case TSBContentType.TSB2: retVal = 5; break;
-				case TSBContentType.TSB3: retVal = 6; break;
-			}
-			return retVal;
-		}
-
-        private int GetSeasonIndex(int season)
-        {
-            int retVal = 0;
-            if (StaticUtils.IsTSB2Content(mData))
-            {
-                string pattern = String.Format("^\\s*SEASON\\s+{0}", season);
-                Regex seasonRegex = new Regex(pattern);
-                Match m = seasonRegex.Match(mData);
-                if (m.Success)
-                    retVal = m.Index;
-            }
-            return retVal;
-        }
-
-        public void UpdateTeamsSimDefense(int season, List<string> teams)
-        {
-            foreach (string team in teams)
-                UpdateTeamSimDefense(season, team);
-        }
-
-        /// <summary>
-        /// Updates the given team's Sim Defense for the given season
-        /// </summary>
-        public string UpdateTeamSimDefense(int season, string team)
-        {
-            string sim_def = "";
-            int[] re = GetPlayerInts(season, team, "RE");
-            int[] le = GetPlayerInts(season, team, "LE");
-            int[] nt = GetPlayerInts(season, team, "NT");
-            int[] lolb = GetPlayerInts(season, team, "LOLB");
-            int[] lilb = GetPlayerInts(season, team, "LILB");
-            int[] rilb = GetPlayerInts(season, team, "RILB");
-            int[] rolb = GetPlayerInts(season, team, "ROLB");
-            int[] rcb = GetPlayerInts(season, team, "RCB");
-            int[] lcb = GetPlayerInts(season, team, "LCB");
-            int[] fs = GetPlayerInts(season, team, "FS");
-            int[] ss = GetPlayerInts(season, team, "SS");
-
-            sim_def = CalculateTeamDefense(re, le, nt, lolb, lilb, rilb, rolb, rcb, lcb, fs, ss);
-
-            string pattern = String.Format("TEAM\\s*=\\s*{0}\\s*,\\s*SimData\\s*=\\s*0x([0-9a-fA-F]{{2}})", team);
-            Regex teamSimRegex = new Regex(pattern);
-            int seasonIndex = GetSeasonIndex(season);
-            Match m = teamSimRegex.Match(mData, seasonIndex);
-            string old = m.Groups[1].ToString();
-            if (m != Match.Empty)
-            {
-                string start = mData.Substring(0, m.Groups[1].Index);
-                string last = mData.Substring(m.Groups[1].Index + 2);
-                StringBuilder tmp = new StringBuilder(mData.Length + 20);
-                tmp.Append(start);
-                tmp.Append(sim_def);
-                tmp.Append(last);
-                mData = tmp.ToString();
-            }
-            System.Diagnostics.Debugger.Log(0, "sim", string.Format("Team:{0} old:{1} new:{2}\n",team, old, sim_def.ToUpper()));
-            return sim_def;
-        }
-
-        //https://www.codeproject.com/Tips/715891/Compiling-Csharp-Code-at-Runtime
-        private static DateTime sFormulasTimeStamp = DateTime.MinValue;
-        private static MethodInfo sTeamSimDataFunction = null;
-
-        /// <summary>
-        /// Will use the 'Formulas/SimFormulas.cs' file to calculate the sim defense.
-        /// If not there, will call the 'GetTeamSimDefense()' function.
-        /// </summary>
-        private string CalculateTeamDefense(int[] re, int[] nt, int[] le, int[] lolb, int[] lilb,
-                int[] rilb, int[] rolb, int[] rcb, int[] lcb, int[] fs, int[] ss)
-        {
-            string functionName = "GetTeamSimDefense";
-            string fileName = ".\\Formulas\\SimFormulas.cs";
-            if (File.Exists(fileName))
-            {
-                FileInfo info = new FileInfo(fileName);
-                if (sFormulasTimeStamp < info.LastWriteTime)
-                {
-                    string finalCode = File.ReadAllText(fileName);
-                    CSharpCodeProvider provider = new CSharpCodeProvider();
-                    CompilerResults results = provider.CompileAssemblyFromSource(new CompilerParameters(), finalCode);
-                    if (results.Errors.HasErrors)
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        sb.Append("Errors in ");
-                        sb.Append(Path.GetFullPath( fileName));
-                        sb.Append("\nFix these errors:\n");
-                        foreach (CompilerError error in results.Errors)
-                            sb.AppendLine(String.Format("Line {0}: Error ({1}): {2}\n", error.Line, error.ErrorNumber, error.ErrorText));
-                        throw new InvalidOperationException(sb.ToString());
-                    }
-                    Type binaryFunction = results.CompiledAssembly.GetType("UserFunctions.SimFunctions");
-                    sTeamSimDataFunction = binaryFunction.GetMethod(functionName);
-                    sFormulasTimeStamp = info.CreationTime;
-                }
-            }
-            string sim_def = "";
-            if (sTeamSimDataFunction != null)
-            {
-                System.Diagnostics.Debug.WriteLine("Using User Defined functions.");
-                sim_def = sTeamSimDataFunction.Invoke(null, new object[] {
-                    re, nt, le, lolb, lilb, rilb, rolb, rcb, lcb, fs, ss
-                }).ToString();
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("NOT Using User Defined functions.");
-                sim_def = GetTeamSimDefense(re, nt, le, lolb, lilb, rilb, rolb, rcb, lcb, fs, ss);
-            }
-            return sim_def;
-        }
-
-        private string GetTeamSimDefense(int[] re, int[] nt, int[] le, int[] lolb, int[] lilb, 
-                int[] rilb, int[] rolb, int[] rcb, int[] lcb, int[] fs, int[] ss)
-        {
-            string sim_def = "";
-            int rs = 0; int rp = 1; int ms = 2; int hp = 3;
-            int pi = GetPiIndex(mData);
-            int qu = pi + 1;
-            int team_hp = 0; int team_pi = 0; int team_ms = 0;
-
-            if (re[ms] > 49) team_ms++; if (re[hp] > 49) team_hp++; if (re[pi] > 49) team_pi++;
-            if (le[ms] > 49) team_ms++; if (le[hp] > 49) team_hp++; if (le[pi] > 49) team_pi++;
-            if (nt[ms] > 49) team_ms++; if (nt[hp] > 49) team_hp++; if (nt[pi] > 49) team_pi++;
-            if (lolb[ms] > 49) team_ms++; if (lolb[hp] > 49) team_hp++; if (lolb[pi] > 49) team_pi++;
-            if (lilb[ms] > 49) team_ms++; if (lilb[hp] > 49) team_hp++; if (lilb[pi] > 49) team_pi++;
-            if (rilb[ms] > 49) team_ms++; if (rilb[hp] > 49) team_hp++; if (rilb[pi] > 49) team_pi++;
-            if (rolb[ms] > 49) team_ms++; if (rolb[hp] > 49) team_hp++; if (rolb[pi] > 49) team_pi++;
-            if (rcb[ms] > 49) team_ms++; if (rcb[hp] > 49) team_hp++; if (rcb[pi] > 49) team_pi++;
-            if (lcb[ms] > 49) team_ms++; if (lcb[hp] > 49) team_hp++; if (lcb[pi] > 49) team_pi++;
-            if (fs[ms] > 49) team_ms++; if (fs[hp] > 49) team_hp++; if (fs[pi] > 49) team_pi++;
-            if (ss[ms] > 49) team_ms++; if (ss[hp] > 49) team_hp++; if (ss[pi] > 49) team_pi++;
-
-            int rush_def = team_ms + team_hp;
-            int pass_def = team_ms + team_pi;
-            if (rush_def > 0xf) rush_def = 0xf;
-            if (pass_def > 0xf) pass_def = 0xf;
-            sim_def = string.Format("{0:x}{1:x}", rush_def, pass_def);
-            return sim_def;
-        }
+        private static Dictionary<string, string> sSubLinesTSB1 = new Dictionary<string, string>(){
+            { "QB","QB,name       ,face    , JN,RS,RP,MS,HP,PS,PC,PA,AR"},
+            { "SKILL","SKILL,name ,face    , JN,RS,RP,MS,HP,BC,RC"},
+            { "OL", "OL,name      ,face    , JN,RS,RP,MS,HP"},
+            { "DEF","DEF,name     ,face    , JN,RS,RP,MS,HP,PI,QU"},
+            { "K","K,name         ,face    , JN,RS,RP,MS,HP,KP,KA,AB"},
+            { "P","P,name         ,face    , JN,RS,RP,MS,HP,KP,AB"}
+        };
     }
 }
