@@ -38,6 +38,7 @@
             this.mResulTextBox = new System.Windows.Forms.TextBox();
             this.mGoButton = new System.Windows.Forms.Button();
             this.ParentItem = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mCancelButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // mBaseTextBox
@@ -133,11 +134,24 @@
             this.ParentItem.Name = "ParentItem";
             this.ParentItem.Size = new System.Drawing.Size(61, 4);
             // 
+            // mCancelButton
+            // 
+            this.mCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.mCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.mCancelButton.Location = new System.Drawing.Point(386, 449);
+            this.mCancelButton.Name = "mCancelButton";
+            this.mCancelButton.Size = new System.Drawing.Size(75, 23);
+            this.mCancelButton.TabIndex = 11;
+            this.mCancelButton.Text = "Cancel";
+            this.mCancelButton.UseVisualStyleBackColor = true;
+            // 
             // PatchMaker
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.mCancelButton;
             this.ClientSize = new System.Drawing.Size(412, 433);
+            this.Controls.Add(this.mCancelButton);
             this.Controls.Add(this.mGoButton);
             this.Controls.Add(this.mResulTextBox);
             this.Controls.Add(this.mBrowseModifiedButton);
@@ -164,5 +178,6 @@
         private System.Windows.Forms.TextBox mResulTextBox;
         private System.Windows.Forms.Button mGoButton;
         private System.Windows.Forms.ContextMenuStrip ParentItem;
+        private System.Windows.Forms.Button mCancelButton;
     }
 }

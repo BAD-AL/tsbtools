@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Drawing;
+using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace TSBTool
 {
@@ -128,5 +130,103 @@ namespace TSBTool
             }
             return i == target.Length;
         }
+
+
+        private static List<string> sErrors = new List<string>();
+
+        public static void AddError(string error)
+        {
+            sErrors.Add(error);
+        }
+
+        public static void ClearErrors()
+        {
+            sErrors.Clear();
+        }
+
+        public static void ShowErrors()
+        {
+            if (sErrors != null && sErrors.Count > 0)
+            {
+                StringBuilder sb = new StringBuilder(500);
+                foreach (string e in sErrors)
+                {
+                    sb.Append(e + "\n");
+                }
+                ShowError(sb.ToString());
+                ClearErrors();
+            }
+        }
+
+        public static void ShowError(string error)
+        {
+            if (MainClass.GUI_MODE)
+            {
+                MessageBox.Show(null, error, "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+                Console.Error.WriteLine(error);
+        }
+
+
+
+        private static Regex tsb1QB1Regex = new Regex(
+            "^QB1\\s*,[a-zA-Z 0-9]+\\s*,\\s*Face=0x[0-9]{1,2}\\s*,\\s*#[0-9]{1,2}\\s*,(\\s*[0-9]{1,2}\\s*,){7}(\\s*[0-9]{1,2}\\s*,?){1}(\\s*\\[|\\s*$)",
+             RegexOptions.Multiline);
+
+        private static Regex tsb2QB1Regex = new Regex(
+            "^QB1\\s*,[a-zA-Z 0-9]+\\s*,\\s*Face=0x[0-9]{1,2}\\s*,\\s*#[0-9]{1,2}\\s*,(\\s*[0-9]{1,2}\\s*,){9}(\\s*[0-9]{1,2}\\s*,?){1}(\\s*\\[|\\s*$)",
+            RegexOptions.Multiline);
+        private static Regex tsb3QB1Regex = new Regex(
+            "^QB1\\s*,[a-zA-Z 0-9\\.]+\\s*,\\s*Face=0x[08][0-9A-Fa-f]{1}\\s*,\\s*#[0-9]{1,2}\\s*,(\\s*[0-9]{1,2}\\s*,){10}(\\s*[0-9]{1,2}\\s*,?){1}(\\s*\\[|\\s*$)",
+            RegexOptions.Multiline);
+
+        internal static bool IsTSB1Content(string data)
+        {
+            bool retVal = false;
+            MatchCollection mc = tsb1QB1Regex.Matches(data);
+            if (mc.Count > 0)
+            {
+                retVal = true;
+            }
+            return retVal;
+        }
+
+        internal static bool IsTSB2Content(string data)
+        {
+            bool retVal = false;
+            MatchCollection mc = tsb2QB1Regex.Matches(data);
+            if (mc.Count > 0)
+            {
+                retVal = true;
+            }
+            return retVal;
+        }
+
+        internal static bool IsTSB3Content(string data)
+        {
+            bool retVal = false;
+            MatchCollection mc = tsb3QB1Regex.Matches(data);
+            if (mc.Count > 0)
+            {
+                retVal = true;
+            }
+            return retVal;
+        }
+
+        /// <summary>
+        /// Returns the content type (TSB1, TSB2, TSB3, Unknown)
+        /// </summary>
+        internal static TSBContentType GetContentType(string data)
+        {
+            if (IsTSB1Content(data))
+                return TSBContentType.TSB1;
+            if (IsTSB2Content(data))
+                return TSBContentType.TSB2;
+            if (IsTSB3Content(data))
+                return TSBContentType.TSB3;
+            return TSBContentType.Unknown;
+        }
+
     }
 }

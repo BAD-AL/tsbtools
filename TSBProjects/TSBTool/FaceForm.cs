@@ -17,6 +17,7 @@ namespace TSBTool
 		private System.ComponentModel.Container components = null;
 
 		private static Image[] m_Faces = null;
+        private Button mCancelButton;
 		private int m_ImageIndex = -1;
 
 		public FaceForm()
@@ -175,12 +176,26 @@ namespace TSBTool
 		private void InitializeComponent()
 		{
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FaceForm));
+            this.mCancelButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            // 
+            // mCancelButton
+            // 
+            this.mCancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.mCancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.mCancelButton.Location = new System.Drawing.Point(447, 514);
+            this.mCancelButton.Name = "mCancelButton";
+            this.mCancelButton.Size = new System.Drawing.Size(75, 23);
+            this.mCancelButton.TabIndex = 0;
+            this.mCancelButton.Text = "Cancel";
+            this.mCancelButton.UseVisualStyleBackColor = true;
             // 
             // FaceForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.CancelButton = this.mCancelButton;
             this.ClientSize = new System.Drawing.Size(520, 498);
+            this.Controls.Add(this.mCancelButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(536, 536);
             this.MinimizeBox = false;

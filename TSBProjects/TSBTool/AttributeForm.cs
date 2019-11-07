@@ -258,11 +258,11 @@ namespace TSBTool
 		/// <param name="playerLine"></param>
 		private void SetPlayerData(string playerLine)
 		{
-			string fName = m_Parser.GetFirstName(playerLine);
-			string lName = m_Parser.GetLastName(playerLine);
-			int face = m_Parser.GetFace(playerLine);
-			int jerseyNumber = m_Parser.GetJerseyNumber(playerLine);
-			int[] attrs = m_Parser.GetInts(playerLine);
+			string fName = InputParser.GetFirstName(playerLine);
+            string lName = InputParser.GetLastName(playerLine);
+            int face = InputParser.GetFace(playerLine);
+            int jerseyNumber = InputParser.GetJerseyNumber(playerLine);
+            int[] attrs = InputParser.GetInts(playerLine);
 			int[] simData = m_Parser.GetSimVals(playerLine);
 
 			m_FirstNameTextBox.Text = fName;
@@ -414,8 +414,8 @@ namespace TSBTool
 						m_A4Label.Text = "";
 						m_Sim1Label.Text = "Sim Rush";
 						m_Sim2Label.Text = "Sim Catch";
-						m_Sim3Label.Text = "Sim Punt Ret";
-						m_Sim4Label.Text = "Sim Kick Ret";
+						m_Sim3Label.Text = "Sim Yards per catch";
+						m_Sim4Label.Text = "Sim Targets";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = true;
 						m_Sim3UpDown.Enabled = true;
@@ -1236,6 +1236,7 @@ namespace TSBTool
             // AttributeForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.CancelButton = this.m_CancelButton;
             this.ClientSize = new System.Drawing.Size(400, 274);
             this.Controls.Add(this.m_AutoUpdateButton);
             this.Controls.Add(this.m_JerseyNumberUpDown);
@@ -1545,16 +1546,15 @@ Please verify that this player's attributes are correct.", oldPlayer);
 				"Are you Sure?", MessageBoxButtons.YesNo) == DialogResult.Yes )
 			{
 				this.Enabled = false;
-//				try
-//				{
-					AutoUpdatePlayerSim();
-					MessageBox.Show(this, "Done.");
-//				}
-//				catch//(Exception e)
-//				{
-//					// not enough attributes for a player,
-//					//MessageBox.Show(this,"Error updating player sim attributes
-//				}
+                if (MessageBox.Show("Use Tecmonster's formulas?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    m_Data = TecmonsterTSB1SimAutoUpdater.AutoUpdatePlayerSimData(m_Data);
+                }
+                else
+                {
+                    AutoUpdatePlayerSim();
+                }
+				MessageBox.Show(this, "Done.");
 				this.Enabled = true;
 				SetCurrentPlayer();
 			}
@@ -1610,15 +1610,15 @@ Please verify that this player's attributes are correct.", oldPlayer);
 			{
 				return;// he's not there, don't update him.
 			}
-			string fName = m_Parser.GetFirstName(oldValue);
-			string lName = m_Parser.GetLastName(oldValue);
-			int face = m_Parser.GetFace(oldValue);
-			int jerseyNumber = m_Parser.GetJerseyNumber(oldValue);
+            string fName = InputParser.GetFirstName(oldValue);
+            string lName = InputParser.GetLastName(oldValue);
+            int face = InputParser.GetFace(oldValue);
+            int jerseyNumber = InputParser.GetJerseyNumber(oldValue);
 			
 			int[] attrs = new int[4];
 			try
 			{
-				attrs = m_Parser.GetInts(oldValue);
+				attrs = InputParser.GetInts(oldValue);
 			}
 			catch(Exception e)
 			{
@@ -1708,17 +1708,17 @@ Please verify that this player's attributes are correct.", oldPlayer);
 				// we need the entire defense in order to update this.
 				return;
 			}
-			int[] reAttrs   = m_Parser.GetInts(re);
-			int[] leAttrs   = m_Parser.GetInts(le);
-			int[] ntAttrs   = m_Parser.GetInts(nt);
-			int[] lolbAttrs = m_Parser.GetInts(lolb);
-			int[] lilbAttrs = m_Parser.GetInts(lilb);
-			int[] rilbAttrs = m_Parser.GetInts(rilb);
-			int[] rolbAttrs = m_Parser.GetInts(rolb);
-			int[] rcbAttrs  = m_Parser.GetInts(rcb);
-			int[] lcbAttrs  = m_Parser.GetInts(lcb);
-			int[] fsAttrs   = m_Parser.GetInts(fs);
-			int[] ssAttrs   = m_Parser.GetInts(ss);
+			int[] reAttrs   = InputParser.GetInts(re);
+			int[] leAttrs   = InputParser.GetInts(le);
+			int[] ntAttrs   = InputParser.GetInts(nt);
+			int[] lolbAttrs = InputParser.GetInts(lolb);
+			int[] lilbAttrs = InputParser.GetInts(lilb);
+			int[] rilbAttrs = InputParser.GetInts(rilb);
+			int[] rolbAttrs = InputParser.GetInts(rolb);
+			int[] rcbAttrs  = InputParser.GetInts(rcb);
+			int[] lcbAttrs  = InputParser.GetInts(lcb);
+			int[] fsAttrs   = InputParser.GetInts(fs);
+			int[] ssAttrs   = InputParser.GetInts(ss);
 			
 			int[] passDef = m_SimStuff.GetSimPassDefense(
 				rolbAttrs[4], rilbAttrs[4], lilbAttrs[4], lolbAttrs[4],
@@ -1758,17 +1758,17 @@ Please verify that this player's attributes are correct.", oldPlayer);
 				// we need the entire defense in order to update this.
 				return;
 			}
-			int[] reAttrs   = m_Parser.GetInts(re);
-			int[] leAttrs   = m_Parser.GetInts(le);
-			int[] ntAttrs   = m_Parser.GetInts(nt);
-			int[] lolbAttrs = m_Parser.GetInts(lolb);
-			int[] lilbAttrs = m_Parser.GetInts(lilb);
-			int[] rilbAttrs = m_Parser.GetInts(rilb);
-			int[] rolbAttrs = m_Parser.GetInts(rolb);
-			int[] rcbAttrs  = m_Parser.GetInts(rcb);
-			int[] lcbAttrs  = m_Parser.GetInts(lcb);
-			int[] fsAttrs   = m_Parser.GetInts(fs);
-			int[] ssAttrs   = m_Parser.GetInts(ss);
+			int[] reAttrs   = InputParser.GetInts(re);
+			int[] leAttrs   = InputParser.GetInts(le);
+			int[] ntAttrs   = InputParser.GetInts(nt);
+			int[] lolbAttrs = InputParser.GetInts(lolb);
+			int[] lilbAttrs = InputParser.GetInts(lilb);
+			int[] rilbAttrs = InputParser.GetInts(rilb);
+			int[] rolbAttrs = InputParser.GetInts(rolb);
+			int[] rcbAttrs  = InputParser.GetInts(rcb);
+			int[] lcbAttrs  = InputParser.GetInts(lcb);
+			int[] fsAttrs   = InputParser.GetInts(fs);
+			int[] ssAttrs   = InputParser.GetInts(ss);
 			
 			int[] rushDef = m_SimStuff.GetSimPassRush(
 				reAttrs[2]+reAttrs[3], ntAttrs[2]+ntAttrs[3],

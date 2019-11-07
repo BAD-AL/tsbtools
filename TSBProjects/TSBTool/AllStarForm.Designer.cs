@@ -141,6 +141,7 @@
             // AllStarForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.CancelButton = this.mCancelButton;
             this.ClientSize = new System.Drawing.Size(695, 395);
             this.Controls.Add(this.mToggleNumberOfComboBoxesButton);
             this.Controls.Add(this.tabControl1);

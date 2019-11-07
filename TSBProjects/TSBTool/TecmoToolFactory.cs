@@ -7,6 +7,10 @@ namespace TSBTool
 	/// </summary>
 	public class TecmoToolFactory
 	{
+        public const int ORIG_NES_TSB1_LEN = 0x60010;
+        public const int CXROM_V105_LEN    = 0x80010;
+        public const int CXROM_V111_LEN    = 0xc0010;
+        public const int SNES_TSB1_LEN     = 0x180000;
 
 		public static ITecmoTool GetToolForRom(String fileName)
 		{
@@ -19,20 +23,18 @@ namespace TSBTool
 			catch( UnauthorizedAccessException )
 			{
 				type = ROM_TYPE.READ_ONLY_ERROR;
-				MainClass.ShowError("ERROR opening ROM, Please check ROM to make sure it's not 'read-only'.");
+				StaticUtils.ShowError("ERROR opening ROM, Please check ROM to make sure it's not 'read-only'.");
 				return null;
 			}
 			catch(Exception e)
 			{
-				MainClass.ShowError(string.Format("ERROR determining ROM type. Exception=\n{0}\n{1}",
+				StaticUtils.ShowError(string.Format("ERROR determining ROM type. Exception=\n{0}\n{1}",
 					e.Message,e.StackTrace));
 				return null;
 			}
 
-			if( type == ROM_TYPE.CXROM )
+            if (type == ROM_TYPE.CXROM_v105 || type == ROM_TYPE.CXROM_v111)
 			{
-				tool = new CXRomTSBTool();
-				tool.Init(fileName);
 				TecmoTool.Teams = new String[] 
 					{
 						"bills",     "dolphins", "patriots", "jets",
@@ -46,9 +48,17 @@ namespace TSBTool
 						"AFC",     "NFC",
 						"49ers",   "rams", "seahawks",   "cardinals"
 					};
-				
+                CXRomTSBTool cxt = new CXRomTSBTool(fileName, type);
+                tool = cxt;
+                // Hack here; There are some ROMS out there whose SIZE == CXROM_v111 and are work better as CXROM_v105
+                if (type == ROM_TYPE.CXROM_v111)
+                {
+                    string test = cxt.GetName("49ers", "QB1");
+                    if (test == null)
+                        tool = new CXRomTSBTool(fileName, ROM_TYPE.CXROM_v105);
+                }
 			}
-			else if( type == ROM_TYPE.SNES )
+			else if( type == ROM_TYPE.SNES_TSB1 )
 			{
 				TecmoTool.Teams = new String[] {
 				"bills",   "colts",  "dolphins", "patriots",  "jets",
@@ -58,18 +68,11 @@ namespace TSBTool
 				"bears",   "lions",  "packers",  "vikings",   "buccaneers",
 				"falcons", "rams",   "saints",   "49ers"
 				  };
-				if( fileName != null )
-					tool = new SNES_TecmoTool(fileName);
-				else
-					tool = new SNES_TecmoTool();
+				tool = new SNES_TecmoTool(fileName);
 			}
 			else
 			{
-				if( fileName != null )
-					tool = new TecmoTool(fileName);
-				else
-					tool = new TecmoTool();
-				TecmoTool.Teams = new String[] 
+                TecmoTool.Teams = new String[]
 					{
 						"bills",   "colts",  "dolphins", "patriots",  "jets",
 						"bengals", "browns", "oilers",   "steelers",
@@ -78,8 +81,8 @@ namespace TSBTool
 						"bears",   "lions",  "packers",  "vikings",   "buccaneers",
 						"49ers",   "rams",   "saints",   "falcons"
 					};
+                tool = new TecmoTool(fileName);
 			}
-
 			return tool;
 		}
 
@@ -92,60 +95,38 @@ namespace TSBTool
 		/// <returns></returns>
 		public static ROM_TYPE CheckRomType(string fileName )
 		{
-			ROM_TYPE ret = ROM_TYPE.NES;
+			ROM_TYPE ret = ROM_TYPE.NONE;
 			System.IO.FileStream s1=null;
 			try
 			{
 				if( System.IO.File.Exists(fileName) )
 				{
-					byte[] fileBytes = null;
 					System.IO.FileInfo f1 = new System.IO.FileInfo(fileName);
 					long len = f1.Length;
-					s1 = new System.IO.FileStream(fileName, System.IO.FileMode.Open );
-					fileBytes = new byte[(int)len];
-					s1.Read(fileBytes,0,(int)len);
-					
-
-					if( fileBytes != null && 
-						fileBytes.Length > 0x99 &&
-						fileBytes[0x48] == 0xff )
-						//					if( fileName.ToLower().EndsWith(".nes") && len > 0x70000 ) //cxrom size=0x80010
+                    if (len == ORIG_NES_TSB1_LEN)
+                    {
+                        ret = ROM_TYPE.NES_ORIGINAL_TSB;
+                    }
+                    else if (len == CXROM_V105_LEN)
 					{
-						ret = ROM_TYPE.CXROM;
-#if(DEBUG)
-						Console.Error.WriteLine("This is a 32 team ROM");
-#endif
+						ret = ROM_TYPE.CXROM_v105;
 					}
-					else if( fileName.ToLower().EndsWith(".smc"))
+                    else if (len == CXROM_V111_LEN)
+                    {
+                        ret = ROM_TYPE.CXROM_v111;
+                    }
+					else if( fileName.ToLower().EndsWith(".smc") && len == SNES_TSB1_LEN)
 					{
-						ret = ROM_TYPE.SNES;
-#if(DEBUG)
-						Console.Error.WriteLine("This is a SNES ROM");
-#endif
-					}
-					else
-					{
-#if(DEBUG)
-						Console.Error.WriteLine("This seems to be the Regular TSB nes ROM.");
-#endif
+						ret = ROM_TYPE.SNES_TSB1;
 					}
 				}
+                Console.Error.WriteLine("ROM Type = " + ret.ToString());
 			}
-//			catch(UnauthorizedAccessException)
-//			{
-//				
-//			}
-//			catch(Exception e )
-//			{
-//				Console.Error.WriteLine("ERROR! Function MainClass.CheckRomType {0}\n{1}",
-//					e.Message, e.StackTrace);
-//			}
 			finally
 			{
 				if( s1 != null )
 					s1.Close();
 			}
-
 			return ret;
 		}
 	}

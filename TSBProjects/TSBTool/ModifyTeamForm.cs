@@ -368,7 +368,10 @@ namespace TSBTool
 
 		private void AutoUpdateAllTeams()
 		{
-			MessageBox.Show("This Featrue Not yet implemented.");
+            TecmonsterTeamSim sim = new TecmonsterTeamSim();
+            m_Data = sim.AutoUpdateSeasonSimData(1, m_Data);
+            ShowTeamValues();
+            MessageBox.Show(this, "Done.");
 		}
 
 		/// <summary>
@@ -548,18 +551,18 @@ namespace TSBTool
             // 
             this.m_Sim2Label.Location = new System.Drawing.Point(192, 8);
             this.m_Sim2Label.Name = "m_Sim2Label";
-            this.m_Sim2Label.Size = new System.Drawing.Size(56, 32);
+            this.m_Sim2Label.Size = new System.Drawing.Size(80, 32);
             this.m_Sim2Label.TabIndex = 25;
-            this.m_Sim2Label.Text = "Sim Defense";
+            this.m_Sim2Label.Text = "Sim Pass Defense";
             this.m_Sim2Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // m_Sim1Label
             // 
-            this.m_Sim1Label.Location = new System.Drawing.Point(128, 8);
+            this.m_Sim1Label.Location = new System.Drawing.Point(112, 8);
             this.m_Sim1Label.Name = "m_Sim1Label";
-            this.m_Sim1Label.Size = new System.Drawing.Size(56, 32);
+            this.m_Sim1Label.Size = new System.Drawing.Size(72, 32);
             this.m_Sim1Label.TabIndex = 24;
-            this.m_Sim1Label.Text = "Sim Offense";
+            this.m_Sim1Label.Text = "Sim Rush Defense";
             this.m_Sim1Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // m_OKButton
@@ -921,12 +924,12 @@ namespace TSBTool
             this.m_AutoButton.TabIndex = 40;
             this.m_AutoButton.Text = "Auto Update All Team Sim attributes";
             this.m_AutoButton.UseVisualStyleBackColor = false;
-            this.m_AutoButton.Visible = false;
             this.m_AutoButton.Click += new System.EventHandler(this.m_AutoButton_Click);
             // 
             // ModifyTeamForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.CancelButton = this.m_CancelButton;
             this.ClientSize = new System.Drawing.Size(408, 418);
             this.Controls.Add(this.m_AutoButton);
             this.Controls.Add(this.m_FormationComboBox);

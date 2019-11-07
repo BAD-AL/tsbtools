@@ -28,7 +28,7 @@ namespace TSBTool
         /// <summary>
         /// Returns the rom version 
         /// </summary>
-        public virtual string RomVersion { get { return "SNES"; } }
+        public virtual ROM_TYPE RomVersion { get { return ROM_TYPE.SNES_TSB1; } }
 
 		//		private bool mShowTeamFormation = false;
 		//
@@ -47,7 +47,7 @@ namespace TSBTool
 			set{ mShowOffPref = value;}
 		}
 
-		public static bool GUI_MODE = false;
+        public static bool GUI_MODE = false;
 		public static bool AUTO_CORRECT_SCHEDULE = true;
 
 		private bool mShowOffPref = true;
@@ -98,11 +98,6 @@ namespace TSBTool
 			"49ers",    "rams",   "saints",   "falcons"
 		};
 
-		private Hashtable abilityMap;
-
-		public SNES_TecmoTool()
-		{
-		}
 		public SNES_TecmoTool(string fileName)
 		{
 			Init(fileName);
@@ -146,32 +141,9 @@ namespace TSBTool
 			return ret;
 		}
 
-		public bool Init(string fileName)
+		protected bool Init(string fileName)
 		{
-			abilityMap = new Hashtable();
-			abilityMap.Add( 6,   0x00); 
-			abilityMap.Add( 13,  0x01); 
-			abilityMap.Add( 19,  0x02); 
-			abilityMap.Add( 25,  0x03); 
-			abilityMap.Add( 31,  0x04); 
-			abilityMap.Add( 38,  0x05); 
-			abilityMap.Add( 44,  0x06); 
-			abilityMap.Add( 50,  0x07); 
-			abilityMap.Add( 56,  0x08); 
-			abilityMap.Add( 63,  0x09);  
-			abilityMap.Add( 69,  0x0a); 
-			abilityMap.Add( 75,  0x0b); 
-			abilityMap.Add( 81,  0x0c); 
-			abilityMap.Add( 88,  0x0d); 
-			abilityMap.Add( 94,  0x0e); 
-			abilityMap.Add( 100, 0x0f);
-			
-			if( ReadRom(fileName) )
-			{
-				//helper = new ScheduleHelper(outputRom);
-				return true;
-			}
-			return false;
+			return ReadRom(fileName);
 		}
 
 		public void Test2()
@@ -257,7 +229,7 @@ Do you want to continue?",ROM_LENGTH),
     Legit TSB1 snes ROMS are {1} bytes long.
     If you know this is really a snes TSB1 ROM, you can force TSBToolSupreme to load it in GUI mode.",
 							filename, ROM_LENGTH);
-						MainClass.AddError(msg);
+						StaticUtils.AddError(msg);
 					}
 				}
 				
@@ -279,7 +251,7 @@ Do you want to continue?",ROM_LENGTH),
 			}
 			catch(Exception e)
 			{
-				MainClass.ShowError(e.ToString());
+				StaticUtils.ShowError(e.ToString());
 			}
 			return ret;
 		}
@@ -297,12 +269,12 @@ Do you want to continue?",ROM_LENGTH),
 				}
 				catch(Exception e)
 				{
-					MainClass.ShowError(e.ToString());
+					StaticUtils.ShowError(e.ToString());
 				}
 			}
 			else
 			{
-				MainClass.AddError("ERROR! You passed a null filename");
+				StaticUtils.AddError("ERROR! You passed a null filename");
 			}
 		}
 
@@ -334,7 +306,7 @@ Do you want to continue?",ROM_LENGTH),
 			{
 				SNES_ScheduleHelper sh2 = new SNES_ScheduleHelper(outputRom);
 				ret = sh2.GetSchedule();
-                MainClass.ShowErrors();
+                StaticUtils.ShowErrors();
 			}
 			return ret;
 		}
@@ -343,7 +315,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if(year == null || year.Length != 4)
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) {0} is not a valid year.",year));
+				StaticUtils.AddError(string.Format("ERROR! (low level) {0} is not a valid year.",year));
 				return;
 			}
 			int location;
@@ -404,7 +376,7 @@ Do you want to continue?",ROM_LENGTH),
 			}
 			catch(Exception )
 			{
-				MainClass.AddError("Problem setting superbowl number.");
+				StaticUtils.AddError("Problem setting superbowl number.");
 			}
 		}
 
@@ -426,7 +398,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidPosition( position) || fname == null || lname == null || fname.Length < 1 || lname.Length < 1)
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) InsertPlayer:: Player name or position invalid"));
+				StaticUtils.AddError(string.Format("ERROR! (low level) InsertPlayer:: Player name or position invalid"));
 			}
 			else
 			{
@@ -434,7 +406,7 @@ Do you want to continue?",ROM_LENGTH),
 				lname = lname.ToUpper(); //15 18  char max for name
 				if(lname.Length + fname.Length > 17)
 				{
-					MainClass.AddError(string.Format("Warning!! There is a 17 character limit for names\n '{0} {1}' is {2} characters long.",
+					StaticUtils.AddError(string.Format("Warning!! There is a 17 character limit for names\n '{0} {1}' is {2} characters long.",
 						fname,lname, fname.Length+lname.Length));
 					if(lname.Length > 16)
 					{
@@ -446,7 +418,7 @@ Do you want to continue?",ROM_LENGTH),
 						fname = string.Format("{0}.",fname[0]);
 					//fname = ""+fname[0];
 
-					MainClass.AddError(string.Format("Name will be {0} {1}", fname, lname ));
+					StaticUtils.AddError(string.Format("Name will be {0} {1}", fname, lname ));
 				}
 				if(fname.Length < 1)
 					fname = "Joe";
@@ -502,7 +474,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) || !IsValidPosition( position ) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetName:: team '{0}' or position '{1}' is invalid.",
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetName:: team '{0}' or position '{1}' is invalid.",
 					team,position));
 				return null;
 			}
@@ -552,12 +524,12 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team))
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) Team {0} is invalid.",team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) Team {0} is invalid.",team));
 				return null;
 			}
 			else if( !IsValidPosition(position) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) position {0} is invalid.",position));
+				StaticUtils.AddError(string.Format("ERROR! (low level) position {0} is invalid.",position));
 				return null;
 			}
 
@@ -616,7 +588,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team ) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetTeamPlayers:: team {0} is invalid.",team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetTeamPlayers:: team {0} is invalid.",team));
 				return null;
 			}
 
@@ -766,7 +738,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if (abb == null || abb.Length != 4)
 			{
-				MainClass.AddError(String.Format("Error Setting TeamAbbreviation; TeamIndex:{0}; abb:{1}",teamIndex, abb));
+				StaticUtils.AddError(String.Format("Error Setting TeamAbbreviation; TeamIndex:{0}; abb:{1}",teamIndex, abb));
 			}
 			else
 			{
@@ -879,7 +851,7 @@ Do you want to continue?",ROM_LENGTH),
 
 			if(positionIndex < 0)
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) Position '{0}' does not exist. Valid positions are:",position));
+				StaticUtils.AddError(string.Format("ERROR! (low level) Position '{0}' does not exist. Valid positions are:",position));
 				for(int i =1; i <= positionNames.Length; i++)
 				{
 					Console.Error.Write("{0}\t", positionNames[i-1]);
@@ -1115,12 +1087,12 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam(team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) team {0} is invalid",team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) team {0} is invalid",team));
 				return;
 			}
 			if(qb != "QB1" && qb != "QB2")
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) Cannot set qb ablities for {0}",qb));
+				StaticUtils.AddError(string.Format("ERROR! (low level) Cannot set qb ablities for {0}",qb));
 				return;
 			}
 			runningSpeed = GetAbility(runningSpeed);
@@ -1141,7 +1113,7 @@ Do you want to continue?",ROM_LENGTH),
 				!IsValidAbility(accuracy) ||  
 				!IsValidAbility(avoidPassBlock) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) Abilities for {0} on {1} were not set.",qb,team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) Abilities for {0} on {1} were not set.",qb,team));
 				PrintValidAbilities();
 				return;
 			}
@@ -1169,7 +1141,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam(team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) team {0} is invalid",team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) team {0} is invalid",team));
 				return;
 			}
 
@@ -1177,7 +1149,7 @@ Do you want to continue?",ROM_LENGTH),
 				pos != "WR1" && pos != "WR2"&& pos != "WR3"&& pos != "WR4" 
 				&& pos != "TE1"&& pos != "TE2")
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) Cannot set skill player ablities for {0}.",pos));
+				StaticUtils.AddError(string.Format("ERROR! (low level) Cannot set skill player ablities for {0}.",pos));
 				return;
 			}
 			runningSpeed = GetAbility(runningSpeed);
@@ -1194,7 +1166,7 @@ Do you want to continue?",ROM_LENGTH),
 				!IsValidAbility(receptions )  || 
 				!IsValidAbility(ballControl)    )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) Invalid attribute. Abilities for {0} on {1} were not set.",pos,team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) Invalid attribute. Abilities for {0} on {1} were not set.",pos,team));
 				PrintValidAbilities();
 				return;
 			}
@@ -1213,13 +1185,13 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam(team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) team {0} is invalid",team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) team {0} is invalid",team));
 				return;
 			}
 
 			if(pos != "K" && pos != "P" )
 			{
-				MainClass.AddError(string.Format("Cannot set kick player ablities for {0}.",pos));
+				StaticUtils.AddError(string.Format("Cannot set kick player ablities for {0}.",pos));
 				return;
 			}
 			runningSpeed = GetAbility(runningSpeed);
@@ -1236,7 +1208,7 @@ Do you want to continue?",ROM_LENGTH),
 				!IsValidAbility(kickingAbility )  || 
 				!IsValidAbility(avoidKickBlock)    )
 			{
-				MainClass.AddError(string.Format("Abilities for {0} on {1} were not set.",pos,team));
+				StaticUtils.AddError(string.Format("Abilities for {0} on {1} were not set.",pos,team));
 				PrintValidAbilities();
 				return;
 			}
@@ -1255,7 +1227,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam(team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) team {0} is invalid",team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) team {0} is invalid",team));
 				return;
 			}
 
@@ -1263,7 +1235,7 @@ Do you want to continue?",ROM_LENGTH),
 				pos != "RILB" && pos != "LILB" && pos != "LOLB" && pos != "RCB"  && 
 				pos != "LCB"  && pos != "SS"   && pos != "FS"   && pos != "DB2"  && pos != "DB1" )
 			{
-				MainClass.AddError(string.Format("Cannot set defensive player ablities for {0}.",pos));
+				StaticUtils.AddError(string.Format("Cannot set defensive player ablities for {0}.",pos));
 				return;
 			}
 			runningSpeed = GetAbility(runningSpeed);
@@ -1280,7 +1252,7 @@ Do you want to continue?",ROM_LENGTH),
 				!IsValidAbility(passRush )    || 
 				!IsValidAbility(interceptions)   )
 			{
-				MainClass.AddError(string.Format("Abilities for {0} on {1} were not set.",pos,team));
+				StaticUtils.AddError(string.Format("Abilities for {0} on {1} were not set.",pos,team));
 				PrintValidAbilities();
 				return;
 			}
@@ -1296,14 +1268,14 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam(team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) team {0} is invalid",team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) team {0} is invalid",team));
 				return;
 			}
 
 			if(pos != "C" && pos != "RG"&& pos != "LG"&& pos != "RT" &&
 				pos != "LT" )
 			{
-				MainClass.AddError(string.Format("Cannot set OL player ablities for {0}.",pos));
+				StaticUtils.AddError(string.Format("Cannot set OL player ablities for {0}.",pos));
 				return;
 			}
 			runningSpeed = GetAbility(runningSpeed);
@@ -1316,7 +1288,7 @@ Do you want to continue?",ROM_LENGTH),
 				!IsValidAbility(maxSpeed)     || 
 				!IsValidAbility(hittingPower)   )
 			{
-				MainClass.AddError(string.Format("Abilities for {0} on {1} were not set.",pos,team));
+				StaticUtils.AddError(string.Format("Abilities for {0} on {1} were not set.",pos,team));
 				PrintValidAbilities();
 				return;
 			}//GetAbility
@@ -1333,12 +1305,12 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam(team)  )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SaveAbilities:: team {0} is invalid",team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SaveAbilities:: team {0} is invalid",team));
 				return;
 			}
 			else if( !IsValidPosition(pos) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SaveAbilities:: position {0} is invalid",pos));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SaveAbilities:: position {0} is invalid",pos));
 				return;
 			}
 
@@ -1363,13 +1335,10 @@ Do you want to continue?",ROM_LENGTH),
 				outputRom[location+3] = (byte)byte3;
 		}
 
-		internal bool IsValidAbility(int ab)
-		{
-			if( abilityMap.ContainsValue (ab))
-				return true;
-			else
-				return false;
-		}
+        internal bool IsValidAbility(int ab)
+        {
+            return ab >= 0 && ab <= 0xF;
+        }
 
 		private byte GetAbility(int ab)
 		{
@@ -1548,7 +1517,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam(team)  )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetTeamSimData:: team {0} is invalid ",team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetTeamSimData:: team {0} is invalid ",team));
 				return;
 			}
 
@@ -1578,9 +1547,9 @@ Do you want to continue?",ROM_LENGTH),
 			else
 			{
 				if(teamIndex != -1)
-					MainClass.AddError(string.Format("Can't set offensive pref to '{0}' valid values are 0-3.\n",val));
+					StaticUtils.AddError(string.Format("Can't set offensive pref to '{0}' valid values are 0-3.\n",val));
 				else
-					MainClass.AddError(string.Format("Team '{0}' is invalid\n",team));
+					StaticUtils.AddError(string.Format("Team '{0}' is invalid\n",team));
 			}
 			return true;
 		}
@@ -1603,7 +1572,7 @@ Do you want to continue?",ROM_LENGTH),
 			}
 			else
 			{
-				MainClass.AddError(string.Format("Team '{0}' is invalid\n",team));
+				StaticUtils.AddError(string.Format("Team '{0}' is invalid\n",team));
 			}
 			return val;
 		}
@@ -1639,16 +1608,16 @@ Do you want to continue?",ROM_LENGTH),
 						outputRom[location] = (byte)0x02;
 						break;
 					default:
-						MainClass.AddError(string.Format(
+						StaticUtils.AddError(string.Format(
 							"ERROR! Formation {0:x} for team '{1}' is invalid.",formation, team));
-						MainClass.AddError(string.Format("  Valid formations are:\n  {0}\n  {1}\n  {2}",
+						StaticUtils.AddError(string.Format("  Valid formations are:\n  {0}\n  {1}\n  {2}",
 							m2RB_2WR_1TE, m1RB_3WR_1TE, m1RB_4WR ));
 						break;
 				}
 			}
 			else
 			{
-				MainClass.AddError(string.Format("ERROR! Team '{0}' is invalid, Offensive Formation not set",team));
+				StaticUtils.AddError(string.Format("ERROR! Team '{0}' is invalid, Offensive Formation not set",team));
 			}
 		}
 
@@ -1678,7 +1647,7 @@ Do you want to continue?",ROM_LENGTH),
 						ret += m1RB_4WR;
 						break;
 					default:
-						MainClass.AddError(string.Format(
+						StaticUtils.AddError(string.Format(
 							"ERROR! Formation {0:x} for team {1} is invalid, ROM FORMATIONS could be messed up.",formation, team));
 						ret="";
 						break;
@@ -1687,7 +1656,7 @@ Do you want to continue?",ROM_LENGTH),
 			else
 			{
 				ret="";
-				MainClass.AddError(string.Format("ERROR! Team '{0}' is invalid, Offensive Formation get failed.",team));
+				StaticUtils.AddError(string.Format("ERROR! Team '{0}' is invalid, Offensive Formation get failed.",team));
 			}
 			return ret;
 		}
@@ -1772,11 +1741,11 @@ Do you want to continue?",ROM_LENGTH),
 			else
 			{
 				if( teamIndex < 0 )
-					MainClass.AddError(string.Format("ERROR! SetPlaybook: Team {0} is Invalid.",team));
+					StaticUtils.AddError(string.Format("ERROR! SetPlaybook: Team {0} is Invalid.",team));
 				if( runs ==  Match.Empty )
-					MainClass.AddError(string.Format("ERROR! SetPlaybook Run play definition '{0} 'is Invalid", runPlays));
+					StaticUtils.AddError(string.Format("ERROR! SetPlaybook Run play definition '{0} 'is Invalid", runPlays));
 				if( pass == Match.Empty )
-					MainClass.AddError(string.Format("ERROR! SetPlaybook Pass play definition '{0} 'is Invalid", passPlays));
+					StaticUtils.AddError(string.Format("ERROR! SetPlaybook Pass play definition '{0} 'is Invalid", passPlays));
 			}
 		}
 
@@ -1826,12 +1795,12 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetPlayerSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetPlayerSimData:: Invalid team {0}", team));
 				return null;
 			}
 			else if( !IsValidPosition( pos ))
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetPlayerSimData:: Invalid Position {0}", pos));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetPlayerSimData:: Invalid Position {0}", pos));
 				return null;
 			}
 
@@ -1861,7 +1830,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetKickingSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetKickingSimData:: Invalid team {0}", team));
 				return null;
 			}
 			int[] ret = new int[1];
@@ -1876,7 +1845,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetKickingSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetKickingSimData:: Invalid team {0}", team));
 				return;
 			}
 			//int teamIndex = GetTeamIndex(team);
@@ -1894,7 +1863,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetPuntingSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetPuntingSimData:: Invalid team {0}", team));
 				return null;
 			}
 			int[] ret = new int[1];
@@ -1909,7 +1878,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetPuntingSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetPuntingSimData:: Invalid team {0}", team));
 				return;
 			}
 			//int teamIndex = GetTeamIndex(team);
@@ -1926,12 +1895,12 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetDefensiveSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetDefensiveSimData:: Invalid team {0}", team));
 				return null;
 			}
 			else if( !IsValidPosition( pos ))
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetDefensiveSimData:: Invalid Position {0}", pos));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetDefensiveSimData:: Invalid Position {0}", pos));
 				return null;
 			}
 
@@ -1955,17 +1924,17 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetDefensiveSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetDefensiveSimData:: Invalid team {0}", team));
 				return;
 			}
 			else if( !IsValidPosition( pos ))
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetDefensiveSimData:: Invalid Position {0}", pos));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetDefensiveSimData:: Invalid Position {0}", pos));
 				return;
 			}
 			else if(data == null || data.Length < 2)
 			{
-				MainClass.AddError(string.Format("Error setting sim data for {0}, {1}. Sim data not set.",team,pos));
+				StaticUtils.AddError(string.Format("Error setting sim data for {0}, {1}. Sim data not set.",team,pos));
 				return;
 			}
 			int teamIndex     = GetSimTeamIndex(team);
@@ -1985,12 +1954,12 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetSkillSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetSkillSimData:: Invalid team {0}", team));
 				return null;
 			}
 			else if( !IsValidPosition( pos ))
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetSkillSimData:: Invalid Position {0}", pos));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetSkillSimData:: Invalid Position {0}", pos));
 				return null;
 			}
 
@@ -2009,17 +1978,17 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetSkillSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetSkillSimData:: Invalid team {0}", team));
 				return;
 			}
 			else if( !IsValidPosition( pos ))
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetSkillSimData:: Invalid Position {0}", pos));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetSkillSimData:: Invalid Position {0}", pos));
 				return;
 			}
 			else if(data == null || data.Length < 4)
 			{
-				MainClass.AddError(string.Format("Error setting sim data for {0}, {1}. Sim data not set.",team,pos));
+				StaticUtils.AddError(string.Format("Error setting sim data for {0}, {1}. Sim data not set.",team,pos));
 				return;
 			}
 
@@ -2039,12 +2008,12 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetQBSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetQBSimData:: Invalid team {0}", team));
 				return null;
 			}
 			else if( !IsValidPosition( pos ))
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetQBSimData:: Invalid Position {0}", pos));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetQBSimData:: Invalid Position {0}", pos));
 				return null;
 			}
 
@@ -2064,17 +2033,17 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetQBSimData:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetQBSimData:: Invalid team {0}", team));
 				return ;
 			}
 			else if( !IsValidPosition( pos ))
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetQBSimData:: Invalid Position {0}", pos));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetQBSimData:: Invalid Position {0}", pos));
 				return ;
 			}
 			else if(data == null || data.Length < 2)
 			{
-				MainClass.AddError(string.Format("Error setting sim data for {0}, {1}. Sim data not set.",team,pos));
+				StaticUtils.AddError(string.Format("Error setting sim data for {0}, {1}. Sim data not set.",team,pos));
 				return;
 			}
 
@@ -2104,7 +2073,7 @@ Do you want to continue?",ROM_LENGTH),
 			int teamIndex = GetTeamIndex(team);
 			if(positionOffset < 0 || teamIndex < 0 )
 			{
-				MainClass.AddError(string.Format("GetFace Error getting face for {0} {1}",team,position));
+				StaticUtils.AddError(string.Format("GetFace Error getting face for {0} {1}",team,position));
 				return -1;
 			}
 			int loc = (teamIndex * teamAbilityOffset)+ abilityOffsets[positionOffset] + billsQB1AbilityStart+2;
@@ -2127,9 +2096,9 @@ Do you want to continue?",ROM_LENGTH),
 			int teamIndex = GetTeamIndex(team);
 			if(positionOffset < 0 || teamIndex < 0 || face < 0x00 | face > 0xD4 )
 			{
-				MainClass.AddError(string.Format("SetFace Error setting face for {0} {1} face={2}",team,position,face));
+				StaticUtils.AddError(string.Format("SetFace Error setting face for {0} {1} face={2}",team,position,face));
 				if( face < 0x00 | face > 0xD4 )
-					MainClass.AddError(string.Format("Valid Face numbers are 0x00 - 0xD4"));
+					StaticUtils.AddError(string.Format("Valid Face numbers are 0x00 - 0xD4"));
 				return ;
 			}
 			int loc = (teamIndex * teamAbilityOffset)+ abilityOffsets[positionOffset] + billsQB1AbilityStart+2;
@@ -2230,7 +2199,7 @@ Do you want to continue?",ROM_LENGTH),
 			}
 			else
 			{
-				MainClass.AddError(string.Format(
+				StaticUtils.AddError(string.Format(
 					"ERROR! Invalid position on RETURN_TEAM {0} {1} {2}",pos0,pos1,pos2));
 			}
 		}
@@ -2246,7 +2215,7 @@ Do you want to continue?",ROM_LENGTH),
 			int teamIndex = Index(teams,team);
 			if( teamIndex < 0 )
 			{
-				MainClass.AddError( string.Format("ERROR! GetReturnTeam.Invalid team {0}",team));
+				StaticUtils.AddError( string.Format("ERROR! GetReturnTeam.Invalid team {0}",team));
 			}
 			else
 			{
@@ -2268,7 +2237,7 @@ Do you want to continue?",ROM_LENGTH),
 				}
 				else
 				{
-					MainClass.AddError("ERROR! Return Team Messed up in ROM.");
+					StaticUtils.AddError("ERROR! Return Team Messed up in ROM.");
 				}
 			}
 			return ret;
@@ -2284,12 +2253,12 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetPuntReturner:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetPuntReturner:: Invalid team {0}", team));
 				return ;
 			}
 			else if( !IsValidPosition( position ))
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetPuntReturner:: Invalid Position {0}", position));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetPuntReturner:: Invalid Position {0}", position));
 				return ;
 			}
 
@@ -2319,12 +2288,12 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetKickReturner:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetKickReturner:: Invalid team {0}", team));
 				return ;
 			}
 			else if( !IsValidPosition( position ))
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetKickReturner:: Invalid Position {0}", position));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetKickReturner:: Invalid Position {0}", position));
 				return ;
 			}
 
@@ -2351,7 +2320,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetKickReturner:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetKickReturner:: Invalid team {0}", team));
 				return null;
 			}
 
@@ -2407,7 +2376,7 @@ Do you want to continue?",ROM_LENGTH),
 
 			if( index < 0 || index > 2 ||teamIndex < 0 || teamIndex > 27 || posIndex < 0 )
 			{
-				MainClass.AddError(string.Format(
+				StaticUtils.AddError(string.Format(
 					"InsertGuyOnReturnTeam: invalid arguments {0}, {1}, {2}",position, team, index));
 				return ;
 			}
@@ -2425,7 +2394,7 @@ Do you want to continue?",ROM_LENGTH),
 		{
 			if( !IsValidTeam( team) )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) GetPuntReturner:: Invalid team {0}", team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) GetPuntReturner:: Invalid team {0}", team));
 				return null;
 			}
 
@@ -2517,7 +2486,7 @@ Do you want to continue?",ROM_LENGTH),
 				ApplySimpleSet(line);
             else if (line.IndexOf("PromptUser", StringComparison.OrdinalIgnoreCase) > -1)
             {
-                if (line.IndexOf(RomVersion, StringComparison.OrdinalIgnoreCase) > -1)
+                if (line.IndexOf(RomVersion.ToString(), StringComparison.OrdinalIgnoreCase) > -1)
                 {
                     // good to go! apply it
                     string simpleSetLine = StringInputDlg.PromptForSetUserInput( line);
@@ -2528,13 +2497,13 @@ Do you want to continue?",ROM_LENGTH),
                 }
                 else
                 {
-                    //MainClass.ShowError("Rom version not specified in Hack: " + line);
-                    MainClass.AddError(string.Format("line '{0}' not applied,", line));
+                    //StaticUtils.ShowError("Rom version not specified in Hack: " + line);
+                    StaticUtils.AddError(string.Format("line '{0}' not applied; RomVersion = {1}", line, RomVersion.ToString()));
                 }
             }
             else
             {
-                MainClass.AddError(string.Format("ERROR with line \"{0}\"", line));
+                StaticUtils.AddError(string.Format("ERROR with line \"{0}\"", line));
             }
 		}
 
@@ -2546,7 +2515,7 @@ Do you want to continue?",ROM_LENGTH),
 			Match m = simpleSetRegex.Match(line);
 			if( m == Match.Empty )
 			{
-				MainClass.ShowError(string.Format("SET function not used properly. incorrect syntax>'{0}'",line));
+				StaticUtils.ShowError(string.Format("SET function not used properly. incorrect syntax>'{0}'",line));
 				return;
 			}
 			string loc = m.Groups[1].ToString().ToLower();
@@ -2562,11 +2531,11 @@ Do you want to continue?",ROM_LENGTH),
 				byte[] bytes = GetHexBytes(val);
 				if( location + bytes.Length > outputRom.Length  )
 				{
-					MainClass.ShowError(string.Format("ApplySet:> Error with line {0}. Data falls off the end of rom.\n",line));
+					StaticUtils.ShowError(string.Format("ApplySet:> Error with line {0}. Data falls off the end of rom.\n",line));
 				}
 				else if( location < 0)
 				{
-					MainClass.ShowError(string.Format("ApplySet:> Error with line {0}. location is negative.\n",line));
+					StaticUtils.ShowError(string.Format("ApplySet:> Error with line {0}. location is negative.\n",line));
 				}
 				else
 				{
@@ -2578,7 +2547,7 @@ Do you want to continue?",ROM_LENGTH),
 			}
 			catch(Exception e)
 			{
-				MainClass.ShowError(string.Format("ApplySet:> Error with line {0}.\n{1}",line, e.Message));
+				StaticUtils.ShowError(string.Format("ApplySet:> Error with line {0}.\n{1}",line, e.Message));
 			}
 		}
 
@@ -2618,7 +2587,7 @@ Do you want to continue?",ROM_LENGTH),
 
 		private void PrintValidAbilities()
 		{
-			MainClass.AddError(string.Format(
+			StaticUtils.AddError(string.Format(
 				"Valid player abilities are 6, 13, 19, 25, 31, 38, 44, 50, 56, 63, 69, 75, 81, 88, 94, 100"));
 		}
 

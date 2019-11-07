@@ -11,11 +11,30 @@ namespace TSBTool
 		K,P
 	}
 
+    public enum TSBContentType
+    {
+        Unknown,
+        TSB1,
+        TSB2,
+        TSB3
+    }
+
+    public enum ROM_TYPE
+    {
+        NONE,
+        NES_ORIGINAL_TSB,
+        CXROM_v105,
+        CXROM_v111,
+        SNES_TSB1,
+        READ_ONLY_ERROR
+    }
+
+
     public enum Conference { AFC, NFC }
 
 	public interface ITecmoTool
 	{
-		byte[] OutputRom{get; set;}
+        byte[] OutputRom{get; set;}
 
 		bool ShowOffPref {get; set;}
 
@@ -136,8 +155,6 @@ namespace TSBTool
 
 		void SetReturnTeam(string team, string pos0, string pos1, string pos2);
 
-		bool Init(string fileName);
-
 		void SetHomeUniform(string team, string colorString);
 
 		void SetAwayUniform(string team, string colorString);
@@ -162,10 +179,7 @@ namespace TSBTool
 
         void SetProBowlPlayer(Conference conf, String proBowlPos, String fromTeam, TSBPlayer fromTeamPos);
 
-        /// <summary>
-        /// "SNES", "28TeamNES", "32TeamNES"
-        /// </summary>
-        string RomVersion { get; }
+        ROM_TYPE RomVersion { get; }
 
 		// for testing
 		void ProcessText(string text);

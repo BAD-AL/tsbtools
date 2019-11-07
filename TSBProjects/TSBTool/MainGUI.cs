@@ -105,8 +105,6 @@ namespace TSBTool
 			richTextBox1.DragDrop += new DragEventHandler(richTextBox1_DragDrop);
 			//**************************//
 
-			tool = TecmoToolFactory.GetToolForRom( romFileName );
-
 			if(romFileName != null && romFileName.Length > 0)
 			{
 				LoadROM(romFileName);
@@ -337,7 +335,6 @@ namespace TSBTool
             this.panel2 = new System.Windows.Forms.Panel();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.mRichTextBoxontextMenu = new System.Windows.Forms.ContextMenu();
-            this.mClearMenuItem = new MenuItem();
             this.mCutMenuItem = new System.Windows.Forms.MenuItem();
             this.mCopyMenuItem = new System.Windows.Forms.MenuItem();
             this.mPasteMenuItem = new System.Windows.Forms.MenuItem();
@@ -353,6 +350,7 @@ namespace TSBTool
             this.menuItem4 = new System.Windows.Forms.MenuItem();
             this.mDeleteCommasMenuItem2 = new System.Windows.Forms.MenuItem();
             this.mChangeFontItem = new System.Windows.Forms.MenuItem();
+            this.mClearMenuItem = new System.Windows.Forms.MenuItem();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -710,8 +708,7 @@ namespace TSBTool
             this.menuItem4,
             this.mDeleteCommasMenuItem2,
             this.mChangeFontItem,
-            this.mClearMenuItem
-            });
+            this.mClearMenuItem});
             // 
             // mCutMenuItem
             // 
@@ -804,7 +801,7 @@ namespace TSBTool
             // 
             this.mClearMenuItem.Index = 15;
             this.mClearMenuItem.Text = "Clear";
-            this.mClearMenuItem.Click += new EventHandler(mClearMenuItem_Click);
+            this.mClearMenuItem.Click += new System.EventHandler(this.mClearMenuItem_Click);
             // 
             // MainGUI
             // 
@@ -835,7 +832,8 @@ namespace TSBTool
 		private void loadTSBMenuItem_Click(object sender, System.EventArgs e)
 		{
 			string filename = GetFileName(nesFilter, false);
-			LoadROM(filename);
+            if( filename != null)
+			    LoadROM(filename);
 		}
 
 		private void LoadROM(string filename)
@@ -844,11 +842,6 @@ namespace TSBTool
 			if (filename != null && tool != null)
 			{
 				if (tool.OutputRom != null)
-				{
-					state2();
-					UpdateTitle(filename);
-				}
-				else if (tool.Init(filename))
 				{
 					state2();
 					UpdateTitle(filename);
@@ -868,17 +861,8 @@ namespace TSBTool
 				{
 					fn = filename.Substring(index);
 				}
-                String type = tool.RomVersion;
-                switch (tool.OutputRom.Length)
-                {
-                    case CXRomTSBTool.ROM_SIZE_v1_05:
-                        type = "32TeamNES CXROM_v1.05";
-                        break;
-                    case CXRomTSBTool.ROM_SIZE_v1_11:
-                        type = "32TeamNES CXROM_v1.11";
-                        break;
-                }
-				if( fn.Length > 4 )
+                String type = tool.RomVersion.ToString();
+                if( fn.Length > 4 )
                     this.Text = string.Format("TSBTool Supreme   '{0}' Loaded   ({1})", fn, type);
 			}
 		}
@@ -995,7 +979,7 @@ namespace TSBTool
 			richTextBox1.SelectionColor = Color.Magenta;
 			richTextBox1.SelectionStart = 0;
 			richTextBox1.SelectionLength = 0;
-            MainClass.ShowErrors();
+            StaticUtils.ShowErrors();
 		}
 		/// <summary>
 		/// 
@@ -1739,7 +1723,7 @@ This Program is not endorsed or related to the Tecmo video game company.
                 }
                 catch(Exception ex )
                 {
-                    MainClass.ShowError("Encountered error on double click" + ex.Message);
+                    StaticUtils.ShowError("Encountered error on double click" + ex.Message);
                 }
 			}
 			m_LastTime = now;

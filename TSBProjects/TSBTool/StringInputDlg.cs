@@ -103,7 +103,7 @@ namespace TSBTool
                         }
                         catch (Exception )
                         {
-                            MainClass.ShowError(string.Format(
+                            StaticUtils.ShowError(string.Format(
                                 "Error with '{0}'. Value '{1}' is invalid for range {2}",
                                 msg, userInputValue, rangeMessage));
                         }
@@ -120,7 +120,7 @@ namespace TSBTool
                 }
                 else
                 {
-                    MainClass.ShowError("ERROR applying line: " + input);
+                    StaticUtils.ShowError("ERROR applying line: " + input);
                     retVal = null;
                 }
             }
@@ -135,7 +135,7 @@ namespace TSBTool
             Match m = locationRegex.Match(input);
             if (m == Match.Empty)
             {
-                MainClass.ShowError(string.Format("SET function not used properly. incorrect syntax>'{0}'", input));
+                StaticUtils.ShowError(string.Format("SET function not used properly. incorrect syntax>'{0}'", input));
             }
             else
             {
@@ -259,6 +259,7 @@ namespace TSBTool
             // StringInputDlg
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(282, 104);
             this.ControlBox = false;
             this.Controls.Add(this.label1);

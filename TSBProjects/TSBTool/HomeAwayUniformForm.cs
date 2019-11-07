@@ -692,6 +692,7 @@ namespace TSBTool
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(113)))), ((int)(((byte)(239)))));
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.CancelButton = this.mCancelButton;
             this.ClientSize = new System.Drawing.Size(472, 378);
             this.ContextMenu = this.contextMenu1;
             this.Controls.Add(this.checkBox28);

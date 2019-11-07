@@ -1234,6 +1234,7 @@ Please verify that this teams's color attributes are correct.", oldData);
             // UniformEditForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.CancelButton = this.mCancelButton;
             this.ClientSize = new System.Drawing.Size(536, 402);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.mUniform1GroupBox);

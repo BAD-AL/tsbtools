@@ -1138,6 +1138,7 @@ namespace TSBTool
             // ColorForm2
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.CancelButton = this.mCancelButton;
             this.ClientSize = new System.Drawing.Size(528, 194);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);

@@ -62,8 +62,6 @@ namespace TSBTool
 		
 		private  int  FORTY_NINERS_QB1_POINTER   = 0x3eb0;
 
-        public const int ROM_SIZE_v1_05 = 0x80010;
-        public const int ROM_SIZE_v1_11 = 0xc0010; // 786448;
         /* v1.11 
          * if( outputRom.length == 786448){
          *   FORTY_NINERS_QB1_POINTER = 0x3e054
@@ -79,48 +77,33 @@ namespace TSBTool
 		private  int    m_ExpansionSegmentEnd = 0x3fff0;
 		private byte[] m_RomVersionData = null;
 
+        private ROM_TYPE mRomType = ROM_TYPE.CXROM_v105;
+
         /// <summary>
         /// Returns the rom version 
         /// </summary>
-        public override string RomVersion { 
-            get
-            {
-                //if (ROM_LENGTH == ROM_SIZE_v1_11)
-                //    return "32TeamNES_CXROM_v1.11";
-                //else
-                //    return "32TeamNES_CXROM_v1.05";
-                return "32TeamNES";
-            } 
-        }
+        public override ROM_TYPE RomVersion {  get { return mRomType; }  }
 
-		public CXRomTSBTool()
+		public CXRomTSBTool(string fileName, ROM_TYPE type)
 		{
-		}
-
-		public CXRomTSBTool(string fileName)
-		{
+            mRomType = type;
 			Init(fileName);
 		}
 
+        
+
 		private void SetupForCxROM()
 		{
-            if (outputRom.Length == ROM_SIZE_v1_11)
+            if (mRomType == ROM_TYPE.CXROM_v111)
             {
                 /* Version 1.11*/
                 FORTY_NINERS_QB1_POINTER = 0x3e054;
                 mGetDataPositionOffset = 0x36010;
                 fortyNinersRunPassPreferenceLoc = 0x27fd6;
-                ROM_LENGTH = ROM_SIZE_v1_11;
                 //KR/PR 
                 FORTY_NINERS_KR_PR_LOC = 0x32CC7;
                 FORTY_NINERS_KR_PR_LOC_1 = 0x7FD51;
             }
-            else
-            {
-                /* Version 1.05*/
-                ROM_LENGTH = ROM_SIZE_v1_05;
-            }
-
             mTeamFormationsStartingLoc = 0x3f940;
             namePointersStart = 0x48 + 12;
             lastPlayerNamePointer = 0x06e4;//0x6d9 + 12;
@@ -187,7 +170,7 @@ namespace TSBTool
 			}
 			catch(Exception  )
 			{
-				MainClass.ShowError(
+				StaticUtils.ShowError(
 					"Error reading Config file options, do you have TSBToolSupreme.exe.config in the same directory?");
 			}
 			faceTeamOffsets= new int[]
@@ -207,12 +190,12 @@ namespace TSBTool
 		/// <param name="formation"></param>
 		public override void SetTeamOffensiveFormation( string team, string formation)
 		{
-            if (outputRom.Length == ROM_SIZE_v1_11)
+            if (RomVersion == ROM_TYPE.CXROM_v111)
             {
                 if (!mAddedFormationRomError)
                 {
                     mAddedFormationRomError = true;
-                    MainClass.AddError("Setting offensive formation on CXROM_v1.11 ROM is not yet supported.");
+                    StaticUtils.AddError("Setting offensive formation on CXROM_v1.11 ROM is not yet supported.");
                 }
                 return;
             }
@@ -237,16 +220,16 @@ namespace TSBTool
 //						outputRom[location2] = (byte)0x01; 
 						break;
 					default:
-						MainClass.AddError(string.Format(
+						StaticUtils.AddError(string.Format(
 							"ERROR! Formation {0} for team '{1}' is invalid.",formation, team));
-						MainClass.AddError(string.Format("  Valid formations are:\n  {0}\n  {1}\n  {2}",
+						StaticUtils.AddError(string.Format("  Valid formations are:\n  {0}\n  {1}\n  {2}",
 							m2RB_2WR_1TE, m1RB_3WR_1TE, m1RB_4WR ));
 						break;
 				}
 			}
 			else
 			{
-				MainClass.AddError(string.Format("ERROR! Team '{0}' is invalid, Offensive Formation not set",team));
+				StaticUtils.AddError(string.Format("ERROR! Team '{0}' is invalid, Offensive Formation not set",team));
 			}
 		}
 
@@ -257,19 +240,9 @@ namespace TSBTool
          */
         public override bool IsValidRomSize(long len)
         {
-            bool ret = false;
-            if( len == ROM_SIZE_v1_05 )
-            {
-                /* Version 1.05*/
+            bool ret = false;            
+            if( len == TecmoToolFactory.CXROM_V105_LEN || len == TecmoToolFactory.CXROM_V111_LEN)
                 ret = true;
-            }
-            else if( len == ROM_SIZE_v1_11)
-            {
-                /* Version 1.11*/
-                //FORTY_NINERS_QB1_POINTER = 0x3e054;
-                //mGetDataPositionOffset = 0x36010;
-                ret = true;
-            }
             return ret;
         }
 
@@ -321,7 +294,7 @@ namespace TSBTool
 			}
 			else
 			{
-				MainClass.ShowError(
+				StaticUtils.ShowError(
 				"WARNING!! Expansion team name section has been overwritten, ROM could be messed up.");
 				if( MainClass.GUI_MODE )
 				{
@@ -413,7 +386,7 @@ namespace TSBTool
 						outputRom[location1] = (byte)b;
 						break;
 					default:
-						MainClass.AddError(string.Format("Cannot assign '{0}' as a punt returner",position));
+						StaticUtils.AddError(string.Format("Cannot assign '{0}' as a punt returner",position));
 						break;
 				}
 			}
@@ -447,7 +420,7 @@ namespace TSBTool
 						break;
 				
 					default:
-						MainClass.AddError(string.Format("Cannot assign '{0}' as a kick returner",position));
+						StaticUtils.AddError(string.Format("Cannot assign '{0}' as a kick returner",position));
 						break;
 				}
 			}
@@ -496,7 +469,7 @@ namespace TSBTool
                 SetTeamStringTableString(teamIndex, abb);
             }
             else
-                MainClass.AddError(string.Format(
+                StaticUtils.AddError(string.Format(
                     "Error setting team abbreviation, teamIndex={0}; value length must == 4; {1}",
                     teamIndex, abb));
         }
@@ -521,7 +494,8 @@ namespace TSBTool
         public override string GetTeamOffensiveFormation(string team)
         {
             String retVal = "";
-            if (outputRom.Length != ROM_SIZE_v1_11)
+            //if (outputRom.Length != ROM_SIZE_v1_11)
+            if( this.mRomType != ROM_TYPE.CXROM_v111)
             {
                 retVal = base.GetTeamOffensiveFormation(team);
             }
@@ -563,9 +537,9 @@ namespace TSBTool
 			else
 			{
 				if(teamIndex != -1)
-					MainClass.AddError(string.Format("Can't set offensive pref to '{0}' valid values are 0-3.\n",val));
+					StaticUtils.AddError(string.Format("Can't set offensive pref to '{0}' valid values are 0-3.\n",val));
 				else
-					MainClass.AddError(string.Format("Team '{0}' is invalid\n",team));
+					StaticUtils.AddError(string.Format("Team '{0}' is invalid\n",team));
 			}
 			return true;
 		}
@@ -591,7 +565,7 @@ namespace TSBTool
 			}
 			else
 			{
-				MainClass.AddError(string.Format("Team '{0}' is invalid\n",team));
+				StaticUtils.AddError(string.Format("Team '{0}' is invalid\n",team));
 			}
 			return val;
 		}
@@ -679,7 +653,7 @@ namespace TSBTool
 		{
 			if( !IsValidTeam(team)  )
 			{
-				MainClass.AddError(string.Format("ERROR! (low level) SetTeamSimData:: team {0} is invalid ",team));
+				StaticUtils.AddError(string.Format("ERROR! (low level) SetTeamSimData:: team {0} is invalid ",team));
 				return;
 			}
 
@@ -805,7 +779,7 @@ namespace TSBTool
                     }
                     builder.Remove(builder.Length - 1, 1);
                     builder.Append("]");
-                    MainClass.AddError(builder.ToString());
+                    StaticUtils.AddError(builder.ToString());
 					return -1;
 				}
 				ret = FORTY_NINERS_QB1_POINTER + (2*playerSpot);
@@ -915,7 +889,7 @@ namespace TSBTool
 			
 			if(positionOffset < 0 || teamIndex < 0 )
 			{
-				MainClass.AddError(string.Format("GetFace Error getting face for {0} {1}",team,position));
+				StaticUtils.AddError(string.Format("GetFace Error getting face for {0} {1}",team,position));
 				return -1;
 			}
 			teamIndex -= 2;
@@ -942,9 +916,9 @@ namespace TSBTool
 			
 			if(positionOffset < 0 || teamIndex < 0 || face < 0x00 | face > 0xD4 )
 			{
-				MainClass.AddError(string.Format("SetFace Error setting face for {0} {1} face={2}",team,position,face));
+				StaticUtils.AddError(string.Format("SetFace Error setting face for {0} {1} face={2}",team,position,face));
 				if( face < 0x00 | face > 0xD4 )
-					MainClass.AddError(string.Format("Valid Face numbers are 0x00 - 0xD4"));
+					StaticUtils.AddError(string.Format("Valid Face numbers are 0x00 - 0xD4"));
 				return ;
 			}
 			teamIndex -= 2;
@@ -999,7 +973,7 @@ namespace TSBTool
 			{
 				CXRomScheduleHelper sh2 = new CXRomScheduleHelper( outputRom );
 				ret = sh2.GetSchedule();
-                MainClass.ShowErrors();
+                StaticUtils.ShowErrors();
 			}
 
 			return ret;

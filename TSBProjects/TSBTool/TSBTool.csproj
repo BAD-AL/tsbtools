@@ -217,12 +217,14 @@
     <Compile Include="StringInputDlg.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="TecmonsterTeamSim.cs" />
     <Compile Include="TecmoTool.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TecmoToolFactory.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TecmonsterTSB1SimAutoUpdater.cs" />
     <Compile Include="UniformEditForm.cs">
       <SubType>Form</SubType>
     </Compile>

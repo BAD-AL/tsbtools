@@ -72,7 +72,7 @@ namespace TSBTool
         private void mGetTeamButton_Click(object sender, EventArgs e)
         {
             mResultsTextBox.Text = Tool.GetTeamPlayers(mInputTextBox.Text.ToLower());
-            MainClass.ShowErrors();
+            StaticUtils.ShowErrors();
         }
 
         private void mSetByteLocUpDown_ValueChanged(object sender, EventArgs e)
@@ -248,7 +248,7 @@ LOS ANGELES:OAKLAND:2
                     string[] parts = line.Trim().Split(":".ToCharArray());
                     if (parts.Length > 3)
                     {
-                        MainClass.AddError(String.Format("Error! Too many ':' characters on line>{0}", line));
+                        StaticUtils.AddError(String.Format("Error! Too many ':' characters on line>{0}", line));
                     }
                     else
                     {
@@ -260,13 +260,13 @@ LOS ANGELES:OAKLAND:2
                         }
                         msg = StaticUtils.ReplaceStringInRom(Tool.OutputRom, parts[0], parts[1], occur);
                         if (msg.StartsWith("Error"))
-                            MainClass.AddError(msg);
+                            StaticUtils.AddError(msg);
                         else
                             builder.Append(msg);
                     }
                 }
                 mResultsTextBox.Text = builder.ToString();
-                MainClass.ShowErrors();
+                StaticUtils.ShowErrors();
             }
         }
 

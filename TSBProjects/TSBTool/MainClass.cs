@@ -147,7 +147,7 @@ Usage: TSBToolSupreme (<tecmorom.nes>|<tecmorom.smc>) [data file] [options]
 This program can extract data from and import data into a Tecmo Super Bowl rom (nes version only).
 
 The default behavior when called with a nes filename and no options is to print all player 
-and schedule inormation from the given TSB rom file.
+and schedule information from the given TSB rom file.
 
 When called with a TSB rom file and a data file, the behavior is that it will modify the TSB file
 with the data contained in the data file.
@@ -303,7 +303,7 @@ The following are the available options.
 			ITecmoTool tool = TecmoToolFactory.GetToolForRom( filename); 
 			if( tool == null )
 			{
-				ShowError("ERROR determining ROM type.");
+                StaticUtils.ShowError("ERROR determining ROM type.");
 				return;
 			}
 			StringBuilder stuff = new StringBuilder(77000);
@@ -353,42 +353,6 @@ The following are the available options.
 			else
 				parser.ReadFromStdin();
 			tt.SaveRom(outFileName);
-		}
-
-        private static ArrayList sErrors = new ArrayList();
-
-        public static void AddError(string error)
-        {
-            sErrors.Add(error);
-        }
-
-        public static void ClearErrors()
-        {
-            sErrors.Clear();
-        }
-
-		public static void ShowErrors()
-		{
-			if (sErrors != null && sErrors.Count > 0)
-			{
-				StringBuilder sb = new StringBuilder(500);
-				foreach (string e in sErrors)
-				{
-					sb.Append(e + "\n");
-				}
-				ShowError(sb.ToString());
-				ClearErrors();
-			}
-		}
-
-		public static void ShowError( string error )
-		{
-			if( MainClass.GUI_MODE )
-			{
-				MessageBox.Show(null,error,"",MessageBoxButtons.OK, MessageBoxIcon.Information);
-			}
-			else
-				Console.Error.WriteLine( error );
 		}
 
 		/// <summary>
@@ -464,18 +428,18 @@ The following are the available options.
 			string ret = null;
 			if( rom == null )
 			{
-				ShowError(string.Format(
+                StaticUtils.ShowError(string.Format(
 					"ERROR! rom is null."));
 			}
 			else if( addr2 < addr1  )
 			{
-				ShowError(string.Format(
+				StaticUtils.ShowError(string.Format(
 					"ERROR! ending'0x{1:X}' address greater than starting address'{0:X}'.",
 					addr1, addr2));
 			}
 			else if(addr2 > rom.Length )
 			{
-				ShowError(string.Format(
+                StaticUtils.ShowError(string.Format(
 					"ERROR! ending address '0x{0:X}'is out of range.",
 					addr2));
 			}
@@ -520,16 +484,6 @@ The following are the available options.
 		}
 		
 
-	}
-
-
-	public enum ROM_TYPE
-	{
-		NONE,
-		NES,
-		CXROM,
-		SNES,
-		READ_ONLY_ERROR
 	}
 
 	/// <summary>Enumeration of the different ways of showing a window using
