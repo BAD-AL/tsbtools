@@ -1,21 +1,19 @@
-Microsoft Visual Studio Solution File, Format Version 8.00
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSBSeasonGen", "TSBSeasonGen.csproj", "{593E5874-4386-40EF-AE9B-061FCA5E35C9}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
 EndProject
 Global
-	GlobalSection(SolutionConfiguration) = preSolution
-		Debug = Debug
-		Release = Release
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{593E5874-4386-40EF-AE9B-061FCA5E35C9}.Debug.ActiveCfg = Debug|.NET
-		{593E5874-4386-40EF-AE9B-061FCA5E35C9}.Debug.Build.0 = Debug|.NET
-		{593E5874-4386-40EF-AE9B-061FCA5E35C9}.Release.ActiveCfg = Release|.NET
-		{593E5874-4386-40EF-AE9B-061FCA5E35C9}.Release.Build.0 = Release|.NET
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{593E5874-4386-40EF-AE9B-061FCA5E35C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{593E5874-4386-40EF-AE9B-061FCA5E35C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{593E5874-4386-40EF-AE9B-061FCA5E35C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{593E5874-4386-40EF-AE9B-061FCA5E35C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
