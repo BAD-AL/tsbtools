@@ -163,6 +163,9 @@
     <Compile Include="MainGUI.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="TSB2_TSB3\ModifyPlayerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="ModifyTeamForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -225,6 +228,26 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TecmonsterTSB1SimAutoUpdater.cs" />
+    <Compile Include="TSB2_TSB3\InputParser.cs" />
+    <Compile Include="TSB2_TSB3\Interfaces.cs" />
+    <Compile Include="TSB2_TSB3\PlaySelectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TSB2_TSB3\PlaySelectForm.designer.cs">
+      <DependentUpon>PlaySelectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TSB2_TSB3\SNES_ScheduleHelper.cs" />
+    <Compile Include="TSB2_TSB3\SNES_TSB3_ScheduleHelper.cs" />
+    <Compile Include="TSB2_TSB3\TeamForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TSB2_TSB3\TeamForm.designer.cs">
+      <DependentUpon>TeamForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TSB2_TSB3\TSB2Tool.cs" />
+    <Compile Include="TSB2_TSB3\TSB3Tool.cs" />
+    <Compile Include="TSB2_TSB3\TSBConverter.cs" />
+    <Compile Include="TSB2_TSB3\TSBXSimAutoUpdater.cs" />
     <Compile Include="UniformEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -234,7 +257,31 @@
     <Compile Include="WeekScheduler.Designer.cs">
       <DependentUpon>WeekScheduler.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Formulas\FAP_Formulas.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Formulas\SIM_Formulas.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_000.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_001.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_002.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_003.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_004.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_005.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_006.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_007.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_008.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_009.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_010.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_011.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_012.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_013.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_014.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_015.png" />
+    <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_Side.png" />
     <Content Include="ROM_HACK_INFO.txt" />
+    <EmbeddedResource Include="TSB2_TSB3\SimData.txt" />
     <Content Include="TSBTool_README.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -452,6 +499,10 @@
       <DependentUpon>MainGUI.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="TSB2_TSB3\ModifyPlayerForm.resx">
+      <DependentUpon>ModifyPlayerForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="ModifyTeamForm.resx">
       <DependentUpon>ModifyTeamForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -547,6 +598,14 @@
     </EmbeddedResource>
     <EmbeddedResource Include="StringInputDlg.resx">
       <DependentUpon>StringInputDlg.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TSB2_TSB3\PlaySelectForm.resx">
+      <DependentUpon>PlaySelectForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TSB2_TSB3\TeamForm.resx">
+      <DependentUpon>TeamForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="UniformEditForm.resx">

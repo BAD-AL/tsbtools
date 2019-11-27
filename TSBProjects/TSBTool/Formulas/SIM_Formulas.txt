@@ -1,0 +1,85 @@
+﻿# SIM_Formulas.txt
+# Used for TSB II & TSB III
+#https://tecmobowl.org/forums/topic/2968-simulation-hex-values-for-tsb-iii-snes/
+# Auto Update Sim formulas for TSBII & TSBIII
+# Attribute Order
+# QBs   RS RP MS HP BB AG PS PC PA AR CO [sim vals]
+# Skill RS RP MS HP BB AG BC RC [sim vals]
+# OL    RS RP MS HP BB AG 
+# DEF   RS RP MS HP BB AG PI QU [sim vals]
+# K     RS RP MS HP BB AG KP KA AB [sim val]
+# P     RS RP MS HP BB AG KP AB [sim val]
+# Allowed operations:
+# https://docs.microsoft.com/en-us/dotnet/api/system.data.datacolumn.expression?redirectedfrom=MSDN&view=netframework-3.5#System_Data_DataColumn_Expression
+# No Hex values allowed in formulas 
+#*********QBs*********
+#QB SIM CARY [00-1C]: Higher value => More rushes & less pass attempts
+#QB SIM RUSHING QB Byte 2 Sim Rushing ability[00-08]:  00=> Marino, 08=> Steve Young
+#QB SIM PASSING QB byte 3, nibble 1 Passing ability (completion %)[1-F]: 1 => Scott Zolak, F => Steve Young
+#QB SIM SCRAMBLE QB byte 3, nibble 2 sim scramble[0-3]: 0 => Dan Marino, 3 => Randall Cunningham
+
+# https://docs.microsoft.com/en-us/dotnet/api/system.data.datacolumn.expression?view=netframework-3.5
+# IIF( expr, true_expr, false_expr)
+QB_SIM_CARY: IIF(MS > 43,10, IIF(MS > 37,8, IIF(MS > 30, 6, IIF(MS > 24, 4,IIF(MS > 18, 2, 0)))))
+QB_SIM_RUSHING: MS /5
+QB_SIM_PASSING: (PS -38 + PC -31 + AR -38) / 6
+QB_SIM_SCRAMBLE: MS /16
+
+#*********Skill Players*********
+#Byte 1: Rushing Ability [00-AD]
+#Byte 2: Sim Carries [00-0B]
+#Byte 3: Sim Return  ????
+#Byte 4 nibble 1: Sim yards per catch
+#Byte 4 nibble 2: Sim catches 
+
+RB_SIM_RUSHING: ((MS - 31)*2 + (HP-31)*2 + (RP-3)*2)+10
+RB_SIM_CARRIES: (((MS - 31)*2 + (HP-31)*2 + (RP-3)*2)+10) /10
+RB_SIM_RETURN: (MS+HP)/10 -3
+RB_SIM_YPC: 4
+RB_SIM_CATCH: RC / 5 -1
+
+WR_SIM_RUSHING: 1
+WR_SIM_CARRIES: 2
+WR_SIM_RETURN: (MS+HP)/10 -3
+WR_SIM_YPC: (MS + RC) / 10
+WR_SIM_CATCH:  RC / 5 -1
+
+TE_SIM_RUSHING: 0
+TE_SIM_CARRIES: 2
+TE_SIM_RETURN: (MS+HP)/10 -3
+TE_SIM_YPC:( MS + RC) / 10
+TE_SIM_CATCH:  RC / 5 -1
+
+
+#*********Defense**************
+#******** Defensive Line ******
+#SIM SACKING   Byte 1: Sim Sacking 
+#SIM INT       Byte 2: Sim Interception
+#SIM TACKLING  Byte 3: Sim Tackling [0-A]
+
+DL_SIM_SACKING: (QU-44 + HP-50) * 1.3
+DL_SIM_INT: 0
+DL_SIM_TACKLING: 1+ (HP /10) 
+
+#******** Linebackers ******
+LB_SIM_SACKING: (HP - 38)*1.3
+LB_SIM_INT: (PI - 6) * 0.45
+LB_SIM_TACKLING: (HP /7) 
+
+#******** CBs ******
+CB_SIM_SACKING: (HP-44)*2
+CB_SIM_INT: PI * 0.66
+CB_SIM_TACKLING: RP/10
+
+#******** SS, FS, DB3 ******
+S_SIM_SACKING: (HP-44)*2
+S_SIM_INT: PI * 0.66
+S_SIM_TACKLING: QU /10
+
+
+#******** Special Teams *******
+#*********K/P*********
+#Nibble 1: Kicking/punting ability
+
+K_SIM_ABILITY: KA/ 7
+P_SIM_ABILITY: KP / 7

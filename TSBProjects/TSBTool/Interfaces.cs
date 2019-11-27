@@ -26,11 +26,27 @@ namespace TSBTool
         CXROM_v105,
         CXROM_v111,
         SNES_TSB1,
+        SNES_TSB2,
+        SNES_TSB3,
         READ_ONLY_ERROR
     }
 
-
     public enum Conference { AFC, NFC }
+
+    public interface ITecmoContent
+    {
+        bool ShowOffPref { get; set; }
+        byte[] OutputRom { get; set; }
+        ROM_TYPE RomVersion { get; }
+        void SaveRom(string fileName);
+        string GetKey();
+        string GetAll(int season);
+        string GetProBowlPlayers(int season);
+        string GetSchedule(int season);
+        void ProcessText(string text);
+        void ApplySet(string line);
+        void SetByte(int location, byte b);
+    }
 
 	public interface ITecmoTool
 	{

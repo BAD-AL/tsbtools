@@ -1,28 +1,31 @@
 using System;
 using System.Drawing;
-using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Collections.Generic;
+using System.IO;
+using TSBTool2;
 
-namespace TSBTool
+namespace TSBTool2
 {
-	public enum StateEnum
-	{
-		QB = 0,
-		SKILL,
-		OLINE,
-		DEFENSE,
-		KICKER
-	}
+    public enum StateEnum
+    {
+        QB = 0,
+        SKILL,
+        OLINE,
+        DEFENSE,
+        KICKER,
+        PUNTER
+    }
 
 
 
 	/// <summary>
 	/// Summary description for AttributeForm.
 	/// </summary>
-	public class AttributeForm : System.Windows.Forms.Form
+	public class ModifyPlayerForm : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Label label2;
@@ -59,31 +62,26 @@ namespace TSBTool
 		private System.Windows.Forms.Button m_PrevPicture;
 		private System.Windows.Forms.Button m_NextPicture;
 
-		private StateEnum m_CurrentState = StateEnum.QB;
 		private System.Windows.Forms.PictureBox m_FaceBox;
 		private System.Windows.Forms.Label m_FaceLabel;
 		private System.Windows.Forms.ComboBox m_TeamsComboBox;
 		private System.Windows.Forms.Button m_NextPlayerButton;
-		private int m_ImageNumber = 0x00;
-
-		private string m_Data = "";
 		private System.Windows.Forms.TextBox m_FirstNameTextBox;
 		private System.Windows.Forms.TextBox m_LastNameTextBox;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Button m_PrevPlayerButton;
+        private Label m_BBLabel;
+        private ComboBox m_BBBox;
+        private ComboBox m_CoolBox;
+        private Label m_CoolnessLabel;
 
-		private InputParser m_Parser = null;
 
-		private bool m_AutoUpdatePlayers = false;
-
-		public bool AutoUpdatePlayersUI
-		{
-			get{ return m_AutoUpdatePlayers ; }
-			set 
-			{
-				m_AutoUpdatePlayers = value;
-			}
-		}
+        private StateEnum m_CurrentState = StateEnum.QB;
+		private int m_ImageNumber = 0x00;
+        private Label m_AgilityLabel;
+        private ComboBox m_AgilityBox;
+        private string m_Data = "";
+        private Button mAboutButton;
 
 		/// <summary>
 		/// The text data to work on and retrieve.
@@ -94,14 +92,40 @@ namespace TSBTool
 
 			set
 			{ 
-				m_Data = value; 
-				if( m_Data != null && m_Data.Length > 0)
+				m_Data = value;
+                if( m_Data != null && m_Data.Length > 0)
 				{
 					SetupTeams();
 					SetCurrentPlayer();
 				}
 			}
 		}
+        private TSBTool.TSBContentType mRomVersion = TSBTool.TSBContentType.Unknown;
+        public TSBTool.TSBContentType RomVersion
+        {
+            //"SNES_TSB2", "SNES_TSB3", "GENESIS_TSB2", "GENESIS_TSB3"
+            set
+            {
+                mRomVersion = value;
+                if (value == TSBTool.TSBContentType.TSB2 || value == TSBTool.TSBContentType.TSB1)
+                {
+                    m_AgilityLabel.Visible = false;
+                    m_AgilityBox.Visible = false;
+                    m_AgilityBox.Enabled = false;
+                    m_Attributes.Remove(m_AgilityBox);
+                    m_NextPicture.Visible = false;
+                    m_PrevPicture.Visible = false;
+                }
+                if (value == TSBTool.TSBContentType.TSB1)
+                {
+                    m_BBBox.Visible = false;
+                    m_BBLabel.Visible = false;
+                    m_Attributes.Remove(m_BBBox);
+                    m_NextPicture.Visible = true;
+                    m_PrevPicture.Visible = true;
+                }
+            }
+        }
 
 		private void SetupTeams()
 		{
@@ -134,9 +158,7 @@ namespace TSBTool
 				int index = m_PositionComboBox.Items.IndexOf(value);
 				if(index > -1 )
 				{
-//					m_DoneInit = false;
 					m_PositionComboBox.SelectedIndex = index;
-//					m_DoneInit = true;
 				}
 			}
 		}
@@ -153,15 +175,13 @@ namespace TSBTool
 				int index = m_TeamsComboBox.Items.IndexOf(value);
 				if(index > -1 )
 				{
-//					m_DoneInit = false;
 					m_TeamsComboBox.SelectedIndex = index;
-//					m_DoneInit = true;
 				}
 			}
 		}
 
-		private ComboBox[]      m_Attributes = null;
-		private NumericUpDown[] m_SimAttrs   = null;
+		private List<ComboBox>      m_Attributes = null;
+		private List<NumericUpDown> m_SimAttrs   = null;
 		private System.Windows.Forms.NumericUpDown m_JerseyNumberUpDown;
 		private System.Windows.Forms.Button m_AutoUpdateButton;
 
@@ -169,33 +189,34 @@ namespace TSBTool
 		private System.Windows.Forms.Button m_SaveButton;
 		private System.Windows.Forms.Button m_CancelButton;
 		private System.Windows.Forms.ComboBox m_ACCBox;
-		private System.Windows.Forms.ComboBox m_APBBox;
+		private System.Windows.Forms.ComboBox m_ARBox;
 		private System.Windows.Forms.Label m_A4Label;
-		private SimStuff m_SimStuff = null;
-
-		public AttributeForm()
+		
+		public ModifyPlayerForm()
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-			m_SimStuff = new SimStuff();
-			m_Parser = new InputParser();
-			m_Attributes = new ComboBox[8];
-			m_Attributes[0] = m_RSBox;
-			m_Attributes[1] = m_RPBox;
-			m_Attributes[2] = m_MSBox;
-			m_Attributes[3] = m_HPBox;
-			m_Attributes[4] = m_PS_BC_PI_KABox;
-			m_Attributes[5] = m_PC_REC_QU_KABox;
-			m_Attributes[6] = m_ACCBox;
-			m_Attributes[7] = m_APBBox;
-
-			m_SimAttrs = new NumericUpDown[4];
-			m_SimAttrs[0] = m_Sim1UpDown;
-			m_SimAttrs[1] = m_Sim2UpDown;
-			m_SimAttrs[2] = m_Sim3UpDown;
-			m_SimAttrs[3] = m_Sim4UpDown;
+		    m_Attributes = new List<ComboBox>(){
+			    m_RSBox,
+                m_RPBox,
+                m_MSBox,
+                m_HPBox,
+                m_BBBox,
+                m_AgilityBox,
+                m_PS_BC_PI_KABox,
+                m_PC_REC_QU_KABox,
+                m_ACCBox,
+                m_ARBox,
+                m_CoolBox
+            };
+            m_SimAttrs = new List<NumericUpDown>(){
+                m_Sim1UpDown,
+                m_Sim2UpDown,
+                m_Sim3UpDown,
+                m_Sim4UpDown
+            };
 
 			m_TeamsComboBox.SelectedIndex    = 0;
 			m_PositionComboBox.SelectedIndex = 0;
@@ -217,10 +238,8 @@ namespace TSBTool
 			if( m != Match.Empty )
 			{
 				int teamIndex = m.Index;
-				//int teamIndex = m_Data.IndexOf("TEAM = "+team);
 				if( teamIndex == -1 )
 					return null;
-				//int playerIndex = m_Data.IndexOf("\n"+position+",", teamIndex);
 				int playerIndex = -1;
 				Regex endLineRegex = new Regex(string.Format("\n\\s*{0}\\s*,",position));
 				Match eol = endLineRegex.Match(m_Data, teamIndex);
@@ -258,12 +277,13 @@ namespace TSBTool
 		/// <param name="playerLine"></param>
 		private void SetPlayerData(string playerLine)
 		{
+            m_DoneInit = false;
 			string fName = InputParser.GetFirstName(playerLine);
-            string lName = InputParser.GetLastName(playerLine);
-            int face = InputParser.GetFace(playerLine);
-            int jerseyNumber = InputParser.GetJerseyNumber(playerLine);
-            int[] attrs = InputParser.GetInts(playerLine);
-			int[] simData = m_Parser.GetSimVals(playerLine);
+			string lName = InputParser.GetLastName(playerLine);
+			int face = InputParser.GetFace(playerLine);
+			int jerseyNumber = InputParser.GetJerseyNumber(playerLine);
+			int[] attrs = InputParser.GetInts(playerLine, false);
+			int[] simData = InputParser.GetSimVals(playerLine, true);
 
 			m_FirstNameTextBox.Text = fName;
 			m_LastNameTextBox.Text  = lName;
@@ -274,7 +294,7 @@ namespace TSBTool
 			if( attrs != null )
 			{
 				int attrIndex = 0;
-				for(int i = 0; i < attrs.Length && i < m_Attributes.Length; i++)
+				for(int i = 0; i < attrs.Length && i < m_Attributes.Count; i++)
 				{
 					attrIndex = AttrIndex(attrs[i].ToString());
 					if( attrIndex > -1 )
@@ -285,7 +305,7 @@ namespace TSBTool
 			{
 				for( int i =0; i < simData.Length; i++)
 				{
-					m_SimAttrs[i].Value = Int32.Parse(simData[i].ToString());
+					m_SimAttrs[i].Value = simData[i];
 				}
 			}
 			if( jerseyNumber > -1 && jerseyNumber < 0x100)
@@ -293,6 +313,7 @@ namespace TSBTool
 				m_JerseyNumberUpDown.Value = Int32.Parse(string.Format("{0:x}", jerseyNumber));
 				ShowCurrentFace();
 			}
+            m_DoneInit = true;
 		}
 
 		/// <summary>
@@ -313,42 +334,47 @@ namespace TSBTool
 		{
 			StringBuilder sb = new StringBuilder(60);
 			sb.Append(position);
-			sb.Append(", ");
+			sb.Append(",");
 			sb.Append(m_FirstNameTextBox.Text);
 			sb.Append(" ");
 			sb.Append(m_LastNameTextBox.Text);
-			sb.Append(", ");
-			sb.Append(string.Format("Face=0x{0:x}, #{1}, ", 
+			sb.Append(",");
+			sb.Append(string.Format("Face=0x{0:x2},#{1},", 
 				m_ImageNumber, m_JerseyNumberUpDown.Value));
 			// attrs
-			for( int i = 0; i < m_Attributes.Length; i++)
+			for( int i = 0; i < m_Attributes.Count; i++)
 			{
 				if( m_Attributes[i].Enabled)
 				{
 					sb.Append(m_Attributes[i].SelectedItem.ToString());
-					sb.Append(", ");
+					sb.Append(",");
 				}
 			}
 			//sim attrs
 			if( m_SimAttrs[0].Enabled)
 				sb.Append("[");
-			for(int i = 0; i < m_SimAttrs.Length; i++)
+            string format = "X2";
+			for(int i = 0; i < m_SimAttrs.Count; i++)
 			{
 				if( m_SimAttrs[i].Enabled )
 				{
-					sb.Append(m_SimAttrs[i].Value);
-					sb.Append(", ");
+                    if (m_SimAttrs[i].Maximum > 0x0F)
+                        format = "X2";
+                    else
+                        format = "X";
+					sb.Append(((int)m_SimAttrs[i].Value).ToString(format));
+					sb.Append(",");
 				}
 			}
 			if( m_SimAttrs[0].Enabled)
 			{
-				sb.Remove(sb.Length-2,2);
-				sb.Append(" ]");
+				sb.Remove(sb.Length-1,1);
+				sb.Append("]");
 			}
 
 			string ret = sb.ToString();
-			char[] chars = {' ', ',' };
-			ret = ret.Trim(chars);
+			//char[] chars = {' ', ',' };
+			//ret = ret.Trim(chars);
 			return ret;
 		}
 
@@ -390,54 +416,59 @@ namespace TSBTool
 						m_A2Label.Text   = "PC";
 						m_A3Label.Text   = "ACC";
 						m_A4Label.Text   = "APB";
-						m_Sim1Label.Text = "Sim Run";
-						m_Sim2Label.Text = "Sim Pass";
-						m_Sim3Label.Text = "Sim Pocket";
-						m_Sim4Label.Text = "";
+                        m_CoolnessLabel.Text = "COOL";
+                        //m_Sim1Label.Text = "Sim Run";
+                        //m_Sim2Label.Text = "Sim Pass";
+                        //m_Sim3Label.Text = "Sim Pocket";
+                        //m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = true;
 						m_Sim3UpDown.Enabled = true;
 						m_Sim4UpDown.Enabled = false;
-						m_Sim1UpDown.Maximum = 15;
-						m_Sim2UpDown.Maximum = 15;
-						m_Sim3UpDown.Maximum = 15;
-						m_Sim4UpDown.Maximum = 15;
+						m_Sim1UpDown.Maximum = 255;
+						m_Sim2UpDown.Maximum = 255;
+						m_Sim3UpDown.Maximum = 255;
+						m_Sim4UpDown.Maximum = 255;
 						m_PS_BC_PI_KABox.Enabled  = true;
 						m_PC_REC_QU_KABox.Enabled = true;
 						m_ACCBox.Enabled          = true;
-						m_APBBox.Enabled          = true;
+						m_ARBox.Enabled           = true;
+                        m_CoolBox.Enabled         = true;
 						break;
 					case StateEnum.SKILL:
 						m_A1Label.Text = "BC";
 						m_A2Label.Text = "REC";
 						m_A3Label.Text = "";
 						m_A4Label.Text = "";
-						m_Sim1Label.Text = "Sim Rush";
-						m_Sim2Label.Text = "Sim Catch";
-						m_Sim3Label.Text = "Sim Yards per catch";
-						m_Sim4Label.Text = "Sim Targets";
+                        m_CoolnessLabel.Text = "";
+                        //m_Sim1Label.Text = "Sim Rush";
+                        //m_Sim2Label.Text = "Sim Catch";
+                        //m_Sim3Label.Text = "Sim Punt Ret";
+                        //m_Sim4Label.Text = "Sim Kick Ret";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = true;
 						m_Sim3UpDown.Enabled = true;
 						m_Sim4UpDown.Enabled = true;
-						m_Sim1UpDown.Maximum = 15;
-						m_Sim2UpDown.Maximum = 15;
-						m_Sim3UpDown.Maximum = 15;
-						m_Sim4UpDown.Maximum = 15;
+                        m_Sim1UpDown.Maximum = 255;
+                        m_Sim2UpDown.Maximum = 255;
+                        m_Sim3UpDown.Maximum = 255;
+                        m_Sim4UpDown.Maximum = 255;
 						m_PS_BC_PI_KABox.Enabled  = true;
 						m_PC_REC_QU_KABox.Enabled = true;
 						m_ACCBox.Enabled          = false;
-						m_APBBox.Enabled          = false;
+						m_ARBox.Enabled          = false;
+                        m_CoolBox.Enabled         = false;
 						break;
 					case StateEnum.OLINE:
 						m_A1Label.Text = "";
 						m_A2Label.Text = "";
 						m_A3Label.Text = "";
 						m_A4Label.Text = "";
-						m_Sim1Label.Text = "";
-						m_Sim2Label.Text = "";
-						m_Sim3Label.Text = "";
-						m_Sim4Label.Text = "";
+                        m_CoolnessLabel.Text = "";
+                        //m_Sim1Label.Text = "";
+                        //m_Sim2Label.Text = "";
+                        //m_Sim3Label.Text = "";
+                        //m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = false;
 						m_Sim2UpDown.Enabled = false;
 						m_Sim3UpDown.Enabled = false;
@@ -445,20 +476,22 @@ namespace TSBTool
 						m_PS_BC_PI_KABox.Enabled  = false;
 						m_PC_REC_QU_KABox.Enabled = false;
 						m_ACCBox.Enabled          = false;
-						m_APBBox.Enabled          = false;
+						m_ARBox.Enabled          = false;
+                        m_CoolBox.Enabled = false;
 						break;
 					case StateEnum.DEFENSE:
 						m_A1Label.Text = "PI";
 						m_A2Label.Text = "QU";
 						m_A3Label.Text = "";
 						m_A4Label.Text = "";
-						m_Sim1Label.Text = "Sim Pass rush";
-						m_Sim2Label.Text = "Sim Coverage";
-						m_Sim3Label.Text = "";
-						m_Sim4Label.Text = "";
+                        m_CoolnessLabel.Text = "";
+                        //m_Sim1Label.Text = "Sim Pass rush";
+                        //m_Sim2Label.Text = "Sim Coverage";
+                        //m_Sim3Label.Text = "";
+                        //m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = true;
-						m_Sim3UpDown.Enabled = false;
+						m_Sim3UpDown.Enabled = true;
 						m_Sim4UpDown.Enabled = false;
 						m_Sim1UpDown.Maximum = 255;
 						m_Sim2UpDown.Maximum = 255;
@@ -467,17 +500,19 @@ namespace TSBTool
 						m_PS_BC_PI_KABox.Enabled  = true;
 						m_PC_REC_QU_KABox.Enabled = true;
 						m_ACCBox.Enabled          = false;
-						m_APBBox.Enabled          = false;
+						m_ARBox.Enabled          = false;
+                        m_CoolBox.Enabled = false;
 						break;
 					case StateEnum.KICKER:
-						m_A1Label.Text = "KA";
-						m_A2Label.Text = "AKB";
-						m_A3Label.Text = "";
+						m_A1Label.Text = "KP";
+						m_A2Label.Text = "KA";
+						m_A3Label.Text = "AB";
 						m_A4Label.Text = "";
-						m_Sim1Label.Text = "Sim KA";
-						m_Sim2Label.Text = "";
-						m_Sim3Label.Text = "";
-						m_Sim4Label.Text = "";
+                        m_CoolnessLabel.Text = "";
+                        //m_Sim1Label.Text = "Sim KA";
+                        //m_Sim2Label.Text = "";
+                        //m_Sim3Label.Text = "";
+                        //m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = false;
 						m_Sim3UpDown.Enabled = false;
@@ -488,9 +523,34 @@ namespace TSBTool
 						m_Sim4UpDown.Maximum = 15;
 						m_PS_BC_PI_KABox.Enabled  = true;
 						m_PC_REC_QU_KABox.Enabled = true;
-						m_ACCBox.Enabled          = false;
-						m_APBBox.Enabled          = false;
+						m_ACCBox.Enabled          = true;
+						m_ARBox.Enabled          = false;
+                        m_CoolBox.Enabled = false;
 						break;
+                    case StateEnum.PUNTER:
+                        m_A1Label.Text = "KP";
+                        m_A2Label.Text = "AB";
+                        m_A3Label.Text = "";
+                        m_A4Label.Text = "";
+                        //m_Sim1Label.Text = "Sim P";
+                        //m_Sim2Label.Text = "";
+                        //m_Sim3Label.Text = "";
+                        //m_Sim4Label.Text = "";
+                        m_CoolnessLabel.Text = "";
+                        m_Sim1UpDown.Enabled = true;
+                        m_Sim2UpDown.Enabled = false;
+                        m_Sim3UpDown.Enabled = false;
+                        m_Sim4UpDown.Enabled = false;
+                        m_Sim1UpDown.Maximum = 15;
+                        m_Sim2UpDown.Maximum = 15;
+                        m_Sim3UpDown.Maximum = 15;
+                        m_Sim4UpDown.Maximum = 15;
+                        m_PS_BC_PI_KABox.Enabled = true;
+                        m_PC_REC_QU_KABox.Enabled = true;
+                        m_ACCBox.Enabled = false;
+                        m_ARBox.Enabled = false;
+                        m_CoolBox.Enabled = false;
+                        break;
 				}
 				m_CurrentState = value;
 				m_DoneInit = true;
@@ -519,7 +579,7 @@ namespace TSBTool
 		/// </summary>
 		private void InitializeComponent()
 		{
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AttributeForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModifyPlayerForm));
             this.label1 = new System.Windows.Forms.Label();
             this.m_TeamsComboBox = new System.Windows.Forms.ComboBox();
             this.m_PositionComboBox = new System.Windows.Forms.ComboBox();
@@ -544,12 +604,19 @@ namespace TSBTool
             this.m_Sim2Label = new System.Windows.Forms.Label();
             this.m_Sim1Label = new System.Windows.Forms.Label();
             this.mSimBox = new System.Windows.Forms.GroupBox();
+            this.mAboutButton = new System.Windows.Forms.Button();
             this.m_Sim4UpDown = new System.Windows.Forms.NumericUpDown();
             this.m_Sim3UpDown = new System.Windows.Forms.NumericUpDown();
             this.m_Sim2UpDown = new System.Windows.Forms.NumericUpDown();
             this.m_Sim1UpDown = new System.Windows.Forms.NumericUpDown();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.m_APBBox = new System.Windows.Forms.ComboBox();
+            this.m_AgilityLabel = new System.Windows.Forms.Label();
+            this.m_AgilityBox = new System.Windows.Forms.ComboBox();
+            this.m_CoolBox = new System.Windows.Forms.ComboBox();
+            this.m_CoolnessLabel = new System.Windows.Forms.Label();
+            this.m_BBLabel = new System.Windows.Forms.Label();
+            this.m_BBBox = new System.Windows.Forms.ComboBox();
+            this.m_ARBox = new System.Windows.Forms.ComboBox();
             this.m_A4Label = new System.Windows.Forms.Label();
             this.m_NextPlayerButton = new System.Windows.Forms.Button();
             this.label15 = new System.Windows.Forms.Label();
@@ -647,17 +714,24 @@ namespace TSBTool
             "RE",
             "NT",
             "LE",
+            "RE2",
+            "NT2",
+            "LE2",
             "ROLB",
             "RILB",
             "LILB",
             "LOLB",
+            "LB5",
             "RCB",
             "LCB",
+            "DB1",
+            "DB2",
             "FS",
             "SS",
+            "DB3",
             "K",
             "P"});
-            this.m_PositionComboBox.Location = new System.Drawing.Point(280, 4);
+            this.m_PositionComboBox.Location = new System.Drawing.Point(424, 4);
             this.m_PositionComboBox.Name = "m_PositionComboBox";
             this.m_PositionComboBox.Size = new System.Drawing.Size(104, 21);
             this.m_PositionComboBox.TabIndex = 1;
@@ -667,7 +741,7 @@ namespace TSBTool
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(232, 8);
+            this.label2.Location = new System.Drawing.Point(376, 8);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(44, 13);
             this.label2.TabIndex = 2;
@@ -675,9 +749,10 @@ namespace TSBTool
             // 
             // m_FaceBox
             // 
+            this.m_FaceBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.m_FaceBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.m_FaceBox.Image = ((System.Drawing.Image)(resources.GetObject("m_FaceBox.Image")));
-            this.m_FaceBox.Location = new System.Drawing.Point(8, 128);
+            this.m_FaceBox.Location = new System.Drawing.Point(8, 143);
             this.m_FaceBox.Name = "m_FaceBox";
             this.m_FaceBox.Size = new System.Drawing.Size(64, 64);
             this.m_FaceBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -689,7 +764,7 @@ namespace TSBTool
             // 
             this.label4.Location = new System.Drawing.Point(8, 16);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(40, 10);
+            this.label4.Size = new System.Drawing.Size(40, 15);
             this.label4.TabIndex = 7;
             this.label4.Text = "RS";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -698,7 +773,7 @@ namespace TSBTool
             // 
             this.label5.Location = new System.Drawing.Point(56, 16);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(40, 10);
+            this.label5.Size = new System.Drawing.Size(40, 15);
             this.label5.TabIndex = 9;
             this.label5.Text = "RP";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -707,7 +782,7 @@ namespace TSBTool
             // 
             this.label6.Location = new System.Drawing.Point(152, 16);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(40, 10);
+            this.label6.Size = new System.Drawing.Size(40, 15);
             this.label6.TabIndex = 13;
             this.label6.Text = "HP";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -716,7 +791,7 @@ namespace TSBTool
             // 
             this.label7.Location = new System.Drawing.Point(104, 16);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(40, 10);
+            this.label7.Size = new System.Drawing.Size(40, 15);
             this.label7.TabIndex = 11;
             this.label7.Text = "MS";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -741,7 +816,7 @@ namespace TSBTool
             "88",
             "94",
             "100"});
-            this.m_RSBox.Location = new System.Drawing.Point(8, 32);
+            this.m_RSBox.Location = new System.Drawing.Point(8, 35);
             this.m_RSBox.Name = "m_RSBox";
             this.m_RSBox.Size = new System.Drawing.Size(43, 21);
             this.m_RSBox.TabIndex = 4;
@@ -767,7 +842,7 @@ namespace TSBTool
             "88",
             "94",
             "100"});
-            this.m_RPBox.Location = new System.Drawing.Point(56, 32);
+            this.m_RPBox.Location = new System.Drawing.Point(56, 35);
             this.m_RPBox.Name = "m_RPBox";
             this.m_RPBox.Size = new System.Drawing.Size(43, 21);
             this.m_RPBox.TabIndex = 5;
@@ -793,7 +868,7 @@ namespace TSBTool
             "88",
             "94",
             "100"});
-            this.m_MSBox.Location = new System.Drawing.Point(104, 32);
+            this.m_MSBox.Location = new System.Drawing.Point(104, 35);
             this.m_MSBox.Name = "m_MSBox";
             this.m_MSBox.Size = new System.Drawing.Size(43, 21);
             this.m_MSBox.TabIndex = 6;
@@ -819,7 +894,7 @@ namespace TSBTool
             "88",
             "94",
             "100"});
-            this.m_HPBox.Location = new System.Drawing.Point(152, 32);
+            this.m_HPBox.Location = new System.Drawing.Point(152, 35);
             this.m_HPBox.Name = "m_HPBox";
             this.m_HPBox.Size = new System.Drawing.Size(43, 21);
             this.m_HPBox.TabIndex = 7;
@@ -845,10 +920,10 @@ namespace TSBTool
             "88",
             "94",
             "100"});
-            this.m_ACCBox.Location = new System.Drawing.Point(296, 32);
+            this.m_ACCBox.Location = new System.Drawing.Point(391, 35);
             this.m_ACCBox.Name = "m_ACCBox";
             this.m_ACCBox.Size = new System.Drawing.Size(43, 21);
-            this.m_ACCBox.TabIndex = 10;
+            this.m_ACCBox.TabIndex = 20;
             this.m_ACCBox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
             // 
             // m_PC_REC_QU_KABox
@@ -871,10 +946,10 @@ namespace TSBTool
             "88",
             "94",
             "100"});
-            this.m_PC_REC_QU_KABox.Location = new System.Drawing.Point(248, 32);
+            this.m_PC_REC_QU_KABox.Location = new System.Drawing.Point(343, 35);
             this.m_PC_REC_QU_KABox.Name = "m_PC_REC_QU_KABox";
             this.m_PC_REC_QU_KABox.Size = new System.Drawing.Size(43, 21);
-            this.m_PC_REC_QU_KABox.TabIndex = 9;
+            this.m_PC_REC_QU_KABox.TabIndex = 15;
             this.m_PC_REC_QU_KABox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
             // 
             // m_PS_BC_PI_KABox
@@ -897,35 +972,35 @@ namespace TSBTool
             "88",
             "94",
             "100"});
-            this.m_PS_BC_PI_KABox.Location = new System.Drawing.Point(200, 32);
+            this.m_PS_BC_PI_KABox.Location = new System.Drawing.Point(295, 35);
             this.m_PS_BC_PI_KABox.Name = "m_PS_BC_PI_KABox";
             this.m_PS_BC_PI_KABox.Size = new System.Drawing.Size(43, 21);
-            this.m_PS_BC_PI_KABox.TabIndex = 8;
+            this.m_PS_BC_PI_KABox.TabIndex = 10;
             this.m_PS_BC_PI_KABox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
             // 
             // m_A3Label
             // 
-            this.m_A3Label.Location = new System.Drawing.Point(296, 16);
+            this.m_A3Label.Location = new System.Drawing.Point(391, 16);
             this.m_A3Label.Name = "m_A3Label";
-            this.m_A3Label.Size = new System.Drawing.Size(40, 10);
+            this.m_A3Label.Size = new System.Drawing.Size(40, 15);
             this.m_A3Label.TabIndex = 20;
-            this.m_A3Label.Text = "ACC";
+            this.m_A3Label.Text = "PA";
             this.m_A3Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // m_A2Label
             // 
-            this.m_A2Label.Location = new System.Drawing.Point(248, 16);
+            this.m_A2Label.Location = new System.Drawing.Point(343, 16);
             this.m_A2Label.Name = "m_A2Label";
-            this.m_A2Label.Size = new System.Drawing.Size(40, 10);
+            this.m_A2Label.Size = new System.Drawing.Size(40, 15);
             this.m_A2Label.TabIndex = 19;
             this.m_A2Label.Text = "PC";
             this.m_A2Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // m_A1Label
             // 
-            this.m_A1Label.Location = new System.Drawing.Point(200, 16);
+            this.m_A1Label.Location = new System.Drawing.Point(295, 16);
             this.m_A1Label.Name = "m_A1Label";
-            this.m_A1Label.Size = new System.Drawing.Size(40, 10);
+            this.m_A1Label.Size = new System.Drawing.Size(40, 15);
             this.m_A1Label.TabIndex = 18;
             this.m_A1Label.Text = "PS";
             this.m_A1Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -936,7 +1011,7 @@ namespace TSBTool
             this.m_Sim4Label.Name = "m_Sim4Label";
             this.m_Sim4Label.Size = new System.Drawing.Size(56, 32);
             this.m_Sim4Label.TabIndex = 27;
-            this.m_Sim4Label.Text = "blank";
+            this.m_Sim4Label.Text = "Sim 4";
             this.m_Sim4Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // m_Sim3Label
@@ -945,7 +1020,7 @@ namespace TSBTool
             this.m_Sim3Label.Name = "m_Sim3Label";
             this.m_Sim3Label.Size = new System.Drawing.Size(56, 32);
             this.m_Sim3Label.TabIndex = 26;
-            this.m_Sim3Label.Text = "Sim pocket";
+            this.m_Sim3Label.Text = "Sim 3";
             this.m_Sim3Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // m_Sim2Label
@@ -954,7 +1029,7 @@ namespace TSBTool
             this.m_Sim2Label.Name = "m_Sim2Label";
             this.m_Sim2Label.Size = new System.Drawing.Size(56, 32);
             this.m_Sim2Label.TabIndex = 25;
-            this.m_Sim2Label.Text = "Sim Pass";
+            this.m_Sim2Label.Text = "Sim 2";
             this.m_Sim2Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // m_Sim1Label
@@ -963,13 +1038,14 @@ namespace TSBTool
             this.m_Sim1Label.Name = "m_Sim1Label";
             this.m_Sim1Label.Size = new System.Drawing.Size(56, 32);
             this.m_Sim1Label.TabIndex = 24;
-            this.m_Sim1Label.Text = "Sim Run";
+            this.m_Sim1Label.Text = "Sim 1";
             this.m_Sim1Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // mSimBox
             // 
-            this.mSimBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.mSimBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.mSimBox.Controls.Add(this.mAboutButton);
             this.mSimBox.Controls.Add(this.m_Sim4UpDown);
             this.mSimBox.Controls.Add(this.m_Sim3UpDown);
             this.mSimBox.Controls.Add(this.m_Sim2UpDown);
@@ -978,15 +1054,26 @@ namespace TSBTool
             this.mSimBox.Controls.Add(this.m_Sim3Label);
             this.mSimBox.Controls.Add(this.m_Sim2Label);
             this.mSimBox.Controls.Add(this.m_Sim1Label);
-            this.mSimBox.Location = new System.Drawing.Point(88, 128);
+            this.mSimBox.Location = new System.Drawing.Point(88, 143);
             this.mSimBox.Name = "mSimBox";
-            this.mSimBox.Size = new System.Drawing.Size(312, 80);
+            this.mSimBox.Size = new System.Drawing.Size(456, 80);
             this.mSimBox.TabIndex = 6;
             this.mSimBox.TabStop = false;
             this.mSimBox.Text = "Sim attributes";
             // 
+            // mAboutButton
+            // 
+            this.mAboutButton.Location = new System.Drawing.Point(359, 16);
+            this.mAboutButton.Name = "mAboutButton";
+            this.mAboutButton.Size = new System.Drawing.Size(75, 48);
+            this.mAboutButton.TabIndex = 28;
+            this.mAboutButton.Text = "About SimData";
+            this.mAboutButton.UseVisualStyleBackColor = true;
+            this.mAboutButton.Click += new System.EventHandler(this.mAboutButton_Click);
+            // 
             // m_Sim4UpDown
             // 
+            this.m_Sim4UpDown.Hexadecimal = true;
             this.m_Sim4UpDown.Location = new System.Drawing.Point(254, 48);
             this.m_Sim4UpDown.Maximum = new decimal(new int[] {
             255,
@@ -1000,6 +1087,7 @@ namespace TSBTool
             // 
             // m_Sim3UpDown
             // 
+            this.m_Sim3UpDown.Hexadecimal = true;
             this.m_Sim3UpDown.Location = new System.Drawing.Point(172, 48);
             this.m_Sim3UpDown.Maximum = new decimal(new int[] {
             255,
@@ -1013,6 +1101,7 @@ namespace TSBTool
             // 
             // m_Sim2UpDown
             // 
+            this.m_Sim2UpDown.Hexadecimal = true;
             this.m_Sim2UpDown.Location = new System.Drawing.Point(90, 48);
             this.m_Sim2UpDown.Maximum = new decimal(new int[] {
             255,
@@ -1026,6 +1115,7 @@ namespace TSBTool
             // 
             // m_Sim1UpDown
             // 
+            this.m_Sim1UpDown.Hexadecimal = true;
             this.m_Sim1UpDown.Location = new System.Drawing.Point(8, 48);
             this.m_Sim1UpDown.Maximum = new decimal(new int[] {
             255,
@@ -1039,9 +1129,16 @@ namespace TSBTool
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.m_APBBox);
+            this.groupBox1.Controls.Add(this.m_AgilityLabel);
+            this.groupBox1.Controls.Add(this.m_AgilityBox);
+            this.groupBox1.Controls.Add(this.m_CoolBox);
+            this.groupBox1.Controls.Add(this.m_CoolnessLabel);
+            this.groupBox1.Controls.Add(this.m_BBLabel);
+            this.groupBox1.Controls.Add(this.m_BBBox);
+            this.groupBox1.Controls.Add(this.m_ARBox);
             this.groupBox1.Controls.Add(this.m_A4Label);
             this.groupBox1.Controls.Add(this.m_A2Label);
             this.groupBox1.Controls.Add(this.label7);
@@ -1059,15 +1156,24 @@ namespace TSBTool
             this.groupBox1.Controls.Add(this.m_A3Label);
             this.groupBox1.Location = new System.Drawing.Point(8, 72);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(392, 56);
+            this.groupBox1.Size = new System.Drawing.Size(536, 71);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Attributes";
             // 
-            // m_APBBox
+            // m_AgilityLabel
             // 
-            this.m_APBBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.m_APBBox.Items.AddRange(new object[] {
+            this.m_AgilityLabel.Location = new System.Drawing.Point(247, 15);
+            this.m_AgilityLabel.Name = "m_AgilityLabel";
+            this.m_AgilityLabel.Size = new System.Drawing.Size(40, 15);
+            this.m_AgilityLabel.TabIndex = 32;
+            this.m_AgilityLabel.Text = "AG";
+            this.m_AgilityLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // m_AgilityBox
+            // 
+            this.m_AgilityBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.m_AgilityBox.Items.AddRange(new object[] {
             "6",
             "13",
             "19",
@@ -1084,25 +1190,121 @@ namespace TSBTool
             "88",
             "94",
             "100"});
-            this.m_APBBox.Location = new System.Drawing.Point(344, 32);
-            this.m_APBBox.Name = "m_APBBox";
-            this.m_APBBox.Size = new System.Drawing.Size(43, 21);
-            this.m_APBBox.TabIndex = 21;
-            this.m_APBBox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
+            this.m_AgilityBox.Location = new System.Drawing.Point(247, 34);
+            this.m_AgilityBox.Name = "m_AgilityBox";
+            this.m_AgilityBox.Size = new System.Drawing.Size(43, 21);
+            this.m_AgilityBox.TabIndex = 9;
+            this.m_AgilityBox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
+            // 
+            // m_CoolBox
+            // 
+            this.m_CoolBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.m_CoolBox.Items.AddRange(new object[] {
+            "6",
+            "13",
+            "19",
+            "25",
+            "31",
+            "38",
+            "44",
+            "50",
+            "56",
+            "63",
+            "69",
+            "75",
+            "81",
+            "88",
+            "94",
+            "100"});
+            this.m_CoolBox.Location = new System.Drawing.Point(488, 35);
+            this.m_CoolBox.Name = "m_CoolBox";
+            this.m_CoolBox.Size = new System.Drawing.Size(43, 21);
+            this.m_CoolBox.TabIndex = 30;
+            this.m_CoolBox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
+            // 
+            // m_CoolnessLabel
+            // 
+            this.m_CoolnessLabel.Location = new System.Drawing.Point(488, 16);
+            this.m_CoolnessLabel.Name = "m_CoolnessLabel";
+            this.m_CoolnessLabel.Size = new System.Drawing.Size(40, 15);
+            this.m_CoolnessLabel.TabIndex = 26;
+            this.m_CoolnessLabel.Text = "COOL";
+            this.m_CoolnessLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // m_BBLabel
+            // 
+            this.m_BBLabel.Location = new System.Drawing.Point(198, 16);
+            this.m_BBLabel.Name = "m_BBLabel";
+            this.m_BBLabel.Size = new System.Drawing.Size(40, 15);
+            this.m_BBLabel.TabIndex = 24;
+            this.m_BBLabel.Text = "BB";
+            this.m_BBLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // m_BBBox
+            // 
+            this.m_BBBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.m_BBBox.Items.AddRange(new object[] {
+            "6",
+            "13",
+            "19",
+            "25",
+            "31",
+            "38",
+            "44",
+            "50",
+            "56",
+            "63",
+            "69",
+            "75",
+            "81",
+            "88",
+            "94",
+            "100"});
+            this.m_BBBox.Location = new System.Drawing.Point(198, 35);
+            this.m_BBBox.Name = "m_BBBox";
+            this.m_BBBox.Size = new System.Drawing.Size(43, 21);
+            this.m_BBBox.TabIndex = 8;
+            this.m_BBBox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
+            // 
+            // m_ARBox
+            // 
+            this.m_ARBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.m_ARBox.Items.AddRange(new object[] {
+            "6",
+            "13",
+            "19",
+            "25",
+            "31",
+            "38",
+            "44",
+            "50",
+            "56",
+            "63",
+            "69",
+            "75",
+            "81",
+            "88",
+            "94",
+            "100"});
+            this.m_ARBox.Location = new System.Drawing.Point(439, 35);
+            this.m_ARBox.Name = "m_ARBox";
+            this.m_ARBox.Size = new System.Drawing.Size(43, 21);
+            this.m_ARBox.TabIndex = 25;
+            this.m_ARBox.SelectedIndexChanged += new System.EventHandler(this.ValueChanged);
             // 
             // m_A4Label
             // 
-            this.m_A4Label.Location = new System.Drawing.Point(344, 16);
+            this.m_A4Label.Location = new System.Drawing.Point(439, 16);
             this.m_A4Label.Name = "m_A4Label";
-            this.m_A4Label.Size = new System.Drawing.Size(40, 10);
+            this.m_A4Label.Size = new System.Drawing.Size(40, 15);
             this.m_A4Label.TabIndex = 22;
-            this.m_A4Label.Text = "APB";
+            this.m_A4Label.Text = "AR";
             this.m_A4Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // m_NextPlayerButton
             // 
             this.m_NextPlayerButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.m_NextPlayerButton.Location = new System.Drawing.Point(117, 248);
+            this.m_NextPlayerButton.Location = new System.Drawing.Point(117, 263);
             this.m_NextPlayerButton.Name = "m_NextPlayerButton";
             this.m_NextPlayerButton.Size = new System.Drawing.Size(88, 24);
             this.m_NextPlayerButton.TabIndex = 25;
@@ -1119,9 +1321,11 @@ namespace TSBTool
             // 
             // label16
             // 
+            this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.label16.Location = new System.Drawing.Point(232, 32);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(100, 16);
+            this.label16.Size = new System.Drawing.Size(244, 16);
             this.label16.TabIndex = 36;
             this.label16.Text = "Last Name";
             // 
@@ -1138,18 +1342,21 @@ namespace TSBTool
             // 
             // m_LastNameTextBox
             // 
+            this.m_LastNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.m_LastNameTextBox.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.m_LastNameTextBox.Location = new System.Drawing.Point(232, 48);
             this.m_LastNameTextBox.MaxLength = 16;
             this.m_LastNameTextBox.Name = "m_LastNameTextBox";
-            this.m_LastNameTextBox.Size = new System.Drawing.Size(152, 21);
+            this.m_LastNameTextBox.Size = new System.Drawing.Size(296, 21);
             this.m_LastNameTextBox.TabIndex = 4;
             this.m_LastNameTextBox.TextChanged += new System.EventHandler(this.ValueChanged);
             this.m_LastNameTextBox.Leave += new System.EventHandler(this.m_LastNameTextBox_Leave);
             // 
             // m_PrevPicture
             // 
-            this.m_PrevPicture.Location = new System.Drawing.Point(8, 208);
+            this.m_PrevPicture.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.m_PrevPicture.Location = new System.Drawing.Point(8, 223);
             this.m_PrevPicture.Name = "m_PrevPicture";
             this.m_PrevPicture.Size = new System.Drawing.Size(32, 18);
             this.m_PrevPicture.TabIndex = 15;
@@ -1158,7 +1365,8 @@ namespace TSBTool
             // 
             // m_NextPicture
             // 
-            this.m_NextPicture.Location = new System.Drawing.Point(40, 208);
+            this.m_NextPicture.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.m_NextPicture.Location = new System.Drawing.Point(40, 223);
             this.m_NextPicture.Name = "m_NextPicture";
             this.m_NextPicture.Size = new System.Drawing.Size(32, 18);
             this.m_NextPicture.TabIndex = 16;
@@ -1167,7 +1375,8 @@ namespace TSBTool
             // 
             // m_FaceLabel
             // 
-            this.m_FaceLabel.Location = new System.Drawing.Point(8, 192);
+            this.m_FaceLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.m_FaceLabel.Location = new System.Drawing.Point(8, 207);
             this.m_FaceLabel.Name = "m_FaceLabel";
             this.m_FaceLabel.Size = new System.Drawing.Size(64, 16);
             this.m_FaceLabel.TabIndex = 41;
@@ -1176,9 +1385,9 @@ namespace TSBTool
             // 
             // m_SaveButton
             // 
-            this.m_SaveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.m_SaveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.m_SaveButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.m_SaveButton.Location = new System.Drawing.Point(224, 248);
+            this.m_SaveButton.Location = new System.Drawing.Point(368, 263);
             this.m_SaveButton.Name = "m_SaveButton";
             this.m_SaveButton.Size = new System.Drawing.Size(80, 24);
             this.m_SaveButton.TabIndex = 30;
@@ -1196,7 +1405,7 @@ namespace TSBTool
             // m_PrevPlayerButton
             // 
             this.m_PrevPlayerButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.m_PrevPlayerButton.Location = new System.Drawing.Point(8, 248);
+            this.m_PrevPlayerButton.Location = new System.Drawing.Point(8, 263);
             this.m_PrevPlayerButton.Name = "m_PrevPlayerButton";
             this.m_PrevPlayerButton.Size = new System.Drawing.Size(96, 24);
             this.m_PrevPlayerButton.TabIndex = 20;
@@ -1205,9 +1414,9 @@ namespace TSBTool
             // 
             // m_CancelButton
             // 
-            this.m_CancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.m_CancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.m_CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.m_CancelButton.Location = new System.Drawing.Point(312, 248);
+            this.m_CancelButton.Location = new System.Drawing.Point(456, 263);
             this.m_CancelButton.Name = "m_CancelButton";
             this.m_CancelButton.Size = new System.Drawing.Size(88, 24);
             this.m_CancelButton.TabIndex = 35;
@@ -1228,20 +1437,22 @@ namespace TSBTool
             // 
             // m_AutoUpdateButton
             // 
+            this.m_AutoUpdateButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.m_AutoUpdateButton.BackColor = System.Drawing.Color.LightCoral;
-            this.m_AutoUpdateButton.Location = new System.Drawing.Point(88, 216);
+            this.m_AutoUpdateButton.Location = new System.Drawing.Point(88, 231);
             this.m_AutoUpdateButton.Name = "m_AutoUpdateButton";
-            this.m_AutoUpdateButton.Size = new System.Drawing.Size(312, 24);
+            this.m_AutoUpdateButton.Size = new System.Drawing.Size(456, 24);
             this.m_AutoUpdateButton.TabIndex = 18;
             this.m_AutoUpdateButton.Text = "&Auto Update All Player Sim Attributes";
             this.m_AutoUpdateButton.UseVisualStyleBackColor = false;
             this.m_AutoUpdateButton.Click += new System.EventHandler(this.m_AutoUpdateButton_Click);
             // 
-            // AttributeForm
+            // ModifyPlayerForm
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.CancelButton = this.m_CancelButton;
-            this.ClientSize = new System.Drawing.Size(400, 274);
+            this.ClientSize = new System.Drawing.Size(544, 289);
             this.Controls.Add(this.m_AutoUpdateButton);
             this.Controls.Add(this.m_JerseyNumberUpDown);
             this.Controls.Add(this.m_CancelButton);
@@ -1266,7 +1477,7 @@ namespace TSBTool
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(800, 600);
             this.MinimumSize = new System.Drawing.Size(416, 312);
-            this.Name = "AttributeForm";
+            this.Name = "ModifyPlayerForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Modify Players";
             ((System.ComponentModel.ISupportInitialize)(this.m_FaceBox)).EndInit();
@@ -1306,21 +1517,29 @@ namespace TSBTool
 						CurrentState = StateEnum.SKILL;
 						break;
 					case TSBPlayer.RT: case TSBPlayer.RG: 
-					case TSBPlayer.C: case TSBPlayer.LG: 
+					case TSBPlayer.C:  case TSBPlayer.LG: 
 					case TSBPlayer.LT:
 						CurrentState = StateEnum.OLINE;
 						break;
 					case TSBPlayer.RE:   case TSBPlayer.LE:   
 					case TSBPlayer.NT:
+                    case TSBPlayer.RE2:  case TSBPlayer.LE2:
+                    case TSBPlayer.NT2:
 					case TSBPlayer.ROLB: case TSBPlayer.RILB: 
 					case TSBPlayer.LILB: case TSBPlayer.LOLB:
+                    case TSBPlayer.LB5:
 					case TSBPlayer.RCB:  case TSBPlayer.LCB:  
 					case TSBPlayer.SS:   case TSBPlayer.FS:
+                    case TSBPlayer.DB1:  case TSBPlayer.DB2:
+                    case TSBPlayer.DB3:
 						CurrentState = StateEnum.DEFENSE;
 						break;
-					case TSBPlayer.P: case TSBPlayer.K:
+					case TSBPlayer.K:
 						CurrentState = StateEnum.KICKER;
 						break;
+                    case TSBPlayer.P:
+                        CurrentState = StateEnum.PUNTER;
+                        break;
 				}
 				SetCurrentPlayer();
 			}
@@ -1331,20 +1550,37 @@ namespace TSBTool
 		/// </summary>
 		private void ShowCurrentFace()
 		{
-			if( m_DoneInit )
-			{
-				string file = "TSBTool.FACES."+string.Format("{0:x2}.BMP",m_ImageNumber).ToUpper();
-			
-				Image  face = StaticUtils.GetImage(file);
-				if( face != null )
-				{
-					m_FaceBox.Image = face;
-					m_FaceLabel.Text = string.Format("{0:x2}",m_ImageNumber).ToUpper();
-				}
-				else
-					MessageBox.Show("Problem with "+file);
-				AutoUpdateRoster();
-			}
+            if (mRomVersion == TSBTool.TSBContentType.TSB1)
+            {
+                string file = "TSBTool.FACES." + string.Format("{0:x2}.BMP", m_ImageNumber).ToUpper();
+
+                Image face = TSBTool.StaticUtils.GetImage(file);
+                if (face != null)
+                {
+                    m_FaceBox.Image = face;
+                    m_FaceLabel.Text = string.Format("{0:x2}", m_ImageNumber).ToUpper();
+                }
+                else
+                    MessageBox.Show("Problem with " + file);
+            }
+            else
+            {
+                string whiteGuy = "TSBTool.FACES.00.BMP";
+                string blackGuy = "TSBTool.FACES.80.BMP";
+                string file = blackGuy;
+
+                if (m_ImageNumber < 0x80)
+                    file = whiteGuy;
+
+                Image face = TSBTool.StaticUtils.GetImage(file);
+                if (face != null)
+                {
+                    m_FaceBox.Image = face;
+                    m_FaceLabel.Text = string.Format("{0:x2}", m_ImageNumber).ToUpper();
+                }
+                else
+                    MessageBox.Show("Problem with " + file);
+            }
 		}
 
 		/// <summary>
@@ -1356,7 +1592,6 @@ namespace TSBTool
 		{
 			if( m_DoneInit )
 			{
-				// do a replace player on Auto update HERE!
 				SetCurrentPlayer();
 			}
 		}
@@ -1369,12 +1604,24 @@ namespace TSBTool
 		/// <param name="e"></param>
 		private void m_PrevPicture_Click(object sender, System.EventArgs e)
 		{
-			if( m_ImageNumber == 0x00 )
-				m_ImageNumber = 0xD4;
-			else if( m_ImageNumber == 0x80 )
-				m_ImageNumber = 0x52;
-			else
-				m_ImageNumber--;
+            if (mRomVersion == TSBTool.TSBContentType.TSB1)
+            {
+                if (m_ImageNumber == 0x00)
+                    m_ImageNumber = 0xD4;
+                else if (m_ImageNumber == 0x80)
+                    m_ImageNumber = 0x52;
+                else
+                    m_ImageNumber--;
+            }
+            else
+            {
+                if (m_ImageNumber == 0x00)
+                    m_ImageNumber = 0x8F;
+                else if (m_ImageNumber == 0x80)
+                    m_ImageNumber = 0x0F;
+                else
+                    m_ImageNumber--;
+            }
 			ShowCurrentFace();
 		}
 
@@ -1385,12 +1632,24 @@ namespace TSBTool
 		/// <param name="e"></param>
 		private void m_NextPicture_Click(object sender, System.EventArgs e)
 		{
-			if( m_ImageNumber == 0xD4 )
-				m_ImageNumber = 0;
-			else if( m_ImageNumber == 0x52 )
-				m_ImageNumber = 0x80;
-			else
-				m_ImageNumber++;
+            if (mRomVersion == TSBTool.TSBContentType.TSB1)
+            {
+                if (m_ImageNumber == 0xD4)
+                    m_ImageNumber = 0;
+                else if (m_ImageNumber == 0x52)
+                    m_ImageNumber = 0x80;
+                else
+                    m_ImageNumber++;
+            }
+            else
+            {
+                if (m_ImageNumber == 0x8F)
+                    m_ImageNumber = 0;
+                else if (m_ImageNumber == 0x0F)
+                    m_ImageNumber = 0x80;
+                else
+                    m_ImageNumber++;
+            }
 			ShowCurrentFace();
 		}
 
@@ -1401,7 +1660,7 @@ namespace TSBTool
 		/// <param name="e"></param>
 		private void m_NextPlayerButton_Click(object sender, System.EventArgs e)
 		{
-			//ReplacePlayer();
+			ReplacePlayer();
 			if( m_PositionComboBox.SelectedIndex == m_PositionComboBox.Items.Count - 1 )
 			{
 				m_PositionComboBox.SelectedIndex = 0;
@@ -1414,13 +1673,6 @@ namespace TSBTool
 				m_PositionComboBox.SelectedIndex++;
 		}
 
-		private void AutoUpdateRoster()
-		{
-			if( m_DoneInit && m_AutoUpdatePlayers )
-			{
-				ReplacePlayer();
-			}
-		}
 		/// <summary>
 		/// Replaces the current player with the values specified.
 		/// </summary>
@@ -1459,7 +1711,6 @@ namespace TSBTool
 				Match nt = nextTeamRegex.Match(m_Data);
 				if( nt.Success )
 					nextTeamIndex = nt.Index;
-				//nextTeamIndex = m_Data.IndexOf(nextTeam);
 			}
 			if( nextTeamIndex < 0)
 				nextTeamIndex = m_Data.Length;
@@ -1478,7 +1729,6 @@ namespace TSBTool
 				tmp.Append(last);
 
 				m_Data = tmp.ToString();
-				//m_Data = start + newPlayer + last;
 			}
 			else
 			{
@@ -1497,20 +1747,33 @@ Please verify that this player's attributes are correct.", oldPlayer);
 		/// <param name="e"></param>
 		private void m_FaceBox_Click(object sender, System.EventArgs e)
 		{
-			FaceForm form = new FaceForm();
-			try
-			{
-				form.ShowDialog(this);
-			}
-			catch(Exception ex )
-			{
-				MessageBox.Show(ex.Message+"\n"+ex.StackTrace);
-			}
-			if(form.ImageIndex > -1 )
-			{
-				m_ImageNumber = form.ImageIndex;
-				ShowCurrentFace();
-			}
+            if (mRomVersion == TSBTool.TSBContentType.TSB1)
+            {
+                TSBTool.FaceForm form = new TSBTool.FaceForm();
+                try
+                {
+                    form.ShowDialog(this);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message + "\n" + ex.StackTrace);
+                }
+                if (form.ImageIndex > -1)
+                {
+                    m_ImageNumber = form.ImageIndex;
+                    ShowCurrentFace();
+                }
+            }
+            else
+            {
+                // toggle race
+                if (m_ImageNumber < 0x80) // it's currently a white guy
+                    m_ImageNumber = 0x80 + (m_ImageNumber & 0x0F);
+                else
+                    m_ImageNumber = 0x0F & m_ImageNumber;
+                ShowCurrentFace();
+                ReplacePlayer();
+            }
 		}
 
 		/// <summary>
@@ -1544,21 +1807,13 @@ Please verify that this player's attributes are correct.", oldPlayer);
 
 		private void m_AutoUpdateButton_Click(object sender, System.EventArgs e)
 		{
-			//MessageBox.Show("This Feature not yet implemented.");
 			if( MessageBox.Show(this, 
                 "Are you sure you want to Auto Update ALL Player Sim data for ALL teams?",
 				"Are you Sure?", MessageBoxButtons.YesNo) == DialogResult.Yes )
 			{
 				this.Enabled = false;
-                if (MessageBox.Show("Use Tecmonster's formulas?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                {
-                    m_Data = TecmonsterTSB1SimAutoUpdater.AutoUpdatePlayerSimData(m_Data);
-                }
-                else
-                {
-                    AutoUpdatePlayerSim();
-                }
-				MessageBox.Show(this, "Done.");
+				AutoUpdatePlayerSim();
+				//MessageBox.Show(this, "Done.");
 				this.Enabled = true;
 				SetCurrentPlayer();
 			}
@@ -1569,263 +1824,24 @@ Please verify that this player's attributes are correct.", oldPlayer);
 		/// </summary>
 		private void AutoUpdatePlayerSim()
 		{
-			foreach( string team in m_TeamsComboBox.Items )
-			{
-				AutoUpdatePlayers( team );
-			}
-		}
-
-		/// <summary>
-		/// Auto update a team's players sim attributs.
-		/// </summary>
-		/// <param name="team"></param>
-		private void AutoUpdatePlayers( string team )
-		{
-			// look for 'TEAM = ' here
-			string pattern = "TEAM\\s*=\\s*"+team;
-			Regex findTeamRegex = new Regex(pattern);
-			Match m = findTeamRegex.Match(m_Data);
-			if( m != Match.Empty )
-			{
-				foreach( string position in m_PositionComboBox.Items )
-				{
-					if( position == "C")
-						break;
-					AutoUpdatePlayerSimData( team, position);
-				}
-				AutoUpdatePlayerSimData(team, "P");
-				AutoUpdatePlayerSimData(team, "K");
-				UpdateTeamSimPassDefense(team);
-				UpdateTeamSimPassRush(team);
-			}
-		}
-
-		/// <summary>
-		/// Auto update a player's sim data.
-		/// </summary>
-		/// <param name="team"></param>
-		/// <param name="position"></param>
-		private void AutoUpdatePlayerSimData(string team, string position)
-		{
-			string oldValue = GetPlayerString(team, position);
-			string newValue = null;
-
-			if( oldValue == null || oldValue == string.Empty )
-			{
-				return;// he's not there, don't update him.
-			}
-            string fName = InputParser.GetFirstName(oldValue);
-            string lName = InputParser.GetLastName(oldValue);
-            int face = InputParser.GetFace(oldValue);
-            int jerseyNumber = InputParser.GetJerseyNumber(oldValue);
-			
-			int[] attrs = new int[4];
-			try
-			{
-				attrs = InputParser.GetInts(oldValue);
-			}
-			catch(Exception e)
-			{
-				MessageBox.Show("Oh oh!"+e.Message);
-			}
-			//int[] simData = m_Parser.GetSimVals(playerLine);
-			int simPass, simRush, simPocket, simCatch, simPR, simKR, simKA;
-
-			switch( position )
-			{
-				case "QB1": case "QB2":
-					if( attrs != null && attrs.Length > 7)
-					{
-						simPass   = m_SimStuff.SimPass(/*PC*/attrs[5], /*APB*/attrs[7], /*PS*/attrs[4]);
-						simRush   = m_SimStuff.QbSimRun(/*MS*/attrs[2]);
-						simPocket = m_SimStuff.SimPocket(/*MS*/attrs[2]);
-						newValue  = string.Format( 
-							"{0}, {1} {2}, Face=0x{3:x}, #{4:x}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12} ,[{13}, {14}, {15} ]",
-							position, fName, lName, face, jerseyNumber, attrs[0], attrs[1],attrs[2],attrs[3],
-							attrs[4],attrs[5],attrs[6], attrs[7], simRush, simPass, simPocket); 
-					}
-					break;
-				case "RB1": case "RB2": 
-				case "RB3": case "RB4":
-					if( attrs != null && attrs.Length > 5)
-					{
-						simRush  = m_SimStuff.RbSimRush(/*MS*/attrs[2],/*HP*/attrs[3],/*BC*/attrs[4],/*RS*/attrs[0]);
-						simCatch = m_SimStuff.RbSimCatch(/*REC*/attrs[5]);
-						simKR    = m_SimStuff.SimKickRet(/*MS*/attrs[2]);
-						simPR    = m_SimStuff.SimPuntRet(/*MS*/attrs[2]);
-						newValue  = string.Format( 
-							"{0}, {1} {2}, Face=0x{3:x}, #{4:x}, {5}, {6}, {7}, {8}, {9}, {10} ,[{11}, {12} ,{13}, {14} ]",
-							position, fName, lName, face, jerseyNumber, attrs[0], attrs[1],attrs[2],attrs[3],
-							attrs[4],attrs[5],simRush, simCatch, simPR, simKR);
-					}
-					break;
-				case "WR1": case "WR2": 
-				case "WR3": case "WR4":
-				case "TE1": case "TE2":
-					if( attrs != null && attrs.Length > 5)
-					{
-						simRush  = m_SimStuff.RbSimRush(/*MS*/attrs[2],/*HP*/attrs[3],/*BC*/attrs[4],/*RS*/attrs[0]);
-						simCatch = m_SimStuff.RbSimCatch(/*REC*/attrs[5]);
-						simKR    = m_SimStuff.SimKickRet(/*MS*/attrs[2]);
-						simPR    = m_SimStuff.SimPuntRet(/*MS*/attrs[2]);
-						newValue  = string.Format( 
-							"{0}, {1} {2}, Face=0x{3:x}, #{4:x}, {5}, {6}, {7}, {8}, {9}, {10} ,[{11}, {12} ,{13}, {14} ]",
-							position, fName, lName, face, jerseyNumber, attrs[0], attrs[1],attrs[2],attrs[3],
-							attrs[4],attrs[5],simRush, simCatch, simPR, simKR);
-					}
-					break;
-				case "P": case "K":
-					if( attrs != null && attrs.Length > 5)
-					{
-						simKA = m_SimStuff.PKSimKick(/*KA*/attrs[4], /*AKB*/attrs[5]);
-						newValue  = string.Format( 
-							"{0}, {1} {2}, Face=0x{3:x}, #{4:x}, {5}, {6}, {7}, {8}, {9}, {10} ,[{11} ]",
-							position, fName, lName, face, jerseyNumber, attrs[0], attrs[1],attrs[2],attrs[3],
-							attrs[4],attrs[5], simKA); 
-					}
-					break;
-			}
-			if( newValue != null )
-			{
-				ReplacePlayer(team, oldValue, newValue);
-			}
-		}
-
-		private void UpdateTeamSimPassDefense(string team)
-		{
-			string re   = GetPlayerString(team, "RE");
-			string le   = GetPlayerString(team, "LE");
-			string nt   = GetPlayerString(team, "NT");
-			string lolb = GetPlayerString(team, "LOLB");
-			string lilb = GetPlayerString(team, "LILB");
-			string rilb = GetPlayerString(team, "RILB");
-			string rolb = GetPlayerString(team, "ROLB");
-			string rcb  = GetPlayerString(team, "RCB");
-			string lcb  = GetPlayerString(team, "LCB");
-			string fs   = GetPlayerString(team, "FS");
-			string ss   = GetPlayerString(team, "SS");
-
-			if( re == null   || le == null   || nt == null   || 
-				lolb == null || lilb == null || rilb == null || rolb == null ||
-				rcb == null  || lcb == null || fs == null || ss == null )
-			{
-				// we need the entire defense in order to update this.
-				return;
-			}
-			int[] reAttrs   = InputParser.GetInts(re);
-			int[] leAttrs   = InputParser.GetInts(le);
-			int[] ntAttrs   = InputParser.GetInts(nt);
-			int[] lolbAttrs = InputParser.GetInts(lolb);
-			int[] lilbAttrs = InputParser.GetInts(lilb);
-			int[] rilbAttrs = InputParser.GetInts(rilb);
-			int[] rolbAttrs = InputParser.GetInts(rolb);
-			int[] rcbAttrs  = InputParser.GetInts(rcb);
-			int[] lcbAttrs  = InputParser.GetInts(lcb);
-			int[] fsAttrs   = InputParser.GetInts(fs);
-			int[] ssAttrs   = InputParser.GetInts(ss);
-			
-			int[] passDef = m_SimStuff.GetSimPassDefense(
-				rolbAttrs[4], rilbAttrs[4], lilbAttrs[4], lolbAttrs[4],
-				rcbAttrs[4],  lcbAttrs[4],  fsAttrs[4],   ssAttrs[4]);
-
-			ReplacePlayer(team, re,   ReplaceSimAttr(re,   2,0));
-			ReplacePlayer(team, nt ,  ReplaceSimAttr(nt,   2,0));
-			ReplacePlayer(team, le ,  ReplaceSimAttr(le,   2,0));
-			ReplacePlayer(team, rolb, ReplaceSimAttr(rolb, 2, passDef[0]));
-			ReplacePlayer(team, rilb, ReplaceSimAttr(rilb, 2, passDef[1]));
-			ReplacePlayer(team, lilb, ReplaceSimAttr(lilb, 2, passDef[2]));
-			ReplacePlayer(team, lolb, ReplaceSimAttr(lolb, 2, passDef[3]));
-			ReplacePlayer(team, rcb,  ReplaceSimAttr(rcb,  2, passDef[4]));
-			ReplacePlayer(team, lcb,  ReplaceSimAttr(lcb,  2, passDef[5]));
-			ReplacePlayer(team, fs,   ReplaceSimAttr(fs,   2, passDef[6]));
-			ReplacePlayer(team, ss,   ReplaceSimAttr(ss,   2, passDef[7]));
-		}
-		
-		private void UpdateTeamSimPassRush(string team)
-		{
-			string re   = GetPlayerString(team, "RE");
-			string le   = GetPlayerString(team, "LE");
-			string nt   = GetPlayerString(team, "NT");
-			string lolb = GetPlayerString(team, "LOLB");
-			string lilb = GetPlayerString(team, "LILB");
-			string rilb = GetPlayerString(team, "RILB");
-			string rolb = GetPlayerString(team, "ROLB");
-			string rcb  = GetPlayerString(team, "RCB");
-			string lcb  = GetPlayerString(team, "LCB");
-			string fs   = GetPlayerString(team, "FS");
-			string ss   = GetPlayerString(team, "SS");
-
-			if( re == null   || le == null   || nt == null   || 
-				lolb == null || lilb == null || rilb == null || rolb == null ||
-				rcb == null  || lcb == null || fs == null || ss == null )
-			{
-				// we need the entire defense in order to update this.
-				return;
-			}
-			int[] reAttrs   = InputParser.GetInts(re);
-			int[] leAttrs   = InputParser.GetInts(le);
-			int[] ntAttrs   = InputParser.GetInts(nt);
-			int[] lolbAttrs = InputParser.GetInts(lolb);
-			int[] lilbAttrs = InputParser.GetInts(lilb);
-			int[] rilbAttrs = InputParser.GetInts(rilb);
-			int[] rolbAttrs = InputParser.GetInts(rolb);
-			int[] rcbAttrs  = InputParser.GetInts(rcb);
-			int[] lcbAttrs  = InputParser.GetInts(lcb);
-			int[] fsAttrs   = InputParser.GetInts(fs);
-			int[] ssAttrs   = InputParser.GetInts(ss);
-			
-			int[] rushDef = m_SimStuff.GetSimPassRush(
-				reAttrs[2]+reAttrs[3], ntAttrs[2]+ntAttrs[3],
-				leAttrs[2]+leAttrs[3],
-				rolbAttrs[2]+rolbAttrs[3], rilbAttrs[2]+rilbAttrs[3], 
-				lilbAttrs[2]+lilbAttrs[3], lolbAttrs[2]+lolbAttrs[3] );
-
-			ReplacePlayer(team, re,   ReplaceSimAttr(re,   1, rushDef[0]));
-			ReplacePlayer(team, nt ,  ReplaceSimAttr(nt,   1, rushDef[1]));
-			ReplacePlayer(team, le ,  ReplaceSimAttr(le,   1, rushDef[2]));
-			ReplacePlayer(team, rolb, ReplaceSimAttr(rolb, 1, rushDef[3]));
-			ReplacePlayer(team, rilb, ReplaceSimAttr(rilb, 1, rushDef[4]));
-			ReplacePlayer(team, lilb, ReplaceSimAttr(lilb, 1, rushDef[5]));
-			ReplacePlayer(team, lolb, ReplaceSimAttr(lolb, 1, rushDef[6]));
-			ReplacePlayer(team, rcb,  ReplaceSimAttr(rcb,  1, 0));
-			ReplacePlayer(team, lcb,  ReplaceSimAttr(lcb,  1, 0));
-			ReplacePlayer(team, fs,   ReplaceSimAttr(fs,   1, 0));
-			ReplacePlayer(team, ss,   ReplaceSimAttr(ss,   1, rushDef[7]));
-
-		}
-
-		Regex m_SimRegex = null;
-		/// <summary>
-		/// replaces the sim attribute specified.
-		/// </summary>
-		/// <param name="line">Like: 
-		/// "LOLB, trev ALBERTS, Face=0x26, #51, 25, 31, 31, 31, 38, 31 ,[30, 20 ]"</param>
-		/// <param name="num">1 -> '30', 2->'20' above.</param>
-		/// <param name="newValue">the new value</param>
-		/// <returns>The input string with the specified replacement.</returns>
-		public string ReplaceSimAttr(string line, int num, int newValue)
-		{
-			string ret = line;
-			if( m_SimRegex == null)
-			{
-				m_SimRegex = new Regex("\\[\\s*([0-9]+)\\s*,\\s*([0-9]+)\\s*\\]");
-			}
-			Match m = m_SimRegex.Match(line);
-			if( m != null )
-			{
-				int index = m.Groups[num].Index;
-				int len   = m.Groups[num].ToString().Length;
-				ret = string.Format("{0}{1}{2}", 
-					line.Substring(0, index),
-					newValue,
-					line.Substring(index+len) );
-			}
-			return ret;
+            string stuff = "";
+            if (mRomVersion == TSBTool.TSBContentType.TSB1)
+            {
+                stuff = TSBTool.TecmonsterTSB1SimAutoUpdater.AutoUpdatePlayerSimData(this.m_Data);
+            }
+            else
+            {
+                stuff = TSBXSimAutoUpdater.AutoUpdatePlayerSimData(this.m_Data, mRomVersion);
+            }
+            m_Data = stuff;
 		}
 
 		private void ValueChanged(object sender, System.EventArgs e)
 		{
-			AutoUpdateRoster();
+            if (m_DoneInit)
+            {
+                ReplacePlayer();
+            }
 		}
 
         private void m_LastNameTextBox_Leave(object sender, EventArgs e)
@@ -1838,5 +1854,12 @@ Please verify that this player's attributes are correct.", oldPlayer);
             m_FirstNameTextBox.Text = m_FirstNameTextBox.Text.ToLower();
         }
 
+        private void mAboutButton_Click(object sender, EventArgs e)
+        {
+            StreamReader reader = new StreamReader(
+                this.GetType().Assembly.GetManifestResourceStream("TSBTool.TSB2_TSB3.SimData.txt"));
+            string content = reader.ReadToEnd();
+            TSBTool.RichTextDisplay.ShowText("Sim Info", content, SystemIcons.Question, true, false);
+        }
 	}
 }

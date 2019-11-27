@@ -22,7 +22,7 @@ namespace TSBTool
 		private System.Windows.Forms.MenuItem menuItem1;
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.Panel panel2;
-		private RichTextBox richTextBox1;
+		private RichTextBox mTextBox;
         private System.Windows.Forms.MenuItem mainAboutItem;
         private IContainer components;
 		private System.Windows.Forms.MenuItem loadTSBMenuItem;
@@ -32,7 +32,7 @@ namespace TSBTool
 
 		private string programExecName = null;
 		private string seasonGenOptionFile = null;
-		private ITecmoTool tool;
+        private ITecmoContent tool;
 		private System.Windows.Forms.MenuItem LoadDataMenuItem;
 		private System.Windows.Forms.MenuItem exitMenuItem;
 		private System.Windows.Forms.MenuItem aboutMenuItem;
@@ -81,7 +81,6 @@ namespace TSBTool
         private MenuItem mProwbowlMenuItem;
         private MenuItem mProBowlMenuItem;
         private MenuItem mScheduleGUIMenuItem;
-        private MenuItem mScheduleMenuItem;
         private MenuItem mHackStompMenuItem;
         private MenuItem mSetPatchMenuItem;
         private MenuItem debugDialogMenuItem;
@@ -89,6 +88,17 @@ namespace TSBTool
 		//filter="Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|All files (*.*)|*.*"
 		//private string nesFilter = "nes files (*.nes)|*.nes|SNES files (*.smc)|*.smc";
 		private string nesFilter = "TSB files (*.nes;*.smc)|*.nes;*.smc";
+        private MenuItem seasonMenuItem;
+        private MenuItem season1MenuItem;
+        private MenuItem season2MenuItem;
+        private MenuItem season3MenuItem;
+        private MenuItem allSeasonsMenuItem;
+        private MenuItem convertMenuItem;
+        private MenuItem convertToTSB2TextToolStripMenuItem;
+        private MenuItem convertToTSB1TextToolStripMenuItem;
+        private MenuItem tsb3ToTsb2Item;
+        private MenuItem tsb2ToTsb3Item;
+        private MenuItem aboutConvertingToolStripMenuItem;
 
 		private const string mReadMeFile = "TSBTool_README.txt";
 
@@ -100,9 +110,9 @@ namespace TSBTool
 			InitializeComponent();
 
 			//**** drag/drop stuff ******//
-			richTextBox1.EnableAutoDragDrop = true;
-			richTextBox1.DragEnter += new DragEventHandler(richTextBox1_DragOver);
-			richTextBox1.DragDrop += new DragEventHandler(richTextBox1_DragDrop);
+			mTextBox.EnableAutoDragDrop = true;
+			mTextBox.DragEnter += new DragEventHandler(richTextBox1_DragOver);
+			mTextBox.DragDrop += new DragEventHandler(richTextBox1_DragDrop);
 			//**************************//
 
 			if(romFileName != null && romFileName.Length > 0)
@@ -212,59 +222,34 @@ namespace TSBTool
                 string hack = item.Tag.ToString();
                 {
                     //Append hack
-                    if( !richTextBox1.Text.EndsWith("\n") )
-                        richTextBox1.AppendText("\n");
+                    if( !mTextBox.Text.EndsWith("\n") )
+                        mTextBox.AppendText("\n");
 
-                    richTextBox1.AppendText(hack);
+                    mTextBox.AppendText(hack);
                     if( !hack.EndsWith("\n"))
-                        richTextBox1.AppendText("\n");
+                        mTextBox.AppendText("\n");
                 }
             }
         }
 
-		// used in GetImage method
-		private static NumberForm form = null;
-
-		/// <summary>
-		/// Get an image.
-		/// </summary>
-		/// <param name="file"></param>
-		/// <returns></returns>
-		public static Image GetImage( string file )
-		{
-			Image ret = null;
-			try
-			{
-				if( form == null )
-					form = new NumberForm("");
-				System.IO.Stream s =  
-					form.GetType().Assembly.GetManifestResourceStream(file);
-				if( s != null )
-					ret = Image.FromStream(s);
-			}
-			catch(Exception e )
-			{
-				MessageBox.Show(e.Message);
-			}
-			return ret;
-		}
-
 		private void state1()
 		{
-			debugDialogMenuItem.Enabled = false;
-			viewContentsBbutton.Enabled=false;
-			viewTSBContentsMenuItem.Enabled=false;
-			applyButton.Enabled=false;
-			applyToRomMenuItem.Enabled=false;
+            seasonMenuItem.Enabled =
+			    debugDialogMenuItem.Enabled = 
+			    viewContentsBbutton.Enabled =
+			    viewTSBContentsMenuItem.Enabled =
+			    applyButton.Enabled =
+			    applyToRomMenuItem.Enabled = false;
 		}
 
 		private void state2()
 		{
-			debugDialogMenuItem.Enabled = true;
-			viewContentsBbutton.Enabled=true;
-			viewTSBContentsMenuItem.Enabled=true;
-			applyButton.Enabled=true;
-			applyToRomMenuItem.Enabled=true;
+            seasonMenuItem.Enabled =
+			    debugDialogMenuItem.Enabled = 
+			    viewContentsBbutton.Enabled =
+			    viewTSBContentsMenuItem.Enabled =
+			    applyButton.Enabled =
+			    applyToRomMenuItem.Enabled = true;
 		}
 
 		/// <summary>
@@ -300,6 +285,7 @@ namespace TSBTool
             this.exitMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem11 = new System.Windows.Forms.MenuItem();
             this.menuItem5 = new System.Windows.Forms.MenuItem();
+            this.mScheduleGUIMenuItem = new System.Windows.Forms.MenuItem();
             this.viewTSBContentsMenuItem = new System.Windows.Forms.MenuItem();
             this.showTeamStringsMenuItem = new System.Windows.Forms.MenuItem();
             this.mProBowlMenuItem = new System.Windows.Forms.MenuItem();
@@ -321,10 +307,19 @@ namespace TSBTool
             this.debugDialogMenuItem = new System.Windows.Forms.MenuItem();
             this.mHackStompMenuItem = new System.Windows.Forms.MenuItem();
             this.mSetPatchMenuItem = new System.Windows.Forms.MenuItem();
-            this.mScheduleMenuItem = new System.Windows.Forms.MenuItem();
-            this.mScheduleGUIMenuItem = new System.Windows.Forms.MenuItem();
+            this.seasonMenuItem = new System.Windows.Forms.MenuItem();
+            this.season1MenuItem = new System.Windows.Forms.MenuItem();
+            this.season2MenuItem = new System.Windows.Forms.MenuItem();
+            this.season3MenuItem = new System.Windows.Forms.MenuItem();
+            this.allSeasonsMenuItem = new System.Windows.Forms.MenuItem();
             this.mainAboutItem = new System.Windows.Forms.MenuItem();
             this.aboutMenuItem = new System.Windows.Forms.MenuItem();
+            this.convertMenuItem = new System.Windows.Forms.MenuItem();
+            this.convertToTSB2TextToolStripMenuItem = new System.Windows.Forms.MenuItem();
+            this.convertToTSB1TextToolStripMenuItem = new System.Windows.Forms.MenuItem();
+            this.tsb3ToTsb2Item = new System.Windows.Forms.MenuItem();
+            this.tsb2ToTsb3Item = new System.Windows.Forms.MenuItem();
+            this.aboutConvertingToolStripMenuItem = new System.Windows.Forms.MenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.statusBar1 = new System.Windows.Forms.StatusBar();
             this.saveDataButton = new System.Windows.Forms.Button();
@@ -333,7 +328,7 @@ namespace TSBTool
             this.loadTSBButton = new System.Windows.Forms.Button();
             this.applyButton = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.mTextBox = new System.Windows.Forms.RichTextBox();
             this.mRichTextBoxontextMenu = new System.Windows.Forms.ContextMenu();
             this.mCutMenuItem = new System.Windows.Forms.MenuItem();
             this.mCopyMenuItem = new System.Windows.Forms.MenuItem();
@@ -362,7 +357,8 @@ namespace TSBTool
             this.menuItem11,
             this.menuItem2,
             this.hacksMainMenuItem,
-            this.mScheduleMenuItem,
+            this.seasonMenuItem,
+            this.convertMenuItem,
             this.mainAboutItem});
             // 
             // menuItem1
@@ -411,6 +407,7 @@ namespace TSBTool
             this.menuItem11.Index = 1;
             this.menuItem11.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem5,
+            this.mScheduleGUIMenuItem,
             this.viewTSBContentsMenuItem,
             this.showTeamStringsMenuItem,
             this.mProBowlMenuItem,
@@ -432,86 +429,92 @@ namespace TSBTool
             this.menuItem5.Text = "Number &Guys Tool";
             this.menuItem5.Click += new System.EventHandler(this.menuItem5_Click);
             // 
+            // mScheduleGUIMenuItem
+            // 
+            this.mScheduleGUIMenuItem.Index = 1;
+            this.mScheduleGUIMenuItem.Text = "Schedule &GUI";
+            this.mScheduleGUIMenuItem.Click += new System.EventHandler(this.mScheduleGUIMenuItem_Click);
+            // 
             // viewTSBContentsMenuItem
             // 
-            this.viewTSBContentsMenuItem.Index = 1;
+            this.viewTSBContentsMenuItem.Index = 2;
             this.viewTSBContentsMenuItem.Text = "View TSB contents";
             this.viewTSBContentsMenuItem.Click += new System.EventHandler(this.viewTSBContentsMenuItem_Click);
             // 
             // showTeamStringsMenuItem
             // 
-            this.showTeamStringsMenuItem.Index = 2;
+            this.showTeamStringsMenuItem.Index = 3;
             this.showTeamStringsMenuItem.Text = "Show Team Abb, City, Name";
             this.showTeamStringsMenuItem.Click += new System.EventHandler(this.showTeamStringsMenuItem_Click);
             // 
             // mProBowlMenuItem
             // 
             this.mProBowlMenuItem.Checked = true;
-            this.mProBowlMenuItem.Index = 3;
+            this.mProBowlMenuItem.Index = 4;
             this.mProBowlMenuItem.Text = "Show ProBowl Roster";
             this.mProBowlMenuItem.Click += new System.EventHandler(this.mProBowlMenuItem_Click);
             // 
             // testScheduleMenuItem
             // 
-            this.testScheduleMenuItem.Index = 4;
+            this.testScheduleMenuItem.Index = 5;
             this.testScheduleMenuItem.Text = "Show Schedule Only";
             this.testScheduleMenuItem.Click += new System.EventHandler(this.testScheduleMenuItem_Click);
             // 
             // offensivePrefMenuItem
             // 
             this.offensivePrefMenuItem.Checked = true;
-            this.offensivePrefMenuItem.Index = 5;
+            this.offensivePrefMenuItem.Index = 6;
             this.offensivePrefMenuItem.Text = "Show Offensive Team &Preference";
             this.offensivePrefMenuItem.Click += new System.EventHandler(this.offensivePrefMenuItem_Click);
             // 
             // mOffensiveFormationsMenuItem
             // 
             this.mOffensiveFormationsMenuItem.Checked = true;
-            this.mOffensiveFormationsMenuItem.Index = 6;
+            this.mOffensiveFormationsMenuItem.Index = 7;
             this.mOffensiveFormationsMenuItem.Text = "Show Offensive Formaions";
             this.mOffensiveFormationsMenuItem.Click += new System.EventHandler(this.mOffensiveFormationsMenuItem_Click);
             // 
             // mPlaybookMenuItem
             // 
             this.mPlaybookMenuItem.Checked = true;
-            this.mPlaybookMenuItem.Index = 7;
+            this.mPlaybookMenuItem.Index = 8;
             this.mPlaybookMenuItem.Text = "Show Playbooks";
             this.mPlaybookMenuItem.Click += new System.EventHandler(this.mPlaybookMenuItem_Click);
             // 
             // mColorsMenuItem
             // 
-            this.mColorsMenuItem.Index = 8;
+            this.mColorsMenuItem.Index = 9;
             this.mColorsMenuItem.Text = "Show &Colors";
             this.mColorsMenuItem.Click += new System.EventHandler(this.mColorsMenuItem_Click);
             // 
             // eolMenuItem
             // 
             this.eolMenuItem.Checked = true;
-            this.eolMenuItem.Index = 9;
+            this.eolMenuItem.Index = 10;
             this.eolMenuItem.Text = "EOL= Windows Style (CR LF)";
             this.eolMenuItem.Click += new System.EventHandler(this.eolMenuItem_Click);
             // 
             // mEditPlayersMenuItem1
             // 
-            this.mEditPlayersMenuItem1.Index = 10;
+            this.mEditPlayersMenuItem1.Index = 11;
             this.mEditPlayersMenuItem1.Text = "&Edit Players";
             this.mEditPlayersMenuItem1.Click += new System.EventHandler(this.EditPlayers_Click);
             // 
             // mProwbowlMenuItem
             // 
-            this.mProwbowlMenuItem.Index = 11;
+            this.mProwbowlMenuItem.Index = 12;
             this.mProwbowlMenuItem.Text = "Edit &Pro Bowl";
             this.mProwbowlMenuItem.Click += new System.EventHandler(this.mProwbowlMenuItem_Click);
             // 
             // mEditTeamsMenuItem2
             // 
-            this.mEditTeamsMenuItem2.Index = 12;
+            this.mEditTeamsMenuItem2.Index = 13;
             this.mEditTeamsMenuItem2.Text = "Edit &Teams";
             this.mEditTeamsMenuItem2.Click += new System.EventHandler(this.mEditTeamsMenuItem_Click);
             // 
             // mDeleteCommasMenuItem
             // 
-            this.mDeleteCommasMenuItem.Index = 13;
+            this.mDeleteCommasMenuItem.Index = 14;
             this.mDeleteCommasMenuItem.Text = "&Delete Trailing Commas";
             this.mDeleteCommasMenuItem.Click += new System.EventHandler(this.mDeleteCommasMenuItem_Click);
             // 
@@ -569,22 +572,44 @@ namespace TSBTool
             this.mSetPatchMenuItem.Text = "Create \'SET\' patch";
             this.mSetPatchMenuItem.Click += new System.EventHandler(this.mSetPatchMenuItem_Click);
             // 
-            // mScheduleMenuItem
+            // seasonMenuItem
             // 
-            this.mScheduleMenuItem.Index = 4;
-            this.mScheduleMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.mScheduleGUIMenuItem});
-            this.mScheduleMenuItem.Text = "&Schedule";
+            this.seasonMenuItem.Index = 4;
+            this.seasonMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.season1MenuItem,
+            this.season2MenuItem,
+            this.season3MenuItem,
+            this.allSeasonsMenuItem});
+            this.seasonMenuItem.Text = "Season";
             // 
-            // mScheduleGUIMenuItem
+            // season1MenuItem
             // 
-            this.mScheduleGUIMenuItem.Index = 0;
-            this.mScheduleGUIMenuItem.Text = "Schedule &GUI";
-            this.mScheduleGUIMenuItem.Click += new System.EventHandler(this.mScheduleGUIMenuItem_Click);
+            this.season1MenuItem.Checked = true;
+            this.season1MenuItem.Index = 0;
+            this.season1MenuItem.Text = "Season 1";
+            this.season1MenuItem.Click += new System.EventHandler(this.seasonItemClicked);
+            // 
+            // season2MenuItem
+            // 
+            this.season2MenuItem.Index = 1;
+            this.season2MenuItem.Text = "Season 2";
+            this.season2MenuItem.Click += new System.EventHandler(this.seasonItemClicked);
+            // 
+            // season3MenuItem
+            // 
+            this.season3MenuItem.Index = 2;
+            this.season3MenuItem.Text = "Season 3";
+            this.season3MenuItem.Click += new System.EventHandler(this.seasonItemClicked);
+            // 
+            // allSeasonsMenuItem
+            // 
+            this.allSeasonsMenuItem.Index = 3;
+            this.allSeasonsMenuItem.Text = "All Seasons";
+            this.allSeasonsMenuItem.Click += new System.EventHandler(this.seasonItemClicked);
             // 
             // mainAboutItem
             // 
-            this.mainAboutItem.Index = 5;
+            this.mainAboutItem.Index = 6;
             this.mainAboutItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.aboutMenuItem});
             this.mainAboutItem.Text = "A&bout";
@@ -595,6 +620,47 @@ namespace TSBTool
             this.aboutMenuItem.Text = "About &TSBTool";
             this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
             // 
+            // convertMenuItem
+            // 
+            this.convertMenuItem.Index = 5;
+            this.convertMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.convertToTSB2TextToolStripMenuItem,
+            this.convertToTSB1TextToolStripMenuItem,
+            this.tsb3ToTsb2Item,
+            this.tsb2ToTsb3Item,
+            this.aboutConvertingToolStripMenuItem});
+            this.convertMenuItem.Text = "Convert";
+            // 
+            // convertToTSB2TextToolStripMenuItem
+            // 
+            this.convertToTSB2TextToolStripMenuItem.Index = 0;
+            this.convertToTSB2TextToolStripMenuItem.Text = "TSB1 --> TSB2";
+            this.convertToTSB2TextToolStripMenuItem.Click += new System.EventHandler(this.tsb1ToTsb2Item_Click);
+            // 
+            // convertToTSB1TextToolStripMenuItem
+            // 
+            this.convertToTSB1TextToolStripMenuItem.Index = 1;
+            this.convertToTSB1TextToolStripMenuItem.Text = "TSB2 --> TSB1";
+            this.convertToTSB1TextToolStripMenuItem.Click += new System.EventHandler(this.tsb2ToTsb1tem_Click);
+            // 
+            // tsb3ToTsb2Item
+            // 
+            this.tsb3ToTsb2Item.Index = 2;
+            this.tsb3ToTsb2Item.Text = "TSB3 --> TSB2";
+            this.tsb3ToTsb2Item.Click += new System.EventHandler(this.tsb3ToTsb2Item_Click);
+            // 
+            // tsb2ToTsb3Item
+            // 
+            this.tsb2ToTsb3Item.Index = 3;
+            this.tsb2ToTsb3Item.Text = "TSB2 --> TSB3";
+            this.tsb2ToTsb3Item.Click += new System.EventHandler(this.tsb2ToTsb3Item_Click);
+            // 
+            // aboutConvertingToolStripMenuItem
+            // 
+            this.aboutConvertingToolStripMenuItem.Index = 4;
+            this.aboutConvertingToolStripMenuItem.Text = "About Converting";
+            this.aboutConvertingToolStripMenuItem.Click += new System.EventHandler(this.aboutConvertingToolStripMenuItem_Click);
+            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.statusBar1);
@@ -604,16 +670,16 @@ namespace TSBTool
             this.panel1.Controls.Add(this.loadTSBButton);
             this.panel1.Controls.Add(this.applyButton);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 486);
+            this.panel1.Location = new System.Drawing.Point(0, 549);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(680, 72);
+            this.panel1.Size = new System.Drawing.Size(677, 69);
             this.panel1.TabIndex = 0;
             // 
             // statusBar1
             // 
-            this.statusBar1.Location = new System.Drawing.Point(0, 50);
+            this.statusBar1.Location = new System.Drawing.Point(0, 47);
             this.statusBar1.Name = "statusBar1";
-            this.statusBar1.Size = new System.Drawing.Size(680, 22);
+            this.statusBar1.Size = new System.Drawing.Size(677, 22);
             this.statusBar1.TabIndex = 5;
             // 
             // saveDataButton
@@ -652,7 +718,7 @@ namespace TSBTool
             this.loadTSBButton.Name = "loadTSBButton";
             this.loadTSBButton.Size = new System.Drawing.Size(128, 32);
             this.loadTSBButton.TabIndex = 0;
-            this.loadTSBButton.Text = "&Load TSB Rom       (nes or snes TSB1)";
+            this.loadTSBButton.Text = "&Load TSB Rom";
             this.loadTSBButton.Click += new System.EventHandler(this.loadTSBMenuItem_Click);
             this.loadTSBButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
             // 
@@ -668,27 +734,28 @@ namespace TSBTool
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.richTextBox1);
+            this.panel2.Controls.Add(this.mTextBox);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(680, 486);
+            this.panel2.Size = new System.Drawing.Size(677, 549);
             this.panel2.TabIndex = 1;
             // 
-            // richTextBox1
+            // mTextBox
             // 
-            this.richTextBox1.AcceptsTab = true;
-            this.richTextBox1.ContextMenu = this.mRichTextBoxontextMenu;
-            this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBox1.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.richTextBox1.Location = new System.Drawing.Point(0, 0);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.richTextBox1.Size = new System.Drawing.Size(680, 486);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
-            this.richTextBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBox1_KeyDown);
-            this.richTextBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.richTextBox1_MouseDown);
+            this.mTextBox.AcceptsTab = true;
+            this.mTextBox.ContextMenu = this.mRichTextBoxontextMenu;
+            this.mTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mTextBox.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.mTextBox.Location = new System.Drawing.Point(0, 0);
+            this.mTextBox.Name = "mTextBox";
+            this.mTextBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.mTextBox.Size = new System.Drawing.Size(677, 549);
+            this.mTextBox.TabIndex = 0;
+            this.mTextBox.Text = "";
+            this.mTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBox1_KeyDown);
+            this.mTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.mTextBox_LinkClicked);
+            this.mTextBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.richTextBox1_MouseDown);
             // 
             // mRichTextBoxontextMenu
             // 
@@ -794,7 +861,7 @@ namespace TSBTool
             // mChangeFontItem
             // 
             this.mChangeFontItem.Index = 14;
-            this.mChangeFontItem.Text = "Change &Font (and resize form)";
+            this.mChangeFontItem.Text = "Change &Font";
             this.mChangeFontItem.Click += new System.EventHandler(this.mChangeFontItem_Click);
             // 
             // mClearMenuItem
@@ -806,7 +873,7 @@ namespace TSBTool
             // MainGUI
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(680, 558);
+            this.ClientSize = new System.Drawing.Size(677, 618);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -824,20 +891,34 @@ namespace TSBTool
 
         void mClearMenuItem_Click(object sender, EventArgs e)
         {
-            this.richTextBox1.Clear();
+            this.mTextBox.Clear();
         }
 		#endregion
 
 		//loadTSBMenuItem
 		private void loadTSBMenuItem_Click(object sender, System.EventArgs e)
 		{
-			string filename = GetFileName(nesFilter, false);
+			string filename = StaticUtils.GetFileName(nesFilter, false);
             if( filename != null)
 			    LoadROM(filename);
 		}
 
+        private int GetSeason()
+        {
+            int retVal = 0;
+            if (season1MenuItem.Checked)
+                retVal = 1;
+            else if (season2MenuItem.Checked)
+                retVal = 2;
+            else if (season3MenuItem.Checked)
+                retVal = 3;
+
+            return retVal;
+        }
+
 		private void LoadROM(string filename)
 		{
+            //TODO: update this.
 			tool = TecmoToolFactory.GetToolForRom(filename);
 			if (filename != null && tool != null)
 			{
@@ -845,6 +926,9 @@ namespace TSBTool
 				{
 					state2();
 					UpdateTitle(filename);
+                    seasonMenuItem.Enabled = tool.RomVersion.ToString().Contains("TSB2");
+                    allSeasonsMenuItem.Checked = season1MenuItem.Checked = season3MenuItem.Checked = false;
+                    season3MenuItem.Checked = true;// start with season 3
 				}
 				else
 					state1();
@@ -867,52 +951,74 @@ namespace TSBTool
 			}
 		}
 
+        private TSBContentType GetType(ROM_TYPE t)
+        {
+            switch (t)
+            {
+                case ROM_TYPE.SNES_TSB2:
+                    return TSBContentType.TSB2;
+                case ROM_TYPE.SNES_TSB3:
+                    return TSBContentType.TSB3;
+                default:
+                    return TSBContentType.TSB1;
+            }
+        }
+
 		private void ApplyToRom(string saveToFilename)
 		{
-			string[] lines = richTextBox1.Lines;
-			InputParser parser = new InputParser(tool);
-			parser.ProcessLines(lines);
-			tool.SaveRom(saveToFilename);
-			UpdateTitle(saveToFilename);
-		}
+            TSBContentType text_type = StaticUtils.GetContentType(mTextBox.Text);
+            TSBContentType rom_type = GetType(tool.RomVersion);
+            string textToApply = mTextBox.Text;
 
-		/// <summary>
-		/// Returns filename on 'OK' null on 'cancel'.
-		/// </summary>
-		/// <param name="filter"></param>
-		/// <returns></returns>
-		private string GetFileName(string filter, bool saveFileDlg)
-		{
-			string ret=null;
-			FileDialog dlg;
-			if( saveFileDlg )
-			{
-				dlg = new SaveFileDialog();
-			}
-			else
-			{
-				dlg = new OpenFileDialog();
-			}
-			dlg.CheckFileExists = false;
-			dlg.RestoreDirectory = true;
-			//dlg.Filter="nes files (*.nes)|*.nes";
-			if(filter != null && filter.Length > 0)
-				dlg.Filter = filter;
-			if(dlg.ShowDialog() == DialogResult.OK) 
-			{
-				ret = dlg.FileName;
-			}
-			return ret;
+            if (text_type != rom_type)
+            {
+                if (MessageBox.Show(String.Format(
+@"The content type shows as '{0}'. The ROM loaded is of type '{1}'
+Do you wish to try automatic conversion (this will modify the text in the editor)?",
+    text_type, rom_type), "Warning",
+    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    textToApply = TSBTool2.TecmoConverter.Convert(text_type, rom_type, textToApply);
+                    SetText(textToApply);
+                }
+                else
+                {
+                    return;
+                }
+            }
+			tool.ProcessText(textToApply);
+            tool.SaveRom(saveToFilename);
+			UpdateTitle(saveToFilename);
 		}
 
 		private void SetText( string text )
 		{
-			this.richTextBox1.Text = text;
-			richTextBox1.SelectAll();
-			richTextBox1.SelectionColor = Color.Black;
-			richTextBox1.SelectionLength = 0;
-			richTextBox1.SelectionStart = 0;
+			this.mTextBox.Text = text;
+			mTextBox.SelectAll();
+			mTextBox.SelectionColor = Color.Black;
+			mTextBox.SelectionLength = 0;
+			mTextBox.SelectionStart = 0;
 		}
+
+        private void seasonItemClicked(object sender, EventArgs e)
+        {
+            if (sender == this.season1MenuItem)
+            {
+                allSeasonsMenuItem.Checked = season2MenuItem.Checked = season3MenuItem.Checked = false;
+            }
+            else if (sender == this.season2MenuItem)
+            {
+                allSeasonsMenuItem.Checked = season1MenuItem.Checked = season3MenuItem.Checked = false;
+            }
+            else if (sender == this.season3MenuItem)
+            {
+                allSeasonsMenuItem.Checked = season2MenuItem.Checked = season1MenuItem.Checked = false;
+            }
+            else if (sender == this.allSeasonsMenuItem)
+            {
+                season3MenuItem.Checked = season2MenuItem.Checked = season1MenuItem.Checked = false;
+            }
+        }
 
 		private void LoadDataFile(string fileName)
 		{
@@ -934,13 +1040,13 @@ namespace TSBTool
 
 		private void LoadDataMenuItem_Click(object sender, System.EventArgs e)
 		{
-			string fileName = GetFileName(null,false);
+			string fileName = StaticUtils.GetFileName(null,false);
 			LoadDataFile(fileName);
 		}
 
 		private void applyButton_Click(object sender, System.EventArgs e)
 		{
-			string filename = GetFileName(nesFilter,true);
+			string filename = StaticUtils.GetFileName(nesFilter,true);
 			if(filename != null)
 				ApplyToRom(filename);
 		}
@@ -958,27 +1064,47 @@ namespace TSBTool
 			TecmoTool.ShowTeamFormation = mOffensiveFormationsMenuItem.Checked;
 			TecmoTool.ShowTeamStrings = showTeamStringsMenuItem.Checked;
 			TecmoTool.ShowProBowlRosters = mProBowlMenuItem.Checked;
-
-			string msg = 
+            int season = GetSeason();
+            StringBuilder sb = new StringBuilder();
+            string msg = 
 					"#  -> Double click on a team or player to bring up the All new Player/Team editing GUI.\n"+
 				    "#  -> Select (Show Colors) menu Item (under view Menu) to enable listing of team colors.\n"+
 				    "#  -> Double Click on a 'COLORS' line to edit team COLORS.\n" +
                     "#  -> Double click on a 'TEAM' to bring up a team editing GUI with the selected team.\n" +
                     "#  -> Double click on a 'NFC' or 'AFC' line to bring up the Pro Bowl editor GUI.\n" +
                     "#  -> Double Click on a 'WEEK x' or a game line to edit schedule\n";
-            string text = msg
-                +
-                tool.GetKey() + tool.GetAll();
-			if (TecmoTool.ShowProBowlRosters)
-                text += tool.GetProBowlPlayers();
+            sb.Append(msg);
+            sb.Append(tool.GetKey());
+            if (season == 0) // all seasons
+            {
+                sb.Append(tool.GetAll(1));
+                if (TecmoTool.ShowProBowlRosters)
+                    sb.Append(tool.GetProBowlPlayers(1));
+                sb.Append(tool.GetSchedule(1));
+                
+                sb.Append(tool.GetAll(2));
+                if (TecmoTool.ShowProBowlRosters)
+                    sb.Append(tool.GetProBowlPlayers(2));
+                sb.Append(tool.GetSchedule(2));
 
-            text += tool.GetSchedule();
-			SetText(text);
-			richTextBox1.SelectionStart = 0;
-			richTextBox1.SelectionLength = msg.Length;
-			richTextBox1.SelectionColor = Color.Magenta;
-			richTextBox1.SelectionStart = 0;
-			richTextBox1.SelectionLength = 0;
+                sb.Append(tool.GetAll(3));
+                if (TecmoTool.ShowProBowlRosters)
+                    sb.Append(tool.GetProBowlPlayers(3));
+                sb.Append(tool.GetSchedule(3));
+            }
+            else
+            {
+                sb.Append(tool.GetAll(season));
+                if (TecmoTool.ShowProBowlRosters)
+                    sb.Append(tool.GetProBowlPlayers(season));
+                sb.Append(tool.GetSchedule(season));
+            }
+			SetText(sb.ToString());
+			mTextBox.SelectionStart = 0;
+			mTextBox.SelectionLength = msg.Length;
+			mTextBox.SelectionColor = Color.Magenta;
+			mTextBox.SelectionStart = 0;
+			mTextBox.SelectionLength = 0;
             StaticUtils.ShowErrors();
 		}
 		/// <summary>
@@ -1013,13 +1139,13 @@ namespace TSBTool
 
 		private void saveDataButton_Click(object sender, System.EventArgs e)
 		{
-			string filename = GetFileName(null,true);
+			string filename = StaticUtils.GetFileName(null,true);
 			if(filename != null)
 			{
 				try
 				{
 					StreamWriter sw = new StreamWriter(filename);
-					String text = richTextBox1.Text;
+					String text = mTextBox.Text;
 					if( eolMenuItem.Checked )
 					{ // if we're on windows
 						text = text.Replace("\r\n", "\n");
@@ -1099,16 +1225,16 @@ This Program is not endorsed or related to the Tecmo video game company.
 			{
 				Regex r;
 				r = new Regex(searchString,RegexOptions.IgnoreCase);
-				Match m = r.Match(richTextBox1.Text, richTextBox1.SelectionStart);
+				Match m = r.Match(mTextBox.Text, mTextBox.SelectionStart);
 
 				if(m.Length == 0)
 				{ // continue at the top if not found
-					m = r.Match(richTextBox1.Text);
+					m = r.Match(mTextBox.Text);
 					wrapped = true;
 				}
 				if(m.Length > 0)
 				{
-					richTextBox1.SelectionStart = m.Index+m.Length;
+					mTextBox.SelectionStart = m.Index+m.Length;
 					ret=true;
 					if(!wrapped)
 						message = "Found";
@@ -1128,7 +1254,7 @@ This Program is not endorsed or related to the Tecmo video game company.
 			if( searchString!= null && !searchString.Equals("") )
 			{
 				Regex r = new Regex(searchString,RegexOptions.IgnoreCase);
-				MatchCollection mc = r.Matches(richTextBox1.Text);
+				MatchCollection mc = r.Matches(mTextBox.Text);
 				Match m = null;
 				if(mc.Count > 0)
 				{
@@ -1140,11 +1266,11 @@ This Program is not endorsed or related to the Tecmo video game company.
 					goto end;
 				}
 				int i =0;
-				while(mc[i].Index < richTextBox1.SelectionStart-mc[i].Length)
+				while(mc[i].Index < mTextBox.SelectionStart-mc[i].Length)
 					m=mc[i++];
 				if(m != null && m.Length != 0)
 				{
-					richTextBox1.SelectionStart = m.Index+m.Length;
+					mTextBox.SelectionStart = m.Index+m.Length;
 					message= "Found";
 					ret = true;
 				}
@@ -1175,7 +1301,7 @@ This Program is not endorsed or related to the Tecmo video game company.
 				}
 				else if( e.KeyCode == Keys.V )
 				{
-					richTextBox1.Paste(DataFormats.GetFormat(DataFormats.Text));
+					mTextBox.Paste(DataFormats.GetFormat(DataFormats.Text));
 					e.Handled = true;
 				}
 			}
@@ -1299,7 +1425,7 @@ This Program is not endorsed or related to the Tecmo video game company.
 
 		private void DeleteTrailingCommas()
 		{
-			string txt = InputParser.DeleteTrailingCommas( richTextBox1.Text );
+			string txt = InputParser.DeleteTrailingCommas( mTextBox.Text );
 			SetText( txt);
 		}
 		
@@ -1307,7 +1433,7 @@ This Program is not endorsed or related to the Tecmo video game company.
 		{
 			string team = "bills";
 			Regex r = new Regex("TEAM\\s*=\\s*([a-zA-Z49]+)");
-			MatchCollection mc = r.Matches(richTextBox1.Text);
+			MatchCollection mc = r.Matches(mTextBox.Text);
 			Match theMatch = null;
 
 			foreach(Match m in mc)
@@ -1326,49 +1452,71 @@ This Program is not endorsed or related to the Tecmo video game company.
 
 		private void ModifyTeams()
 		{
-			string team = GetTeam(richTextBox1.SelectionStart);
+			string team = GetTeam(mTextBox.SelectionStart);
 			ModifyTeams(team);
 		}
 
 		private void ModifyTeams(string team)
 		{
-			ModifyTeamForm form = new ModifyTeamForm();
-			form.Data = richTextBox1.Text;
-			form.CurrentTeam = team;
+            TSBContentType type = StaticUtils.GetContentType(mTextBox.Text);
+            if (type == TSBContentType.TSB1)
+            {
+                ModifyTeamForm form = new ModifyTeamForm();
+                form.Data = mTextBox.Text;
+                form.CurrentTeam = team;
 
-			if( form.ShowDialog(this) == DialogResult.OK )
-			{
-				int index = richTextBox1.SelectionStart;
-				SetText( form.Data);
-				if( richTextBox1.Text.Length > index)
-				{
-					richTextBox1.SelectionStart = index;
-					richTextBox1.ScrollToCaret();
-				}
-			}
-			form.Dispose();
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    int index = mTextBox.SelectionStart;
+                    SetText(form.Data);
+                    if (mTextBox.Text.Length > index)
+                    {
+                        mTextBox.SelectionStart = index;
+                        mTextBox.ScrollToCaret();
+                    }
+                }
+                form.Dispose();
+            }
+            else if (type == TSBContentType.TSB2 || type == TSBContentType.TSB3)
+            {
+                TSBTool2_UI.TeamForm form = new TSBTool2_UI.TeamForm();
+                form.Data = mTextBox.Text;
+                form.CurrentTeam = team;
+
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    int index = mTextBox.SelectionStart;
+                    SetText(form.Data);
+                    if (mTextBox.Text.Length > index)
+                    {
+                        mTextBox.SelectionStart = index;
+                        mTextBox.ScrollToCaret();
+                    }
+                }
+                form.Dispose();
+            }
 		}
 
 		private void ModifyColors()
 		{
-			string team = GetTeam(richTextBox1.SelectionStart);
+			string team = GetTeam(mTextBox.SelectionStart);
 			ModifyColors(team);
 		}
 
 		private void ModifyColors(string team)
 		{
 			UniformEditForm form = new UniformEditForm();
-			form.Data = richTextBox1.Text;
+			form.Data = mTextBox.Text;
 			form.CurrentTeam = team;
 
 			if( form.ShowDialog(this) == DialogResult.OK )
 			{
-				int index = richTextBox1.SelectionStart;
+				int index = mTextBox.SelectionStart;
 				SetText( form.Data);
-				if( richTextBox1.Text.Length > index)
+				if( mTextBox.Text.Length > index)
 				{
-					richTextBox1.SelectionStart = index;
-					richTextBox1.ScrollToCaret();
+					mTextBox.SelectionStart = index;
+					mTextBox.ScrollToCaret();
 				}
 			}
 			form.Dispose();
@@ -1376,22 +1524,44 @@ This Program is not endorsed or related to the Tecmo video game company.
 
 		private void ModifyPlayers(string team, string position)
 		{
-			AttributeForm form   = new AttributeForm();
-			form.Data            = richTextBox1.Text;
-			form.CurrentTeam     = team;
-			form.CurrentPosition = position;
-			form.AutoUpdatePlayersUI = true;
+            TSBContentType type = StaticUtils.GetContentType(mTextBox.Text);
+            if (type == TSBContentType.TSB2 || type == TSBContentType.TSB3)
+            {
+                TSBTool2.ModifyPlayerForm form = new TSBTool2.ModifyPlayerForm();
+                form.RomVersion = type;
+                
+                form.Data = mTextBox.Text;
+                form.CurrentTeam = team;
+                form.CurrentPosition = position;
 
-			if( form.ShowDialog(this) == DialogResult.OK )
-			{
-				//int spot = VScrollPos;
-				int spot2 = richTextBox1.SelectionStart;
-				SetText( form.Data );
-				if( richTextBox1.Text.Length > spot2 )
-				{
-					richTextBox1.SelectionStart = spot2;
-				}
-			}
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    int spot2 = mTextBox.SelectionStart;
+                    SetText(form.Data);
+                    if (mTextBox.Text.Length > spot2)
+                    {
+                        mTextBox.SelectionStart = spot2;
+                    }
+                }
+            }
+            else if( type == TSBContentType.TSB1)
+            {
+                AttributeForm form = new AttributeForm();
+                form.Data = mTextBox.Text;
+                form.CurrentTeam = team;
+                form.CurrentPosition = position;
+                form.AutoUpdatePlayersUI = true;
+
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    int spot2 = mTextBox.SelectionStart;
+                    SetText(form.Data);
+                    if (mTextBox.Text.Length > spot2)
+                    {
+                        mTextBox.SelectionStart = spot2;
+                    }
+                }
+            }
 		}
 
 		private void MainGUI_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -1408,7 +1578,7 @@ This Program is not endorsed or related to the Tecmo video game company.
 		{
 			if( tool.OutputRom != null )
 			{
-				string sch = tool.GetSchedule();
+				string sch = tool.GetSchedule(GetSeason());
 				SetText( sch );
 			}
 			else
@@ -1456,15 +1626,15 @@ This Program is not endorsed or related to the Tecmo video game company.
 			int textLength = 0;
 			bool splice = false;
 
-			if( richTextBox1.SelectionLength > 0 )
+			if( mTextBox.SelectionLength > 0 )
 			{
-				text = richTextBox1.SelectedText;
-				textStart = richTextBox1.SelectionStart;
-				textLength = richTextBox1.SelectionLength;
+				text = mTextBox.SelectedText;
+				textStart = mTextBox.SelectionStart;
+				textLength = mTextBox.SelectionLength;
 				splice = true;
 			}
-			else if( richTextBox1.Text.Length > 0)
-				text = richTextBox1.Text;
+			else if( mTextBox.Text.Length > 0)
+				text = mTextBox.Text;
 
 			NumberForm nf = new NumberForm(text);
 			
@@ -1475,12 +1645,12 @@ This Program is not endorsed or related to the Tecmo video game company.
 				{
 					if( splice )
 					{
-						if( text2.EndsWith("\n") && richTextBox1.Text[textStart] == '\n' )
+						if( text2.EndsWith("\n") && mTextBox.Text[textStart] == '\n' )
 							text2 = text2.Substring(0, text2.Length -1 );
 
-						string tmp = richTextBox1.Text.Substring(0, textStart);
+						string tmp = mTextBox.Text.Substring(0, textStart);
 						tmp += text2;
-						tmp += richTextBox1.Text.Substring(textStart + textLength );
+						tmp += mTextBox.Text.Substring(textStart + textLength );
 						SetText( tmp );
 					}
 					else
@@ -1492,33 +1662,33 @@ This Program is not endorsed or related to the Tecmo video game company.
 
 		private void EditPlayer()
 		{
-			int pos       = richTextBox1.SelectionStart;
+			int pos       = mTextBox.SelectionStart;
 			int lineStart = 0;
 			int posLen    = 0;
 			string position = "QB1";
 			string team   = "bills";
 
-			if( pos > 0 && pos < richTextBox1.Text.Length )
+			if( pos > 0 && pos < mTextBox.Text.Length )
 			{
 				int i =0;
 				for(i = pos; i > 0; i-- )
 				{
-					if(richTextBox1.Text[i] == '\n')
+					if(mTextBox.Text[i] == '\n')
 					{
 						lineStart = i+1;
 						break;
 					}
 				}
 				i = lineStart;
-				char current =richTextBox1.Text[i];
-				while( i < richTextBox1.Text.Length && current != ' ' && 
+				char current =mTextBox.Text[i];
+				while( i < mTextBox.Text.Length && current != ' ' && 
 					current != ',' && current != '\n')
 				{
 					posLen++;
 					i++;
-					current = richTextBox1.Text[i];
+					current = mTextBox.Text[i];
 				}
-				position = richTextBox1.Text.Substring(lineStart, posLen);
+				position = mTextBox.Text.Substring(lineStart, posLen);
 
 				team = GetTeam(pos);
 				ModifyPlayers(team, position);
@@ -1553,17 +1723,17 @@ This Program is not endorsed or related to the Tecmo video game company.
 
 		private void mCutMenuItem_Click(object sender, System.EventArgs e)
 		{
-			richTextBox1.Cut();
+			mTextBox.Cut();
 		}
 
 		private void mCopyMenuItem_Click(object sender, System.EventArgs e)
 		{
-			richTextBox1.Copy();
+			mTextBox.Copy();
 		}
 
 		private void mPasteMenuItem_Click(object sender, System.EventArgs e)
 		{
-			 richTextBox1.Paste(DataFormats.GetFormat(DataFormats.Text));
+			 mTextBox.Paste(DataFormats.GetFormat(DataFormats.Text));
 			//richTextBox1.Paste();
 		}
 
@@ -1574,7 +1744,7 @@ This Program is not endorsed or related to the Tecmo video game company.
 
 		private void mSelectAllMenuItem_Click(object sender, System.EventArgs e)
 		{
-			richTextBox1.SelectAll();
+			mTextBox.SelectAll();
 		}
 
 		private void mEditTeamsMenuItem_Click(object sender, System.EventArgs e)
@@ -1584,7 +1754,7 @@ This Program is not endorsed or related to the Tecmo video game company.
 
 		private void DoubleClicked()
 		{
-			string line =  GetLine (richTextBox1.SelectionStart);
+			string line =  GetLine (mTextBox.SelectionStart);
 			if( line == null )
 				return;
 			if( line.IndexOf("TEAM") > -1 || line.IndexOf("PLAYBOOK") > -1 )
@@ -1617,9 +1787,9 @@ This Program is not endorsed or related to the Tecmo video game company.
 			int length = le - ls+1;
 			if( length > -1 )
 			{
-				richTextBox1.SelectionStart = ls;
-				richTextBox1.SelectionLength = length;
-				richTextBox1.Cut();
+				mTextBox.SelectionStart = ls;
+				mTextBox.SelectionLength = length;
+				mTextBox.Cut();
 			}
 		}
 
@@ -1631,31 +1801,31 @@ This Program is not endorsed or related to the Tecmo video game company.
 		private string GetLine(int textPosition)
 		{
 			string ret = null;
-			if( textPosition < richTextBox1.Text.Length )
+			if( textPosition < mTextBox.Text.Length )
 			{
 				int i=0;
 				int lineStart = 0;
 				int posLen = 0;
 				for(i = textPosition; i > 0; i-- )
 				{
-					if(richTextBox1.Text[i] == '\n')
+					if(mTextBox.Text[i] == '\n')
 					{
 						lineStart = i+1;
 						break;
 					}
 				}
 				i = lineStart;
-				if( i < richTextBox1.Text.Length )
+				if( i < mTextBox.Text.Length )
 				{
-					char current =richTextBox1.Text[i];
-					while( i < richTextBox1.Text.Length-1 /*&& current != ' ' && 
+					char current =mTextBox.Text[i];
+					while( i < mTextBox.Text.Length-1 /*&& current != ' ' && 
 					current != ',' */ && current != '\n')
 					{
 						posLen++;
 						i++;
-						current = richTextBox1.Text[i];
+						current = mTextBox.Text[i];
 					}
-					ret = richTextBox1.Text.Substring(lineStart, posLen);
+					ret = mTextBox.Text.Substring(lineStart, posLen);
 				}
 			}
 			return ret;
@@ -1668,15 +1838,15 @@ This Program is not endorsed or related to the Tecmo video game company.
 		private int GetLineStart()
 		{
 			int i=0;
-			int textPosition = richTextBox1.SelectionStart;
-			if( textPosition >= richTextBox1.Text.Length)
+			int textPosition = mTextBox.SelectionStart;
+			if( textPosition >= mTextBox.Text.Length)
 			{
 				textPosition--;
 			}
 			int lineStart = 0;
 			for(i = textPosition; i > 0; i-- )
 			{
-				if( richTextBox1.Text[i] == '\n')
+				if( mTextBox.Text[i] == '\n')
 				{
 					lineStart = i+1;
 					break;
@@ -1692,18 +1862,18 @@ This Program is not endorsed or related to the Tecmo video game company.
 		private int GetLineEnd()
 		{
 //			int ret = 0;
-			int i = richTextBox1.SelectionStart;
-			if( i >= richTextBox1.Text.Length )
+			int i = mTextBox.SelectionStart;
+			if( i >= mTextBox.Text.Length )
 			{
-				return richTextBox1.Text.Length-1; 
+				return mTextBox.Text.Length-1; 
 			}
-			char current =richTextBox1.Text[i];
-			while( i < richTextBox1.Text.Length /*&& current != ' ' && 
+			char current =mTextBox.Text[i];
+			while( i < mTextBox.Text.Length /*&& current != ' ' && 
 					current != ',' */ && current != '\n')
 			{
 //				ret++;
 				i++;
-				current = richTextBox1.Text[i];
+				current = mTextBox.Text[i];
 			}
 			return i;
 		}
@@ -1721,7 +1891,7 @@ This Program is not endorsed or related to the Tecmo video game company.
                 {
                     DoubleClicked();
                 }
-                catch(Exception ex )
+                catch (Exception ex)
                 {
                     StaticUtils.ShowError("Encountered error on double click" + ex.Message);
                 }
@@ -1736,11 +1906,10 @@ This Program is not endorsed or related to the Tecmo video game company.
 			if( dlg.ShowDialog() == DialogResult.OK )
 			{
 				this.Font = dlg.Font;
-				Font tbFont = new Font(richTextBox1.Font.FontFamily, dlg.Font.Size);
-				richTextBox1.Font = tbFont;
+				Font tbFont = new Font(mTextBox.Font.FontFamily, dlg.Font.Size);
+				mTextBox.Font = tbFont;
 				this.ApplyAutoScaling();
 			}
-
 		}
 
 		private void menuItem7_Click(object sender, System.EventArgs e)
@@ -1748,7 +1917,7 @@ This Program is not endorsed or related to the Tecmo video game company.
 			UniformEditForm form = new UniformEditForm();
 			form.HomePantsColorString= "3C";
 			form.ShowDialog(this);
-			this.richTextBox1.Text = form.Result;
+			this.mTextBox.Text = form.Result;
 			form.Dispose();
 		}
 
@@ -1774,7 +1943,7 @@ This Program is not endorsed or related to the Tecmo video game company.
 				{
 					string result = MainClass.GetLocations(dlg.FileName, tool.OutputRom);
 					RichTextDisplay disp = new RichTextDisplay();
-					disp.ContentBox.Font = richTextBox1.Font;
+					disp.ContentBox.Font = mTextBox.Font;
 					disp.ContentBox.Text = result;
 					disp.Text = string.Concat("Results from '", dlg.FileName, "'");
 					disp.Show();
@@ -1793,7 +1962,7 @@ This Program is not endorsed or related to the Tecmo video game company.
             try
             {
                 AllStarForm form = new AllStarForm();
-                form.Data = richTextBox1.Text;
+                form.Data = mTextBox.Text;
                 if (form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     SetText( form.Data );
@@ -1819,16 +1988,16 @@ This Program is not endorsed or related to the Tecmo video game company.
         private void DisplayScheduleForm(int week)
         {
             ScheduleForm schForm = new ScheduleForm();
-            schForm.Data = richTextBox1.Text;
+            schForm.Data = mTextBox.Text;
             schForm.CurrentWeek = week;
             if (schForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 SetText(schForm.Data);
-                int location = richTextBox1.Text.IndexOf( "WEEK " + week);
-                if (location > -1 && location < richTextBox1.Text.Length)
+                int location = mTextBox.Text.IndexOf( "WEEK " + week);
+                if (location > -1 && location < mTextBox.Text.Length)
                 {
-                    richTextBox1.SelectionStart = location;
-                    richTextBox1.ScrollToCaret();
+                    mTextBox.SelectionStart = location;
+                    mTextBox.ScrollToCaret();
                 }
             }
             schForm.Dispose();
@@ -1837,7 +2006,7 @@ This Program is not endorsed or related to the Tecmo video game company.
         private int GetWeekAtCaret()
         {
             int retVal = 0;
-            int last_location = richTextBox1.Text.IndexOf('\n', richTextBox1.SelectionStart);
+            int last_location = mTextBox.Text.IndexOf('\n', mTextBox.SelectionStart);
             int location = 0;
 
             if (last_location > -1)
@@ -1845,7 +2014,7 @@ This Program is not endorsed or related to the Tecmo video game company.
                 bool done = false;
                 while (!done)
                 {
-                    location = richTextBox1.Text.IndexOf("WEEK", location + 1);
+                    location = mTextBox.Text.IndexOf("WEEK", location + 1);
                     if (location < 0 || location > last_location)
                         break;
                     else
@@ -1857,11 +2026,11 @@ This Program is not endorsed or related to the Tecmo video game company.
 
         private void mHackStompMenuItem_Click(object sender, EventArgs e)
         {
-            string errors = InputParser.CheckTextForRedundentSetCommands(richTextBox1.Text);
+            string errors = InputParser.CheckTextForRedundentSetCommands(mTextBox.Text);
             if (!String.IsNullOrEmpty(errors))
             {
                 RichTextDisplay disp = new RichTextDisplay();
-                disp.ContentBox.Font = richTextBox1.Font;
+                disp.ContentBox.Font = mTextBox.Font;
                 disp.ContentBox.Text = errors;
                 disp.Text = string.Concat("HACK 'Stomp' check  Results");
                 disp.Show();
@@ -1885,6 +2054,117 @@ This Program is not endorsed or related to the Tecmo video game company.
 			dlg.Tool = this.tool;
 			dlg.ShowDialog();
 			dlg.Dispose();
+        }
+
+        private void aboutConvertingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(TSBTool2.TSB1Converter.CONVERT_MSG);
+        }
+
+        private bool Check1Season()
+        {
+            string search = "SEASON ";
+            int count = 0;
+            int index = 0;
+            while ((index = mTextBox.Text.IndexOf(search, index)) > -1)
+            {
+                index++;
+                count++;
+            }
+            return count < 2;
+        }
+
+        private void tsb2ToTsb1tem_Click(object sender, EventArgs e)
+        {
+            if (!StaticUtils.IsTSB2Content(mTextBox.Text))
+            {
+                DialogResult result = MessageBox.Show("The text does not appear to be TSB2 Content. Do you still want to continue?",
+                    "Incorrect content detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.No)
+                    return;
+            }
+            if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB1\nDo you wish to continue?",
+                "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                if (Check1Season())
+                {
+                    string output = TSBTool2.TSB1Converter.ConvertToTSB1FromTSB2(mTextBox.Text);
+                    SetText(output);
+                }
+                else
+                {
+                    MessageBox.Show("Could not convert multiple seasons. Please have only 1 season of data in the text area.",
+                        "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void tsb1ToTsb2Item_Click(object sender, EventArgs e)
+        {
+            if (!StaticUtils.IsTSB1Content(mTextBox.Text))
+            {
+                DialogResult result = MessageBox.Show("The text does not appear to be TSB1 Content. Do you still want to continue?",
+                    "Incorrect content detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.No)
+                    return;
+            }
+            if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB2\nDo you wish to continue?",
+                    "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                string output = TSBTool2.TSB2Converter.ConvertToTSB2FromTSB1(mTextBox.Text);
+                SetText(output);
+            }
+        }
+
+
+        private void tsb3ToTsb2Item_Click(object sender, EventArgs e)
+        {
+            if (!StaticUtils.IsTSB3Content(mTextBox.Text))
+            {
+                DialogResult result = MessageBox.Show("The text does not appear to be TSB3 Content. Do you still want to continue?",
+                    "Incorrect content detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.No)
+                    return;
+            }
+            if (MessageBox.Show("Warning! This is a destructive operation, the text will be changed to a format compatible with TSB2\nDo you wish to continue?",
+                    "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                string output = TSBTool2.TSB2Converter.ConvertToTSB2FromTSB3(mTextBox.Text);
+                SetText(output);
+            }
+        }
+
+
+        private void tsb2ToTsb3Item_Click(object sender, EventArgs e)
+        {
+            if (!StaticUtils.IsTSB2Content(mTextBox.Text))
+            {
+                DialogResult result = MessageBox.Show("The text does not appear to be TSB2 Content. Do you still want to continue?",
+                    "Incorrect content detected", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (result == DialogResult.No)
+                    return;
+            }
+            if (MessageBox.Show("Warning! This is a text change operation, the text will be changed to a format compatible with TSB3\nDo you wish to continue?",
+                    "Continue?", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                try
+                {
+                    string output = TSBTool2.TSB3Converter.ConvertToTSB3FromTSB2(mTextBox.Text);
+                    SetText(output);
+                }
+                catch (Exception ex)
+                {
+                    StaticUtils.ShowError(ex.ToString());
+                }
+            }
+        }
+
+        private void mTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            if (Environment.OSVersion.ToString().ToUpper().Contains("WINDOWS"))
+            {
+                System.Diagnostics.Process.Start(e.LinkText);
+            }
         }
 	}
 }

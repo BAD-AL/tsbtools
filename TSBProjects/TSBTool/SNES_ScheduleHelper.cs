@@ -16,7 +16,6 @@ namespace TSBTool
 	public class SNES_ScheduleHelper
 	{
 		private const int weekOneStartLoc = 0x15f3be;//0x329db;
-		private ArrayList errors;
 		private int[] teamGames;
 
 		int week, week_game_count,total_game_count;
@@ -30,7 +29,6 @@ namespace TSBTool
 		public SNES_ScheduleHelper(byte[] outputRom)
 		{
 			this.outputRom = outputRom;
-			errors = new ArrayList();
 		}
 
 		private void CloseWeek()
@@ -75,7 +73,7 @@ namespace TSBTool
 				{
 					if(week > 18)
 					{
-						errors.Add("Error! You can have only 18 weeks in a season.");
+						StaticUtils.AddError("Error! You can have only 18 weeks in a season.");
 						break;
 					}
 					CloseWeek();
@@ -90,7 +88,7 @@ namespace TSBTool
 
 			if( week < 18 )
 			{
-				errors.Add("Warning! You didn't schedule all 18 weeks. The schedule could be messed up.");
+				StaticUtils.AddError("Warning! You didn't schedule all 18 weeks. The schedule could be messed up.");
 			}
 			if( teamGames != null)
 			{
@@ -98,7 +96,7 @@ namespace TSBTool
 				{
 					if( teamGames[i] != 16 )
 					{
-						errors.Add(string.Format(
+						StaticUtils.AddError(string.Format(
 							"Warning! The {0} have {1} games scheduled.", 
 							TecmoTool.GetTeamFromIndex(i), teamGames[i] ));
 					}
@@ -123,7 +121,7 @@ namespace TSBTool
 				homeTeam = m.Groups[2].ToString();
 				if( week_game_count > 13 )
 				{
-					errors.Add(string.Format(
+					StaticUtils.AddError(string.Format(
 						"Error! Week {0}: You can have no more than 14 games in a week.",week+1));
 					ret = false;
 				}
@@ -136,7 +134,7 @@ namespace TSBTool
 			}
 			if( total_game_count + week_game_count > 224 )
 			{
-				errors.Add(string.Format(
+				StaticUtils.AddError(string.Format(
 					"Warning! Week {0}: There are more than 224 games scheduled.",week+1));
 			}
 			return ret;
@@ -157,24 +155,24 @@ namespace TSBTool
 			
 			if( awayIndex == -1 || homeIndex == -1 )
 			{
-				errors.Add(string.Format("Error! Week {2}: Game '{0} at {1}'", awayTeam, homeTeam, week+1));
+				StaticUtils.AddError(string.Format("Error! Week {2}: Game '{0} at {1}'", awayTeam, homeTeam, week+1));
 				return false;
 			}
 
 			if( awayIndex == homeIndex && awayIndex < 28 )
 			{
-				errors.Add(string.Format(
+				StaticUtils.AddError(string.Format(
 					"Warning! Week {0}: The {1} are scheduled to play against themselves.",week+1, awayTeam ));
 			}
 
 			if(week < 0 || week > 17){
-				errors.Add(string.Format("Week {0} is not valid. Weeks range 1 - 18.",week+1));
+				StaticUtils.AddError(string.Format("Week {0} is not valid. Weeks range 1 - 18.",week+1));
 				return false;
 			}
 			if( GameLocation(week,gameOfWeek) < 0 ){
-				errors.Add(string.Format("Game {0} for week {1} is not valid. Valid games for week {1} are 0-{2}.",
+				StaticUtils.AddError(string.Format("Game {0} for week {1} is not valid. Valid games for week {1} are 0-{2}.",
 					gameOfWeek,week,gamesPerWeek[week]-1));
-				errors.Add(string.Format("{0} at {1}",awayTeam, homeTeam));
+				StaticUtils.AddError(string.Format("{0} at {1}",awayTeam, homeTeam));
 			}
 
 			ScheduleGame(awayIndex, homeIndex, week, gameOfWeek);
@@ -199,7 +197,7 @@ namespace TSBTool
 			}
 			/*else
 			{
-				errors.Add(string.Format("INVALID game for ROM. Week={0} Game of Week ={1}",
+				StaticUtils.AddError(string.Format("INVALID game for ROM. Week={0} Game of Week ={1}",
 					week,gameOfWeek);
 			}*/
 		}

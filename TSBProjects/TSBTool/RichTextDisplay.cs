@@ -83,6 +83,26 @@ namespace TSBTool
             return retVal;
         }
 
+        /// <summary>
+        /// Returns the MessageText of the Form
+        /// </summary>
+        /// <param name="title">The title bar text</param>
+        /// <param name="message">The initial message text to display</param>
+        /// <param name="icon">the Icon to use</param>
+        /// <param name="editable">true to allow the user to edit the MessageText</param>
+        /// <returns>The resulting MessageText</returns>
+        public static void ShowText(string title, string message, Icon icon, bool editable, bool showCancelButton)
+        {
+            RichTextDisplay mf = new RichTextDisplay();
+            mf.Icon = icon;
+            mf.MessageEditable = editable;
+            mf.Text = title;
+            mf.MessageText = message;
+            mf.ShowCancelButton = showCancelButton;
+
+            mf.Show();
+        }
+
 
         /// <summary>
         /// Shows a message
@@ -192,6 +212,7 @@ namespace TSBTool
             this.richTextBox.TabIndex = 0;
             this.richTextBox.Text = "";
             this.richTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBox_KeyDown);
+            this.richTextBox.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.richTextBox_LinkClicked);
             // 
             // contextMenu1
             // 
@@ -321,6 +342,7 @@ namespace TSBTool
             this.mOkButton.TabIndex = 2;
             this.mOkButton.Text = "&OK";
             this.mOkButton.UseVisualStyleBackColor = true;
+            this.mOkButton.Click += new System.EventHandler(this.mOkButton_Click);
             // 
             // RichTextDisplay
             // 
@@ -333,6 +355,7 @@ namespace TSBTool
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Menu = this.mainMenu1;
             this.Name = "RichTextDisplay";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.ResumeLayout(false);
 
 		}
@@ -439,6 +462,19 @@ namespace TSBTool
         private void mClearMenuItem_Click(object sender, System.EventArgs e)
         {
             richTextBox.Clear();
+        }
+
+        private void richTextBox_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            if (Environment.OSVersion.ToString().ToUpper().Contains("WINDOWS"))
+            {
+                System.Diagnostics.Process.Start(e.LinkText);
+            }
+        }
+
+        private void mOkButton_Click(object sender, EventArgs e)
+        {
+            Close();
         }
 		
 	}

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -16,7 +15,7 @@ namespace TSBTool
             mResultsTextBox.StatusControl = mStatusLabel;
         }
 
-        public ITecmoTool Tool { get; set; }
+        public ITecmoContent Tool { get; set; }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
@@ -71,7 +70,7 @@ namespace TSBTool
 
         private void mGetTeamButton_Click(object sender, EventArgs e)
         {
-            mResultsTextBox.Text = Tool.GetTeamPlayers(mInputTextBox.Text.ToLower());
+            //mResultsTextBox.Text = Tool.GetTeamPlayers(mInputTextBox.Text.ToLower());
             StaticUtils.ShowErrors();
         }
 
@@ -150,10 +149,9 @@ namespace TSBTool
 
         private void mathTestToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DataTable tab = new DataTable();
             try
             {
-                Object result = tab.Compute(mResultsTextBox.Text, "");
+                Object result = StaticUtils.Compute(mResultsTextBox.Text);
                 mResultsTextBox.Text = result.ToString();
             }
             catch (Exception ex)
@@ -267,47 +265,6 @@ LOS ANGELES:OAKLAND:2
                 }
                 mResultsTextBox.Text = builder.ToString();
                 StaticUtils.ShowErrors();
-            }
-        }
-
-        private void stringTableTestToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < Tool.NumberOfStringsInTeamStringTable; i++)  //119 for 28 team rom, 123 for 32-team ROM
-            {
-                builder.Append(String.Format("tool.GetTeamStringTableString({0}):{1}\n", i, this.Tool.GetTeamStringTableString(i)));
-            }
-            mResultsTextBox.Text = builder.ToString();
-        }
-
-        private void stringTableSetTestToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string indexStr = StringInputDlg.GetString("Enter string index", "");
-            if (String.IsNullOrEmpty(indexStr))
-                return;
-            int index =-1;
-            Int32.TryParse(indexStr, out index);
-            string oldValue = this.Tool.GetTeamStringTableString(index);
-
-            string replaceStr = StringInputDlg.GetString(String.Format("String is {0} ",oldValue) , "Enter String to replace it with>");
-            if (String.IsNullOrEmpty(replaceStr))
-                return;
-
-            this.Tool.SetTeamStringTableString(index, replaceStr);
-            stringTableTestToolStripMenuItem_Click(sender, e);
-        }
-
-        private void stringTableGetTestToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string team = StringInputDlg.GetString("Enter Team", "");
-            if (String.IsNullOrEmpty(team))
-                return;
-            int index = TecmoTool.GetTeamIndex(team);
-
-            if (index > -1)
-            {
-                mResultsTextBox.Text = String.Format("Team = {0}; TEAM_ABB:{1}; TEAM_CITY:{2}; TEAM_NAME:{3}\n",
-                    team, Tool.GetTeamAbbreviation(index), Tool.GetTeamCity(index), Tool.GetTeamName(index));
             }
         }
 

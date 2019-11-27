@@ -197,7 +197,7 @@ namespace TSBTool
         {
             mTeamPosComboBox.BeginUpdate();
             mTeamPosComboBox.Items.Clear();
-            if (TecmoTool.Teams.Length == 28)
+            if (TecmoTool.Teams.Count == 28)
             {
                 int begin = 0;
                 int end = 14;
@@ -216,7 +216,7 @@ namespace TSBTool
             else
             {
                 // has 34 teams, skip indexes 26 & 27
-                String[] teams = TecmoTool.Teams;
+                List<string> teams = TecmoTool.Teams;
                 int begin = 0;
                 int end = 16;
                 if (Conference == TSBTool.Conference.NFC)
@@ -242,7 +242,7 @@ namespace TSBTool
         private void OnConferenceChanged()
         {
             mUpdating = true;
-            if (TecmoTool.Teams.Length == 28)
+            if (TecmoTool.Teams.Count == 28)
             {
                 mTeamComboBox.BeginUpdate();
                 mTeamComboBox.Items.Clear();
@@ -263,7 +263,7 @@ namespace TSBTool
                 // has 34 teams, skip indexes 26 & 27
                 mTeamComboBox.BeginUpdate();
                 mTeamComboBox.Items.Clear();
-                String[] teams = TecmoTool.Teams;
+                List<String> teams = TecmoTool.Teams;
                 int begin = 0;
                 int end = 16;
                 if (Conference == TSBTool.Conference.NFC)

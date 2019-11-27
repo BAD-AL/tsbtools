@@ -13,7 +13,7 @@ namespace TSBTool
 	/// Location = pointer - 0x8000 + 0x0010;
 	/// Where pointer is of the 'swapped' format like '0x86dd'
 	/// </summary>
-	public class TecmoTool : ITecmoTool
+    public class TecmoTool : ITecmoTool, ITecmoContent
 	{
 		// TODO Check Redskins and Cowboys data in Snes_TSBTool
 		/* *
@@ -45,19 +45,25 @@ namespace TSBTool
         /// </summary>
         public virtual ROM_TYPE RomVersion { get { return ROM_TYPE.NES_ORIGINAL_TSB; } }
 
-		protected  string[] positionNames = { 
-												"QB1", "QB2", "RB1", "RB2",  "RB3",  "RB4",  "WR1",  "WR2", "WR3", "WR4", "TE1", 
-												"TE2", "C",   "LG",  "RG",   "LT",   "RT",
-												"RE", "NT",   "LE",  "ROLB", "RILB", "LILB", "LOLB", "RCB", "LCB", "FS",  "SS",  "K", "P" 
-											};
+        public static List<string> PositionNames
+        {
+            get { return positionNames; }
+            internal set { positionNames = value; }
+        }
 
-		public static string[] Teams
+        public static List<string> positionNames = new List<string>(){ 
+			"QB1", "QB2", "RB1", "RB2",  "RB3",  "RB4",  "WR1",  "WR2", "WR3", "WR4", "TE1", 
+			"TE2", "C",   "LG",  "RG",   "LT",   "RT",
+			"RE", "NT",   "LE",  "ROLB", "RILB", "LILB", "LOLB", "RCB", "LCB", "FS",  "SS",  "K", "P" 
+		};
+
+		public static List<string> Teams
 		{
 			get{ return teams; }
-			set { teams = value; }
+			internal set { teams = value; }
 		}
-        protected static  string[] teams =
-		{
+
+        protected static  List<String> teams = new List<string>() {
 			"bills",   "colts",  "dolphins", "patriots",  "jets",
 			"bengals", "browns", "oilers",   "steelers",
 			"broncos", "chiefs", "raiders",  "chargers",  "seahawks",
@@ -103,6 +109,12 @@ namespace TSBTool
 			}
 		}
 
+        // use this instead of directoy setting data in OutputRom
+        public void SetByte(int location, byte b)
+        {
+            this.OutputRom[location] = b;
+        }
+
         public TecmoTool() { }
 		public TecmoTool(string fileName)
 		{
@@ -128,20 +140,11 @@ namespace TSBTool
 			}
 		}
 
-		public string[] GetTeams()
-		{
-			return teams;
-		}
-
-		public string[] GetPositionNames()
-		{
-			return positionNames;
-		}
 
 		public bool IsValidPosition( string pos )
 		{
 			bool ret = false;
-			for( int i = 0; i < positionNames.Length; i++)
+			for( int i = 0; i < positionNames.Count; i++)
 			{
 				if(pos == positionNames[i] )
 				{
@@ -155,7 +158,7 @@ namespace TSBTool
 		public bool IsValidTeam(string team)
 		{
 			bool ret = false;
-			for( int i = 0; i < teams.Length; i++)
+			for( int i = 0; i < teams.Count; i++)
 			{
 				if(team == teams[i] )
 				{
@@ -174,7 +177,7 @@ namespace TSBTool
 		public void Test2()
 		{
 			string team = "bills";
-			for(int i = 0; i < positionNames.Length;i++)
+			for(int i = 0; i < positionNames.Count;i++)
 			{
 				InsertPlayer(team,positionNames[i],"player",team, (byte) (i % 10));
 				switch(positionNames[i])
@@ -320,11 +323,11 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 		{
 			StringBuilder sb = new StringBuilder(16*28*30*3);
 			string team="";
-			for(int i =0; i < teams.Length; i++)
+			for(int i =0; i < teams.Count; i++)
 			{
 				team = teams[i];
 				sb.Append(string.Format("TEAM={0}\n",team));
-				for(int j = 0; j < positionNames.Length; j++)
+				for(int j = 0; j < positionNames.Count; j++)
 				{
 					sb.Append(GetPlayerData(team,positionNames[j],abilities_b,jerseyNumber_b,face_b,name_b,simData_b)+"\n");
 				}
@@ -573,28 +576,27 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 
 		public virtual string GetKey()
 		{
-			string teamSim = 
-				"# TEAM:\n"+
-				"#  name, SimData  0x<offense><defense><offense preference>\n"+
-				"#  Offensive pref values 0-3. \n"+
-				"#     0 = Little more rushing, 1 = Heavy Rushing,\n"+
-				"#     2 = little more passing, 3 = Heavy Passing.\n"+
-				"# credit to Jstout for figuring out 'offense preference'";
-
-			string ret = string.Format("# Key\n{10}\n{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n{6}\n{7}\n{8}\n{9}\n",
-				"# -- Quarterbacks:",
-				"# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].",
-				"# -- Offensive Skill players (non-QB):",
-				"# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, BC, REC, [Sim rush, Sim catch, Sim punt Ret, Sim kick ret].",
-				"# -- Offensive Linemen:",
-				"# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP",
-				"# -- Defensive Players:",
-				"# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, PI, QU, [Sim pass rush, Sim coverage].",
-				"# -- Punters and Kickers:",		
-				"# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, KA, AKB,[ Sim kicking ability].",
-				teamSim
-				);
-			return ret;
+            return String.Format(
+@"# TSBTool Forum: https://tecmobowl.org/forums/topic/11106-tsb-editor-tsbtool-supreme-season-generator/
+# Editing:  Tecmo Super Bowl (nes) [{0}]
+# Key
+# TEAM:
+#  name, SimData  0x<offense><defense><offense preference>
+#  Offensive pref values 0-3. 
+#     0 = Little more rushing, 1 = Heavy Rushing,
+#     2 = little more passing, 3 = Heavy Passing.
+# credit to Jstout for figuring out 'offense preference'
+# -- Quarterbacks:
+# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].
+# -- Offensive Skill players (non-QB):
+# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, BC, REC, [Sim rush, Sim catch, Sim punt Ret, Sim kick ret].
+# -- Offensive Linemen:
+# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP
+# -- Defensive Players:
+# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, PI, QU, [Sim pass rush, Sim coverage].
+# -- Punters and Kickers:
+# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, KA, AKB,[ Sim kicking ability].",
+            this.RomVersion);
 		}
 
 		public virtual string GetTeamPlayers(string team)
@@ -605,7 +607,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 				return null;
 			}
 
-			StringBuilder result = new StringBuilder(41* positionNames.Length);
+			StringBuilder result = new StringBuilder(41* positionNames.Count);
 			string pos;
 			byte teamSimData = GetTeamSimData(team);
 			string data = "";
@@ -650,7 +652,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 					));
 			}
 
-			for(int i =0; i < positionNames.Length; i++)
+			for(int i =0; i < positionNames.Count; i++)
 			{
 				pos = positionNames[i];
 				result.Append(string.Format("{0}\n",GetPlayerData(team,pos,true,true,true,true,true) ));
@@ -780,14 +782,28 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 		}
 		#endregion
 
+        public virtual string GetAll(int season)
+        {
+            return GetAll();
+        }
+
+        public string GetProBowlPlayers(int season)
+        {
+            return GetProBowlPlayers();
+        }
+
+        public string GetSchedule(int season)
+        {
+            return GetSchedule();
+        }
 
 		public virtual string GetAll()
 		{
 			string team;
-			StringBuilder all = new StringBuilder(30*41*positionNames.Length);
+			StringBuilder all = new StringBuilder(30*41*positionNames.Count);
 			string year = string.Format("YEAR={0}\n",GetYear());
 			all.Append(year);
-			for(int i = 0; i < teams.Length; i++)
+			for(int i = 0; i < teams.Count; i++)
 			{
 				team = teams[i];
 				all.Append(GetTeamPlayers(team));
@@ -812,7 +828,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			int teamIndex     = GetTeamIndex(team);
 			int positionIndex = GetPositionIndex(position);
 			// the players total index (QB1 bills=0, QB2 bills=2 ...)
-			int guy = teamIndex * positionNames.Length + positionIndex;
+			int guy = teamIndex * positionNames.Count + positionIndex;
 			int pointerLocation = namePointersStart + (2 * guy);
 			byte lowByte = outputRom[pointerLocation];
 			int  hiByte  = outputRom[pointerLocation+1];
@@ -842,13 +858,13 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			int pi = GetPositionIndex(position);
 			pi++;
 			//if(position == "P")
-			if( position == positionNames[positionNames.Length-1] )
+			if( position == positionNames[positionNames.Count-1] )
 			{
 				ti++;
 				pi=0;
 			}
 			//if(team == "falcons" && position == "P" )
-			if(ti == 28 && position == positionNames[positionNames.Length-1] )
+			if(ti == 28 && position == positionNames[positionNames.Count-1] )
 			{ // TODO: falcons' punter case
 				return -1;
 				//				return lastPointer;
@@ -867,15 +883,15 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			}
 			int teamIndex     = GetTeamIndex(team);
 			int positionIndex = GetPositionIndex(position);
-			int playerSpot    = teamIndex *  positionNames.Length + positionIndex;
+			int playerSpot    = teamIndex *  positionNames.Count + positionIndex;
 			//if(team == "falcons" && position == "P")
-			if(team == teams[teams.Length-1] && position == positionNames[positionNames.Length-1] )
+			if(team == teams[teams.Count-1] && position == positionNames[positionNames.Count-1] )
 				//return 0x6d6;
 				return lastPlayerNamePointer-2; //TODO: check this
 			if(positionIndex < 0)
 			{
 				StaticUtils.AddError(string.Format("ERROR! (low level) Position '{0}' does not exist. Valid positions are:",position));
-				for(int i =1; i <= positionNames.Length; i++)
+				for(int i =1; i <= positionNames.Count; i++)
 				{
 					Console.Error.Write("{0}\t", positionNames[i-1]);
 				}
@@ -917,7 +933,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 					string.Format("ERROR! (low level) ShiftDataAfter:: either team {0} or position {1} is invalid.", team, position));
 			}
 
-			if(team == teams[teams.Length-1] && position == "P")
+			if(team == teams[teams.Count-1] && position == "P")
 				return;
 
 			int endPosition = 0x0300F; //(end of name-number segment)
@@ -989,7 +1005,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 					string.Format("ERROR! (low level) GetDataAfter:: either team {0} or position {1} is invalid.", team, position));
 			}
 
-			if(team == teams[teams.Length-1] && position == "P")
+			if(team == teams[teams.Count-1] && position == "P")
 				return null;
 
 			int teamIndex     = GetTeamIndex(team);
@@ -1020,7 +1036,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			int ret = -1;
 			if(teamName.ToLower() == "null")
 				return 255;
-			for(int i = 0; i < teams.Length; i++)
+			for(int i = 0; i < teams.Count; i++)
 			{
 				if(teams[i] == teamName)
 				{
@@ -1040,7 +1056,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 		{
 			if(index == 255)
 				return "null";
-			if(index < 0 || index > teams.Length-1)
+			if(index < 0 || index > teams.Count-1)
 				return null;
 			return teams[index];
 		}
@@ -1053,7 +1069,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 		protected int GetPositionIndex(string positionName)
 		{
 			int ret = -1;
-			for(int i = 0; i < positionNames.Length; i++)
+			for(int i = 0; i < positionNames.Count; i++)
 			{
 				if(positionNames[i] == positionName)
 				{
@@ -1963,15 +1979,15 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			}
 
 			// Bills KR/PR stored at 0x239d3, colts at 0x239d4 ... 
-			int location_1 = 0x239d3 + Index(teams,team);
-			int location = 0x328d3 + Index(teams,team);
+            int location_1 = 0x239d3 + teams.IndexOf(team);// teams.IndexOf(team);
+            int location = 0x328d3 + teams.IndexOf(team); // teams.IndexOf(team);
 			switch(position)
 			{
 				case "QB1": case "QB2": case "C": case "LG": // these guys can return punts/kicks too.
 				case "RB1": case "RB2": case "RB3": case "RB4": 
 				case "WR1": case "WR2": case "WR3": case "WR4": 
 				case "TE1": case "TE2":
-					int pos = Index(positionNames,position);
+                    int pos = positionNames.IndexOf(position); // Index(positionNames, position);
 					int b = outputRom[location];
 					b = b & 0xF0;
 					b = b + pos;
@@ -2005,15 +2021,15 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			}
 
 			// Bills KR/PR stored at 0x239d3, colts at 0x239d4 ... 
-			int location_1 = 0x239d3 + Index(teams,team);
-			int location = 0x328d3 + Index(teams,team);
+            int location_1 = 0x239d3 + teams.IndexOf(team);
+            int location = 0x328d3 + teams.IndexOf(team); 
 			switch(position)
 			{
 				case "QB1": case "QB2": case "C": case "LG":  // these guys can return punts/kicks too.
 				case "RB1": case "RB2": case "RB3": case "RB4": 
 				case "WR1": case "WR2": case "WR3": case "WR4": 
 				case "TE1": case "TE2":
-					int pos = Index(positionNames,position);
+                    int pos = positionNames.IndexOf(position); 
 					int b = outputRom[location];
 					b = b & 0x0F;
 					b = b + ( pos << 4);
@@ -2042,7 +2058,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			}
 
 			string ret ="";
-			int location = mBillsPuntKickReturnerPos + Index(teams,team);
+			int location = mBillsPuntKickReturnerPos + teams.IndexOf(team);
 			int b = outputRom[location];
 			b = b & 0x0F;
 			ret = positionNames[b];
@@ -2063,7 +2079,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			}
 
 			string ret = "";
-			int location = 0x328d3 + Index(teams,team);
+			int location = 0x328d3 + teams.IndexOf(team);
 			int b = outputRom[location];
 			b = b & 0xF0;
 			b = b >> 4;
@@ -2081,7 +2097,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			
 			if( simpleSetRegex.Match(line) != Match.Empty )
             {
-                ApplySimpleSet(line);
+                StaticUtils.ApplySimpleSet(line, this);
             }
             else if (line.IndexOf("PromptUser", StringComparison.OrdinalIgnoreCase) > -1)
             {
@@ -2103,50 +2119,6 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			else
 			{
 				StaticUtils.AddError(string.Format("ERROR with line \"{0}\"",line));
-			}
-		}
-
-		protected void ApplySimpleSet(string line)
-		{
-			if( simpleSetRegex == null)
-				simpleSetRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
-
-			Match m = simpleSetRegex.Match(line);
-			if( m == Match.Empty )
-			{
-				StaticUtils.ShowError(string.Format("SET function not used properly. incorrect syntax>'{0}'",line));
-				return;
-			}
-			string loc = m.Groups[1].ToString().ToLower();
-			string val = m.Groups[2].ToString().ToLower();
-			loc = loc.Substring(2);
-			val = val.Substring(2);
-			if( val.Length % 2 != 0 )
-				val = "0" + val;
-			
-			try
-			{
-				int location = Int32.Parse( loc,System.Globalization.NumberStyles.AllowHexSpecifier);
-				byte[] bytes = GetHexBytes(val);
-				if( location + bytes.Length > outputRom.Length  )
-				{
-					StaticUtils.ShowError(string.Format("ApplySet:> Error with line {0}. Data falls off the end of rom.\n",line));
-				}
-				else if( location < 0)
-				{
-					StaticUtils.ShowError(string.Format("ApplySet:> Error with line {0}. location is negative.\n",line));
-				}
-				else
-				{
-					for(int i = 0; i < bytes.Length; i++)
-					{
-						outputRom[location+i] = bytes[i];
-					}
-				}
-			}
-			catch(Exception e)
-			{
-				StaticUtils.ShowError(string.Format("ApplySet:> Error with line {0}.\n{1}",line, e.Message));
 			}
 		}
 
@@ -2174,7 +2146,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
                 if (outputRom[mTeamFormationHackLoc] == 0xA0)
                 {
                     //special formation hack hasn't been setup yet
-                    ApplySimpleSet("SET(0x21642, 0x8AA66EBCD09FAA4C5096 ) ");
+                    StaticUtils.ApplySimpleSet("SET(0x21642, 0x8AA66EBCD09FAA4C5096 ) ", this);
                 }
                 
 				switch( formation )
@@ -2264,7 +2236,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			int rSlot1, rSlot2, rSlot3, rSlot4,
 				pSlot1, pSlot2, pSlot3, pSlot4;
 
-			int teamIndex = Index(teams, team);
+			int teamIndex = teams.IndexOf(team);
 			if( teamIndex > -1  )
 			{
 				//int pbLocation = mPlaybookStartLoc + (teamIndex * 4);
@@ -2307,7 +2279,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 
 			int r1,r2,r3,r4,p1,p2,p3,p4;
 
-			int teamIndex = Index(teams, team);
+			int teamIndex = teams.IndexOf(team);
 			if( teamIndex > -1 && runs != Match.Empty && pass != Match.Empty )
 			{
 				//int pbLocation = mPlaybookStartLoc + (teamIndex * 4);
@@ -2396,40 +2368,6 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 				ScheduleHelper2 sch = new ScheduleHelper2( outputRom );
 				sch.ApplySchedule( scheduleList );
 			}
-		}
-
-		protected byte[] GetHexBytes(string input)
-		{
-			if( input == null)
-				return null;
-
-			byte[] ret = new byte[input.Length/2];
-			string b="";
-			int tmp=0;
-			int j = 0;
-
-			for(int i =0; i < input.Length; i+=2 )
-			{
-				b = input.Substring(i,2);
-				tmp = Int32.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
-				ret[j++] = (byte)tmp;
-			}
-			return ret;
-		}
-		/// <summary>
-		/// Returns the first index of element that occurs in 'array'. returns
-		/// -1 if 'element' doesn't occur in 'array'.
-		/// </summary>
-		/// <param name="array"></param>
-		/// <param name="element"></param>
-		/// <returns></returns>
-		protected int Index(string[] array, string element)
-		{
-			for(int i =0; i < array.Length; i++)
-				if(array[i] == element)
-					return i;
-
-			return -1;
 		}
 
 		protected void PrintValidAbilities()
@@ -2793,7 +2731,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
         public String GetConferenceProBowlPlayers(Conference conf)
         {
             StringBuilder builder = new StringBuilder(500);
-            for (int i = 0; i < positionNames.Length; i++)
+            for (int i = 0; i < positionNames.Count; i++)
             {
                 builder.Append(GetProBowlPlayer(conf, positionNames[i]));
                 builder.Append("\r\n");

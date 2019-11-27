@@ -1,5 +1,11 @@
 TSBToolSupreme README
 ======================================================================================================
+TSBToolSupreme Version 1.3.0.0 (27 Nov 2019)
+1. Added support for TSB II & TSB III
+2. Added support to convet text data between TSB, TSB II & TSB III
+3. Added Tecmonster's formulas for updating sim data.
+4. Better CXROM version support
+======================================================================================================
 TSBToolSupreme Version 1.2.0.1 (14 Aug 2019)
 1. Bug fix with player attribute form 
 	* First name forced to lowercase on focus lost

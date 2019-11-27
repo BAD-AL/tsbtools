@@ -378,7 +378,7 @@ namespace TSBTool
 					case "RB1": case "RB2": case "RB3": case "RB4": 
 					case "WR1": case "WR2": case "WR3": case "WR4": 
 					case "TE1": case "TE2":
-						int pos = Index(positionNames,position);
+						int pos = positionNames.IndexOf(position);
 						int b = outputRom[location];
 						b = b & 0xF0;
 						b = b + pos;
@@ -411,7 +411,7 @@ namespace TSBTool
 					case "RB1": case "RB2": case "RB3": case "RB4": 
 					case "WR1": case "WR2": case "WR3": case "WR4": 
 					case "TE1": case "TE2":
-						int pos = Index(positionNames,position);
+						int pos = positionNames.IndexOf(position);
 						int b = outputRom[location];
 						b = b & 0x0F;
 						b = b + ( pos << 4);
@@ -429,7 +429,7 @@ namespace TSBTool
 		public override string GetAll()
 		{
 			string team;
-			StringBuilder all = new StringBuilder(30*41*positionNames.Length);
+			StringBuilder all = new StringBuilder(30*41*positionNames.Count);
 			string year = string.Format("YEAR={0}\n",GetYear());
 			all.Append(year);
 			int normalTeamEnd = 28;
@@ -767,12 +767,12 @@ namespace TSBTool
 			if( teamIndex > 29 )
 			{
 				int positionIndex = GetPositionIndex(position);
-				int playerSpot    = (teamIndex - 30 )*  positionNames.Length + positionIndex;
+				int playerSpot    = (teamIndex - 30 )*  positionNames.Count + positionIndex;
 				if(positionIndex < 0)
 				{
                     StringBuilder builder = new StringBuilder(500);
                     builder.Append("ERROR! (low level) Position '{0}' does not exist. Valid positions are: [");
-                    for (int i = 1; i <= positionNames.Length; i++)
+                    for (int i = 1; i <= positionNames.Count; i++)
                     {
                         builder.Append(positionNames[i - 1]);
                         builder.Append(",");
@@ -805,7 +805,7 @@ namespace TSBTool
 					string.Format("ERROR! (low level) ShiftDataAfter:: either team {0} or position {1} is invalid.", team, position));
 			}
 
-			if(team == teams[teams.Length-1] && position == "P")
+			if(team == teams[teams.Count-1] && position == "P")
 				return;
 
 			int startPosition = this.GetNextDataPosition(team,position);

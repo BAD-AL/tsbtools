@@ -24,19 +24,13 @@ namespace TSBTool
         public static String TestString = "";
 
 		public static bool GUI_MODE = false;
-        public static string version //= "Version 1.1.0.1";
-        {
-            get
-            {
-                return System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
-            }
-        }
+        public static string version { get { return System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString(); } }
 
-		//                   -j             -n     -f     -a         -s         -sch    
-		private static bool jerseyNumbers, names, faces, abilities, simData,  schedule, 
+		//                   -sch      -players
+		private static bool  schedule, players,
 		//  -gui  -stdin
-			gui,  stdin, proBowl; 
-		private static bool printStuff, modifyStuff, printHelp;
+			gui,  stdin, proBowl;
+        private static bool modifyStuff, printHelp;
 		private static string outFileName = "output.nes";
 		private static string getFileName = null;
 
@@ -60,8 +54,7 @@ namespace TSBTool
             {
                 OnWindows = false;
             }
-            jerseyNumbers = names = faces = abilities = simData =
-            printStuff = modifyStuff = schedule = proBowl = 
+            modifyStuff = schedule = proBowl = 
               TecmoTool.ShowColors = TecmoTool.ShowPlaybook = 
               TecmoTool.ShowTeamFormation = false;
             //Junk(stuff);
@@ -103,30 +96,20 @@ namespace TSBTool
                 return;
             if (getFileName != null && File.Exists(getFileName))
             {
-                ITecmoTool tool = TecmoToolFactory.GetToolForRom(romFile);
+                ITecmoContent tool = TecmoToolFactory.GetToolForRom(romFile);
                 string result = GetLocations(getFileName, tool.OutputRom);
                 Console.WriteLine(result);
                 return;
             }
-            if (options.Count == 0 && romFile != null)
-            {
-                printStuff = true;
-                jerseyNumbers = names = faces = abilities = simData = printStuff = schedule = proBowl = true;
-            }
-            else if (jerseyNumbers || names || faces || abilities || simData || printStuff || schedule || proBowl ||
-                TecmoTool.ShowColors || TecmoTool.ShowPlaybook || TecmoTool.ShowTeamFormation)
-                printStuff = true;
-
+            
             try
             {
-                if (printStuff)
-                    PrintStuff(romFile);
-                else if (romFile != null && dataFile != null)
+                if (romFile != null && dataFile != null)
                     ModifyStuff(romFile, dataFile);
                 else if (romFile != null)
                     ModifyStuff(romFile, null);
                 else
-                    Console.Error.WriteLine("Exiting...");
+                    PrintStuff(romFile);
             }
             catch (Exception e)
             {
@@ -154,11 +137,7 @@ with the data contained in the data file.
 
 The following are the available options.
 
--j		Print jersey numbers.
--n		Print player names.
--f		Print player face attribute.
--a		Print player abilities (running speed, rushing power, ...).
--s		Print player sim data.
+-players        Print players.
 -sch		Print schedule.
 -stdin		Read data from standard in.
 -gui		Launch GUI.
@@ -219,21 +198,9 @@ The following are the available options.
 				{
 					switch(option)
 					{
-						case "-j": case "/j":
-							jerseyNumbers=true;
-							break;
-						case "-n": case "/n":
-							names = true;
-							break;
-						case "-f": case "/f":
-							faces=true;
-							break;
-						case "-a": case "/a":
-							abilities =true;
-							break;
-						case "-s": case "/s":
-							simData=true; // for players
-							break;
+                        case "-players": case "/players":
+                            players = true;
+                            break;
 						case "-sch": case "/sch":
 							schedule=true;
 							break;
@@ -268,8 +235,6 @@ The following are the available options.
 					}
 				}
 			}
-			if( jerseyNumbers || names || faces || abilities || simData || proBowl)
-				printStuff = true;
 		}
 
 		private static string GetRomFileName(ArrayList args)
@@ -300,37 +265,26 @@ The following are the available options.
 
 		private static void PrintStuff(string filename)
 		{
-			ITecmoTool tool = TecmoToolFactory.GetToolForRom( filename); 
+            ITecmoContent tool = TecmoToolFactory.GetToolForRom(filename); 
 			if( tool == null )
 			{
                 StaticUtils.ShowError("ERROR determining ROM type.");
 				return;
 			}
 			StringBuilder stuff = new StringBuilder(77000);
-			if(jerseyNumbers && names && faces && abilities && simData )
-			{
-				tool.ShowOffPref = true;
-				stuff.Append( tool.GetKey());
-				stuff.Append( tool.GetAll());
-			}
-			else if( TecmoTool.ShowColors || TecmoTool.ShowPlaybook || TecmoTool.ShowTeamFormation )
-			{
-				tool.ShowOffPref = true;
-				stuff.Append(tool.GetKey());
-				stuff.Append(tool.GetAll());
-				//stuff = tool.GetPlayerStuff(jerseyNumbers,names,faces,abilities,simData);
-			}
-			else if(jerseyNumbers || names || faces || abilities || simData)
-			{
-				stuff.Append( tool.GetPlayerStuff(jerseyNumbers,names,faces,abilities,simData));
-			}
+			tool.ShowOffPref = true;
+            if (players)
+            {
+                stuff.Append(tool.GetKey());
+                stuff.Append(tool.GetAll(1));
+            }
             if (proBowl)
             {
-                stuff.Append(tool.GetProBowlPlayers());
+                stuff.Append(tool.GetProBowlPlayers(1));
             }
 			if(schedule)
 			{
-				stuff.Append(tool.GetSchedule());
+				stuff.Append(tool.GetSchedule(1));
 			}
 
 			if(System.IO.Path.DirectorySeparatorChar == '\\')
@@ -345,15 +299,38 @@ The following are the available options.
 
 		public static void ModifyStuff(string romfile, string inputfile)
 		{
-			ITecmoTool tt = TecmoToolFactory.GetToolForRom( romfile );
+            ITecmoContent tt = TecmoToolFactory.GetToolForRom(romfile);
+            string content = "";
 
-			InputParser parser  = new InputParser(tt);
-			if(inputfile != null)
-				parser.ProcessFile(inputfile);
-			else
-				parser.ReadFromStdin();
-			tt.SaveRom(outFileName);
+            if (inputfile != null)
+                content = File.ReadAllText(inputfile);
+            else
+                content = ReadFromStdin();
+
+            tt.ProcessText(content);
 		}
+
+        private static string ReadFromStdin()
+        {
+            string line = "";
+            int lineNumber = 0;
+            Console.WriteLine("Reading from standard in...");
+            StringBuilder builder = new StringBuilder();
+            try
+            {
+                while ((line = Console.ReadLine()) != null)
+                {
+                    builder.AppendLine(line);
+                }
+            }
+            catch (Exception e)
+            {
+                StaticUtils.ShowError(string.Format(
+                 "Error Processing line {0}:'{1}'.\n{2}\n{3}",
+                    lineNumber, line, e.Message, e.StackTrace));
+            }
+            return builder.ToString();
+        }
 
 		/// <summary>
 		/// Syntax:

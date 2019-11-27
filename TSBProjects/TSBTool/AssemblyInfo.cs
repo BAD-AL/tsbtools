@@ -32,7 +32,7 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyVersion("1.0.0.2")]   // Schedule gui
 //[assembly: AssemblyVersion("1.0.0.3")]   // Hacks improvement
 //[assembly: AssemblyVersion("1.2.0.0")]   // Works under Mono; DebugDialog added; 'ReplaceString' functionality; Get/Set Team name, city, abbrev.
-[assembly: AssemblyVersion("1.2.0.3")] // Tecmonster Sim stuff; better CXROM ROM support
+[assembly: AssemblyVersion("1.3.0.0")]     // TSB2, TSB3 ROM support
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 

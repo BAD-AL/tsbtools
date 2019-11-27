@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace TSBTool
 {
@@ -12,9 +13,9 @@ namespace TSBTool
         public const int CXROM_V111_LEN    = 0xc0010;
         public const int SNES_TSB1_LEN     = 0x180000;
 
-		public static ITecmoTool GetToolForRom(String fileName)
+		public static ITecmoContent GetToolForRom(String fileName)
 		{
-			ITecmoTool tool = null;
+            ITecmoContent tool = null;
 			ROM_TYPE type = ROM_TYPE.NONE;
 			try
 			{
@@ -35,19 +36,18 @@ namespace TSBTool
 
             if (type == ROM_TYPE.CXROM_v105 || type == ROM_TYPE.CXROM_v111)
 			{
-				TecmoTool.Teams = new String[] 
-					{
-						"bills",     "dolphins", "patriots", "jets",
-						"bengals",    "browns",  "ravens",   "steelers",
-						"colts",      "texans",  "jaguars",  "titans",
-						"broncos",    "chiefs",  "raiders",  "chargers",  
-						"redskins",   "giants",  "eagles",   "cowboys",
-						"bears",      "lions",   "packers",  "vikings",   
-						"buccaneers", "saints",  "falcons",  "panthers",
-						 
-						"AFC",     "NFC",
-						"49ers",   "rams", "seahawks",   "cardinals"
-					};
+				TecmoTool.Teams = new List<string>() {
+					"bills",     "dolphins", "patriots", "jets",
+					"bengals",    "browns",  "ravens",   "steelers",
+					"colts",      "texans",  "jaguars",  "titans",
+					"broncos",    "chiefs",  "raiders",  "chargers",  
+					"redskins",   "giants",  "eagles",   "cowboys",
+					"bears",      "lions",   "packers",  "vikings",   
+					"buccaneers", "saints",  "falcons",  "panthers",
+					 
+					"AFC",     "NFC",
+					"49ers",   "rams", "seahawks",   "cardinals"
+				};
                 CXRomTSBTool cxt = new CXRomTSBTool(fileName, type);
                 tool = cxt;
                 // Hack here; There are some ROMS out there whose SIZE == CXROM_v111 and are work better as CXROM_v105
@@ -60,29 +60,36 @@ namespace TSBTool
 			}
 			else if( type == ROM_TYPE.SNES_TSB1 )
 			{
-				TecmoTool.Teams = new String[] {
-				"bills",   "colts",  "dolphins", "patriots",  "jets",
-				"bengals", "browns", "oilers",   "steelers",
-				"broncos", "chiefs", "raiders",  "chargers",  "seahawks",
-				"cowboys", "giants", "eagles",   "cardinals", "redskins",
-				"bears",   "lions",  "packers",  "vikings",   "buccaneers",
-				"falcons", "rams",   "saints",   "49ers"
+				TecmoTool.Teams = new List<string>(){
+				    "bills",   "colts",  "dolphins", "patriots",  "jets",
+				    "bengals", "browns", "oilers",   "steelers",
+				    "broncos", "chiefs", "raiders",  "chargers",  "seahawks",
+				    "cowboys", "giants", "eagles",   "cardinals", "redskins",
+				    "bears",   "lions",  "packers",  "vikings",   "buccaneers",
+				    "falcons", "rams",   "saints",   "49ers"
 				  };
 				tool = new SNES_TecmoTool(fileName);
 			}
-			else
-			{
-                TecmoTool.Teams = new String[]
-					{
-						"bills",   "colts",  "dolphins", "patriots",  "jets",
-						"bengals", "browns", "oilers",   "steelers",
-						"broncos", "chiefs", "raiders",  "chargers",  "seahawks",
-						"redskins","giants", "eagles",   "cardinals", "cowboys",
-						"bears",   "lions",  "packers",  "vikings",   "buccaneers",
-						"49ers",   "rams",   "saints",   "falcons"
-					};
+            else if (type == ROM_TYPE.SNES_TSB2)
+            {
+                tool = new TSBTool2.TSB2Tool(StaticUtils.ReadRom(fileName));
+            }
+            else if (type == ROM_TYPE.SNES_TSB3)
+            {
+                tool = new TSBTool2.TSB3Tool(StaticUtils.ReadRom(fileName));
+            }
+            else
+            {
+                TecmoTool.Teams = new List<string>() {
+				    "bills",   "colts",  "dolphins", "patriots",  "jets",
+				    "bengals", "browns", "oilers",   "steelers",
+				    "broncos", "chiefs", "raiders",  "chargers",  "seahawks",
+				    "redskins","giants", "eagles",   "cardinals", "cowboys",
+				    "bears",   "lions",  "packers",  "vikings",   "buccaneers",
+				    "49ers",   "rams",   "saints",   "falcons"
+				};
                 tool = new TecmoTool(fileName);
-			}
+            }
 			return tool;
 		}
 
@@ -101,8 +108,8 @@ namespace TSBTool
 			{
 				if( System.IO.File.Exists(fileName) )
 				{
-					System.IO.FileInfo f1 = new System.IO.FileInfo(fileName);
-					long len = f1.Length;
+                    byte[] rom = StaticUtils.ReadRom(fileName);
+					long len = rom.Length;
                     if (len == ORIG_NES_TSB1_LEN)
                     {
                         ret = ROM_TYPE.NES_ORIGINAL_TSB;
@@ -119,6 +126,14 @@ namespace TSBTool
 					{
 						ret = ROM_TYPE.SNES_TSB1;
 					}
+                    else if (TSBTool2.TSB2Tool.IsTecmoSuperBowl2Rom(rom))
+                    {
+                        ret = ROM_TYPE.SNES_TSB2;
+                    }
+                    else if (TSBTool2.TSB3Tool.IsTecmoSuperBowl3Rom(rom))
+                    {
+                        ret = ROM_TYPE.SNES_TSB3;
+                    }
 				}
                 Console.Error.WriteLine("ROM Type = " + ret.ToString());
 			}

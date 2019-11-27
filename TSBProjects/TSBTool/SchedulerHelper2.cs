@@ -356,7 +356,7 @@ namespace TSBTool
 		private void IncrementTeamGames(int teamIndex)
 		{
 			if( teamGames == null )
-				teamGames = new int[TecmoTool.Teams.Length];
+				teamGames = new int[TecmoTool.Teams.Count];
 			teamGames[teamIndex]++;
 		}
 

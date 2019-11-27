@@ -28,41 +28,58 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             this.mContextMenu = new System.Windows.Forms.ContextMenu();
+            this.mFontMenuItem = new System.Windows.Forms.MenuItem();
             this.mCutMenuItem = new System.Windows.Forms.MenuItem();
             this.mCopyMenuItem = new System.Windows.Forms.MenuItem();
             this.mPasteMenuItem = new System.Windows.Forms.MenuItem();
+            this.mSelectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.mFindMenuItem = new System.Windows.Forms.MenuItem();
             this.mFindNextMenuItem = new System.Windows.Forms.MenuItem();
             this.mFindPrevMenuItem = new System.Windows.Forms.MenuItem();
-            this.mSelectAllMenuItem = new System.Windows.Forms.MenuItem();
             this.mClearMenuItem = new System.Windows.Forms.MenuItem();
-
-            this.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-
+            this.SuspendLayout();
+            // 
+            // mContextMenu
+            // 
+            this.mContextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.mFontMenuItem,
+            this.mCutMenuItem,
+            this.mCopyMenuItem,
+            this.mPasteMenuItem,
+            this.mSelectAllMenuItem,
+            this.mFindMenuItem,
+            this.mFindNextMenuItem,
+            this.mFindPrevMenuItem,
+            this.mClearMenuItem});
+            // 
+            // mFontMenuItem
+            // 
+            this.mFontMenuItem.Index = 0;
+            this.mFontMenuItem.Text = "Change &Font";
+            this.mFontMenuItem.Click += new System.EventHandler(this.ContextMenuItem_Click);
             // 
             // mCutMenuItem
             // 
-            this.mCutMenuItem.Index = 0;
+            this.mCutMenuItem.Index = 1;
             this.mCutMenuItem.Text = "C&ut       (Ctrl+X)";
             this.mCutMenuItem.Click += new System.EventHandler(this.ContextMenuItem_Click);
             // 
             // mCopyMenuItem
             // 
-            this.mCopyMenuItem.Index = 1;
+            this.mCopyMenuItem.Index = 2;
             this.mCopyMenuItem.Text = "&Copy    (Ctrl+C)";
             this.mCopyMenuItem.Click += new System.EventHandler(this.ContextMenuItem_Click);
             // 
             // mPasteMenuItem
             // 
-            this.mPasteMenuItem.Index = 2;
+            this.mPasteMenuItem.Index = 3;
             this.mPasteMenuItem.Text = "&Paste   (Ctrl+V)";
             this.mPasteMenuItem.Click += new System.EventHandler(this.ContextMenuItem_Click);
             // 
             // mSelectAllMenuItem
             // 
-            this.mSelectAllMenuItem.Index = 3;
+            this.mSelectAllMenuItem.Index = 4;
             this.mSelectAllMenuItem.Text = "Select &All  (Ctrl+A)";
             this.mSelectAllMenuItem.Click += new System.EventHandler(this.ContextMenuItem_Click);
             // 
@@ -84,26 +101,19 @@
             this.mFindPrevMenuItem.Text = "Find &Prev (F2)";
             this.mFindPrevMenuItem.Click += new System.EventHandler(this.ContextMenuItem_Click);
             // 
-            // this.mClearMenuItem
-            //
+            // mClearMenuItem
+            // 
             this.mClearMenuItem.Index = 8;
             this.mClearMenuItem.Text = "Clea&r";
             this.mClearMenuItem.Click += new System.EventHandler(this.ContextMenuItem_Click);
             // 
-            // mContextMenu
+            // SearchTextBox
             // 
-            this.mContextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-                this.mCutMenuItem,
-                this.mCopyMenuItem,
-                this.mPasteMenuItem,
-                this.mSelectAllMenuItem,
-                this.mFindMenuItem,
-                this.mFindNextMenuItem,
-                this.mFindPrevMenuItem,
-                this.mClearMenuItem
-            });
-
             this.ContextMenu = this.mContextMenu;
+            this.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.SearchTextBox_LinkClicked);
+            this.ResumeLayout(false);
+
         }
 
         private System.Windows.Forms.ContextMenu mContextMenu;
@@ -115,6 +125,7 @@
         private System.Windows.Forms.MenuItem mFindPrevMenuItem;
         private System.Windows.Forms.MenuItem mSelectAllMenuItem;
         private System.Windows.Forms.MenuItem mClearMenuItem;
+        private System.Windows.Forms.MenuItem mFontMenuItem;
         #endregion
     }
 }

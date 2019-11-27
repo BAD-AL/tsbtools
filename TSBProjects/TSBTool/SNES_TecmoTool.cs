@@ -11,7 +11,7 @@ namespace TSBTool
 	/// Location = pointer - 0x8000 + 0x0010;
 	/// Where pointer is of the 'swapped' format like '0x86dd'
 	/// </summary>
-	public class SNES_TecmoTool : ITecmoTool
+    public class SNES_TecmoTool : ITecmoTool, ITecmoContent
 	{
 		private byte[] outputRom;
 		private const int nameNumberSegmentEnd      = 0x17b7f0;
@@ -140,6 +140,11 @@ namespace TSBTool
 			}
 			return ret;
 		}
+        // use this instead of directoy setting data in OutputRom
+        public void SetByte(int location, byte b)
+        {
+            this.OutputRom[location] = b;
+        }
 
 		protected bool Init(string fileName)
 		{
@@ -560,28 +565,30 @@ Do you want to continue?",ROM_LENGTH),
 
 		public string GetKey()
 		{
-			string teamSim = 
-				"# TEAM:\n"+
-				"#  name, SimData  0x<offense><defense><offense preference>\n"+
-				"#  Offensive pref values 0-3. \n"+
-				"#     0 = Little more rushing, 1 = Heavy Rushing,\n"+
-				"#     2 = little more passing, 3 = Heavy Passing.\n"+
-				"# credit to elway7 for finding	'offense preference'";
-
-			string ret = string.Format("# Key\n{10}\n{0}\n{1}\n{2}\n{3}\n{4}\n{5}\n{6}\n{7}\n{8}\n{9}\n",
-				"# -- Quarterbacks:",
-				"# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].",
-				"# -- Offensive Skill players (non-QB):",
-				"# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, BC, REC, [Sim rush, Sim catch, Sim punt Ret, Sim kick ret].",
-				"# -- Offensive Linemen:",
-				"# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP",
-				"# -- Defensive Players:",
-				"# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, PI, QU, [Sim pass rush, Sim coverage].",
-				"# -- Punters and Kickers:",		
-				"# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, KA, AKB,[ Sim kicking ability].",
-				teamSim
-				);
-			return ret;
+            return String.Format(
+@"# TSBTool Forum: https://tecmobowl.org/forums/topic/11106-tsb-editor-tsbtool-supreme-season-generator/
+# Editing: Tecmo Super Bowl I (snes) [{0}]
+# 
+# Double click on a team name (or playbook) to bring up the edit Team GUI.
+# Double click on a player to bring up the edit player GUI (Click 'Sim Data'
+#   button to find out more on Sim Data). 
+# Key
+# -- Quarterbacks:
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].
+# -- Offensive Skill players (non-QB):
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, BC, REC, [Sim rush, Sim catch, Sim punt Ret, Sim kick ret].
+# -- Offensive Linemen:
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP
+# -- Defensive Players:
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, PI, QU, [Sim pass rush, Sim coverage].
+# -- Punters and Kickers:
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, KA, AKB,[ Sim kicking ability].
+# TEAM:\n
+#  name, SimData  0x<offense><defense><offense preference>
+#  Offensive pref values 0-3. 
+#     0 = Little more rushing, 1 = Heavy Rushing,
+#     2 = little more passing, 3 = Heavy Passing.
+# credit to elway7 for finding	'offense preference'", this.RomVersion);
 		}
 
 		public string GetTeamPlayers(string team)
@@ -759,6 +766,21 @@ Do you want to continue?",ROM_LENGTH),
 			SetTeamStringTableString(teamIndex, teamString);
 		}
 		#endregion
+
+        public virtual string GetAll(int season)
+        {
+            return GetAll();
+        }
+
+        public string GetProBowlPlayers(int season)
+        {
+            return GetProBowlPlayers();
+        }
+
+        public string GetSchedule(int season)
+        {
+            return GetSchedule();
+        }
 
 		public string GetAll()
 		{
@@ -2483,7 +2505,7 @@ Do you want to continue?",ROM_LENGTH),
 				simpleSetRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
 			
 			if( simpleSetRegex.Match(line) != Match.Empty )
-				ApplySimpleSet(line);
+				StaticUtils.ApplySimpleSet(line, this);
             else if (line.IndexOf("PromptUser", StringComparison.OrdinalIgnoreCase) > -1)
             {
                 if (line.IndexOf(RomVersion.ToString(), StringComparison.OrdinalIgnoreCase) > -1)
@@ -2505,50 +2527,6 @@ Do you want to continue?",ROM_LENGTH),
             {
                 StaticUtils.AddError(string.Format("ERROR with line \"{0}\"", line));
             }
-		}
-
-		private void ApplySimpleSet(string line)
-		{
-			if( simpleSetRegex == null)
-				simpleSetRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
-
-			Match m = simpleSetRegex.Match(line);
-			if( m == Match.Empty )
-			{
-				StaticUtils.ShowError(string.Format("SET function not used properly. incorrect syntax>'{0}'",line));
-				return;
-			}
-			string loc = m.Groups[1].ToString().ToLower();
-			string val = m.Groups[2].ToString().ToLower();
-			loc = loc.Substring(2);
-			val = val.Substring(2);
-			if( val.Length % 2 != 0 )
-				val = "0" + val;
-			
-			try
-			{
-				int location = Int32.Parse( loc,System.Globalization.NumberStyles.AllowHexSpecifier);
-				byte[] bytes = GetHexBytes(val);
-				if( location + bytes.Length > outputRom.Length  )
-				{
-					StaticUtils.ShowError(string.Format("ApplySet:> Error with line {0}. Data falls off the end of rom.\n",line));
-				}
-				else if( location < 0)
-				{
-					StaticUtils.ShowError(string.Format("ApplySet:> Error with line {0}. location is negative.\n",line));
-				}
-				else
-				{
-					for(int i = 0; i < bytes.Length; i++)
-					{
-						outputRom[location+i] = bytes[i];
-					}
-				}
-			}
-			catch(Exception e)
-			{
-				StaticUtils.ShowError(string.Format("ApplySet:> Error with line {0}.\n{1}",line, e.Message));
-			}
 		}
 
 		private byte[] GetHexBytes(string input)
