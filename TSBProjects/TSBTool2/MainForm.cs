@@ -81,7 +81,7 @@ namespace TSBTool2_UI
                 state2();
                 UpdateTitle(filename);
                 if (!tool.RomVersion.Contains("TSB2"))
-                    seasonToolStripMenuItem.Enabled = false;
+                    seasonMenuItem.Enabled = false;
             }
             else
                 state1();
@@ -105,7 +105,7 @@ namespace TSBTool2_UI
 
         private void state1()
         {
-            seasonToolStripMenuItem.Enabled =
+            seasonMenuItem.Enabled =
                 debugToolStripMenuItem.Enabled =
                 debugDialogToolStripMenuItem.Enabled =
                 mViewContentsButton.Enabled =
@@ -116,7 +116,7 @@ namespace TSBTool2_UI
 
         private void state2()
         {
-            seasonToolStripMenuItem.Enabled =
+            seasonMenuItem.Enabled =
                 debugToolStripMenuItem.Enabled =
                 debugDialogToolStripMenuItem.Enabled =
                 mViewContentsButton.Enabled =
@@ -133,13 +133,13 @@ namespace TSBTool2_UI
         {
             string key  = tool.GetKey();
             string text = "";
-            if (season1ToolStripMenuItem.Checked)
+            if (season1MenuItem.Checked)
                 text += tool.GetAll(1);
-            else if (season2ToolStripMenuItem.Checked)
+            else if (season2MenuItem.Checked)
                 text += tool.GetAll(2);
-            else if (season3ToolStripMenuItem.Checked)
+            else if (season3MenuItem.Checked)
                 text += tool.GetAll(3);
-            else if (allSeasonsToolStripMenuItem.Checked)
+            else if (allSeasonsMenuItem.Checked)
                 text += tool.GetAll();
             SetText(key + text);
             
@@ -167,21 +167,21 @@ namespace TSBTool2_UI
 
         private void seasonItemClicked(object sender, EventArgs e)
         {
-            if (sender == this.season1ToolStripMenuItem)
+            if (sender == this.season1MenuItem)
             {
-                allSeasonsToolStripMenuItem.Checked = season2ToolStripMenuItem.Checked = season3ToolStripMenuItem.Checked = false;
+                allSeasonsMenuItem.Checked = season2MenuItem.Checked = season3MenuItem.Checked = false;
             }
-            else if (sender == this.season2ToolStripMenuItem)
+            else if (sender == this.season2MenuItem)
             {
-                allSeasonsToolStripMenuItem.Checked = season1ToolStripMenuItem.Checked = season3ToolStripMenuItem.Checked = false;
+                allSeasonsMenuItem.Checked = season1MenuItem.Checked = season3MenuItem.Checked = false;
             }
-            else if (sender == this.season3ToolStripMenuItem)
+            else if (sender == this.season3MenuItem)
             {
-                allSeasonsToolStripMenuItem.Checked = season2ToolStripMenuItem.Checked = season1ToolStripMenuItem.Checked = false;
+                allSeasonsMenuItem.Checked = season2MenuItem.Checked = season1MenuItem.Checked = false;
             }
-            else if (sender == this.allSeasonsToolStripMenuItem)
+            else if (sender == this.allSeasonsMenuItem)
             {
-                season3ToolStripMenuItem.Checked = season2ToolStripMenuItem.Checked = season1ToolStripMenuItem.Checked = false;
+                season3MenuItem.Checked = season2MenuItem.Checked = season1MenuItem.Checked = false;
             }
         }
 

@@ -877,4 +877,44 @@ When converting from TSB1 --> TSB2 a 'Auto-update' sim data operation is perform
             return retval;
         }
     }
+
+    public static class TecmoConverter
+    {
+        // TSB1->TSB2; TSB1-> TSB3; 
+        // TSB2->TSB1; TSB2-> TSB3;
+        // TSB3->TSB1; TSB3-> TSB2;
+        public static string Convert(TSBContentType from, TSBContentType to, string content)
+        {
+            if( from == to)
+                return content;
+            string retVal = "";
+            if (from == TSBContentType.TSB1 && to == TSBContentType.TSB2)
+            {
+                retVal = TSB2Converter.ConvertToTSB2FromTSB1(content);
+            }
+            else if (from == TSBContentType.TSB1 && to == TSBContentType.TSB3)
+            {
+                retVal = TSB2Converter.ConvertToTSB2FromTSB1(content);
+                retVal = TSB3Converter.ConvertToTSB3FromTSB2(retVal);
+            }
+            else if (from == TSBContentType.TSB2 && to == TSBContentType.TSB3)
+            {
+                retVal = TSB3Converter.ConvertToTSB3FromTSB2(content);
+            }
+            else if (from == TSBContentType.TSB2 && to == TSBContentType.TSB1)
+            {
+                retVal = TSB1Converter.ConvertToTSB1FromTSB2(content);
+            }
+            else if (from == TSBContentType.TSB3 && to == TSBContentType.TSB1)
+            {
+                retVal = TSB2Converter.ConvertToTSB2FromTSB3(content);
+                retVal = TSB1Converter.ConvertToTSB1FromTSB2(retVal);
+            }
+            else if (from == TSBContentType.TSB3 && to == TSBContentType.TSB2)
+            {
+                retVal = TSB2Converter.ConvertToTSB2FromTSB3(content);
+            }
+            return retVal;
+        }
+    }
 }

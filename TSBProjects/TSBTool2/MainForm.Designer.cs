@@ -44,13 +44,14 @@
             this.proBowlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editPlayersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editTeamsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editProBowlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.debugDialogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.seasonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.season1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.season2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.season3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.allSeasonsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.seasonMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.season1MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.season2MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.season3MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allSeasonsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertToTSB2TextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertToTSB1TextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,7 +64,6 @@
             this.mViewContentsButton = new System.Windows.Forms.Button();
             this.mApplyButton = new System.Windows.Forms.Button();
             this.mTextBox = new TSBTool2_UI.SearchTextBox();
-            this.editProBowlToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -73,7 +73,7 @@
             this.fileToolStripMenuItem,
             this.viewToolStripMenuItem,
             this.debugToolStripMenuItem,
-            this.seasonToolStripMenuItem,
+            this.seasonMenuItem,
             this.convertToolStripMenuItem,
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -156,7 +156,7 @@
             this.playbooksToolStripMenuItem.CheckOnClick = true;
             this.playbooksToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.playbooksToolStripMenuItem.Name = "playbooksToolStripMenuItem";
-            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.playbooksToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.playbooksToolStripMenuItem.Text = "Playbooks";
             this.playbooksToolStripMenuItem.Click += new System.EventHandler(this.playbooksToolStripMenuItem_Click);
             // 
@@ -166,7 +166,7 @@
             this.simDataToolStripMenuItem.CheckOnClick = true;
             this.simDataToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.simDataToolStripMenuItem.Name = "simDataToolStripMenuItem";
-            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.simDataToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.simDataToolStripMenuItem.Text = "Sim Data";
             this.simDataToolStripMenuItem.Click += new System.EventHandler(this.simDataToolStripMenuItem_Click);
             // 
@@ -176,7 +176,7 @@
             this.scheduleToolStripMenuItem.CheckOnClick = true;
             this.scheduleToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.scheduleToolStripMenuItem.Name = "scheduleToolStripMenuItem";
-            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.scheduleToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.scheduleToolStripMenuItem.Text = "Schedule";
             this.scheduleToolStripMenuItem.Click += new System.EventHandler(this.scheduleToolStripMenuItem_Click);
             // 
@@ -186,23 +186,30 @@
             this.proBowlToolStripMenuItem.CheckOnClick = true;
             this.proBowlToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.proBowlToolStripMenuItem.Name = "proBowlToolStripMenuItem";
-            this.proBowlToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.proBowlToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.proBowlToolStripMenuItem.Text = "Pro Bowl";
             this.proBowlToolStripMenuItem.Click += new System.EventHandler(this.proBowlToolStripMenuItem_Click);
             // 
             // editPlayersToolStripMenuItem
             // 
             this.editPlayersToolStripMenuItem.Name = "editPlayersToolStripMenuItem";
-            this.editPlayersToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editPlayersToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.editPlayersToolStripMenuItem.Text = "Edit &Players";
             this.editPlayersToolStripMenuItem.Click += new System.EventHandler(this.editPlayersToolStripMenuItem_Click);
             // 
             // editTeamsToolStripMenuItem
             // 
             this.editTeamsToolStripMenuItem.Name = "editTeamsToolStripMenuItem";
-            this.editTeamsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editTeamsToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
             this.editTeamsToolStripMenuItem.Text = "Edit &Teams";
             this.editTeamsToolStripMenuItem.Click += new System.EventHandler(this.editTeamsToolStripMenuItem_Click);
+            // 
+            // editProBowlToolStripMenuItem
+            // 
+            this.editProBowlToolStripMenuItem.Name = "editProBowlToolStripMenuItem";
+            this.editProBowlToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.editProBowlToolStripMenuItem.Text = "Edit Pro Bowl";
+            this.editProBowlToolStripMenuItem.Click += new System.EventHandler(this.editProBowlToolStripMenuItem_Click);
             // 
             // debugToolStripMenuItem
             // 
@@ -219,50 +226,50 @@
             this.debugDialogToolStripMenuItem.Text = "Debug Dialog";
             this.debugDialogToolStripMenuItem.Click += new System.EventHandler(this.debugDialogToolStripMenuItem_Click);
             // 
-            // seasonToolStripMenuItem
+            // seasonMenuItem
             // 
-            this.seasonToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.season1ToolStripMenuItem,
-            this.season2ToolStripMenuItem,
-            this.season3ToolStripMenuItem,
-            this.allSeasonsToolStripMenuItem});
-            this.seasonToolStripMenuItem.Name = "seasonToolStripMenuItem";
-            this.seasonToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
-            this.seasonToolStripMenuItem.Text = "&Season";
+            this.seasonMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.season1MenuItem,
+            this.season2MenuItem,
+            this.season3MenuItem,
+            this.allSeasonsMenuItem});
+            this.seasonMenuItem.Name = "seasonMenuItem";
+            this.seasonMenuItem.Size = new System.Drawing.Size(56, 20);
+            this.seasonMenuItem.Text = "&Season";
             // 
-            // season1ToolStripMenuItem
+            // season1MenuItem
             // 
-            this.season1ToolStripMenuItem.Checked = true;
-            this.season1ToolStripMenuItem.CheckOnClick = true;
-            this.season1ToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.season1ToolStripMenuItem.Name = "season1ToolStripMenuItem";
-            this.season1ToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
-            this.season1ToolStripMenuItem.Text = "Season 1";
-            this.season1ToolStripMenuItem.Click += new System.EventHandler(this.seasonItemClicked);
+            this.season1MenuItem.Checked = true;
+            this.season1MenuItem.CheckOnClick = true;
+            this.season1MenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.season1MenuItem.Name = "season1MenuItem";
+            this.season1MenuItem.Size = new System.Drawing.Size(152, 22);
+            this.season1MenuItem.Text = "Season 1";
+            this.season1MenuItem.Click += new System.EventHandler(this.seasonItemClicked);
             // 
-            // season2ToolStripMenuItem
+            // season2MenuItem
             // 
-            this.season2ToolStripMenuItem.CheckOnClick = true;
-            this.season2ToolStripMenuItem.Name = "season2ToolStripMenuItem";
-            this.season2ToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
-            this.season2ToolStripMenuItem.Text = "Season 2";
-            this.season2ToolStripMenuItem.Click += new System.EventHandler(this.seasonItemClicked);
+            this.season2MenuItem.CheckOnClick = true;
+            this.season2MenuItem.Name = "season2MenuItem";
+            this.season2MenuItem.Size = new System.Drawing.Size(152, 22);
+            this.season2MenuItem.Text = "Season 2";
+            this.season2MenuItem.Click += new System.EventHandler(this.seasonItemClicked);
             // 
-            // season3ToolStripMenuItem
+            // season3MenuItem
             // 
-            this.season3ToolStripMenuItem.CheckOnClick = true;
-            this.season3ToolStripMenuItem.Name = "season3ToolStripMenuItem";
-            this.season3ToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
-            this.season3ToolStripMenuItem.Text = "Season 3";
-            this.season3ToolStripMenuItem.Click += new System.EventHandler(this.seasonItemClicked);
+            this.season3MenuItem.CheckOnClick = true;
+            this.season3MenuItem.Name = "season3MenuItem";
+            this.season3MenuItem.Size = new System.Drawing.Size(152, 22);
+            this.season3MenuItem.Text = "Season 3";
+            this.season3MenuItem.Click += new System.EventHandler(this.seasonItemClicked);
             // 
-            // allSeasonsToolStripMenuItem
+            // allSeasonsMenuItem
             // 
-            this.allSeasonsToolStripMenuItem.CheckOnClick = true;
-            this.allSeasonsToolStripMenuItem.Name = "allSeasonsToolStripMenuItem";
-            this.allSeasonsToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
-            this.allSeasonsToolStripMenuItem.Text = "All Seasons";
-            this.allSeasonsToolStripMenuItem.Click += new System.EventHandler(this.seasonItemClicked);
+            this.allSeasonsMenuItem.CheckOnClick = true;
+            this.allSeasonsMenuItem.Name = "allSeasonsMenuItem";
+            this.allSeasonsMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.allSeasonsMenuItem.Text = "All Seasons";
+            this.allSeasonsMenuItem.Click += new System.EventHandler(this.seasonItemClicked);
             // 
             // convertToolStripMenuItem
             // 
@@ -375,13 +382,6 @@
             this.mTextBox.Text = "";
             this.mTextBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.mTextBox_MouseDoubleClick);
             // 
-            // editProBowlToolStripMenuItem
-            // 
-            this.editProBowlToolStripMenuItem.Name = "editProBowlToolStripMenuItem";
-            this.editProBowlToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.editProBowlToolStripMenuItem.Text = "Edit Pro Bowl";
-            this.editProBowlToolStripMenuItem.Click += new System.EventHandler(this.editProBowlToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -417,11 +417,11 @@
 		private System.Windows.Forms.ToolStripMenuItem applyToROMToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem viewContentsToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem seasonToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem season1ToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem season2ToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem season3ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem allSeasonsToolStripMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem seasonMenuItem;
+		private System.Windows.Forms.ToolStripMenuItem season1MenuItem;
+		private System.Windows.Forms.ToolStripMenuItem season2MenuItem;
+		private System.Windows.Forms.ToolStripMenuItem season3MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem allSeasonsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutTSBTool2ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
