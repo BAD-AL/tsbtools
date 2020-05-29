@@ -167,7 +167,7 @@ namespace TSBTool
 
 		void SetPuntReturner(string team, string position);
 
-		void ApplySchedule( ArrayList scheduleList );
+		void ApplySchedule(System.Collections.Generic.List<string> scheduleList );
 
 		void SetReturnTeam(string team, string pos0, string pos1, string pos2);
 

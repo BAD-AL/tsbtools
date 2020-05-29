@@ -3,8 +3,11 @@ using System.IO;
 using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
+
 using System.Windows.Forms;
+#if !BRIDGE_PROJECT
 using System.Configuration;
+#endif
 
 // defect happens when saving player attributes for 49ers +
 // need to find out where 49ers QB1 attributes start. -=> 0x3CDC
@@ -84,10 +87,10 @@ namespace TSBTool
         /// </summary>
         public override ROM_TYPE RomVersion {  get { return mRomType; }  }
 
-		public CXRomTSBTool(string fileName, ROM_TYPE type)
+		public CXRomTSBTool(byte[] rom, ROM_TYPE type)
 		{
             mRomType = type;
-			Init(fileName);
+			Init(rom);
 		}
 
         
@@ -107,7 +110,8 @@ namespace TSBTool
             mTeamFormationsStartingLoc = 0x3f940;
             namePointersStart = 0x48 + 12;
             lastPlayerNamePointer = 0x06e4;//0x6d9 + 12;
-			
+
+#if !BRIDGE_PROJECT
 			try
 			{
 				string test = ConfigurationSettings.AppSettings["CXROM_ExpansionNameSegmentEnd"];
@@ -173,6 +177,7 @@ namespace TSBTool
 				StaticUtils.ShowError(
 					"Error reading Config file options, do you have TSBToolSupreme.exe.config in the same directory?");
 			}
+#endif
 			faceTeamOffsets= new int[]
 				{
 				0x3012, 0x3087, 0x30FC, 0x3171, 0x31E6,	0x325B, 0x32D0, 0x3345, 0x33BA, 0x342F, 0x34A4, 0x3519, 0x358e, 0x3603,
@@ -246,10 +251,10 @@ namespace TSBTool
             return ret;
         }
 
-		public override bool ReadRom(string filename)
+		public override bool InitRom(byte[] rom)
 		{
 			bool ret = false;
-			ret = base.ReadRom (filename);
+			ret = base.InitRom (rom);
 			if( ret )
 			{
                 SetupForCxROM();
@@ -946,7 +951,7 @@ namespace TSBTool
 		/// </summary>
 		/// <param name="scheduleList"></param>
 		/// <returns></returns>
-		public override void ApplySchedule( ArrayList scheduleList )
+		public override void ApplySchedule(System.Collections.Generic.List<string> scheduleList )
 		{
 			if( scheduleList != null && outputRom != null )
 			{
@@ -979,7 +984,7 @@ namespace TSBTool
 			return ret;
 		}
 
-		#region Uniform Color Stuff
+#region Uniform Color Stuff
 		private int mFortyNinersUniformLoc = 0x2cf82;
 		
 		protected override int GetUniformLoc(string team)
@@ -1057,6 +1062,6 @@ namespace TSBTool
 			}
 			return ret;
 		}
-		#endregion
+#endregion
 	}
 }

@@ -312,7 +312,7 @@ namespace TSBTool2
         private static string ConvertFaceToTSB2(string input)
         {
             string tmp = input.Replace("Face=0x","");
-            int number = Int32.Parse(tmp, System.Globalization.NumberStyles.AllowHexSpecifier);
+            int number = TSBTool.StaticUtils.ParseIntFromHexString(tmp); // Int32.Parse(tmp, System.Globalization.NumberStyles.AllowHexSpecifier);
             if (number < 0x80)
                 number = number & 0x0F;
             else
@@ -822,11 +822,29 @@ When converting from TSB1 --> TSB2 a 'Auto-update' sim data operation is perform
             {
                 if (sFormulaString == null)
                 {
+#if !BRIDGE_PROJECT
                     string fileName = "Formulas\\FAP_Formulas.txt";
                     if (File.Exists(fileName))
                         sFormulaString = File.ReadAllText(fileName);
                     else
                         sFormulaString = TSBTool.StaticUtils.GetEmbeddedTextFile("TSBTool.Formulas.FAP_Formulas.txt");
+#else
+                    sFormulaString =
+@"# Free Agent point formulas
+
+FAP_QB: (PS+PC+AR)/15
+FAP_RB: ((MS+BC+RC)-110)/4
+FAP_WR: ((RC -38 + MS - 38)/3) -2
+FAP_TE: ((RC -25 + MS - 25)/3) +1
+FAP_OL: (HP -44)/2
+FAP_DL: (MS + HP -50) / 6
+FAP_LB: (MS-31 + HP-31)/4
+FAP_CB: (MS-31 + PI-25)/5
+FAP_S: (MS-31 + PI-25 + HP-31)/7
+FAP_K: KA/6
+FAP_P: (KP-31)/6
+";
+#endif 
                 }
                 return sFormulaString;
             }

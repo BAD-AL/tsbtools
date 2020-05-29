@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Reflection;
-using System.CodeDom.Compiler;
+//using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 
 namespace TSBTool2
@@ -207,11 +207,59 @@ namespace TSBTool2
             {
                 if (sSimFormulas == null)
                 {
+#if !BRIDGE_PROJECT
                     string fileName = "Formulas\\SIM_Formulas.txt";
                     if (File.Exists(fileName))
                         sSimFormulas = File.ReadAllText(fileName);
                     else
                         sSimFormulas = TSBTool.StaticUtils.GetEmbeddedTextFile("TSBTool.Formulas.SIM_Formulas.txt");
+#else
+                    sSimFormulas =
+@" SIM_Formulas.txt
+QB_SIM_CARY: IIF(MS > 43,10, IIF(MS > 37,8, IIF(MS > 30, 6, IIF(MS > 24, 4,IIF(MS > 18, 2, 0)))))
+QB_SIM_RUSHING: MS /5
+QB_SIM_PASSING: (PS -38 + PC -31 + AR -38) / 6
+QB_SIM_SCRAMBLE: MS /16
+
+RB_SIM_RUSHING: ((MS - 31)*2 + (HP-31)*2 + (RP-3)*2)+10
+RB_SIM_CARRIES: (((MS - 31)*2 + (HP-31)*2 + (RP-3)*2)+10) /10
+RB_SIM_RETURN: (MS+HP)/10 -3
+RB_SIM_YPC: 4
+RB_SIM_CATCH: RC / 5 -1
+
+WR_SIM_RUSHING: 1
+WR_SIM_CARRIES: 2
+WR_SIM_RETURN: (MS+HP)/10 -3
+WR_SIM_YPC: (MS + RC) / 10
+WR_SIM_CATCH:  RC / 5 -1
+
+TE_SIM_RUSHING: 0
+TE_SIM_CARRIES: 2
+TE_SIM_RETURN: (MS+HP)/10 -3
+TE_SIM_YPC:( MS + RC) / 10
+TE_SIM_CATCH:  RC / 5 -1
+
+DL_SIM_SACKING: (QU-44 + HP-50) * 1.3
+DL_SIM_INT: 0
+DL_SIM_TACKLING: 1+ (HP /10) 
+
+LB_SIM_SACKING: (HP - 38)*1.3
+LB_SIM_INT: (PI - 6) * 0.45
+LB_SIM_TACKLING: (HP /7) 
+
+CB_SIM_SACKING: (HP-44)*2
+CB_SIM_INT: PI * 0.66
+CB_SIM_TACKLING: RP/10
+
+S_SIM_SACKING: (HP-44)*2
+S_SIM_INT: PI * 0.66
+S_SIM_TACKLING: QU /10
+
+
+K_SIM_ABILITY: KA/ 7
+P_SIM_ABILITY: KP / 7
+";
+#endif 
                 }
                 return sSimFormulas;
             }

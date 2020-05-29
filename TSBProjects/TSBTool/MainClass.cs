@@ -96,7 +96,7 @@ namespace TSBTool
                 return;
             if (getFileName != null && File.Exists(getFileName))
             {
-                ITecmoContent tool = TecmoToolFactory.GetToolForRom(romFile);
+                ITecmoContent tool = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom( romFile));
                 string result = GetLocations(getFileName, tool.OutputRom);
                 Console.WriteLine(result);
                 return;
@@ -265,7 +265,7 @@ The following are the available options.
 
 		private static void PrintStuff(string filename)
 		{
-            ITecmoContent tool = TecmoToolFactory.GetToolForRom(filename); 
+            ITecmoContent tool = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom( filename)); 
 			if( tool == null )
 			{
                 StaticUtils.ShowError("ERROR determining ROM type.");
@@ -299,7 +299,7 @@ The following are the available options.
 
 		public static void ModifyStuff(string romfile, string inputfile)
 		{
-            ITecmoContent tt = TecmoToolFactory.GetToolForRom(romfile);
+            ITecmoContent tt = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom( romfile));
             string content = "";
 
             if (inputfile != null)

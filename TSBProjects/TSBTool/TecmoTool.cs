@@ -103,7 +103,7 @@ namespace TSBTool
 			{
 				if( mNameRegex == null )
 				{
-					mNameRegex = new Regex("[a-zA-Z \\.]+", RegexOptions.Compiled );
+					mNameRegex = new Regex("[a-zA-Z \\.]+");
 				}
 				return mNameRegex;
 			}
@@ -116,9 +116,9 @@ namespace TSBTool
         }
 
         public TecmoTool() { }
-		public TecmoTool(string fileName)
+		public TecmoTool(byte[] rom)
 		{
-			Init(fileName);
+			Init(rom);
 		}
 
 		/// <summary>
@@ -169,9 +169,9 @@ namespace TSBTool
 			return ret;
 		}
 
-		protected bool Init(string fileName)
+		protected bool Init(byte[] rom)
 		{
-			return ReadRom(fileName);
+			return InitRom(rom);
 		}
 
 		public void Test2()
@@ -237,15 +237,13 @@ namespace TSBTool
             return ret;
         }
 
-		public virtual bool ReadRom(string filename)
+		public virtual bool InitRom(byte[] rom)
 		{
 			bool ret = false;
 			try
 			{
-				System.Windows.Forms.DialogResult result = 
-					System.Windows.Forms.DialogResult.Yes;
-				FileInfo f1 = new FileInfo(filename);
-				long len = f1.Length;
+				System.Windows.Forms.DialogResult result =  System.Windows.Forms.DialogResult.Yes;
+				long len = rom.Length;
                 if (!IsValidRomSize(len))
 				{
 					if( MainClass.GUI_MODE )
@@ -260,7 +258,7 @@ You should only continue if you know for sure that you are loading a nes TSB ROM
 
 Supported sizes are[{2}, {3}, {4}]
 
-Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, TecmoToolFactory.CXROM_V105_LEN, TecmoToolFactory.CXROM_V111_LEN),
+Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, TecmoToolFactory.CXROM_V105_LEN, TecmoToolFactory.CXROM_V111_LEN),
 							"WARNING!",
 							System.Windows.Forms.MessageBoxButtons.YesNo,
 							System.Windows.Forms.MessageBoxIcon.Warning );
@@ -271,17 +269,14 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
                             @"ERROR! ROM '{0}' is not the correct length.  
     Supported sizes are [{1}, {2}, or {3}] bytes long.
     If you know this is really a nes TSB ROM, you can force TSBToolSupreme to load it in GUI mode.",
-                            filename, TecmoToolFactory.ORIG_NES_TSB1_LEN, TecmoToolFactory.CXROM_V105_LEN, TecmoToolFactory.CXROM_V111_LEN);
+                            "<file>", TecmoToolFactory.ORIG_NES_TSB1_LEN, TecmoToolFactory.CXROM_V105_LEN, TecmoToolFactory.CXROM_V111_LEN);
 						StaticUtils.AddError(msg);
 					}
 				}
 				
 				if( result == System.Windows.Forms.DialogResult.Yes )
 				{
-					FileStream s1 = new FileStream(filename, FileMode.Open);
-					outputRom = new byte[(int)len];
-					s1.Read(outputRom,0,(int)len);
-					s1.Close();
+					outputRom = rom;
 					ret = true;
 				}
 			}
@@ -893,7 +888,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 				StaticUtils.AddError(string.Format("ERROR! (low level) Position '{0}' does not exist. Valid positions are:",position));
 				for(int i =1; i <= positionNames.Count; i++)
 				{
-					Console.Error.Write("{0}\t", positionNames[i-1]);
+					StaticUtils.WriteError(string.Format("{0}\t", positionNames[i-1]));
 				}
 				return -1;
 			}
@@ -2099,6 +2094,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
             {
                 StaticUtils.ApplySimpleSet(line, this);
             }
+#if !BRIDGE_PROJECT
             else if (line.IndexOf("PromptUser", StringComparison.OrdinalIgnoreCase) > -1)
             {
                 if (line.IndexOf(RomVersion.ToString(), StringComparison.OrdinalIgnoreCase) > -1)
@@ -2116,6 +2112,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
                     StaticUtils.AddError(string.Format("line '{0}' not applied; romVersion = {1}",line, RomVersion.ToString()));
                 }
             }
+#endif
 			else
 			{
 				StaticUtils.AddError(string.Format("ERROR with line \"{0}\"",line));
@@ -2361,7 +2358,7 @@ Do you want to continue?", filename, len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 		/// </summary>
 		/// <param name="scheduleList"></param>
 		/// <returns></returns>
-		public virtual void ApplySchedule( ArrayList scheduleList )
+		public virtual void ApplySchedule( List<string> scheduleList )
 		{
 			if( scheduleList != null && outputRom != null )
 			{

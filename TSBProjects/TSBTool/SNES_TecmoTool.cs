@@ -98,9 +98,9 @@ namespace TSBTool
 			"49ers",    "rams",   "saints",   "falcons"
 		};
 
-		public SNES_TecmoTool(string fileName)
+		public SNES_TecmoTool(byte[] rom)
 		{
-			Init(fileName);
+			Init(rom);
 		}
 
 		public string[] GetTeams()
@@ -146,9 +146,9 @@ namespace TSBTool
             this.OutputRom[location] = b;
         }
 
-		protected bool Init(string fileName)
+		protected bool Init(byte[] rom)
 		{
-			return ReadRom(fileName);
+			return ReadRom(rom);
 		}
 
 		public void Test2()
@@ -201,15 +201,14 @@ namespace TSBTool
 
 		}
 		
-		public bool ReadRom(string filename)
+		public bool ReadRom(byte[] rom )
 		{
 			bool ret = false;
 			try
 			{
 				System.Windows.Forms.DialogResult result = 
 					System.Windows.Forms.DialogResult.Yes;
-				FileInfo f1 = new FileInfo(filename);
-				long len = f1.Length;
+				long len = rom.Length;
 				if( len != ROM_LENGTH )
 				{
 					if( MainClass.GUI_MODE )
@@ -233,18 +232,14 @@ Do you want to continue?",ROM_LENGTH),
 							@"ERROR! ROM '{0}' is not the correct length.  
     Legit TSB1 snes ROMS are {1} bytes long.
     If you know this is really a snes TSB1 ROM, you can force TSBToolSupreme to load it in GUI mode.",
-							filename, ROM_LENGTH);
+							"<filename>", ROM_LENGTH);
 						StaticUtils.AddError(msg);
 					}
 				}
 				
 				if( result == System.Windows.Forms.DialogResult.Yes )
 				{
-					FileStream s1 = new FileStream(filename, FileMode.Open);
-					outputRom = new byte[(int)len];
-					s1.Read(outputRom,0,(int)len);
-					s1.Close();
-					
+					outputRom = rom; 
 					//					if( len == ROM_LENGTH + 0x200 )// works
 					//					{// some TSB1 snes ROMS are like this, we'll just strip the first 
 					//						byte[] newRom = new byte[ROM_LENGTH];
@@ -876,7 +871,7 @@ Do you want to continue?",ROM_LENGTH),
 				StaticUtils.AddError(string.Format("ERROR! (low level) Position '{0}' does not exist. Valid positions are:",position));
 				for(int i =1; i <= positionNames.Length; i++)
 				{
-					Console.Error.Write("{0}\t", positionNames[i-1]);
+                    StaticUtils.WriteError(string.Format( "{0}\t", positionNames[i-1]));
 				}
 				return -1;
 			}
@@ -2506,6 +2501,7 @@ Do you want to continue?",ROM_LENGTH),
 			
 			if( simpleSetRegex.Match(line) != Match.Empty )
 				StaticUtils.ApplySimpleSet(line, this);
+#if !BRIDGE_PROJECT
             else if (line.IndexOf("PromptUser", StringComparison.OrdinalIgnoreCase) > -1)
             {
                 if (line.IndexOf(RomVersion.ToString(), StringComparison.OrdinalIgnoreCase) > -1)
@@ -2523,6 +2519,7 @@ Do you want to continue?",ROM_LENGTH),
                     StaticUtils.AddError(string.Format("line '{0}' not applied; RomVersion = {1}", line, RomVersion.ToString()));
                 }
             }
+#endif
             else
             {
                 StaticUtils.AddError(string.Format("ERROR with line \"{0}\"", line));
@@ -2542,7 +2539,7 @@ Do you want to continue?",ROM_LENGTH),
 			for(int i =0; i < input.Length; i+=2 )
 			{
 				b = input.Substring(i,2);
-				tmp = Int32.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
+                tmp = StaticUtils.ParseIntFromHexString(b);// Int32.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
 				ret[j++] = (byte)tmp;
 			}
 			return ret;
@@ -2586,7 +2583,7 @@ Do you want to continue?",ROM_LENGTH),
 		/// </summary>
 		/// <param name="scheduleList"></param>
 		/// <returns></returns>
-		public virtual void ApplySchedule( ArrayList scheduleList )
+		public virtual void ApplySchedule( System.Collections.Generic.List<string> scheduleList )
 		{
 			if( scheduleList != null && outputRom != null )
 			{

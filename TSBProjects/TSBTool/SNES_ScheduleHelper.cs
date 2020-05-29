@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace TSBTool
 {
@@ -51,7 +52,7 @@ namespace TSBTool
 		/// Applies a schedule to the rom.
 		/// </summary>
 		/// <param name="lines">the contents of the schedule file.</param>
-		public void ApplySchedule(ArrayList lines)
+		public void ApplySchedule(List<string> lines)
 		{
 			week             = -1;
 			week_game_count  =  0;
@@ -77,7 +78,7 @@ namespace TSBTool
 						break;
 					}
 					CloseWeek();
-					Console.Error.WriteLine("Scheduleing {0}",line);
+					StaticUtils.WriteError( string.Format("Scheduleing {0}",line));
 				}
 				else 
 				{
@@ -288,7 +289,7 @@ namespace TSBTool
 
 		}
 
-		private ArrayList Ensure18Weeks(ArrayList lines )
+		private List<string> Ensure18Weeks(List<string> lines )
 		{
 
 			int wks = CountWeeks(lines);
@@ -314,7 +315,7 @@ namespace TSBTool
 			return lines;
 		}
 
-		private int CountWeeks(ArrayList lines)
+		private int CountWeeks(List<string> lines)
 		{
 			int count = 0;
 			foreach(string line in lines)

@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
 
 namespace TSBTool
@@ -25,7 +26,7 @@ namespace TSBTool
 			uniformUsageRegex, replaceStringRegex, teamStringsRegex;
 
 		private string currentTeam; //used for roster update
-		private ArrayList scheduleList;
+		private List<string> scheduleList;
 
 		public InputParser(ITecmoTool tool)
 		{
@@ -165,12 +166,12 @@ namespace TSBTool
             for (int i = 0; i < mc.Count; i++)
             {
                 current = mc[i];
-                location1 = long.Parse(current.Groups[1].ToString().Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
+                location1 = StaticUtils.ParseLongFromHexString(current.Groups[1].ToString().Substring(2)); // long.Parse(current.Groups[1].ToString().Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
                 valueLength1 = current.Groups[2].Length / 2 ;
                 for (int j = i+1; j < mc.Count; j++)
                 {
                     m = mc[j];
-                    location2 = long.Parse(m.Groups[1].ToString().Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
+                    location2 = StaticUtils.ParseLongFromHexString(m.Groups[1].ToString().Substring(2)); // long.Parse(m.Groups[1].ToString().Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
                     valueLength2 = m.Groups[2].Length / 2 ;
                     if ((location2 >= location1 && location2 <= location1 + (valueLength1-2)) ||
                         (location1 >= location2 && location1 <= location2 + (valueLength2-2))    )
@@ -349,7 +350,7 @@ namespace TSBTool
             {
                 currentState = scheduleState;
                 if (scheduleList == null)
-                    scheduleList = new ArrayList(300);
+                    scheduleList = new List<string>(300);
                 scheduleList.Add(line);
             }
             else if (yearRegex.Match(line) != Match.Empty)//line.StartsWith("YEAR"))
@@ -422,7 +423,7 @@ namespace TSBTool
 			{
 				try
 				{
-					int simData = Int32.Parse(data,System.Globalization.NumberStyles.AllowHexSpecifier);
+					int simData = StaticUtils.ParseIntFromHexString(data);
 					ret[0]=simData;
 				}
 				catch
@@ -735,9 +736,9 @@ namespace TSBTool
         {
             if (input != null)
             {
-                System.Globalization.NumberStyles ns = System.Globalization.NumberStyles.None;
-                if (useHex)
-                    ns = System.Globalization.NumberStyles.AllowHexSpecifier;
+                //System.Globalization.NumberStyles ns = System.Globalization.NumberStyles.None;
+                //if (useHex)
+                //    ns = System.Globalization.NumberStyles.AllowHexSpecifier;
                 int pound = input.IndexOf("#");
                 int brace = input.IndexOf("[");
                 if (pound > -1)
@@ -764,7 +765,12 @@ namespace TSBTool
                     {
                         s = nums[i] as string;
                         if (s != null && s.Length > 0)
-                            result[j++] = Int32.Parse(s, ns);
+                        {
+                            if (useHex)
+                                result[j++] = StaticUtils.ParseIntFromHexString(s);
+                            else
+                                result[j++] = Int32.Parse(s);
+                        }
                     }
                     return result;
                 }
@@ -784,7 +790,7 @@ namespace TSBTool
 			string num = jerseyRegex.Match(line).Groups[1].ToString();
 			try
 			{
-				ret = Int32.Parse(num,System.Globalization.NumberStyles.AllowHexSpecifier);
+                ret = StaticUtils.ParseIntFromHexString(num);
 			}
 			catch{ret = -1; }
 			return ret;
@@ -800,8 +806,8 @@ namespace TSBTool
 				string num = m.Groups[1].ToString();
 				try
 				{
-					ret = Int32.Parse(num,System.Globalization.NumberStyles.AllowHexSpecifier);
-				}
+                    ret = StaticUtils.ParseIntFromHexString(num);
+                }
 				catch
 				{
 					ret = -1; 
@@ -818,7 +824,7 @@ namespace TSBTool
 			return pos;
 		}
 
-		public string oldGetLastName(string line)
+		public static string GetLastName(string line)
 		{
 			string ret ="";
 			Match m = posNameFaceRegex.Match(line);
@@ -831,7 +837,7 @@ namespace TSBTool
 			return ret;
 		}
 
-		public string oldGetFirstName(string line)
+		public static string GetFirstName(string line)
 		{
 			string ret ="";
 			Match m = posNameFaceRegex.Match(line);
@@ -844,7 +850,7 @@ namespace TSBTool
 			}
 			return ret;
 		}
-
+        /*
         static Regex mFirstNameRegex = new Regex("([a-z. ]+)");
         static Regex mLastNameRegex = new Regex(" ([A-Z. ]+)");
 
@@ -859,7 +865,7 @@ namespace TSBTool
                 if (m2 != Match.Empty)
                     ret = m2.Groups[1].ToString().Trim();
                 else
-                    Console.Error.WriteLine("ERROR Getting last name for>" + line);
+                    StaticUtils.WriteError("ERROR Getting last name for>" + line);
             }
             return ret;
         }
@@ -875,10 +881,10 @@ namespace TSBTool
                 if (m2 != Match.Empty)
                     ret = m2.Groups[1].ToString().Trim();
                 else
-                    Console.Error.WriteLine("ERROR Getting first name for>" + line);
+                    StaticUtils.WriteError("ERROR Getting first name for>" + line);
             }
             return ret;
-        }
+        }*/
 
 		
 		/// <summary>
@@ -898,7 +904,7 @@ namespace TSBTool
 				for(int i =0; i < tmp.Length; i++)
 				{
 					b = byteString.Substring(i*2,2);
-					tmp[i] = byte.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
+                    tmp[i] = StaticUtils.ParseByteFromHexString(b);// byte.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
 				}
 				ret = tmp;
 			}

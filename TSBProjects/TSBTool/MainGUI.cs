@@ -919,7 +919,7 @@ namespace TSBTool
 		private void LoadROM(string filename)
 		{
             //TODO: update this.
-			tool = TecmoToolFactory.GetToolForRom(filename);
+			tool = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom( filename));
 			if (filename != null && tool != null)
 			{
 				if (tool.OutputRom != null)

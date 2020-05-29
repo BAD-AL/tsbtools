@@ -154,12 +154,12 @@ namespace TSBTool2
             for (int i = 0; i < mc.Count; i++)
             {
                 current = mc[i];
-                location1 = long.Parse(current.Groups[1].ToString().Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
+                location1 = TSBTool.StaticUtils.ParseLongFromHexString(current.Groups[1].ToString().Substring(2)); // long.Parse(current.Groups[1].ToString().Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
                 valueLength1 = current.Groups[2].Length / 2;
                 for (int j = i + 1; j < mc.Count; j++)
                 {
                     m = mc[j];
-                    location2 = long.Parse(m.Groups[1].ToString().Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
+                    location2 = TSBTool.StaticUtils.ParseLongFromHexString(m.Groups[1].ToString().Substring(2)); // long.Parse(m.Groups[1].ToString().Substring(2), System.Globalization.NumberStyles.AllowHexSpecifier);
                     valueLength2 = m.Groups[2].Length / 2;
                     if ((location2 >= location1 && location2 <= location1 + (valueLength1 - 2)) ||
                         (location1 >= location2 && location1 <= location2 + (valueLength2 - 2)))
@@ -414,7 +414,7 @@ namespace TSBTool2
             {
                 try
                 {
-                    int simData = Int32.Parse(data, System.Globalization.NumberStyles.AllowHexSpecifier);
+                    int simData = TSBTool.StaticUtils.ParseIntFromHexString(data);
                     ret[0] = simData;
                 }
                 catch
@@ -748,9 +748,9 @@ namespace TSBTool2
         {
             if (input != null)
             {
-                System.Globalization.NumberStyles ns = System.Globalization.NumberStyles.None;
-                if(useHex)
-                    ns = System.Globalization.NumberStyles.AllowHexSpecifier;
+                //System.Globalization.NumberStyles ns = System.Globalization.NumberStyles.None;
+                //if(useHex)
+                //    ns = System.Globalization.NumberStyles.AllowHexSpecifier;
                 int pound = input.IndexOf("#");
                 int brace = input.IndexOf("[");
                 if (pound > -1)
@@ -777,7 +777,12 @@ namespace TSBTool2
                     {
                         s = nums[i] as string;
                         if (s != null && s.Length > 0)
-                            result[j++] = Int32.Parse(s, ns);
+                        {
+                            if (useHex)
+                                result[j++] = TSBTool.StaticUtils.ParseIntFromHexString(s);
+                            else
+                                result[j++] = Int32.Parse(s);
+                        }
                     }
                     return result;
                 }
@@ -797,7 +802,7 @@ namespace TSBTool2
             string num = jerseyRegex.Match(line).Groups[1].ToString();
             try
             {
-                ret = Int32.Parse(num, System.Globalization.NumberStyles.AllowHexSpecifier);
+                ret = TSBTool.StaticUtils.ParseIntFromHexString(num);
             }
             catch { ret = -1; }
             return ret;
@@ -813,7 +818,7 @@ namespace TSBTool2
                 string num = m.Groups[1].ToString();
                 try
                 {
-                    ret = Int32.Parse(num, System.Globalization.NumberStyles.AllowHexSpecifier);
+                    ret = TSBTool.StaticUtils.ParseIntFromHexString(num);
                 }
                 catch
                 {
@@ -831,7 +836,7 @@ namespace TSBTool2
             return pos;
         }
 
-        public static  string oldGetLastName(string line)
+        public static  string GetLastName(string line)
         {
             string ret = "";
             Match m = posNameFaceRegex.Match(line);
@@ -844,7 +849,7 @@ namespace TSBTool2
             return ret;
         }
 
-        public static  string oldGetFirstName(string line)
+        public static  string GetFirstName(string line)
         {
             string ret = "";
             Match m = posNameFaceRegex.Match(line);
@@ -857,7 +862,7 @@ namespace TSBTool2
             }
             return ret;
         }
-
+        /*
         private static Regex mFirstNameRegex = new Regex("([a-z. ]+)");
         private static Regex mLastNameRegex = new Regex(" ([A-Z. ]+)");
 
@@ -872,7 +877,7 @@ namespace TSBTool2
                 if (m2 != Match.Empty)
                     ret = m2.Groups[1].ToString().Trim();
                 else
-                    Console.Error.WriteLine("ERROR Getting last name for>" + line);
+                    TSBTool.StaticUtils.WriteError("ERROR Getting last name for>" + line);
             }
             return ret;
         }
@@ -888,10 +893,10 @@ namespace TSBTool2
                 if (m2 != Match.Empty)
                     ret = m2.Groups[1].ToString().Trim();
                 else
-                    Console.Error.WriteLine("ERROR Getting first name for>" + line);
+                    TSBTool.StaticUtils.WriteError("ERROR Getting first name for>" + line);
             }
             return ret;
-        }
+        }*/
 
 
         /// <summary>
@@ -911,7 +916,7 @@ namespace TSBTool2
                 for (int i = 0; i < tmp.Length; i++)
                 {
                     b = byteString.Substring(i * 2, 2);
-                    tmp[i] = byte.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
+                    tmp[i] = TSBTool.StaticUtils.ParseByteFromHexString(b); // byte.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
                 }
                 ret = tmp;
             }

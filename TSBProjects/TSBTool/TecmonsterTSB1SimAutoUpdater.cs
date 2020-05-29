@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace TSBTool
 {
@@ -189,8 +188,8 @@ Please verify that this player's attributes are correct.", oldPlayer);
 			}
 			catch(Exception e)
 			{
-				MessageBox.Show("Oh oh!"+e.Message);
-			}
+                StaticUtils.ShowError("Oh oh!" + e.Message);
+            }
 			int simPass, simRush, simPocket, simCatch, simTargets, simYPC, simKA;
 
 			switch( position )

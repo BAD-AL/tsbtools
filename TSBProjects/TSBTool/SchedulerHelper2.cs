@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace TSBTool
 {
@@ -25,7 +26,7 @@ namespace TSBTool
         private int week_game_count  =  0;
         private int total_game_count =  0;
 
-		private ArrayList messages;
+		private List<string> messages;
         private byte[] outputRom;
         private Regex gameRegex;
 
@@ -53,12 +54,12 @@ namespace TSBTool
         /// Applies a schedule to the rom.
         /// </summary>
         /// <param name="lines">the contents of the schedule file.</param>
-        public void ApplySchedule(ArrayList lines)
+        public void ApplySchedule(List<string> lines)
         {
 			week             = -1;
             week_game_count  =  0;
             total_game_count =  0;
-			messages         = new ArrayList(50);
+			messages         = new List<string>(50);
 
             string line;
             for(int i =0; i < lines.Count; i++)
@@ -77,7 +78,7 @@ namespace TSBTool
 							break;
 						}
 						SetupWeek();
-						Console.Error.WriteLine("Scheduleing {0}",line);
+                        StaticUtils.WriteError(string.Format("Scheduleing {0}", line));   //Console.Error.WriteLine("Scheduleing {0}",line);
 					}
 					else 
 					{
@@ -86,7 +87,7 @@ namespace TSBTool
 				}
 				catch(Exception e)
 				{
-					Console.Error.WriteLine("Exception! with line '{0}' {1}\n{2}",line, e.Message, e.StackTrace);
+                    StaticUtils.WriteError(string.Format("Exception! with line '{0}' {1}\n{2}",line, e.Message, e.StackTrace));
 					AddMessage(string.Format("Error on line '{0}'", line));
 				}
             }
@@ -364,7 +365,7 @@ namespace TSBTool
 		/// Returns an arraylist of error messages encountered when processing the schedule data.
 		/// </summary>
 		/// <returns></returns>
-		public ArrayList GetErrorMessages()
+		public List<string> GetErrorMessages()
 		{
 			return messages;
 		}

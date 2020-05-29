@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <NoStdLib>true</NoStdLib>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E8D612D9-3DE4-4A5F-B886-C756C2F95934}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Bridge_TSBTool</RootNamespace>
+    <AssemblyName>Bridge_TSBTool</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;BRIDGE_PROJECT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+    <ItemGroup>
+    <Folder Include="..\TSBTool\" />
+    <Folder Include="..\TSBTool\TSB2_TSB3\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App.cs" />
+    <Compile Include="BridgeFakeItems.cs" />
+    <Compile Include="..\TSBTool\CXRomScheduleHelper.cs" />
+    <Compile Include="..\TSBTool\CXRomTSBTool.cs" />
+    <Compile Include="..\TSBTool\InputParser.cs" />
+    <Compile Include="..\TSBTool\Interfaces.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\TSBTool\SchedulerHelper2.cs" />
+    <Compile Include="..\TSBTool\SimStuff.cs" />
+    <Compile Include="..\TSBTool\SNES_ScheduleHelper.cs" />
+    <Compile Include="..\TSBTool\SNES_TecmoTool.cs" />
+    <Compile Include="..\TSBTool\StaticUtils.cs" />
+    <Compile Include="..\TSBTool\TecmonsterTeamSim.cs" />
+    <Compile Include="..\TSBTool\TecmonsterTSB1SimAutoUpdater.cs" />
+    <Compile Include="..\TSBTool\TecmoTool.cs" />
+    <Compile Include="..\TSBTool\TecmoToolFactory.cs" />
+    <Compile Include="..\TSBTool\TSB2_TSB3\InputParser.cs" />
+    <Compile Include="..\TSBTool\TSB2_TSB3\Interfaces.cs" />
+    <Compile Include="..\TSBTool\TSB2_TSB3\SNES_ScheduleHelper.cs" />
+    <Compile Include="..\TSBTool\TSB2_TSB3\SNES_TSB3_ScheduleHelper.cs" />
+    <Compile Include="..\TSBTool\TSB2_TSB3\TSB2Tool.cs" />
+    <Compile Include="..\TSBTool\TSB2_TSB3\TSB3Tool.cs" />
+    <Compile Include="..\TSBTool\TSB2_TSB3\TSBConverter.cs" />
+    <Compile Include="..\TSBTool\TSB2_TSB3\TSBXSimAutoUpdater.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bridge.json" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Bridge, Version=17.10.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Bridge.Core.17.10.1\lib\net40\Bridge.dll</HintPath>
+    </Reference>
+    <Reference Include="Bridge.Html5, Version=17.9.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Bridge.Html5.17.9.0\lib\net40\Bridge.Html5.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=1.17.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Bridge.Newtonsoft.Json.1.17.0\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="packages\Bridge.Min.17.10.1\build\Bridge.Min.targets" Condition="Exists('packages\Bridge.Min.17.10.1\build\Bridge.Min.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Bridge.Min.17.10.1\build\Bridge.Min.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Bridge.Min.17.10.1\build\Bridge.Min.targets'))" />
+  </Target>
+</Project>

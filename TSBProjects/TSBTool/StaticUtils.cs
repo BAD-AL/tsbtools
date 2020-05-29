@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Drawing;
 using System.Text.RegularExpressions;
+
+#if !BRIDGE_PROJECT
+using System.Drawing;
 using System.Windows.Forms;
 using System.Data;
+#endif 
 
 namespace TSBTool
 {
@@ -14,6 +17,7 @@ namespace TSBTool
     /// </summary>
     public static class StaticUtils
     {
+#if !BRIDGE_PROJECT
         private static Control form = null;
 
         public static Image GetImage(string file)
@@ -86,6 +90,59 @@ namespace TSBTool
                 ret = dlg.FileName;
             }
             return ret;
+        }
+#else
+        /// <summary>
+        /// takes a math string, returns a value
+        /// </summary>
+        /// <param name="formula"></param>
+        /// <returns></returns>
+        public static string Compute(string formula)
+        {
+            return Bridge.Script.Eval<string>(formula);
+        }
+#endif
+
+        public static int ParseIntFromHexString(string input)
+        {
+            int retVal =
+#if !BRIDGE_PROJECT
+                Int32.Parse(input, System.Globalization.NumberStyles.AllowHexSpecifier);
+#else 
+                Int32.Parse(input, 16);
+#endif 
+            return retVal;
+        }
+
+        public static long ParseLongFromHexString(string input)
+        {
+            long retVal =
+#if !BRIDGE_PROJECT
+            long.Parse(input, System.Globalization.NumberStyles.AllowHexSpecifier);
+#else
+                ParseIntFromHexString(input);
+#endif 
+            return retVal;
+        }
+        public static byte ParseByteFromHexString(string input)
+        {
+            byte retVal =
+#if !BRIDGE_PROJECT
+            byte.Parse(input, System.Globalization.NumberStyles.AllowHexSpecifier);
+#else
+                byte.Parse(input, 16);
+#endif 
+            return retVal;
+        }
+
+
+        public static void WriteError(string input)
+        {
+#if !BRIDGE_PROJECT
+            Console.Error.WriteLine(input);
+#else
+            Console.WriteLine(input);
+#endif
         }
 
         /// <summary>
@@ -198,7 +255,7 @@ namespace TSBTool
             int i;
             for (i = 0; i < target.Length; i++)
             {
-                if (target[i] != data[(int)(checked((IntPtr)(unchecked(location + (long)i))))])
+                if (target[i] != data[location + i])
                 {
                     break;
                 }
@@ -322,7 +379,22 @@ namespace TSBTool
 
         private static Regex simpleSetRegex;
 
-        internal static void ApplySimpleSet(string line, ITecmoContent tool)
+        public static void ApplySet(string line, ITecmoTool tool)
+        {
+            if (simpleSetRegex == null)
+                simpleSetRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
+
+            if (simpleSetRegex.Match(line) != Match.Empty)
+            {
+                ApplySimpleSet(line, tool as ITecmoContent);
+            }
+            else
+            {
+                StaticUtils.AddError(string.Format("ERROR with line \"{0}\"", line));
+            }
+        }
+
+        public static void ApplySimpleSet(string line, ITecmoContent tool)
         {
             if (simpleSetRegex == null)
                 simpleSetRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
@@ -342,7 +414,7 @@ namespace TSBTool
 
             try
             {
-                int location = Int32.Parse(loc, System.Globalization.NumberStyles.AllowHexSpecifier);
+                int location = ParseIntFromHexString(loc);
                 byte[] bytes = GetHexBytes(val);
                 if (location + bytes.Length > tool.OutputRom.Length)
                 {
@@ -381,7 +453,7 @@ namespace TSBTool
             for (int i = 0; i < input.Length; i += 2)
             {
                 b = input.Substring(i, 2);
-                tmp = Int32.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
+                tmp = ParseIntFromHexString(b); // Int32.Parse(b, System.Globalization.NumberStyles.AllowHexSpecifier);
                 ret[j++] = (byte)tmp;
             }
             return ret;
@@ -414,25 +486,34 @@ namespace TSBTool
 
         public static void ShowError(string error)
         {
+#if !BRIDGE_PROJECT
             RichTextDisplay.ShowMessage("Error!", error, SystemIcons.Error, false, false);
+#else
+            Console.WriteLine(error);
+#endif
         }
 
 
         public static byte[] ReadRom(string filename)
         {
             byte[] outputRom = null;
+            FileStream s1 = null;
             try
             {
-                FileInfo f1 = new FileInfo(filename);
-                long len = f1.Length;
-                FileStream s1 = new FileStream(filename, FileMode.Open);
+                //FileInfo f1 = new FileInfo(filename);
+                //long len = f1.Length;
+                s1 = new FileStream(filename, FileMode.Open);
+                long len = s1.Length;
                 outputRom = new byte[(int)len];
                 s1.Read(outputRom, 0, (int)len);
-                s1.Close();
             }
             catch (Exception e)
             {
                 ShowError(e.ToString());
+            }
+            finally
+            {
+                if (s1 != null) s1.Close();
             }
             return outputRom;
         }
