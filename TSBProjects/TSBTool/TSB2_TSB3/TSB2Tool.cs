@@ -992,8 +992,6 @@ namespace TSBTool2
             builder.Append(season);
             builder.Append("\n");
             builder.Append(GetTeams(season));
-            if (ShowSchedule)
-                builder.Append(GetSchedule(season));
             return builder.ToString();
         }
 

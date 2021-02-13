@@ -1,5 +1,9 @@
 TSBToolSupreme README
 ======================================================================================================
+TSBToolSupreme Version 1.3.0.1 (13 Feb 2021)
+1. Bug fix - TSBII, TSBIII Schedule shows 2x
+2. Bug fix - TSBIII throws exception while saving data for a 'RE2'
+======================================================================================================
 TSBToolSupreme Version 1.3.0.0 (27 Nov 2019)
 1. Added support for TSB II & TSB III
 2. Added support to convet text data between TSB, TSB II & TSB III

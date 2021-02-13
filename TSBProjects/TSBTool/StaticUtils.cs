@@ -372,7 +372,7 @@ namespace TSBTool
         internal static void CheckTSB2Args(int season, string team, string position)
         {
             CheckTSB2Args(season, team);
-            if (TecmoTool.positionNames.IndexOf(position) < 0)
+            if (TSBTool2.TSB2Tool.positionNames.IndexOf(position) < 0)
                 throw new ArgumentException("Invalid position! " + position);
         }
         static string RomVersion { get { return "SNES_TSB2"; } }

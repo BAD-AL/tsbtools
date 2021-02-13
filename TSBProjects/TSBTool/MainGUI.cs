@@ -182,8 +182,7 @@ namespace TSBTool
             if (files != null && files.Length == 1)
             {
                 file = files[0].ToLower();
-                if (file.EndsWith(".nes"))
-                {
+                if (file.EndsWith(".nes") || file.EndsWith(".smc") || file.EndsWith(".sfc"))                {
                     LoadROM(file);
                 }
                 else if( file.EndsWith(".txt") || file.EndsWith(".csv"))
@@ -1072,7 +1071,9 @@ Do you wish to try automatic conversion (this will modify the text in the editor
 				    "#  -> Double Click on a 'COLORS' line to edit team COLORS.\n" +
                     "#  -> Double click on a 'TEAM' to bring up a team editing GUI with the selected team.\n" +
                     "#  -> Double click on a 'NFC' or 'AFC' line to bring up the Pro Bowl editor GUI.\n" +
-                    "#  -> Double Click on a 'WEEK x' or a game line to edit schedule\n";
+                    "#  -> Double Click on a 'WEEK x' or a game line to edit schedule\n" +
+                    "#  GitHub Project at: https://github.com/BAD-AL/tsbtools \n"
+                    ;
             sb.Append(msg);
             sb.Append(tool.GetKey());
             if (season == 0) // all seasons
