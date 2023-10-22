@@ -72,8 +72,6 @@ namespace TSBTool
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Button m_PrevPlayerButton;
 
-		private InputParser m_Parser = null;
-
 		private bool m_AutoUpdatePlayers = false;
 
 		public bool AutoUpdatePlayersUI
@@ -180,7 +178,6 @@ namespace TSBTool
 			//
 			InitializeComponent();
 			m_SimStuff = new SimStuff();
-			m_Parser = new InputParser();
 			m_Attributes = new ComboBox[8];
 			m_Attributes[0] = m_RSBox;
 			m_Attributes[1] = m_RPBox;
@@ -263,7 +260,7 @@ namespace TSBTool
             int face = InputParser.GetFace(playerLine);
             int jerseyNumber = InputParser.GetJerseyNumber(playerLine);
             int[] attrs = InputParser.GetInts(playerLine);
-			int[] simData = m_Parser.GetSimVals(playerLine);
+			int[] simData = InputParser.GetSimVals(playerLine);
 
 			m_FirstNameTextBox.Text = fName;
 			m_LastNameTextBox.Text  = lName;
@@ -1628,7 +1625,7 @@ Please verify that this player's attributes are correct.", oldPlayer);
 			{
 				MessageBox.Show("Oh oh!"+e.Message);
 			}
-			//int[] simData = m_Parser.GetSimVals(playerLine);
+			//int[] simData = InputParser.GetSimVals(playerLine);
 			int simPass, simRush, simPocket, simCatch, simPR, simKR, simKA;
 
 			switch( position )

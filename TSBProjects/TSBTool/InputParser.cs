@@ -19,11 +19,26 @@ namespace TSBTool
 		private int currentState = 2;
 		public bool showSimError= false;
 
-		private static Regex teamRegex, weekRegex, gameRegex, numberRegex, 
-			posNameFaceRegex, simDataRegex, yearRegex, setRegex,
-			returnTeamRegex, offensiveFormationRegex, playbookRegex,
-			juiceRegex, homeRegex, awayRegex, divChampRegex, confChampRegex,
-			uniformUsageRegex, replaceStringRegex, teamStringsRegex;
+        private static Regex numberRegex = new Regex("(#[0-9]{1,2})");
+        private static Regex teamRegex = new Regex("TEAM\\s*=\\s*([0-9a-z]+)");
+        private static Regex simDataRegex = new Regex("SimData=0[xX]([0-9a-fA-F][0-9a-fA-F])([0-3]?)");
+        private static Regex weekRegex = new Regex("WEEK ([1-9][0	-7]?)");
+        private static Regex gameRegex = new Regex("([0-9a-z]+)\\s+at\\s+([0-9a-z]+)");
+        private static Regex posNameFaceRegex = new Regex("([A-Z]+[1-4]?)\\s*,\\s*([a-zA-Z \\.\\-]+),\\s*(face=0[xX][0-9a-fA-F]+\\s*,\\s*)?");
+        private static Regex yearRegex = new Regex("YEAR\\s*=\\s*([0-9]+)");
+        private static Regex returnTeamRegex = new Regex("RETURN_TEAM\\s+([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)");
+        private static Regex setRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
+        private static Regex offensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
+        private static Regex playbookRegex = new Regex("PLAYBOOK (R[1-8]{4})\\s*,\\s*(P[1-8]{4})");
+        private static Regex juiceRegex = new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)");
+        private static Regex homeRegex = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{6})");
+        private static Regex awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{6})");
+        private static Regex divChampRegex = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
+        private static Regex confChampRegex = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
+        private static Regex uniformUsageRegex = new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
+        private static Regex replaceStringRegex = new Regex("ReplaceString\\(\\s*\"([A-Za-z0-9 .]+)\"\\s*,\\s*\"([A-Za-z .]+)\"\\s*(,\\s*([0-9]+))*\\s*\\)");
+        private static Regex teamStringsRegex = new Regex("TEAM_ABB=([0-9A-Z. ]+),TEAM_CITY=([0-9A-Za-z .]+),TEAM_NAME=([0-9A-Z .]+)");
+
 
 		private string currentTeam; //used for roster update
 		private List<string> scheduleList;
@@ -32,45 +47,11 @@ namespace TSBTool
 		{
 			this.tool = tool;
 			currentTeam      = "bills";
-			Init();
 		}
 
 		public InputParser()
 		{
 			currentTeam      = "bills";
-			Init();
-		}
-
-		private static void Init()
-		{
-			if( numberRegex == null )
-			{
-//				currentTeam      = "bills";
-				numberRegex      = new Regex("(#[0-9]{1,2})");
-				teamRegex        = new Regex("TEAM\\s*=\\s*([0-9a-z]+)");
-				simDataRegex     = new Regex("SimData=0[xX]([0-9a-fA-F][0-9a-fA-F])([0-3]?)");
-				weekRegex        = new Regex("WEEK ([1-9][0	-7]?)");
-				gameRegex        = new Regex("([0-9a-z]+)\\s+at\\s+([0-9a-z]+)");
-				posNameFaceRegex = new Regex("([A-Z]+[1-4]?)\\s*,\\s*([a-zA-Z \\.\\-]+),\\s*(face=0[xX][0-9a-fA-F]+\\s*,\\s*)?");
-				yearRegex        = new Regex("YEAR\\s*=\\s*([0-9]+)");
-				returnTeamRegex  = new Regex("RETURN_TEAM\\s+([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)");
-				setRegex         = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
-				offensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
-				playbookRegex    = new Regex("PLAYBOOK (R[1-8]{4})\\s*,\\s*(P[1-8]{4})");
-				juiceRegex       = new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)");
-				homeRegex        = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{6})");
-				awayRegex        = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{6})");
-				divChampRegex    = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
-				confChampRegex   = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
-				uniformUsageRegex= new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
-				replaceStringRegex = new Regex("ReplaceString\\(\\s*\"([A-Za-z0-9 .]+)\"\\s*,\\s*\"([A-Za-z .]+)\"\\s*(,\\s*([0-9]+))*\\s*\\)");
-				teamStringsRegex = new Regex("TEAM_ABB=([0-9A-Z. ]+),TEAM_CITY=([0-9A-Za-z .]+),TEAM_NAME=([0-9A-Z .]+)");
-			}
-//			colorsRegex      = new Regex(
-//                 "COLORS\\s*Home\\s*=\\s*(0x[0-9a-fA-F]{4})\\s*,\\s*Away\\s*=\\s*(0x[0-9a-fA-F]{4})\\s*,\\s*"+
-//				 "DivChamp\\s*=\\s*(0x[0-9a-fA-F]{10})\\s*,\\s*ConfChamp\\s*=\\s*(0x[0-9a-fA-F]{8})");
-			// use \/ regex for a custom Juice Setting.
-			//new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)|JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2})\\s*,\\s*([0-9]{1,2}),\\s*([0-9]{1,2})\\s*\\)");
 		}
 
 		public void ProcessFile(string fileName)
@@ -411,7 +392,7 @@ namespace TSBTool
 			return team;
 		}
 
-		public int[] GetSimData(string line)
+		public static int[] GetSimData(string line)
 		{
 			Match m = simDataRegex.Match(line);
 			//string data = m.Groups[2].ToString();
@@ -711,7 +692,7 @@ namespace TSBTool
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		public int[] GetSimVals(string input)
+		public static int[] GetSimVals(string input)
 		{
 			if( input != null )
 			{
@@ -913,7 +894,6 @@ namespace TSBTool
 
 		public static string GetHomeUniformColorString(string line)
 		{
-			Init();
 			string tmp = string.Empty;
 			Match match = homeRegex.Match(line);
 			if( match != Match.Empty )
@@ -924,7 +904,6 @@ namespace TSBTool
 		}
 		public static string GetAwayUniformColorString(string line)
 		{
-			Init();
 			string tmp = string.Empty;
 			Match match = awayRegex.Match(line);
 			if( match != Match.Empty )
@@ -935,7 +914,6 @@ namespace TSBTool
 		}
 		public static string GetConfChampColorString(string line)
 		{
-			Init();
 			string tmp = string.Empty;
 			Match match = confChampRegex.Match(line);
 			if( match != Match.Empty )
@@ -946,7 +924,6 @@ namespace TSBTool
 		}
 		public static string GetDivChampColorString(string line)
 		{
-			Init();
 			string tmp = string.Empty;
 			Match match = divChampRegex.Match(line);
 			if( match != Match.Empty )
@@ -958,7 +935,6 @@ namespace TSBTool
 
 		public static string GetUniformUsageString(string line)
 		{
-			Init();
 			string tmp = string.Empty;
 			Match match = uniformUsageRegex.Match(line);
 			if( match != Match.Empty )

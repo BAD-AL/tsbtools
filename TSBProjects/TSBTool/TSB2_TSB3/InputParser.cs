@@ -583,8 +583,8 @@ namespace TSBTool2
                 TSBTool.StaticUtils.AddError(string.Format("Warning! could not set ability data for {0} {1},", currentTeam, pos));
             if (face > -1)
                 tool.SetFace(season, currentTeam, pos, face);
-            /*if(simVals != null)
-                tool.SetQBSimData(season, currentTeam, pos, simVals);*/
+            if(simVals != null)
+                tool.SetQBSimData(season, currentTeam, pos, simVals);
             else if (showSimError)
                 TSBTool.StaticUtils.AddError(string.Format("Warning! On line '{0}'. No sim data specified.", line));
         }
@@ -605,10 +605,10 @@ namespace TSBTool2
                 tool.SetSkillPlayerAbilities(season, currentTeam, pos, vals);
             else
                 TSBTool.StaticUtils.AddError(string.Format("Warning! On line '{0}'. No player data specified.", line));
-            /*if(simVals!= null&& simVals.Length > 3)
-                tool.SetSkillSimData(currentTeam,pos,simVals);
+            if(simVals!= null&& simVals.Length > 3)
+                tool.SetSkillSimData(season, currentTeam,pos,simVals);
             else  if(showSimError)
-                TSBTool.StaticUtils.AddError(string.Format("Warning! On line '{0}'. No sim data specified.",line));*/
+                TSBTool.StaticUtils.AddError(string.Format("Warning! On line '{0}'. No sim data specified.",line));
         }
 
         private void SetOLPlayer(string line)
@@ -677,12 +677,12 @@ namespace TSBTool2
 
             //else
             //	TSBTool.StaticUtils.AddError(string.Format("Warning! On line '{0}'. No player data specified.",line));
-            //if(simVals != null && pos == "P")
-            //    tool.SetPuntingSimData(season,currentTeam, simVals[0]);
-            //else if(simVals != null && pos == "K")
-            //    tool.SetKickingSimData(season,currentTeam, simVals[0]);
-            //else if(showSimError)
-            //    TSBTool.StaticUtils.AddError(string.Format("Warning! On line '{0}'. No sim data specified.",line));
+            if (simVals != null && pos == "P")
+                tool.SetPuntingSimData(season, currentTeam, (byte)simVals[0]);
+            else if (simVals != null && pos == "K")
+                tool.SetKickingSimData(season, currentTeam, (byte)simVals[0]);
+            else if (showSimError)
+                TSBTool.StaticUtils.AddError(string.Format("Warning! On line '{0}'. No sim data specified.", line));
         }
 
         private static Regex KickRetMan = new Regex("^KR\\s*,\\s*([A-Z1-4]+)$");

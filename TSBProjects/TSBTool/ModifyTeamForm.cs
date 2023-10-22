@@ -25,7 +25,6 @@ namespace TSBTool
 		private System.Windows.Forms.ComboBox m_OffensivePrefomComboBox;
 
 		private bool m_InitDone = false;
-		private InputParser m_InputParser = null;
 
 		private string m_Data = "";
 		private System.Windows.Forms.Button m_OKButton;
@@ -152,7 +151,6 @@ namespace TSBTool
 			m_RunPlaysGroupBox.Enabled = false;
 			m_PassPlaysGroupBox.Enabled = false;
 			m_FormationComboBox.Enabled = false;
-			m_InputParser = new InputParser();
 			PopulatePlayImages();
 			m_TeamsComboBox.SelectedIndex = 0;
 			m_InitDone = true;
@@ -230,7 +228,7 @@ namespace TSBTool
 			
 			if( line != null )
 			{
-				int[] vals = m_InputParser.GetSimData(line);
+				int[] vals = InputParser.GetSimData(line);
 
 				if( vals != null && vals[1] > -1 && vals[1] < 4 )
 					m_OffensivePrefomComboBox.SelectedIndex = vals[1];
