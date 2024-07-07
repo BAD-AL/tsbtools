@@ -1554,7 +1554,7 @@ namespace TSBTool2
             {
                 string file = "TSBTool.FACES." + string.Format("{0:x2}.BMP", m_ImageNumber).ToUpper();
 
-                Image face = TSBTool.StaticUtils.GetImage(file);
+                Image face = TSBTool.MainClass.GetImage(file);
                 if (face != null)
                 {
                     m_FaceBox.Image = face;
@@ -1572,7 +1572,7 @@ namespace TSBTool2
                 if (m_ImageNumber < 0x80)
                     file = whiteGuy;
 
-                Image face = TSBTool.StaticUtils.GetImage(file);
+                Image face = TSBTool.MainClass.GetImage(file);
                 if (face != null)
                 {
                     m_FaceBox.Image = face;

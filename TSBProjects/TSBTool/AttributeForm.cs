@@ -1331,8 +1331,8 @@ namespace TSBTool
 			if( m_DoneInit )
 			{
 				string file = "TSBTool.FACES."+string.Format("{0:x2}.BMP",m_ImageNumber).ToUpper();
-			
-				Image  face = StaticUtils.GetImage(file);
+
+                Image face = MainClass.GetImage(file);
 				if( face != null )
 				{
 					m_FaceBox.Image = face;

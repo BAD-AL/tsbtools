@@ -186,7 +186,7 @@ namespace TSBTool2_UI
             Rectangle dest = new Rectangle(0,0,play_width, play_height);
             for (int i = 0; i < pictureBoxes.Count; i++)
             {
-                baseImage = TSBTool.StaticUtils.GetImage("TSBTool.TSB2_TSB3.Playbook." + fileNames[i]);
+                baseImage = TSBTool.MainClass.GetImage("TSBTool.TSB2_TSB3.Playbook." + fileNames[i]);
                 current = new Bitmap(play_width, play_height);
                 Graphics g = Graphics.FromImage(current);
                 g.DrawImage(baseImage, dest, src, GraphicsUnit.Pixel);
@@ -216,7 +216,7 @@ namespace TSBTool2_UI
             Rectangle src = new Rectangle(selection.X, selection.Y, play_width, play_height);
             Rectangle dest = new Rectangle(0, 0, play_width, play_height);
 
-            baseImage = TSBTool.StaticUtils.GetImage("TSBTool.TSB2_TSB3.Playbook." + fileNames[playNumber]);
+            baseImage = TSBTool.MainClass.GetImage("TSBTool.TSB2_TSB3.Playbook." + fileNames[playNumber]);
             current = new Bitmap(play_width, play_height);
             Graphics g = Graphics.FromImage(current);
             g.DrawImage(baseImage, dest, src, GraphicsUnit.Pixel);

@@ -157,6 +157,35 @@ namespace TSBTool
 			catch {}
 		}
 
+        /// <summary>
+        /// Returns filename on 'OK' null on 'cancel'.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public static string GetFileName(string filter, bool saveFileDlg)
+        {
+            string ret = null;
+            FileDialog dlg;
+            if (saveFileDlg)
+            {
+                dlg = new SaveFileDialog();
+            }
+            else
+            {
+                dlg = new OpenFileDialog();
+            }
+            dlg.CheckFileExists = false;
+            dlg.RestoreDirectory = true;
+            //dlg.Filter="nes files (*.nes)|*.nes";
+            if (filter != null && filter.Length > 0)
+                dlg.Filter = filter;
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                ret = dlg.FileName;
+            }
+            return ret;
+        }
+
 		void readmeItem_Click(object sender, EventArgs e)
 		{
 			if (File.Exists(mReadMeFile))
@@ -897,7 +926,7 @@ namespace TSBTool
 		//loadTSBMenuItem
 		private void loadTSBMenuItem_Click(object sender, System.EventArgs e)
 		{
-			string filename = StaticUtils.GetFileName(nesFilter, false);
+			string filename = GetFileName(nesFilter, false);
             if( filename != null)
 			    LoadROM(filename);
 		}
@@ -1039,13 +1068,13 @@ Do you wish to try automatic conversion (this will modify the text in the editor
 
 		private void LoadDataMenuItem_Click(object sender, System.EventArgs e)
 		{
-			string fileName = StaticUtils.GetFileName(null,false);
+			string fileName = GetFileName(null,false);
 			LoadDataFile(fileName);
 		}
 
 		private void applyButton_Click(object sender, System.EventArgs e)
 		{
-			string filename = StaticUtils.GetFileName(nesFilter,true);
+			string filename = GetFileName(nesFilter,true);
 			if(filename != null)
 				ApplyToRom(filename);
 		}
@@ -1140,7 +1169,7 @@ Do you wish to try automatic conversion (this will modify the text in the editor
 
 		private void saveDataButton_Click(object sender, System.EventArgs e)
 		{
-			string filename = StaticUtils.GetFileName(null,true);
+			string filename = GetFileName(null,true);
 			if(filename != null)
 			{
 				try

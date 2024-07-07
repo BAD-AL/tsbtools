@@ -183,7 +183,7 @@ namespace TSBTool
 				{//TSBTool.FACES.
 					fileName = string.Format("TSBTool.PLAYS.{0}{1}-{2}.BMP",
 						type,num+1,j);
-					m_PlayImages[i][j] = StaticUtils.GetImage(fileName);
+                    m_PlayImages[i][j] = MainClass.GetImage(fileName);
 				}
 			}
 		}

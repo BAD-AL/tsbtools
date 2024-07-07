@@ -23,7 +23,6 @@ namespace TSBTool
         /// </summary>
         public static String TestString = "";
 
-		public static bool GUI_MODE = false;
         public static string version { get { return System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString(); } }
 
 		//                   -sch      -players
@@ -41,6 +40,7 @@ namespace TSBTool
 		[STAThread]
 		static void Main(string[] stuff)
 		{
+            StaticUtils.sMessageGiver = new WinFormsMessageGiver();
             RunMain(stuff);
 		}
 
@@ -74,7 +74,7 @@ namespace TSBTool
 
             if (stuff.Length == 0 || gui)
             {
-                MainClass.GUI_MODE = true;
+                StaticUtils.GUI_MODE = true;
                 //if (OnWindows)
                 //    ShowWindow(GetConsoleWindow(), WindowShowStyle.Hide);
                 Application.Run(new MainGUI(romFile, dataFile));
@@ -459,7 +459,27 @@ The following are the available options.
 			}
 			return ret;
 		}
-		
+
+        private static Object fromAssemplyObject = null;
+
+        public static System.Drawing.Image GetImage(string file)
+        {
+            System.Drawing.Image ret = null;
+            try
+            {
+                if (fromAssemplyObject == null)
+                    fromAssemplyObject = new SimStuff();
+                System.IO.Stream s = fromAssemplyObject.GetType().Assembly.GetManifestResourceStream(file);
+                if (s != null)
+                    ret = System.Drawing.Image.FromStream(s);
+            }
+            catch (Exception e)
+            {
+                StaticUtils.ShowMessageBox("Error", string.Format(
+                    "Occured while getting {0}\n{1}", file, e.Message));
+            }
+            return ret;
+        }
 
 	}
 

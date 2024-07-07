@@ -50,13 +50,13 @@ namespace TSBTool
 				for( int i = 0; i < 0x53 ; i ++)
 				{
 					file = "TSBTool.FACES."+string.Format("{0:x2}.BMP",i).ToUpper();
-					m_Faces[i] = StaticUtils.GetImage(file);
+                    m_Faces[i] = MainClass.GetImage(file);
 				}
 
 				for(int i = 0x80; i < 0xD5; i++)
 				{
 					file = "TSBTool.FACES."+string.Format("{0:x2}.BMP",i).ToUpper();
-					m_Faces[i] = StaticUtils.GetImage(file);
+                    m_Faces[i] = MainClass.GetImage(file);
 				}
 			}
 		}

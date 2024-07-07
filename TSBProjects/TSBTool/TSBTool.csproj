@@ -130,13 +130,13 @@
     <Compile Include="ColorInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CXRomScheduleHelper.cs">
+    <Compile Include="Core\CXRomScheduleHelper.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CxRomTeamHomeAwayUniformForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="CXRomTSBTool.cs">
+    <Compile Include="Core\CXRomTSBTool.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DebugDialog.cs">
@@ -151,10 +151,10 @@
     <Compile Include="HomeAwayUniformForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InputParser.cs">
+    <Compile Include="Core\InputParser.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Interfaces.cs">
+    <Compile Include="Core\Interfaces.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MainClass.cs">
@@ -192,7 +192,7 @@
     <Compile Include="ScheduleForm.Designer.cs">
       <DependentUpon>ScheduleForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SchedulerHelper2.cs">
+    <Compile Include="Core\SchedulerHelper2.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SearchTextBox.cs">
@@ -201,7 +201,7 @@
     <Compile Include="SearchTextBox.designer.cs">
       <DependentUpon>SearchTextBox.cs</DependentUpon>
     </Compile>
-    <Compile Include="SimStuff.cs">
+    <Compile Include="Core\SimStuff.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SnesReturnTeamPlayerControl.cs">
@@ -210,44 +210,44 @@
     <Compile Include="SnesReturnTeamPlayerControl.Designer.cs">
       <DependentUpon>SnesReturnTeamPlayerControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="SNES_ScheduleHelper.cs">
+    <Compile Include="Core\SNES_ScheduleHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SNES_TecmoTool.cs">
+    <Compile Include="Core\SNES_TecmoTool.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="StaticUtils.cs" />
+    <Compile Include="Core\StaticUtils.cs" />
     <Compile Include="StringInputDlg.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TecmonsterTeamSim.cs" />
-    <Compile Include="TecmoTool.cs">
+    <Compile Include="Core\TecmonsterTeamSim.cs" />
+    <Compile Include="Core\TecmoTool.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TecmoToolFactory.cs">
+    <Compile Include="Core\TecmoToolFactory.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TecmonsterTSB1SimAutoUpdater.cs" />
-    <Compile Include="TSB2_TSB3\InputParser.cs" />
-    <Compile Include="TSB2_TSB3\Interfaces.cs" />
+    <Compile Include="Core\TecmonsterTSB1SimAutoUpdater.cs" />
+    <Compile Include="TSB2_TSB3\TSB2_3_Core\InputParser.cs" />
+    <Compile Include="TSB2_TSB3\TSB2_3_Core\Interfaces.cs" />
     <Compile Include="TSB2_TSB3\PlaySelectForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="TSB2_TSB3\PlaySelectForm.designer.cs">
       <DependentUpon>PlaySelectForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="TSB2_TSB3\SNES_ScheduleHelper.cs" />
-    <Compile Include="TSB2_TSB3\SNES_TSB3_ScheduleHelper.cs" />
+    <Compile Include="TSB2_TSB3\TSB2_3_Core\SNES_ScheduleHelper.cs" />
+    <Compile Include="TSB2_TSB3\TSB2_3_Core\SNES_TSB3_ScheduleHelper.cs" />
     <Compile Include="TSB2_TSB3\TeamForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="TSB2_TSB3\TeamForm.designer.cs">
       <DependentUpon>TeamForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="TSB2_TSB3\TSB2Tool.cs" />
-    <Compile Include="TSB2_TSB3\TSB3Tool.cs" />
-    <Compile Include="TSB2_TSB3\TSBConverter.cs" />
-    <Compile Include="TSB2_TSB3\TSBXSimAutoUpdater.cs" />
+    <Compile Include="TSB2_TSB3\TSB2_3_Core\TSB2Tool.cs" />
+    <Compile Include="TSB2_TSB3\TSB2_3_Core\TSB3Tool.cs" />
+    <Compile Include="TSB2_TSB3\TSB2_3_Core\TSBConverter.cs" />
+    <Compile Include="TSB2_TSB3\TSB2_3_Core\TSBXSimAutoUpdater.cs" />
     <Compile Include="UniformEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -257,6 +257,7 @@
     <Compile Include="WeekScheduler.Designer.cs">
       <DependentUpon>WeekScheduler.cs</DependentUpon>
     </Compile>
+    <Compile Include="WinFormsMessageGiver.cs" />
     <EmbeddedResource Include="Formulas\FAP_Formulas.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
