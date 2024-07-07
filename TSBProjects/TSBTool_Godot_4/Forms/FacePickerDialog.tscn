@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=3 uid="uid://b4hqr7sth7j1x"]
+
+[ext_resource type="Theme" uid="uid://2td16tl75xtb" path="res://Themes/tecmo_menu_theme.tres" id="1_bomwa"]
+[ext_resource type="Texture2D" uid="uid://dwyco1dy6cx06" path="res://Images/faces.png" id="1_cd3uf"]
+[ext_resource type="Script" path="res://Forms/FacePickerDialog.cs" id="2_08t1k"]
+[ext_resource type="PackedScene" uid="uid://c0wehhislpymp" path="res://Forms/TextureRectWithMouse.tscn" id="3_r2s6c"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sn0pa"]
+bg_color = Color(0.253717, 0.63329, 0.8936, 1)
+
+[node name="FacePickerDialog" type="ConfirmationDialog"]
+mode = 3
+position = Vector2i(0, 36)
+size = Vector2i(1122, 619)
+visible = true
+theme = ExtResource("1_bomwa")
+script = ExtResource("2_08t1k")
+
+[node name="Panel" type="Panel" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 1114.0
+offset_bottom = 567.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_sn0pa")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -224.0
+offset_right = 224.0
+offset_bottom = 410.0
+grow_horizontal = 2
+
+[node name="faceTextureRect" parent="Panel/VBoxContainer" instance=ExtResource("3_r2s6c")]
+layout_mode = 2
+texture = ExtResource("1_cd3uf")
+
+[node name="Control" type="Control" parent="Panel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Pick Your Face"

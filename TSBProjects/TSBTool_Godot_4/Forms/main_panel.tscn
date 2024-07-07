@@ -1,0 +1,138 @@
+[gd_scene load_steps=5 format=3 uid="uid://cu6vi17xsx706"]
+
+[ext_resource type="Theme" uid="uid://2td16tl75xtb" path="res://Themes/tecmo_menu_theme.tres" id="1_i0op5"]
+[ext_resource type="Script" path="res://Forms/main_panel.gd" id="2_hmjon"]
+[ext_resource type="Texture2D" uid="uid://d0mqpf78iimq0" path="res://Images/NFL_logo.jpg" id="2_oeybr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ou554"]
+bg_color = Color(0.0823529, 0.372549, 0.847059, 1)
+border_width_left = 9
+border_width_top = 9
+border_width_right = 9
+border_width_bottom = 9
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[node name="Control" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_i0op5")
+script = ExtResource("2_hmjon")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
+z_index = 2
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Tecmo Super Bowl Tool"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="middlePanel" type="Panel" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/middlePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("2_oeybr")
+stretch_mode = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 10
+
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer"]
+z_index = 1
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ou554")
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_right = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="loadRomButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Load Rom"
+
+[node name="editPlayersButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Edit Players"
+
+[node name="editTeamsButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Edit Teams"
+
+[node name="viewTextButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "View/Edit Text"
+
+[node name="saveButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Save"
+
+[node name="bottomPanel" type="Panel" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/bottomPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_bottom = 5
+
+[node name="aboutButton" type="Button" parent="MarginContainer/VBoxContainer/bottomPanel/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+text = "About"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/loadRomButton" to="." method="_on_load_rom_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/editPlayersButton" to="." method="_on_edit_players_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/editTeamsButton" to="." method="_on_edit_teams_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/viewTextButton" to="." method="_on_view_text_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/saveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/bottomPanel/MarginContainer/aboutButton" to="." method="_on_about_button_pressed"]

@@ -1,0 +1,34 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="G_TSBTool"
+run/main_scene="res://Forms/main_panel.tscn"
+config/features=PackedStringArray("4.3", "C#", "GL Compatibility")
+config/icon="res://Images/52.svg"
+
+[autoload]
+
+SceneManager="*res://Utilities/SceneManager.gd"
+Globals="*res://Utilities/Globals.gd"
+
+[display]
+
+window/stretch/aspect="expand"
+
+[dotnet]
+
+project/assembly_name="G_TSBTool"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

@@ -1,0 +1,72 @@
+[gd_scene load_steps=3 format=3 uid="uid://cvufo51sqy0rj"]
+
+[ext_resource type="Theme" uid="uid://2td16tl75xtb" path="res://Themes/tecmo_menu_theme.tres" id="1_6bm1l"]
+[ext_resource type="Script" path="res://Forms/TecmoAttributeControl.cs" id="1_075nn"]
+
+[node name="TecmoAttributeControl" type="Control"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 3
+anchor_right = 0.51
+anchor_bottom = 0.185
+offset_right = -0.520081
+offset_bottom = 0.119995
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_6bm1l")
+script = ExtResource("1_075nn")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="hBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+
+[node name="attrLabel" type="Label" parent="MarginContainer/hBoxContainer"]
+layout_mode = 2
+text = "Attr	"
+
+[node name="valueCombo" type="OptionButton" parent="MarginContainer/hBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+item_count = 16
+popup/item_0/text = "6"
+popup/item_1/text = "13"
+popup/item_1/id = 1
+popup/item_2/text = "19"
+popup/item_2/id = 2
+popup/item_3/text = "25"
+popup/item_3/id = 3
+popup/item_4/text = "31"
+popup/item_4/id = 4
+popup/item_5/text = "38"
+popup/item_5/id = 5
+popup/item_6/text = "44"
+popup/item_6/id = 6
+popup/item_7/text = "50"
+popup/item_7/id = 7
+popup/item_8/text = "56"
+popup/item_8/id = 8
+popup/item_9/text = "63"
+popup/item_9/id = 9
+popup/item_10/text = "69"
+popup/item_10/id = 10
+popup/item_11/text = "75"
+popup/item_11/id = 11
+popup/item_12/text = "81"
+popup/item_12/id = 12
+popup/item_13/text = "88"
+popup/item_13/id = 13
+popup/item_14/text = "94"
+popup/item_14/id = 14
+popup/item_15/text = "100"
+popup/item_15/id = 15

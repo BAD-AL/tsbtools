@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3 uid="uid://dir7w25h3l8io"]
+
+[ext_resource type="Theme" uid="uid://2td16tl75xtb" path="res://Themes/tecmo_menu_theme.tres" id="1_c0jcr"]
+[ext_resource type="Script" path="res://Forms/PlayControl.cs" id="2_dxwrr"]
+[ext_resource type="Texture2D" uid="uid://d2uc1fxdltg8g" path="res://Images/PLAYS/P1-0.BMP" id="2_n8y0c"]
+[ext_resource type="PackedScene" uid="uid://c0wehhislpymp" path="res://Forms/TextureRectWithMouse.tscn" id="3_tnknl"]
+
+[node name="PlayControl" type="Panel"]
+custom_minimum_size = Vector2(100, 0)
+offset_right = 112.0
+offset_bottom = 204.0
+theme = ExtResource("1_c0jcr")
+script = ExtResource("2_dxwrr")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="VBox" type="VBoxContainer" parent="MarginContainer"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+
+[node name="playImageTextureRectWithMouse" parent="MarginContainer/VBox" instance=ExtResource("3_tnknl")]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+texture = ExtResource("2_n8y0c")
+expand_mode = 5
+stretch_mode = 4
+
+[node name="playIndexSpinBox" type="SpinBox" parent="MarginContainer/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+min_value = 1.0
+max_value = 8.0
+value = 1.0

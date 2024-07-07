@@ -1,0 +1,53 @@
+[gd_scene load_steps=4 format=3 uid="uid://dvdte0x5sp2br"]
+
+[ext_resource type="Theme" uid="uid://2td16tl75xtb" path="res://Themes/tecmo_menu_theme.tres" id="1_raj2i"]
+[ext_resource type="Script" path="res://Forms/TextView.gd" id="2_fra82"]
+[ext_resource type="FontFile" uid="uid://cgq4qfs7t0hta" path="res://Fonts/LiberationMono-Regular.ttf" id="3_gmb6e"]
+
+[node name="TextView" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_raj2i")
+script = ExtResource("2_fra82")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="textEdit" type="TextEdit" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_fonts/font = ExtResource("3_gmb6e")
+text = "# Put text here
+"
+wrap_mode = 1
+caret_blink = true
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="prowBowlCheckBox" type="CheckBox" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "Show Pro Bowl"
+
+[node name="closeButton" type="Button" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Close"
+
+[connection signal="toggled" from="VBoxContainer/MarginContainer/HBoxContainer/prowBowlCheckBox" to="." method="_on_prow_bowl_check_box_toggled"]
+[connection signal="pressed" from="VBoxContainer/MarginContainer/HBoxContainer/closeButton" to="." method="_on_close_button_pressed"]

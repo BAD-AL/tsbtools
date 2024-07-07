@@ -1,0 +1,213 @@
+[gd_scene load_steps=4 format=3 uid="uid://cgqn0tg314s04"]
+
+[ext_resource type="Theme" uid="uid://2td16tl75xtb" path="res://Themes/tecmo_menu_theme.tres" id="1_vhtam"]
+[ext_resource type="PackedScene" uid="uid://dir7w25h3l8io" path="res://Forms/PlayControl.tscn" id="2_8qqah"]
+[ext_resource type="Script" path="res://Forms/EditTeam.cs" id="2_snp1d"]
+
+[node name="EditTeam" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1152.0
+offset_bottom = -648.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_vhtam")
+script = ExtResource("2_snp1d")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -5.0
+offset_top = -5.0
+offset_right = 1154.0
+offset_bottom = 650.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="mPanel" type="Panel" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/mPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="teamOptionButton" type="OptionButton" parent="MarginContainer/mPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="simPanel" type="Panel" parent="MarginContainer/mPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/mPanel/VBoxContainer/simPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
+layout_mode = 2
+text = "Sim Offense"
+
+[node name="spacerPanel3" type="Panel" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="m_SimOffenseUpDown" type="SpinBox" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
+layout_mode = 2
+max_value = 15.0
+
+[node name="spacerPanel1" type="Panel" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
+layout_mode = 2
+text = "Sim Defense"
+
+[node name="spacerPanel2" type="Panel" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+
+[node name="m_SimDefenseUpDown" type="SpinBox" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
+layout_mode = 2
+max_value = 15.0
+
+[node name="runPassFormationPanel" type="Panel" parent="MarginContainer/mPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
+layout_mode = 2
+text = "Run/Pass Ratio	"
+
+[node name="Panel" type="Panel" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
+custom_minimum_size = Vector2(25, 0)
+layout_mode = 2
+
+[node name="m_OffensivePrefomComboBox" type="OptionButton" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+item_count = 4
+popup/item_0/text = "Balanced Rush"
+popup/item_1/text = "Heavy Rushing"
+popup/item_1/id = 1
+popup/item_2/text = "Balanced Pass"
+popup/item_2/id = 2
+popup/item_3/text = "Heavy Passing"
+popup/item_3/id = 3
+
+[node name="Panel3" type="Panel" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
+custom_minimum_size = Vector2(25, 0)
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
+layout_mode = 2
+text = "Formation"
+
+[node name="Panel2" type="Panel" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
+custom_minimum_size = Vector2(25, 0)
+layout_mode = 2
+
+[node name="m_FormationComboBox" type="OptionButton" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+item_count = 3
+popup/item_0/text = "2RB_2WR_1TE"
+popup/item_0/id = 2
+popup/item_1/text = "1RB_4WR"
+popup/item_1/id = 3
+popup/item_2/text = "1RB_3WR_1TE"
+popup/item_2/id = 2
+
+[node name="Panel2" type="Panel" parent="MarginContainer/mPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/mPanel/VBoxContainer/Panel2"]
+layout_mode = 0
+offset_right = 1146.0
+offset_bottom = 187.0
+
+[node name="PlayControlR1" parent="MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer" instance=ExtResource("2_8qqah")]
+layout_mode = 2
+PlayType = 1
+PlaySlot = 1
+
+[node name="PlayControlR2" parent="MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer" instance=ExtResource("2_8qqah")]
+layout_mode = 2
+PlayType = 1
+PlaySlot = 2
+
+[node name="PlayControlR3" parent="MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer" instance=ExtResource("2_8qqah")]
+layout_mode = 2
+PlayType = 1
+PlaySlot = 3
+
+[node name="PlayControlR4" parent="MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer" instance=ExtResource("2_8qqah")]
+layout_mode = 2
+PlayType = 1
+PlaySlot = 4
+
+[node name="Panel" type="Panel" parent="MarginContainer/mPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/mPanel/VBoxContainer/Panel"]
+layout_mode = 0
+offset_right = 1146.0
+offset_bottom = 187.0
+
+[node name="PlayControlP1" parent="MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer" instance=ExtResource("2_8qqah")]
+layout_mode = 2
+PlayType = 2
+PlaySlot = 1
+
+[node name="PlayControlP2" parent="MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer" instance=ExtResource("2_8qqah")]
+layout_mode = 2
+PlayType = 2
+PlaySlot = 2
+
+[node name="PlayControlP3" parent="MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer" instance=ExtResource("2_8qqah")]
+layout_mode = 2
+PlayType = 2
+PlaySlot = 3
+
+[node name="PlayControlP4" parent="MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer" instance=ExtResource("2_8qqah")]
+layout_mode = 2
+PlayType = 2
+PlaySlot = 4
+
+[node name="closeButton" type="Button" parent="MarginContainer/mPanel"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Close"

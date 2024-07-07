@@ -1,0 +1,341 @@
+[gd_scene load_steps=6 format=3 uid="uid://biasxy00xaqdi"]
+
+[ext_resource type="Theme" uid="uid://2td16tl75xtb" path="res://Themes/tecmo_menu_theme.tres" id="1_mhif1"]
+[ext_resource type="PackedScene" uid="uid://cvufo51sqy0rj" path="res://Forms/TecmoAttributeControl.tscn" id="1_qlx2x"]
+[ext_resource type="Script" path="res://Forms/EditPlayer.cs" id="2_mcvh5"]
+[ext_resource type="Texture2D" uid="uid://1araga2in431" path="res://Images/52.png" id="3_kqfsx"]
+[ext_resource type="PackedScene" uid="uid://c0wehhislpymp" path="res://Forms/TextureRectWithMouse.tscn" id="3_ttdgg"]
+
+[node name="EditPlayer" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_mhif1")
+script = ExtResource("2_mcvh5")
+
+[node name="marginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="pPanel" type="Panel" parent="marginContainer"]
+layout_mode = 2
+
+[node name="hBoxContainer" type="HBoxContainer" parent="marginContainer/pPanel"]
+layout_mode = 2
+anchor_right = 1.0
+anchor_bottom = 0.987
+offset_bottom = 0.267944
+theme_override_constants/separation = 10
+
+[node name="leftPanel" type="Panel" parent="marginContainer/pPanel/hBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="leftVBoxContainer" type="VBoxContainer" parent="marginContainer/pPanel/hBoxContainer/leftPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="m_TeamsComboBox" type="OptionButton" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+item_count = 1
+popup/item_0/text = "team"
+
+[node name="m_FirstNameTextBox" type="LineEdit" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer"]
+custom_minimum_size = Vector2(30, 60)
+layout_mode = 2
+placeholder_text = "First Name"
+context_menu_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="facePanel" type="Panel" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer"]
+custom_minimum_size = Vector2(70, 70)
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel"]
+layout_mode = 1
+offset_right = 146.0
+offset_bottom = 70.0
+
+[node name="m_PrevPicture" type="Button" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = "<"
+
+[node name="spacerPanel1" type="Panel" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
+[node name="m_FaceBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer" instance=ExtResource("3_ttdgg")]
+custom_minimum_size = Vector2(70, 70)
+layout_mode = 2
+texture = ExtResource("3_kqfsx")
+
+[node name="spacerPanel2" type="Panel" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
+[node name="m_FaceLabel" type="Label" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer/spacerPanel2"]
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -10.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="m_NextPicture" type="Button" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer"]
+custom_minimum_size = Vector2(40, 0)
+layout_mode = 2
+text = ">"
+
+[node name="m_RSBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer" instance=ExtResource("1_qlx2x")]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+AttributeName = "RS"
+
+[node name="m_MSBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer" instance=ExtResource("1_qlx2x")]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+AttributeName = "MS"
+
+[node name="m_PS_BC_PI_KABox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer" instance=ExtResource("1_qlx2x")]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+
+[node name="m_ACCBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer" instance=ExtResource("1_qlx2x")]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+
+[node name="Panel1" type="Panel" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="m_Sim1Label" type="Label" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel1"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -10.0
+offset_right = 140.0
+offset_bottom = 10.0
+grow_vertical = 2
+text = "Sim Run"
+
+[node name="m_Sim1UpDown" type="SpinBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel1"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.353
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 77.967
+offset_top = -14.0
+offset_bottom = 14.0
+grow_horizontal = 0
+grow_vertical = 2
+max_value = 255.0
+alignment = 2
+
+[node name="Panel3" type="Panel" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+
+[node name="m_Sim3Label" type="Label" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel3"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -10.0
+offset_right = 140.0
+offset_bottom = 10.0
+grow_vertical = 2
+text = "Sim Pocket"
+
+[node name="m_Sim3UpDown" type="SpinBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel3"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.353
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 76.967
+offset_top = -14.0
+offset_bottom = 14.0
+grow_horizontal = 0
+grow_vertical = 2
+max_value = 255.0
+alignment = 2
+
+[node name="rightPanel" type="Panel" parent="marginContainer/pPanel/hBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="rightVBoxContainer" type="VBoxContainer" parent="marginContainer/pPanel/hBoxContainer/rightPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="m_PositionComboBox" type="OptionButton" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+
+[node name="m_LastNameTextBox" type="LineEdit" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+placeholder_text = "Last Name"
+context_menu_enabled = false
+drag_and_drop_selection_enabled = false
+
+[node name="jerseyPanel" type="Panel" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer"]
+custom_minimum_size = Vector2(70, 70)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/jerseyPanel"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -10.0
+offset_right = 140.0
+offset_bottom = 10.0
+grow_vertical = 2
+text = "Jersey#"
+vertical_alignment = 1
+
+[node name="m_JerseyNumberDropUpDown" type="SpinBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/jerseyPanel"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.532086
+anchor_top = 0.0714286
+anchor_right = 0.967023
+anchor_bottom = 0.928571
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 99.0
+metadata/_edit_use_anchors_ = true
+
+[node name="m_RPBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer" instance=ExtResource("1_qlx2x")]
+custom_minimum_size = Vector2(200, 50)
+layout_mode = 2
+AttributeName = "RP"
+
+[node name="m_HPBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer" instance=ExtResource("1_qlx2x")]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+AttributeName = "HP"
+
+[node name="m_PC_REC_QU_KABox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer" instance=ExtResource("1_qlx2x")]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+
+[node name="m_APBBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer" instance=ExtResource("1_qlx2x")]
+custom_minimum_size = Vector2(200, 60)
+layout_mode = 2
+
+[node name="Panel2" type="Panel" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+
+[node name="m_Sim2Label" type="Label" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel2"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -10.0
+offset_right = 140.0
+offset_bottom = 10.0
+grow_vertical = 2
+text = "Sim Pass"
+
+[node name="m_Sim2UpDown" type="SpinBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel2"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.353
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 76.967
+offset_top = -14.0
+offset_bottom = 14.0
+grow_horizontal = 0
+grow_vertical = 2
+max_value = 255.0
+alignment = 2
+
+[node name="Panel4" type="Panel" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+
+[node name="m_Sim4Label" type="Label" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel4"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -10.0
+offset_right = 140.0
+offset_bottom = 10.0
+grow_vertical = 2
+text = "Sim 4"
+
+[node name="m_Sim4UpDown" type="SpinBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel4"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.353
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 76.967
+offset_top = -14.0
+offset_bottom = 14.0
+grow_horizontal = 0
+grow_vertical = 2
+max_value = 255.0
+alignment = 2
+
+[node name="bottomPanel" type="Panel" parent="marginContainer/pPanel"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="closeButton" type="Button" parent="marginContainer/pPanel/bottomPanel"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -54.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Close	"
+
+[connection signal="item_selected" from="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/m_TeamsComboBox" to="." method="_on_m_teams_combo_box_item_selected"]
+[connection signal="item_selected" from="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/m_PositionComboBox" to="." method="_on_m_position_combo_box_item_selected"]
+[connection signal="pressed" from="marginContainer/pPanel/bottomPanel/closeButton" to="." method="_on_close_button_pressed"]
