@@ -19,6 +19,8 @@ At some point in the future I hope to update this project with a working HTML5 e
 Before you build this Godot Project you'll need to run the 'Create_links.bat' file inside the 'Lib.NET' folder.
 This creates links to the core TSBTool source files that enables manipulation of TSB ROMS. 
 
+(Tools = Visual Studio 2022 & Godot 4.3)
+
 ## Debugging (Windows app)
 For Debugging the C# side, it's easiest to export to a Win64 exe and set that as your debug target.
 
