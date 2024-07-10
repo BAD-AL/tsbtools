@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<h3>Bridge.net C# to JavaScript Conversion sample project</h3>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <style>
+        body {
+            background-color: #121212;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #FFFFFF;
+        }
+        a {
+            color: #1E90FF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        textarea {
+            background-color: #333333;
+            color: #FFFFFF;
+            border: 1px solid #444444;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        input[type="button"] {
+            background-color: #333333;
+            color: #FFFFFF;
+            border: 1px solid #444444;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        input[type="button"]:hover {
+            background-color: #444444;
+        }
+    </style>
+
+    <meta charset="utf-8" />
+    <title>Web TSBTool</title>
+	<script src="bridge.js"></script>
+    <script src="bridge.console.js"></script>
+    <script src="bridge.meta.js"></script>
+    <script src="newtonsoft.json.js"></script>
+    <script src="Bridge_TSBTool.js"></script>
+    <script src="Bridge_TSBTool.meta.js"></script>
+	<script>
+	
+		/*
+			Bridge.NET does not make it easy to work with Blobs, so 
+				"window.createBlobFromArrayBuffer" and 
+				"window.saveFile" 
+			are used by the BRIDGE.NET C# side to do the proper (easier) blob handling.
+		*/
+		window.createBlobFromArrayBuffer = function(arrayBuffer){
+			var retVal = new Blob( [arrayBuffer], {type: "application/octet-stream"}  );
+			return retVal;
+		}
+
+		window.saveFile = function ( fileName, blob) {
+			var link = document.createElement("a"); // Or maybe get it from the current document
+			var blobUrl = URL.createObjectURL(blob);
+			link.href = blobUrl;
+			link.download = fileName;
+			link.innerHTML = "Click here to download the file";
+			document.body.appendChild(link); // Or append it whereever you want
+			link.click();
+		}
+		
+		
+		// This is the convience API for working with roms.
+		window.tecmoTool = {
+			// load a tsb rom to edit 
+			// example: window.tecmoTool.loadFile();
+			loadFile: Bridge_TSBTool.App.PromptAndLoadFile,
+			
+			// Get contents for the loaded ROM; returns a string 
+			// example: var allTSBContents = window.tecmoTool.getAllContents();
+			getAllContents: Bridge_TSBTool.App.GetAllContents,
+			
+			// Applies the data passed
+			// @param name="data" The data to apply
+			// example: window.tecmoTool.applyData( dataToApplyString);
+			applyData: Bridge_TSBTool.App.ApplyData,
+			
+			//save the current work to a rom, prompts user for filename.
+			//example: window.tecmoTool.saveFile();
+			saveFile: Bridge_TSBTool.App.SaveFile,
+			
+			//  Converts data to TSB1 Format; returns the converted data
+			// @param name="inputString"
+			// example: var tsb1DataString = window.tecmoTool.convertToTSB1Format(notTsb1String);
+			convertToTSB1Format: Bridge_TSBTool.App.ConvertToTSB1Format,
+			
+			//  Converts data to TSB2 Format; returns the converted data
+			// @param name="inputString"
+			// example: var tsb2DataString = window.tecmoTool.convertToTSB1Format(notTsb2String);
+			convertToTSB2Format: Bridge_TSBTool.App.ConvertToTSB2Format,
+			
+			//  Converts data to TSB3 Format; returns the converted data
+			// @param name="inputString"
+			// example: var tsb3DataString = window.tecmoTool.convertToTSB1Format(notTsb3String);
+			convertToTSB3Format: Bridge_TSBTool.App.ConvertToTSB3Format,
+			/*
+				window.tecmoTool.loadFile(blobFromButtonInput);
+				var allTSBContents = window.tecmoTool.getAllContents();
+				window.tecmoTool.applyData( dataToApplyString);
+				window.tecmoTool.saveFile();
+				var tsb1DataString = window.tecmoTool.convertToTSB1Format(notTsb1String);
+				var tsb2DataString = window.tecmoTool.convertToTSB1Format(notTsb2String);
+				var tsb3DataString = window.tecmoTool.convertToTSB1Format(notTsb3String);
+			*/
+		}
+		
+		
+		function renderPage() {
+			// Renders the Page with the default simple UI, 
+			// replace this if you'd like to create and use your own UI.
+			Bridge_TSBTool.App.RenderSamplePage();
+		}
+	</script>
+</head>
+<body onload="renderPage()" >
+</body>
+</html>
