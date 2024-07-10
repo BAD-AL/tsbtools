@@ -1,6 +1,6 @@
 .import 
 .mono 
 .vs 
-Export/ 
+Export/Win64/ 
 *.user
 launchSettings.json
