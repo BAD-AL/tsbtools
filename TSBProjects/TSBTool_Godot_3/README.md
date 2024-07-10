@@ -1,5 +1,11 @@
 # Godot 3 C# + HTML5 Export
 
+Note: If building this project, you'll want to have 
+ * Visual Studio 2022
+ * Godot 3.5.3 
+
+And you'll need to run the ```Lib.NET\create_links.bat``` file (to reference the core TSBTool code).
+
 A few issues I encountered:
 ### Issue 1
 The HTML5 mono export seemed to have trouble with GDScript -> C# communication using the following pattern:
