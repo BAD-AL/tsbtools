@@ -149,7 +149,7 @@ margin_top = -10.0
 margin_right = 112.0
 margin_bottom = 10.0
 rect_min_size = Vector2( 0, 30 )
-text = " About Time "
+text = " About "
 
 [node name="tecmoControl" parent="MarginContainer/VBoxContainer/bottomPanel" instance=ExtResource( 6 )]
 
