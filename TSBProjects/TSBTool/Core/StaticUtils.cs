@@ -94,7 +94,7 @@ namespace TSBTool
 
         public static void WriteError(string input)
         {
-            Console.WriteLine(input);
+            Console.Error.WriteLine(input);
         }
 
         /// <summary>
@@ -443,7 +443,7 @@ namespace TSBTool
                 sMessageGiver.ShowMessageBox(title, message);
             }
             else
-                Console.WriteLine("Error! need to set StaticUtils.sMessageGiver");
+                WriteError("Error! need to set StaticUtils.sMessageGiver");
         }
 
         public static bool ShowConfirmationDialog(string title, string message)
@@ -453,7 +453,7 @@ namespace TSBTool
                 return sMessageGiver.ShowConfirmationDialog(title, message);
             }
             else
-                Console.WriteLine("Error! need to set StaticUtils.sMessageGiver");
+                WriteError("Error! need to set StaticUtils.sMessageGiver");
             return true;
         }
 
@@ -464,7 +464,7 @@ namespace TSBTool
                 sMessageGiver.ShowError("Error!", error);
             }
             else
-                Console.WriteLine("Error! need to set StaticUtils.sMessageGiver");
+                WriteError("Error! need to set StaticUtils.sMessageGiver");
         }
 
         public static string PromptForSetUserInput(string input)
@@ -475,8 +475,16 @@ namespace TSBTool
                 result = sMessageGiver.PromptForSetUserInput(input);
             }
             else
-                Console.WriteLine("Error! need to set StaticUtils.sMessageGiver");
+                WriteError("Error! need to set StaticUtils.sMessageGiver");
             return result;
+        }
+
+        public static void LogMessage(string message)
+        {
+            if (sMessageGiver != null)
+                sMessageGiver.LogMessage(message);
+            else
+                Console.WriteLine(message);
         }
 
 
@@ -561,7 +569,7 @@ namespace TSBTool
 
             int i;
             if (shiftAmount > 0)
-                Console.WriteLine("positive shift amount in ShiftDataUp");
+                LogMessage("positive shift amount in ShiftDataUp");
 
             for (i = startPos; i <= endPos; i++)
                 data[i + shiftAmount] = data[i];

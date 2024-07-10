@@ -1,0 +1,309 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Images/52.png" type="Texture" id=1]
+[ext_resource path="res://Forms/TextureRectWithMouse.tscn" type="PackedScene" id=2]
+[ext_resource path="res://Forms/TecmoAttributeControl.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Themes/tecmo_menu_theme.tres" type="Theme" id=4]
+[ext_resource path="res://Forms/EditPlayer.cs" type="Script" id=5]
+
+[node name="EditPlayer" type="Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 4 )
+script = ExtResource( 5 )
+
+[node name="marginContainer" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 10
+custom_constants/margin_top = 10
+custom_constants/margin_left = 10
+custom_constants/margin_bottom = 10
+
+[node name="pPanel" type="Panel" parent="marginContainer"]
+margin_left = 10.0
+margin_top = 10.0
+margin_right = 1014.0
+margin_bottom = 758.0
+
+[node name="hBoxContainer" type="HBoxContainer" parent="marginContainer/pPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_bottom = -59.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="leftPanel" type="Panel" parent="marginContainer/pPanel/hBoxContainer"]
+margin_right = 500.0
+margin_bottom = 689.0
+size_flags_horizontal = 3
+
+[node name="leftVBoxContainer" type="VBoxContainer" parent="marginContainer/pPanel/hBoxContainer/leftPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="m_TeamsComboBox" type="OptionButton" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer"]
+margin_right = 500.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="m_FirstNameTextBox" type="LineEdit" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer"]
+margin_top = 54.0
+margin_right = 500.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="facePanel" type="Panel" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer"]
+margin_top = 108.0
+margin_right = 500.0
+margin_bottom = 178.0
+rect_min_size = Vector2( 0, 70 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="m_PrevPicture" type="Button" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer"]
+margin_right = 70.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 70, 0 )
+text = "<"
+
+[node name="spacerPanel" type="Panel" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer"]
+margin_left = 74.0
+margin_right = 124.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 50, 0 )
+
+[node name="m_FaceBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer" instance=ExtResource( 2 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 128.0
+margin_right = 198.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 70, 70 )
+texture = ExtResource( 1 )
+stretch_mode = 5
+
+[node name="m_FaceLabel" type="Label" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer"]
+margin_left = 202.0
+margin_top = 10.0
+margin_right = 252.0
+margin_bottom = 60.0
+rect_min_size = Vector2( 50, 50 )
+text = "00"
+align = 1
+valign = 1
+
+[node name="m_NextPicture" type="Button" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer"]
+margin_left = 256.0
+margin_right = 326.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 70, 0 )
+text = ">"
+
+[node name="m_RSBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 182.0
+margin_right = 500.0
+margin_bottom = 222.0
+
+[node name="m_MSBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 226.0
+margin_right = 500.0
+margin_bottom = 266.0
+
+[node name="m_PS_BC_PI_KABox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 270.0
+margin_right = 500.0
+margin_bottom = 310.0
+
+[node name="m_ACCBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 314.0
+margin_right = 500.0
+margin_bottom = 354.0
+
+[node name="Panel1" type="Panel" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer"]
+margin_top = 358.0
+margin_right = 500.0
+margin_bottom = 418.0
+rect_min_size = Vector2( 0, 60 )
+
+[node name="m_Sim1Label" type="Label" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel1"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -8.0
+margin_right = 112.0
+margin_bottom = 8.0
+text = "Sim Run"
+
+[node name="m_Sim1UpDown" type="SpinBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel1"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -295.0
+margin_top = -13.0
+margin_bottom = 13.0
+
+[node name="Panel3" type="Panel" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer"]
+margin_top = 422.0
+margin_right = 500.0
+margin_bottom = 492.0
+rect_min_size = Vector2( 0, 70 )
+
+[node name="m_Sim3Label" type="Label" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel3"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -8.0
+margin_right = 160.0
+margin_bottom = 8.0
+text = "Sim Pocket	"
+
+[node name="m_Sim3UpDown" type="SpinBox" parent="marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel3"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -295.0
+margin_top = -13.0
+margin_bottom = 13.0
+
+[node name="rightPanel" type="Panel" parent="marginContainer/pPanel/hBoxContainer"]
+margin_left = 504.0
+margin_right = 1004.0
+margin_bottom = 689.0
+size_flags_horizontal = 3
+
+[node name="rightVBoxContainer" type="VBoxContainer" parent="marginContainer/pPanel/hBoxContainer/rightPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="m_PositionComboBox" type="OptionButton" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer"]
+margin_right = 500.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="m_LastNameTextBox" type="LineEdit" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer"]
+margin_top = 54.0
+margin_right = 500.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="jerseyPanel" type="Panel" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer"]
+margin_top = 108.0
+margin_right = 500.0
+margin_bottom = 178.0
+rect_min_size = Vector2( 0, 70 )
+
+[node name="Label" type="Label" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/jerseyPanel"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -8.0
+margin_right = 112.0
+margin_bottom = 8.0
+text = "Jersey#"
+
+[node name="m_JerseyNumberDropUpDown" type="SpinBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/jerseyPanel"]
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -278.0
+margin_bottom = 60.0
+rect_min_size = Vector2( 0, 60 )
+max_value = 99.0
+
+[node name="m_RPBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 182.0
+margin_right = 500.0
+margin_bottom = 222.0
+
+[node name="m_HPBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 226.0
+margin_right = 500.0
+margin_bottom = 266.0
+
+[node name="m_PC_REC_QU_KABox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 270.0
+margin_right = 500.0
+margin_bottom = 310.0
+
+[node name="m_APBBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 314.0
+margin_right = 500.0
+margin_bottom = 354.0
+
+[node name="Panel2" type="Panel" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer"]
+margin_top = 358.0
+margin_right = 500.0
+margin_bottom = 418.0
+rect_min_size = Vector2( 0, 60 )
+
+[node name="m_Sim2Label" type="Label" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel2"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -8.0
+margin_right = 112.0
+margin_bottom = 8.0
+text = "Sim Pass"
+
+[node name="m_Sim2UpDown" type="SpinBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel2"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -295.0
+margin_top = -13.0
+margin_bottom = 13.0
+
+[node name="Panel4" type="Panel" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer"]
+margin_top = 422.0
+margin_right = 500.0
+margin_bottom = 492.0
+rect_min_size = Vector2( 0, 70 )
+
+[node name="m_Sim4Label" type="Label" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel4"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -8.0
+margin_right = 160.0
+margin_bottom = 8.0
+text = "Sim 4"
+
+[node name="m_Sim4UpDown" type="SpinBox" parent="marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel4"]
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+margin_left = -295.0
+margin_top = -13.0
+margin_bottom = 13.0
+
+[node name="bottomPanel" type="Panel" parent="marginContainer/pPanel"]
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+margin_left = -502.0
+margin_top = -60.0
+margin_right = 502.0
+rect_min_size = Vector2( 0, 60 )
+
+[node name="closeButton" type="Button" parent="marginContainer/pPanel/bottomPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "Close"

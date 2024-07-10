@@ -167,11 +167,37 @@ public partial class EditPlayer : Control
 
 		LoadData();
 		CurrentState = StateEnum.QB;
+		AddListeners();
 	}
 
-	private void M_FaceBox_GuiInput(InputEvent evt)
+	private void AddListeners()
 	{
-		//evt.
+		foreach(TecmoAttributeControl control in m_Attributes)
+		{
+			control.value_changed += attributel_value_changed;
+		}
+		foreach(SpinBox sb in m_SimAttrs)
+		{
+			sb.ValueChanged += attributel_value_changed;
+		}
+	}
+
+
+	private void attributel_value_changed(double value)
+	{
+		ReplacePlayer();
+	}
+
+	private void RemoveListeners()
+	{
+		foreach (TecmoAttributeControl control in m_Attributes)
+		{
+			control.value_changed -= attributel_value_changed;
+		}
+		foreach (SpinBox sb in m_SimAttrs)
+		{
+			sb.ValueChanged -= attributel_value_changed;
+		}
 	}
 
 	private void M_FaceBox_MouseDown(InputEventMouseButton mouseEvent)
@@ -275,6 +301,7 @@ public partial class EditPlayer : Control
 	/// </summary>
 	private void ReplacePlayer()
 	{
+		GD.Print("EditPlayer.ReplacePlayer()");
 		string oldPlayer = GetPlayerString(m_TeamsComboBox.Text,
 			m_PositionComboBox.Text);
 		if (oldPlayer == null)
@@ -346,11 +373,13 @@ Please verify that this player's attributes are correct.", oldPlayer);
 	/// </summary>
 	private void _on_m_teams_combo_box_item_selected(int newIndex)
 	{
+		RemoveListeners();
 		//if (m_DoneInit)
 		{
 			// do a replace player on Auto update HERE!
 			SetCurrentPlayer();
 		}
+		AddListeners();
 	}
 
 	/// <summary>
@@ -358,6 +387,7 @@ Please verify that this player's attributes are correct.", oldPlayer);
 	/// </summary>
 	private void _on_m_position_combo_box_item_selected(int newIndex)
 	{
+		RemoveListeners();
 		//if (m_DoneInit)
 		{
 			TSBPlayer pos = (TSBPlayer)m_PositionComboBox.Selected;
@@ -406,6 +436,7 @@ Please verify that this player's attributes are correct.", oldPlayer);
 			}
 			SetCurrentPlayer();
 		}
+		AddListeners();
 	}
 
 	/// <summary>
@@ -636,7 +667,7 @@ Please verify that this player's attributes are correct.", oldPlayer);
 		for (int i = 0; i < m_Attributes.Length; i++)
 		{
 			
-			if (!m_Attributes[i].Visible)
+			if (m_Attributes[i].Visible)
 			{
 				sb.Append(m_Attributes[i].AttributeValue.ToString());
 				sb.Append(", ");

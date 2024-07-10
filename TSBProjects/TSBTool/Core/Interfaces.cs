@@ -221,6 +221,8 @@ namespace TSBTool
         bool ShowConfirmationDialog(string title, string message);
 
         string PromptForSetUserInput(string input);
+
+		void LogMessage(string message);
     }
 
 }

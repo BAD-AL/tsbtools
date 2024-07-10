@@ -37,6 +37,11 @@ namespace TSBTool
             return simpleSetLine;
         }
 
+        public void LogMessage(String msg)
+        {
+            Console.WriteLine(msg);
+        }
+
         #endregion
     }
 }

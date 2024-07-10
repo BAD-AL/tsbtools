@@ -1,0 +1,161 @@
+[gd_scene load_steps=9 format=2]
+
+[ext_resource path="res://Images/NFL_logo.jpg" type="Texture" id=1]
+[ext_resource path="res://Themes/tecmo_menu_theme.tres" type="Theme" id=2]
+[ext_resource path="res://Fonts/GF-TecmoNarrow.TTF" type="DynamicFontData" id=3]
+[ext_resource path="res://Forms/main_panel.gd" type="Script" id=4]
+[ext_resource path="res://Forms/MyTextureRect.cs" type="Script" id=5]
+[ext_resource path="res://Forms/TecmoControl.tscn" type="PackedScene" id=6]
+
+[sub_resource type="DynamicFont" id=1]
+size = 30
+font_data = ExtResource( 3 )
+
+[sub_resource type="StyleBoxFlat" id=2]
+bg_color = Color( 0.0823529, 0.372549, 0.847059, 1 )
+border_width_left = 9
+border_width_top = 9
+border_width_right = 9
+border_width_bottom = 9
+border_color = Color( 1, 1, 1, 1 )
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+
+[node name="main_panel" type="Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 2 )
+script = ExtResource( 4 )
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 5
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1019.0
+margin_bottom = 643.0
+
+[node name="titleLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+margin_right = 1014.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 40 )
+custom_fonts/font = SubResource( 1 )
+text = "Tecmo Super Bowl Tool"
+align = 1
+valign = 1
+
+[node name="middlePanel" type="Panel" parent="MarginContainer/VBoxContainer"]
+margin_top = 44.0
+margin_right = 1014.0
+margin_bottom = 594.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/middlePanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="TextureRect" type="TextureRect" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer"]
+margin_right = 476.0
+margin_bottom = 550.0
+texture = ExtResource( 1 )
+script = ExtResource( 5 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer"]
+margin_left = 480.0
+margin_right = 1014.0
+margin_bottom = 550.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_right = 20
+custom_constants/margin_top = 70
+custom_constants/margin_left = 20
+custom_constants/margin_bottom = 80
+
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer"]
+margin_left = 20.0
+margin_top = 70.0
+margin_right = 514.0
+margin_bottom = 470.0
+custom_styles/panel = SubResource( 2 )
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_right = 20
+custom_constants/margin_left = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer"]
+margin_left = 20.0
+margin_right = 474.0
+margin_bottom = 400.0
+alignment = 1
+
+[node name="loadRomButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+margin_top = 129.0
+margin_right = 454.0
+margin_bottom = 154.0
+rect_min_size = Vector2( 0, 25 )
+text = "Load Rom"
+
+[node name="editPlayersButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+margin_top = 158.0
+margin_right = 454.0
+margin_bottom = 183.0
+rect_min_size = Vector2( 0, 25 )
+text = "Edit Players"
+
+[node name="editTeamsButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+margin_top = 187.0
+margin_right = 454.0
+margin_bottom = 212.0
+rect_min_size = Vector2( 0, 25 )
+text = "Edit Teams"
+
+[node name="viewTextButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+margin_top = 216.0
+margin_right = 454.0
+margin_bottom = 241.0
+rect_min_size = Vector2( 0, 25 )
+text = "View/Edit Text"
+
+[node name="saveButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
+margin_top = 245.0
+margin_right = 454.0
+margin_bottom = 270.0
+rect_min_size = Vector2( 0, 25 )
+text = "Save"
+
+[node name="bottomPanel" type="Panel" parent="MarginContainer/VBoxContainer"]
+margin_top = 598.0
+margin_right = 1014.0
+margin_bottom = 638.0
+rect_min_size = Vector2( 0, 40 )
+
+[node name="aboutButton" type="Button" parent="MarginContainer/VBoxContainer/bottomPanel"]
+anchor_top = 0.5
+anchor_bottom = 0.5
+margin_top = -10.0
+margin_right = 112.0
+margin_bottom = 10.0
+rect_min_size = Vector2( 0, 30 )
+text = " About Time "
+
+[node name="tecmoControl" parent="MarginContainer/VBoxContainer/bottomPanel" instance=ExtResource( 6 )]
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/loadRomButton" to="." method="_on_load_rom_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/editPlayersButton" to="." method="_on_edit_players_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/editTeamsButton" to="." method="_on_edit_teams_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/viewTextButton" to="." method="_on_view_text_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/saveButton" to="." method="_on_save_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/bottomPanel/aboutButton" to="." method="_on_aboutButton_pressed"]

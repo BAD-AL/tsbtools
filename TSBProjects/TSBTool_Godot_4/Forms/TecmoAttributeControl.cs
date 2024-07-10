@@ -11,6 +11,10 @@ public partial class TecmoAttributeControl : Control
 	private static List<byte> sOptions = new List<byte>()
 		{6, 13, 19, 25, 31, 38, 44, 50, 56, 63, 69, 75, 81, 88, 94, 100 };
 
+
+	[Signal]
+	public delegate void value_changedEventHandler(double value); // double is used to keep consistent with the SpinBox value_changed.
+
 	[Export]
 	public String AttributeName
 	{
@@ -73,10 +77,12 @@ public partial class TecmoAttributeControl : Control
 	{
 		attributeLabel = FindChild("attrLabel") as Label; // may need to be "*attrLabel", check it
 		valueCombo = FindChild("valueCombo") as OptionButton;
+		valueCombo.ItemSelected += ValueCombo_ItemSelected;
 	}
 
-	//// Called every frame. 'delta' is the elapsed time since the previous frame.
-	//public override void _Process(double delta)
-	//{
-	//}
+	private void ValueCombo_ItemSelected(long index)
+	{
+		EmitSignal(SignalName.value_changed, (double)index);
+	}
+
 }

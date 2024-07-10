@@ -1,0 +1,6 @@
+.import 
+.mono 
+.vs 
+Export/ 
+*.user
+launchSettings.json

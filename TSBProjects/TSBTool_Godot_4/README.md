@@ -7,7 +7,7 @@ Godot has a rich set of controls for building UIs and it's a very nice Tool to b
 although 'WinForms' still does enable a much more rapid development cycle.
 
 In Godot's current form (4.3) the HTML5 target only works for non-C# projects; HTML5 targeting for Godot 4 is WIP.
-At some point in the future I hope to update this project with a working HTML5 export.
+At some point in the future I hope to update this project with a working HTML5 export for Godot 4.
 
 ## Supported Game versions
 * TSB nes 

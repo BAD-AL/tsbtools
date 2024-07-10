@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://Themes/tecmo_menu_theme.tres" type="Theme" id=1]
+[ext_resource path="res://Images/faces.png" type="Texture" id=2]
+[ext_resource path="res://Forms/TextureRectWithMouse.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Forms/FacePickerDialog.cs" type="Script" id=4]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.254902, 0.631373, 0.894118, 1 )
+
+[node name="FacePickerDialog" type="ConfirmationDialog"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+rect_min_size = Vector2( 300, 105 )
+theme = ExtResource( 1 )
+script = ExtResource( 4 )
+
+[node name="Panel" type="Panel" parent="."]
+anchor_right = 1.0
+anchor_bottom = 0.915
+margin_left = 8.0
+margin_top = 8.0
+margin_right = -8.0
+margin_bottom = 33.28
+custom_styles/panel = SubResource( 1 )
+
+[node name="faceTextureRect" parent="Panel" instance=ExtResource( 3 )]
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.0
+margin_left = -226.5
+margin_right = 226.5
+margin_bottom = 387.0
+texture = ExtResource( 2 )
+
+[node name="Label" type="Label" parent="Panel"]
+margin_top = 415.0
+margin_right = 1020.0
+margin_bottom = 431.0
+text = "Pick Your Face"
+align = 1

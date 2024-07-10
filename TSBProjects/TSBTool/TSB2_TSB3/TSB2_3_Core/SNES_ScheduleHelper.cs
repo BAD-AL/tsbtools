@@ -97,7 +97,7 @@ namespace TSBTool2
                         break;
                     }
                     CloseWeek();
-                    TSBTool.StaticUtils.WriteError(String.Format( "Scheduleing {0}", line));
+                    TSBTool.StaticUtils.LogMessage(String.Format( "Scheduleing {0}", line));
                 }
                 else
                 {

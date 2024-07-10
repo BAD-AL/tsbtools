@@ -242,7 +242,7 @@ namespace TSBTool
                     if (msg.StartsWith("Error"))
                         StaticUtils.AddError(msg);
                     else
-                        Console.WriteLine(msg);
+                        StaticUtils.LogMessage(msg);
                 }
                 else
                 {
@@ -296,7 +296,7 @@ namespace TSBTool
             }
             else if (teamRegex.Match(line) != Match.Empty)//line.StartsWith("TEAM") )
             {
-                Console.WriteLine("'{0}' ", line);
+                //Console.WriteLine("'{0}' ", line);
                 currentState = rosterState;
                 string team = GetTeam(line);
                 bool ret = SetCurrentTeam(team);
@@ -381,7 +381,7 @@ namespace TSBTool
 			else
 			{
 				tool.SetYear(year);
-				Console.WriteLine("Year set to '{0}'",year);
+				StaticUtils.LogMessage(String.Format("Year set to '{0}'",year));
 			}
 		}
 

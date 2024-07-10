@@ -955,7 +955,7 @@ Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			//int end = endPos+shiftAmount;
 			int i;
 			if(shiftAmount > 0 )
-				Console.WriteLine("positive shift amount in ShiftDataUp");
+				StaticUtils.LogMessage("positive shift amount in ShiftDataUp");
 
 			for(i = startPos /*+ shiftAmount*/; i <= endPos /*end*/; i++)
 			{
