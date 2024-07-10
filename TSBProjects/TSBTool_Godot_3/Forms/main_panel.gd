@@ -1,14 +1,41 @@
 extends Panel
 
 var myCallback:JavaScriptObject
+var textureRect:TextureRect
+
+"""
+Screen reduction stuff
+"""
+func check_screen_size():
+	var screen_width = OS.get_window_size().x
+	print("check_screen_size")
+	if screen_width < 800:
+		hide_element()
+	else:
+		show_element()
+
+func _on_resized():
+	check_screen_size()
+
+func hide_element():
+	textureRect.hide()
+
+func show_element():
+	textureRect.show()
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	disable_buttons()
+	#setup 
+	textureRect = $MarginContainer/VBoxContainer/middlePanel/HBoxContainer/TextureRect
 	print("main_panel._ready() os :" + OS.get_name())
 	var tecmoControl = $MarginContainer/VBoxContainer/bottomPanel/tecmoControl
 	print("main_panel._ready() C# message:" + tecmoControl.TecmoHelper.GetMessageFromCSharp())
 	Globals.tecmoHelper = tecmoControl.TecmoHelper
+	# Screen size stuff 
+	check_screen_size()
+	get_tree().get_root().connect("size_changed", self, "_on_resized")
 	
 	if OS.get_name() == "HTML5":
 		myCallback = JavaScript.create_callback(self, "fileLoaded")
@@ -192,4 +219,5 @@ func fileLoaded(args:Array):
 	print("fileLoaded called back from JavaScript! ")
 	Globals.tecmoHelper.LoadRomBytesFromBase64String(base64String)
 	enable_buttons()
+
 
