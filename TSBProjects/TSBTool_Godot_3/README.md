@@ -23,12 +23,14 @@ The HTML5 mono export seemed to have trouble with GDScript -> C# communication u
 So I switched the approach where I create a simple scene (TecmoControl.tscn [Label]) with an attached C# Script and add it to my main UI (in my case, the main UI was implemented in GDScript). This Node with attached C# script becomes the conduit over to the C# side.
 
 ### Issue 2
-File access 
+**File access**
+
 Godot wasn't able to browse any useful files int the browser's Sandbox. So a work around is to Get the browser to prompt the user for loading/saving files.
 For this to work I ended up injecting some JavaScript into the main broswer window (main_panel.gd; insert_html_and_js(), handle_html5_file_prompting()).
 
 ### Issue 3 
-JavaScript -> GDScript communication
+**JavaScript -> GDScript communication**
+
 This wasn't so bad to get to work. The documentation examples are pretty good, I just need to squint my eyes a little before I understood the pattern:
 ```python
 var myCallback:JavaScriptObject
@@ -48,7 +50,8 @@ func _ready():
 ```
 
 ### Issue 4
-JavaScript -> GDScript type conversion.
+**JavaScript -> GDScript type conversion.**
+
 I tried for a couple hours to get the file contents for the selected file back over to the GDScript side as something akin to a byte array.
 Tried passing back the 'Uint8Array' created on the JavaScript side over to the GDScript side but it came over as a JavaScriptObject and it wasn't clear how to make it into something useful that GDScript could understand as a byte array.
 
@@ -56,7 +59,8 @@ But Strings work just fine as a means to transfer data back and forth; so I ende
 
 
 ### Iasue 5
-Getting a browser to run the thing.
+**Getting a browser to run the thing.**
+
 The exported html is intended to be 'web served', but I was able to get it loading and working in Firefox without the server
 (Can't remember what settings I needed to set for that though).
 Otherwise the 'HTML5' button (next to the debug stop button) in the Godot 3.5.3 Editor is a good option. 
