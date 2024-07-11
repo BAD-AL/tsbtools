@@ -14,7 +14,7 @@ public partial class FacePickerDialog : ConfirmationDialog
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		faceTextureRect = GetNode<TextureRectWithMouse>("Panel/faceTextureRect");
+		faceTextureRect = GetNode<TextureRectWithMouse>("Panel/VBoxContainer/HBoxContainer/faceTextureRect");
 		faceTextureRect.Connect("TextureRectClicked", this, nameof(OnTextureRectClicked));
 		//faceTextureRect.MouseDown += FaceTextureRect_MouseDown;
 	}

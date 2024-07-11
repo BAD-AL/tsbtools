@@ -14,211 +14,247 @@ script = ExtResource( 3 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 custom_constants/margin_right = 5
-custom_constants/margin_top = 10
-custom_constants/margin_left = 10
-custom_constants/margin_bottom = 20
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
 
-[node name="mPanel" type="Panel" parent="MarginContainer"]
-margin_left = 10.0
-margin_top = 10.0
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+margin_left = 5.0
+margin_top = 5.0
 margin_right = 1019.0
-margin_bottom = 748.0
+margin_bottom = 643.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/mPanel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="teamOptionButton" type="OptionButton" parent="MarginContainer/mPanel/VBoxContainer"]
-margin_right = 1009.0
+[node name="teamOptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer"]
+margin_right = 1014.0
 margin_bottom = 50.0
 rect_min_size = Vector2( 300, 50 )
 size_flags_horizontal = 3
-text = "team"
 
-[node name="spacerPanel0" type="Panel" parent="MarginContainer/mPanel/VBoxContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/VBoxContainer"]
 margin_top = 54.0
-margin_right = 1009.0
-margin_bottom = 54.0
+margin_right = 1014.0
+margin_bottom = 604.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="simPanel" type="Panel" parent="MarginContainer/mPanel/VBoxContainer"]
-margin_top = 58.0
-margin_right = 1009.0
-margin_bottom = 108.0
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
+margin_right = 1014.0
+margin_bottom = 550.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2
+
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
+margin_right = 505.0
+margin_bottom = 50.0
 rect_min_size = Vector2( 0, 50 )
 size_flags_horizontal = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/mPanel/VBoxContainer/simPanel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel"]
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
 
-[node name="Label" type="Label" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer"]
 margin_top = 17.0
 margin_right = 176.0
 margin_bottom = 33.0
 text = "Sim Offense	"
 
-[node name="m_SimOffenseUpDown" type="SpinBox" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
+[node name="m_SimOffenseUpDown" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer"]
 margin_left = 180.0
 margin_right = 398.0
 margin_bottom = 50.0
+size_flags_horizontal = 3
 max_value = 15.0
 
-[node name="spacerPanel3" type="Panel" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
-margin_left = 402.0
-margin_right = 422.0
+[node name="Panel2" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
+margin_left = 509.0
+margin_right = 1014.0
 margin_bottom = 50.0
-rect_min_size = Vector2( 20, 0 )
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
 
-[node name="Label2" type="Label" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
-margin_left = 426.0
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2"]
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer"]
 margin_top = 17.0
-margin_right = 602.0
+margin_right = 176.0
 margin_bottom = 33.0
+size_flags_horizontal = 9
 text = "Sim Defense"
 
-[node name="m_SimDefenseUpDown" type="SpinBox" parent="MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer"]
-margin_left = 606.0
-margin_right = 824.0
+[node name="m_SimDefenseUpDown" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer"]
+margin_left = 180.0
+margin_right = 398.0
 margin_bottom = 50.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
 max_value = 15.0
 
-[node name="runPassFormationPanel" type="Panel" parent="MarginContainer/mPanel/VBoxContainer"]
-margin_top = 112.0
-margin_right = 1009.0
-margin_bottom = 152.0
-rect_min_size = Vector2( 0, 40 )
+[node name="Panel3" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
+margin_top = 54.0
+margin_right = 505.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="Label" type="Label" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
-margin_top = 12.0
-margin_right = 224.0
-margin_bottom = 28.0
-text = "Run/Pass Ratio	"
-
-[node name="Panel" type="Panel" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
-margin_left = 228.0
-margin_right = 253.0
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3"]
+margin_right = 40.0
 margin_bottom = 40.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer"]
+margin_top = 7.0
+margin_right = 144.0
+margin_bottom = 42.0
+text = " Run/Pass
+Ratio"
+align = 1
+valign = 1
+
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer"]
+margin_left = 148.0
+margin_right = 173.0
+margin_bottom = 50.0
 rect_min_size = Vector2( 25, 25 )
 
-[node name="m_OffensivePrefomComboBox" type="OptionButton" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
-margin_left = 257.0
-margin_right = 485.0
-margin_bottom = 40.0
+[node name="m_OffensivePrefomComboBox" type="OptionButton" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer"]
+margin_left = 177.0
+margin_right = 405.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
 text = "Balanced Rush"
 items = [ "Balanced Rush", null, false, 0, null, "Heavy Rushing", null, false, 1, null, "Palanced Pass", null, false, 2, null, "Heavy Passing", null, false, 3, null ]
 selected = 0
 
-[node name="Panel2" type="Panel" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
-margin_left = 489.0
-margin_right = 514.0
+[node name="Panel4" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
+margin_left = 509.0
+margin_top = 54.0
+margin_right = 1014.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4"]
+margin_right = 40.0
 margin_bottom = 40.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
+
+[node name="Label2" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer"]
+margin_top = 17.0
+margin_right = 160.0
+margin_bottom = 33.0
+text = " Formation"
+
+[node name="Panel3" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer"]
+margin_left = 164.0
+margin_right = 189.0
+margin_bottom = 50.0
 rect_min_size = Vector2( 25, 0 )
 
-[node name="Label2" type="Label" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
-margin_left = 518.0
-margin_top = 12.0
-margin_right = 662.0
-margin_bottom = 28.0
-text = "Formation"
-
-[node name="Panel3" type="Panel" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
-margin_left = 666.0
-margin_right = 691.0
-margin_bottom = 40.0
-rect_min_size = Vector2( 25, 0 )
-
-[node name="m_FormationComboBox" type="OptionButton" parent="MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer"]
-margin_left = 695.0
-margin_right = 891.0
-margin_bottom = 40.0
+[node name="m_FormationComboBox" type="OptionButton" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer"]
+margin_left = 193.0
+margin_right = 389.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
 text = "2RB_2WR_1TE"
 items = [ "2RB_2WR_1TE", null, false, 0, null, "1RB_4WR", null, false, 1, null, "1RB_3WR_1TE", null, false, 2, null ]
 selected = 0
 
-[node name="Panel2" type="Panel" parent="MarginContainer/mPanel/VBoxContainer"]
-margin_top = 156.0
-margin_right = 1009.0
-margin_bottom = 338.0
+[node name="Panel5" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
+margin_top = 108.0
+margin_right = 505.0
+margin_bottom = 290.0
 rect_min_size = Vector2( 0, 182 )
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/mPanel/VBoxContainer/Panel2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_bottom = -4.0
 
-[node name="PlayControlR1" parent="MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer" instance=ExtResource( 2 )]
+[node name="PlayControlR1" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer" instance=ExtResource( 2 )]
 margin_right = 100.0
 margin_bottom = 178.0
 PlayType = 1
 PlaySlot = 1
 
-[node name="PlayControlR2" parent="MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer" instance=ExtResource( 2 )]
+[node name="PlayControlR2" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer" instance=ExtResource( 2 )]
 margin_left = 104.0
 margin_right = 204.0
 margin_bottom = 178.0
 PlayType = 1
 PlaySlot = 2
 
-[node name="PlayControlR3" parent="MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer" instance=ExtResource( 2 )]
+[node name="PlayControlR3" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer" instance=ExtResource( 2 )]
 margin_left = 208.0
 margin_right = 308.0
 margin_bottom = 178.0
 PlayType = 1
 PlaySlot = 3
 
-[node name="PlayControlR4" parent="MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer" instance=ExtResource( 2 )]
+[node name="PlayControlR4" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer" instance=ExtResource( 2 )]
 margin_left = 312.0
 margin_right = 412.0
 margin_bottom = 178.0
 PlayType = 1
 PlaySlot = 4
 
-[node name="Panel" type="Panel" parent="MarginContainer/mPanel/VBoxContainer"]
-margin_top = 342.0
-margin_right = 1009.0
-margin_bottom = 524.0
+[node name="displayLabel" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
+margin_left = 509.0
+margin_top = 191.0
+margin_right = 1014.0
+margin_bottom = 207.0
+text = "asdf"
+
+[node name="Panel6" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
+margin_top = 294.0
+margin_right = 505.0
+margin_bottom = 476.0
 rect_min_size = Vector2( 0, 182 )
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/mPanel/VBoxContainer/Panel"]
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_bottom = -4.0
 
-[node name="PlayControlP1" parent="MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer" instance=ExtResource( 2 )]
+[node name="PlayControlP1" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer" instance=ExtResource( 2 )]
 margin_right = 100.0
 margin_bottom = 178.0
 PlayType = 2
 PlaySlot = 1
 
-[node name="PlayControlP2" parent="MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer" instance=ExtResource( 2 )]
+[node name="PlayControlP2" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer" instance=ExtResource( 2 )]
 margin_left = 104.0
 margin_right = 204.0
 margin_bottom = 178.0
 PlayType = 2
 PlaySlot = 2
 
-[node name="PlayControlP3" parent="MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer" instance=ExtResource( 2 )]
+[node name="PlayControlP3" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer" instance=ExtResource( 2 )]
 margin_left = 208.0
 margin_right = 308.0
 margin_bottom = 178.0
 PlayType = 2
 PlaySlot = 3
 
-[node name="PlayControlP4" parent="MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer" instance=ExtResource( 2 )]
+[node name="PlayControlP4" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer" instance=ExtResource( 2 )]
 margin_left = 312.0
 margin_right = 412.0
 margin_bottom = 178.0
 PlayType = 2
 PlaySlot = 4
 
-[node name="closeButton" type="Button" parent="MarginContainer/mPanel"]
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_top = -16.0
+[node name="closeButton" type="Button" parent="MarginContainer/VBoxContainer"]
+margin_top = 608.0
+margin_right = 1014.0
+margin_bottom = 638.0
 rect_min_size = Vector2( 0, 30 )
 text = "Close"

@@ -20,6 +20,10 @@ public partial class EditPlayer : Control
 	private SimStuff m_SimStuff = new SimStuff();
 
 	#region control references
+
+	GridContainer gridContainer;
+	Label displayLabel;
+
 	Button? closeButton = null;
 	Button m_PrevPicture;
 	Button m_NextPicture;
@@ -53,6 +57,7 @@ public partial class EditPlayer : Control
 	private OptionButton? m_PositionComboBox;
 	#endregion
 
+	private AtlasTexture faceAtlasTexture;
 
 	/// <summary>
 	/// Returns the index of 'val'.
@@ -74,7 +79,16 @@ public partial class EditPlayer : Control
 		return ret;
 	}
 
-	private AtlasTexture faceAtlasTexture;
+	private void CheckScreenSize()
+	{
+		var sz = OS.WindowSize;
+		displayLabel.Text = $"Window size: {sz.x} {sz.y}";
+		GD.Print("CheckScreenSize " + displayLabel.Text);
+		if (sz.x < 667)
+			gridContainer.Columns = 1; // get small
+		else
+			gridContainer.Columns = 2; // get big
+	}
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -82,22 +96,24 @@ public partial class EditPlayer : Control
 		var faceTexture = GD.Load<Texture>("res://Images/faces.png");
 		faceAtlasTexture = new AtlasTexture { Atlas = faceTexture, Region = new Rect2(0,0,32,32) }; // initialize on first face
 
-		closeButton = GetNode<Button>("marginContainer/pPanel/bottomPanel/closeButton");
+		gridContainer = GetNode<GridContainer>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer");
+		displayLabel = GetNode<Label>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/displayLabel");
+		closeButton = GetNode<Button>("MarginContainer/VBoxContainer/closeButton");
 		
-		m_PrevPicture = GetNode<Button>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer/m_PrevPicture");
-		m_NextPicture = GetNode<Button>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer/m_NextPicture");
-		m_FaceBox = GetNode<TextureRectWithMouse>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer/m_FaceBox");
+		m_PrevPicture = GetNode<Button>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/facePanel/HBoxContainer/m_PrevPicture");
+		m_NextPicture = GetNode<Button>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/facePanel/HBoxContainer/m_NextPicture");
+		m_FaceBox = GetNode<TextureRectWithMouse>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/facePanel/HBoxContainer/m_FaceBox");
 		m_FaceBox.Texture = faceAtlasTexture;
-		m_FaceLabel = GetNode<Label>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/facePanel/HBoxContainer/m_FaceLabel");
+		m_FaceLabel = GetNode<Label>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/facePanel/HBoxContainer/m_FaceLabel");
 		
-		m_RSBox = GetNode<TecmoAttributeControl>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/m_RSBox");
-		m_RPBox = GetNode<TecmoAttributeControl>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/m_RPBox");
-		m_MSBox = GetNode<TecmoAttributeControl>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/m_MSBox");
-		m_HPBox = GetNode<TecmoAttributeControl>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/m_HPBox");
-		m_PC_REC_QU_KABox = GetNode<TecmoAttributeControl>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/m_PC_REC_QU_KABox");
-		m_PS_BC_PI_KABox = GetNode<TecmoAttributeControl>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/m_PS_BC_PI_KABox");
-		m_ACCBox = GetNode<TecmoAttributeControl>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/m_ACCBox");
-		m_APBBox = GetNode< TecmoAttributeControl>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/m_APBBox");
+		m_RSBox = GetNode<TecmoAttributeControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_RSBox");
+		m_RPBox = GetNode<TecmoAttributeControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_RPBox");
+		m_MSBox = GetNode<TecmoAttributeControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_MSBox");
+		m_HPBox = GetNode<TecmoAttributeControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_HPBox");
+		m_PC_REC_QU_KABox = GetNode<TecmoAttributeControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_PC_REC_QU_KABox");
+		m_PS_BC_PI_KABox = GetNode<TecmoAttributeControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_PS_BC_PI_KABox");
+		m_ACCBox = GetNode<TecmoAttributeControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_ACCBox");
+		m_APBBox = GetNode< TecmoAttributeControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_APBBox");
 		m_Attributes = new TecmoAttributeControl[8];
 		m_Attributes[0] = m_RSBox;
 		m_Attributes[1] = m_RPBox;
@@ -108,27 +124,27 @@ public partial class EditPlayer : Control
 		m_Attributes[6] = m_ACCBox;
 		m_Attributes[7] = m_APBBox;
 
-		m_Sim1UpDown = GetNode<SpinBox>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel1/m_Sim1UpDown");
-		m_Sim2UpDown = GetNode<SpinBox>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel2/m_Sim2UpDown");
-		m_Sim3UpDown = GetNode<SpinBox>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel3/m_Sim3UpDown");
-		m_Sim4UpDown = GetNode<SpinBox>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel4/m_Sim4UpDown");
+		m_Sim1UpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel1/HBoxContainer/m_Sim1UpDown");
+		m_Sim2UpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer/m_Sim2UpDown");
+		m_Sim3UpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer/m_Sim3UpDown");
+		m_Sim4UpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer/m_Sim4UpDown");
 		m_SimAttrs = new SpinBox[4];
 		m_SimAttrs[0] = m_Sim1UpDown;
 		m_SimAttrs[1] = m_Sim2UpDown;
 		m_SimAttrs[2] = m_Sim3UpDown;
 		m_SimAttrs[3] = m_Sim4UpDown;
 
-		m_Sim1Label = GetNode<Label>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel1/m_Sim1Label");
-		m_Sim2Label = GetNode<Label>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel2/m_Sim2Label");
-		m_Sim3Label = GetNode<Label>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/Panel3/m_Sim3Label");
-		m_Sim4Label = GetNode<Label>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/Panel4/m_Sim4Label");
+		m_Sim1Label = GetNode<Label>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel1/HBoxContainer/m_Sim1Label");
+		m_Sim2Label = GetNode<Label>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer/m_Sim2Label");
+		m_Sim3Label = GetNode<Label>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer/m_Sim3Label");
+		m_Sim4Label = GetNode<Label>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer/m_Sim4Label");
 
-		m_TeamsComboBox = GetNode<OptionButton>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/m_TeamsComboBox");
-		m_PositionComboBox = GetNode<OptionButton>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/m_PositionComboBox");
+		m_TeamsComboBox = GetNode<OptionButton>("MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/m_TeamsComboBox");
+		m_PositionComboBox = GetNode<OptionButton>("MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2/m_PositionComboBox");
 
-		m_FirstNameTextBox = GetNode<LineEdit>("marginContainer/pPanel/hBoxContainer/leftPanel/leftVBoxContainer/m_FirstNameTextBox");
-		m_LastNameTextBox = GetNode<LineEdit>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/m_LastNameTextBox");
-		m_JerseyNumberUpDown = GetNode<SpinBox>("marginContainer/pPanel/hBoxContainer/rightPanel/rightVBoxContainer/jerseyPanel/m_JerseyNumberDropUpDown");
+		m_FirstNameTextBox = GetNode<LineEdit>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_FirstNameTextBox");
+		m_LastNameTextBox = GetNode<LineEdit>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_LastNameTextBox");
+		m_JerseyNumberUpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/jerseyPanel/HBoxContainer/m_JerseyNumberDropUpDown");
 
 		m_PositionComboBox.Selected = 0;
 		m_TeamsComboBox.Selected = 0;
@@ -171,6 +187,33 @@ public partial class EditPlayer : Control
 		foreach (SpinBox sb in m_SimAttrs)
 			sb.Connect("value_changed", this, nameof(Value_Changed));
 		m_JerseyNumberUpDown.Connect("value_changed", this, nameof(Value_Changed));
+
+		m_FirstNameTextBox.Connect("focus_entered", this, nameof(ShowVirtualKeyboard));
+		m_LastNameTextBox.Connect("focus_entered", this, nameof(ShowVirtualKeyboard));
+		m_JerseyNumberUpDown.GetLineEdit().Connect("focus_entered", this, nameof(ShowVirtualKeyboard));
+		foreach(SpinBox sb in m_SimAttrs)
+			sb.GetLineEdit().Connect("focus_entered", this, nameof(ShowVirtualKeyboard));
+
+		m_FirstNameTextBox.Connect("focus_exited", this, nameof(HideVirtualKeyboard));
+		m_LastNameTextBox.Connect("focus_exited", this, nameof(HideVirtualKeyboard));
+		m_JerseyNumberUpDown.GetLineEdit().Connect("focus_exited", this, nameof(HideVirtualKeyboard));
+		foreach (SpinBox sb in m_SimAttrs)
+			sb.GetLineEdit().Connect("focus_exited", this, nameof(HideVirtualKeyboard));
+
+		CheckScreenSize();
+		GetTree().Root.Connect("size_changed", this, "CheckScreenSize");
+	}
+
+	public void ShowVirtualKeyboard()
+	{
+		GD.Print("ShowVirtualKeyboard");
+		OS.ShowVirtualKeyboard();
+	}
+
+	public void HideVirtualKeyboard()
+	{
+		GD.Print("HideVirtualKeyboard?");
+		//OS.HideVirtualKeyboard();
 	}
 
 	private bool changingPlayer = false;
@@ -210,7 +253,9 @@ public partial class EditPlayer : Control
 		//facePickerDialog.Canceled += facePicker_Closed;
 		facePickerDialog.Connect("confirmed", this, "facePicker_Closed");
 		facePickerDialog.GetCancel().Connect("pressed", this, "facePicker_Closed");
-
+		//var size = new Vector2( facePickerDialog.RectSize.x, facePickerDialog.RectSize.y);
+		//facePickerDialog.RectSize = size; // makes it bigger for some reason
+		
 		AddChild(facePickerDialog);
 		facePickerDialog.PopupCentered();
 	}

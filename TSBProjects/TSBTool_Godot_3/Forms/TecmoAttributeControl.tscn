@@ -21,7 +21,12 @@ margin_left = 10.0
 margin_right = 140.0
 margin_bottom = 40.0
 
-[node name="attrLabel" type="Label" parent="MarginContainer/HBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/HBoxContainer"]
+margin_right = 37.0
+margin_bottom = 40.0
+custom_constants/margin_right = 6
+
+[node name="attrLabel" type="Label" parent="MarginContainer/HBoxContainer/MarginContainer"]
 margin_right = 31.0
 margin_bottom = 40.0
 rect_min_size = Vector2( 0, 40 )
@@ -30,7 +35,7 @@ align = 1
 valign = 1
 
 [node name="valueCombo" type="OptionButton" parent="MarginContainer/HBoxContainer"]
-margin_left = 35.0
+margin_left = 41.0
 margin_right = 130.0
 margin_bottom = 40.0
 size_flags_horizontal = 3

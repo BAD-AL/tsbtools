@@ -2,40 +2,51 @@ extends Panel
 
 var myCallback:JavaScriptObject
 var textureRect:TextureRect
-
-"""
-Screen reduction stuff
-"""
+var titleLabel:Label
+var dynamic_font : DynamicFont = null
+var font_size :=30
+	
+##### Screen reduction stuff start
 func check_screen_size():
 	var screen_width = OS.get_window_size().x
-	print("check_screen_size")
+	#print("check_screen_size")
 	if screen_width < 800:
-		hide_element()
+		get_smaller()
 	else:
-		show_element()
+		get_bigger()
 
-func _on_resized():
-	check_screen_size()
+func change_title_font_size(the_size:int):
+	if the_size != font_size:
+		font_size = the_size
+		dynamic_font.size = font_size
+		titleLabel.add_font_override("font", dynamic_font)
+		
 
-func hide_element():
+func get_smaller():
 	textureRect.hide()
+	change_title_font_size(20)
 
-func show_element():
+func get_bigger():
 	textureRect.show()
-
+	change_title_font_size(30)
+	
+##### Screen reduction stuff end
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	disable_buttons()
 	#setup 
 	textureRect = $MarginContainer/VBoxContainer/middlePanel/HBoxContainer/TextureRect
+	titleLabel = $MarginContainer/VBoxContainer/Panel/titleLabel
+	dynamic_font = DynamicFont.new()
+	dynamic_font.font_data = load("res://Fonts/GF-TecmoNarrow.TTF")
 	print("main_panel._ready() os :" + OS.get_name())
 	var tecmoControl = $MarginContainer/VBoxContainer/bottomPanel/tecmoControl
 	print("main_panel._ready() C# message:" + tecmoControl.TecmoHelper.GetMessageFromCSharp())
 	Globals.tecmoHelper = tecmoControl.TecmoHelper
 	# Screen size stuff 
 	check_screen_size()
-	get_tree().get_root().connect("size_changed", self, "_on_resized")
+	get_tree().get_root().connect("size_changed", self, "check_screen_size")
 	
 	if OS.get_name() == "HTML5":
 		myCallback = JavaScript.create_callback(self, "fileLoaded")
@@ -221,3 +232,7 @@ func fileLoaded(args:Array):
 	enable_buttons()
 
 
+
+
+func _on_deleteMeButton_pressed():
+	SceneManager.push_scene("res://Forms/EditPlayer2.tscn")

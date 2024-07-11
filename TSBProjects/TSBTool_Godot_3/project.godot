@@ -22,6 +22,7 @@ SceneManager="*res://Utilities/SceneManager.gd"
 [display]
 
 window/size/height=648
+window/energy_saving/keep_screen_on=false
 
 [gui]
 

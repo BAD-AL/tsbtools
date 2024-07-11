@@ -75,7 +75,7 @@ public partial class TecmoAttributeControl : Control
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		attributeLabel = GetNode<Label>("MarginContainer/HBoxContainer/attrLabel");
+		attributeLabel = GetNode<Label>("MarginContainer/HBoxContainer/MarginContainer/attrLabel");
 		valueCombo = GetNode<OptionButton>("MarginContainer/HBoxContainer/valueCombo");
 		for(int i =0; i < sOptions.Count; i++)
 			valueCombo.AddItem(sOptions[i].ToString(),i);

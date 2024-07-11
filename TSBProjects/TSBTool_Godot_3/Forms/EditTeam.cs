@@ -25,28 +25,44 @@ public partial class EditTeam : Control
 
 	private Button closeButton;
 
+	GridContainer gridContainer;
+	Label displayLabel;
+
+
 	private Regex m_PlaybookRegex = new Regex("PLAYBOOK (R[1-8]{4})\\s*,\\s*(P[1-8]{4})");
 	private Regex m_OffensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
+
+	private void CheckScreenSize()
+	{
+		var sz = OS.WindowSize;
+		displayLabel.Text = $"Window size: {sz.x} {sz.y}";
+		GD.Print("CheckScreenSize " + displayLabel.Text);
+		if (sz.x < 806)
+			gridContainer.Columns = 1; // get small
+		else
+			gridContainer.Columns = 2; // get big
+	}
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		m_TeamsComboBox = GetNode<OptionButton>("MarginContainer/mPanel/VBoxContainer/teamOptionButton");
-		m_FormationComboBox = GetNode<OptionButton>("MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer/m_FormationComboBox");
-		m_OffensivePrefomComboBox = GetNode<OptionButton>("MarginContainer/mPanel/VBoxContainer/runPassFormationPanel/HBoxContainer/m_OffensivePrefomComboBox");
-		m_SimDefenseUpDown = GetNode<SpinBox>("MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer/m_SimDefenseUpDown");
-		m_SimOffenseUpDown = GetNode<SpinBox>("MarginContainer/mPanel/VBoxContainer/simPanel/HBoxContainer/m_SimOffenseUpDown");
-		P1 = GetNode<PlayControl>("MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer/PlayControlP1");
-		P2 = GetNode<PlayControl>("MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer/PlayControlP2");
-		P3 = GetNode<PlayControl>("MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer/PlayControlP3");
-		P4 = GetNode<PlayControl>("MarginContainer/mPanel/VBoxContainer/Panel/HBoxContainer/PlayControlP4");
+		m_TeamsComboBox = GetNode<OptionButton>("MarginContainer/VBoxContainer/teamOptionButton");
+		m_FormationComboBox = GetNode<OptionButton>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer/m_FormationComboBox");
+		m_OffensivePrefomComboBox = GetNode<OptionButton>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer/m_OffensivePrefomComboBox");
+		m_SimDefenseUpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer/m_SimDefenseUpDown");
+		m_SimOffenseUpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer/m_SimOffenseUpDown");
+		P1 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer/PlayControlP1");
+		P2 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer/PlayControlP2");
+		P3 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer/PlayControlP3");
+		P4 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer/PlayControlP4");
 
-		R1 = GetNode<PlayControl>("MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer/PlayControlR1");
-		R2 = GetNode<PlayControl>("MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer/PlayControlR2");
-		R3 = GetNode<PlayControl>("MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer/PlayControlR3");
-		R4 = GetNode<PlayControl>("MarginContainer/mPanel/VBoxContainer/Panel2/HBoxContainer/PlayControlR4");
-		closeButton = GetNode<Button>("MarginContainer/mPanel/closeButton");
-
+		R1 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer/PlayControlR1");
+		R2 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer/PlayControlR2");
+		R3 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer/PlayControlR3");
+		R4 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer/PlayControlR4");
+		closeButton = GetNode<Button>("MarginContainer/VBoxContainer/closeButton");
+		gridContainer = GetNode<GridContainer>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer");
+		displayLabel = GetNode<Label>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/displayLabel");
 		LoadData();
 
 		m_TeamsComboBox.Connect("item_selected", this, "M_TeamsComboBox_ItemSelected");
@@ -66,6 +82,9 @@ public partial class EditTeam : Control
 		P2.Connect("value_changed", this, nameof(OnPlayChanged));
 		P3.Connect("value_changed", this, nameof(OnPlayChanged));
 		P4.Connect("value_changed", this, nameof(OnPlayChanged));
+
+		CheckScreenSize();
+		GetTree().Root.Connect("size_changed", this, "CheckScreenSize");
 	}
 
 	public void OnPlayChanged(int newPlayNumber)
