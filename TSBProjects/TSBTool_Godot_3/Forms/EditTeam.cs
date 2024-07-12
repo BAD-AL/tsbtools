@@ -35,7 +35,7 @@ public partial class EditTeam : Control
 	private void CheckScreenSize()
 	{
 		var sz = OS.WindowSize;
-		displayLabel.Text = $"Window size: {sz.x} {sz.y}";
+		//displayLabel.Text = $"Window size: {sz.x} {sz.y}";
 		GD.Print("CheckScreenSize " + displayLabel.Text);
 		if (sz.x < 806)
 			gridContainer.Columns = 1; // get small

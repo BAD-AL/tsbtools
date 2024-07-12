@@ -82,19 +82,50 @@ rect_pivot_offset = Vector2( -531, 59 )
 size_flags_horizontal = 3
 columns = 2
 
-[node name="m_FirstNameTextBox" type="LineEdit" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
 margin_right = 505.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="m_FirstNameTextBox" type="LineEdit" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer"]
+margin_right = 421.0
 margin_bottom = 50.0
 rect_min_size = Vector2( 200, 50 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="m_LastNameTextBox" type="LineEdit" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
+[node name="clearFirstNameButton" type="Button" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer"]
+margin_left = 425.0
+margin_right = 505.0
+margin_bottom = 50.0
+text = "clear"
+
+[node name="Panel5" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
 margin_left = 509.0
 margin_right = 1014.0
 margin_bottom = 50.0
+rect_min_size = Vector2( 0, 50 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="m_LastNameTextBox" type="LineEdit" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer"]
+margin_right = 421.0
+margin_bottom = 50.0
 rect_min_size = Vector2( 200, 50 )
 size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="clearLastNameButton" type="Button" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer"]
+margin_left = 425.0
+margin_right = 505.0
+margin_bottom = 50.0
+text = "clear"
 
 [node name="facePanel" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
 margin_top = 54.0

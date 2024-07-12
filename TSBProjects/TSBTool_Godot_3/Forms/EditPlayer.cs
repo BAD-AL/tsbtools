@@ -82,7 +82,7 @@ public partial class EditPlayer : Control
 	private void CheckScreenSize()
 	{
 		var sz = OS.WindowSize;
-		displayLabel.Text = $"Window size: {sz.x} {sz.y}";
+		//displayLabel.Text = $"Window size: {sz.x} {sz.y}";
 		GD.Print("CheckScreenSize " + displayLabel.Text);
 		if (sz.x < 667)
 			gridContainer.Columns = 1; // get small
@@ -142,8 +142,8 @@ public partial class EditPlayer : Control
 		m_TeamsComboBox = GetNode<OptionButton>("MarginContainer/VBoxContainer/HBoxContainer/MarginContainer/m_TeamsComboBox");
 		m_PositionComboBox = GetNode<OptionButton>("MarginContainer/VBoxContainer/HBoxContainer/MarginContainer2/m_PositionComboBox");
 
-		m_FirstNameTextBox = GetNode<LineEdit>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_FirstNameTextBox");
-		m_LastNameTextBox = GetNode<LineEdit>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/m_LastNameTextBox");
+		m_FirstNameTextBox = GetNode<LineEdit>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer/m_FirstNameTextBox");
+		m_LastNameTextBox = GetNode<LineEdit>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer/m_LastNameTextBox");
 		m_JerseyNumberUpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/jerseyPanel/HBoxContainer/m_JerseyNumberDropUpDown");
 
 		m_PositionComboBox.Selected = 0;
@@ -200,8 +200,24 @@ public partial class EditPlayer : Control
 		foreach (SpinBox sb in m_SimAttrs)
 			sb.GetLineEdit().Connect("focus_exited", this, nameof(HideVirtualKeyboard));
 
+		var clearFirstNameButton = GetNode<Button>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer/clearFirstNameButton");
+		var clearLastNameButton = GetNode<Button>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer/clearLastNameButton");
+
+		clearFirstNameButton.Connect("pressed", this, nameof(clearFirstName));
+		clearLastNameButton.Connect("pressed", this, nameof(clearLastName));
+
 		CheckScreenSize();
 		GetTree().Root.Connect("size_changed", this, "CheckScreenSize");
+	}
+
+	public void clearFirstName()
+	{
+		m_FirstNameTextBox?.Clear();
+	}
+
+	public void clearLastName()
+	{
+		m_LastNameTextBox?.Clear();
 	}
 
 	public void ShowVirtualKeyboard()

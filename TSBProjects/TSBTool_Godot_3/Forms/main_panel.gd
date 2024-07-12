@@ -35,6 +35,7 @@ func get_bigger():
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	disable_buttons()
+	OS.set_window_title("TSBTool")
 	#setup 
 	textureRect = $MarginContainer/VBoxContainer/middlePanel/HBoxContainer/TextureRect
 	titleLabel = $MarginContainer/VBoxContainer/Panel/titleLabel
