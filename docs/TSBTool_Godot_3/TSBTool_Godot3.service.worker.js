@@ -3,7 +3,7 @@
 // that they need an Internet connection to run the project if desired.
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
-const CACHE_VERSION = "1720766925|11259848203";
+const CACHE_VERSION = "1720769452|13787041416";
 const CACHE_PREFIX = "TSBTool_Godot_3-sw-cache-";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
 const OFFLINE_URL = "TSBTool_Godot3.offline.html";
