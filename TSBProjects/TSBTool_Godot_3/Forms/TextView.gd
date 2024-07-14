@@ -15,6 +15,7 @@ func _ready():
 	
 	addSyntaxHighlighting(textBox)
 	textBox.text = extraMessage
+	textBox.connect("gui_input", self, "_on_control_gui_input")
 	if Globals.tecmoHelper != null:
 		textBox.text += Globals.tecmoHelper.GetAll(1)
 
@@ -60,3 +61,15 @@ func adjust_font_size(delta):
 	dynamic_font.size = base_font_size
 	print("adjust_font_size: " + str(base_font_size))
 	textBox.add_font_override("font", dynamic_font)
+
+## Android HTML5 backspace no-worky-work-around
+func _on_control_gui_input(event):
+	var ke := (event as InputEventKey)
+	if ke != null and ke.pressed and ke.scancode == 33554431:
+		_send_backspace_key()
+		
+func _send_backspace_key():
+	var backspace_event = InputEventKey.new()
+	backspace_event.scancode = KEY_BACKSPACE
+	backspace_event.pressed = true
+	get_focus_owner()._gui_input(backspace_event)

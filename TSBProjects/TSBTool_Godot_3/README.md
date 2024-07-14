@@ -68,6 +68,62 @@ The exported html is intended to be 'web served', but I was able to get it loadi
 Otherwise the 'HTML5' button (next to the debug stop button) in the Godot 3.5.3 Editor is a good option. 
 NOTE: You do need to remember to clear browser cache or configure it not to cache.
 
+### Issue 6 
+**iOS (iPad) not showing Virtual Keyboard**
+With Godot 3.6 RC1 this seems to work better, but in my testing you gotta double tap a text field to get the virtual keyboard to show. Tapping near the bottom of the LineEdit seems to work best.
+I tried some JavaScript hacky stuff on this one, but it didn't end up working. I ended up adding an 'iOS Quirks' button to the app main screen to signal the user that iOS has this quirk.
+
+### Isue 7
+**Android Backspace Key non-functional**
+It's a puzzler that this defect exists with Android being such a huge platform. But the Backspace key doesn't seem to function with LineEdit, TextEdit, SpinBox on Android HTML5.
+Looks like Android uses a different scan code than the other platforms 
+I ended up attaching a 'hack' script to all my LineEdits to work around this.
+
+|OS 		|Backspace scan code|
+|-----------|-------------------|
+|Android  |554431|
+|iOS      |777220|
+|Windows  |777220|
+|Linux    |777220|
+
+scan code '554431' is emitted for the number keys as well.
+
+<details> <summary>TextBoxHack.gd Code</summary>
+
+```py
+### TextBoxHack.gd  ### When you upgrade versions, need to re-test to see if this can be detached
+extends LineEdit
+
+func _on_control_gui_input(event):
+	var ke := event as InputEventKey
+	if ke != null:
+		print( "pressed: %d scan_code: %d unicode: %s" % [ke.pressed as int, ke.scancode, ke.unicode] )
+		if ke.pressed and ke.scancode == 33554431:
+			_send_backspace_key(get_focus_owner())
+
+func _send_backspace_key(control):
+	var backspace_event = InputEventKey.new()
+	backspace_event.scancode = KEY_BACKSPACE
+	backspace_event.pressed = true
+	control._gui_input(backspace_event)
+	
+func _ready():
+	print("TextBoxHack ready")
+	self.connect("gui_input", self,"_on_control_gui_input")
+```
+</details>
+
+### Issue 8 
+**HTML5 Androiod SpinBox Typing is broken (number key scan codes are coming up as '33554431')**
+Fix for this is not to use the SpinBox, roll your own with better repeating increment/decrement.
+
+### Issue 9 
+**Finger scrolling not operational**
+This is probably not a bug, but for mobile platforms it's nice to be albe to finger scroll with gesturing.
+Fix for this but is to attach a special script (FingerScroll.gd) onto each scroll container.
+Code for this script was posted by dekaravanhoc bug report: https://github.com/godotengine/godot/issues/21137
+thank you to mr 'dekaravanhoc' 
+
 ## 1st project Impressions
 * I was surprised just how rich Godot 3's UI development solution was, Godot 4.3 is even better. It's not as easy as Windows.Forms in Visual Studio, but Godot's UI controls offer easier customization for the most part (the syntax highlighting, document map of the TextEdit was soooo enjoyable to find).
 

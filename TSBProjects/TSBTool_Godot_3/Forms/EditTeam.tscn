@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Themes/tecmo_menu_theme.tres" type="Theme" id=1]
 [ext_resource path="res://Forms/PlayControl.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Forms/EditTeam.cs" type="Script" id=3]
+[ext_resource path="res://Forms/NumericUpDown.tscn" type="PackedScene" id=4]
+[ext_resource path="res://Forms/FingerScroll.gd" type="Script" id=5]
 
 [node name="EditTeam" type="Panel"]
 anchor_right = 1.0
@@ -36,6 +38,7 @@ margin_right = 1014.0
 margin_bottom = 604.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+script = ExtResource( 5 )
 
 [node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
 margin_right = 1014.0
@@ -60,14 +63,16 @@ size_flags_horizontal = 3
 margin_top = 17.0
 margin_right = 176.0
 margin_bottom = 33.0
+size_flags_horizontal = 3
 text = "Sim Offense	"
 
-[node name="m_SimOffenseUpDown" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer"]
+[node name="m_SimOffenseUpDown" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
 margin_left = 180.0
-margin_right = 398.0
+margin_right = 180.0
 margin_bottom = 50.0
-size_flags_horizontal = 3
-max_value = 15.0
+MaxValue = 15
 
 [node name="Panel2" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
 margin_left = 509.0
@@ -86,16 +91,16 @@ size_flags_horizontal = 3
 margin_top = 17.0
 margin_right = 176.0
 margin_bottom = 33.0
-size_flags_horizontal = 9
+size_flags_horizontal = 11
 text = "Sim Defense"
 
-[node name="m_SimDefenseUpDown" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer"]
+[node name="m_SimDefenseUpDown" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer" instance=ExtResource( 4 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
 margin_left = 180.0
-margin_right = 398.0
+margin_right = 180.0
 margin_bottom = 50.0
-rect_min_size = Vector2( 0, 50 )
-size_flags_horizontal = 3
-max_value = 15.0
+MaxValue = 15
 
 [node name="Panel3" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
 margin_top = 54.0
@@ -212,7 +217,6 @@ margin_left = 509.0
 margin_top = 191.0
 margin_right = 1014.0
 margin_bottom = 207.0
-text = "asdf"
 
 [node name="Panel6" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
 margin_top = 294.0

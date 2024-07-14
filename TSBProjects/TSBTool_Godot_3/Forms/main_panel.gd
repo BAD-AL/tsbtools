@@ -1,4 +1,5 @@
 extends Panel
+# https://docs.godotengine.org/en/3.6/tutorials/editor/default_key_mapping.html
 
 var myCallback:JavaScriptObject
 var textureRect:TextureRect
@@ -24,7 +25,7 @@ func change_title_font_size(the_size:int):
 
 func get_smaller():
 	textureRect.hide()
-	change_title_font_size(20)
+	change_title_font_size(18)
 
 func get_bigger():
 	textureRect.show()
@@ -42,7 +43,7 @@ func _ready():
 	dynamic_font = DynamicFont.new()
 	dynamic_font.font_data = load("res://Fonts/GF-TecmoNarrow.TTF")
 	print("main_panel._ready() os :" + OS.get_name())
-	var tecmoControl = $MarginContainer/VBoxContainer/bottomPanel/tecmoControl
+	var tecmoControl = $MarginContainer/VBoxContainer/bottomPanel/HBoxContainer/tecmoControl
 	print("main_panel._ready() C# message:" + tecmoControl.TecmoHelper.GetMessageFromCSharp())
 	Globals.tecmoHelper = tecmoControl.TecmoHelper
 	# Screen size stuff 
@@ -54,6 +55,7 @@ func _ready():
 		var window = JavaScript.get_interface("window")
 		window.fileLoaded = myCallback
 		insert_html_and_js()
+		mobile_platform_check()
 
 func disable_buttons():
 	$MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/editPlayersButton.disabled = true
@@ -66,6 +68,10 @@ func enable_buttons():
 	$MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/editTeamsButton.disabled = false
 	$MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/viewTextButton.disabled = false
 	$MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/saveButton.disabled = false
+	
+func _on_ui_test_button_pressed():
+	print("ui test clicked")
+	SceneManager.push_scene("res://Forms/UI_Test.tscn")
 	
 func _on_edit_players_button_pressed():
 	print("edit players clicked")
@@ -172,7 +178,6 @@ func insert_html_and_js():
 	fileInput.id = 'fileInput';
 	fileInput.accept = '.nes, .snes';
 	fileInput.style.display = 'none';
-	
 	document.body.appendChild(fileInput); // Append the file input element to the body
 
 	function onFileSelected(event) {
@@ -194,7 +199,7 @@ func insert_html_and_js():
 		};
 		reader.readAsArrayBuffer(file);
 	}
-
+	
 	window.saveRomFile = function (base64String, saveType) {
 		// Decode the Base64 string
 		var binaryString = atob(base64String);
@@ -223,8 +228,52 @@ func insert_html_and_js():
 
 	// Add event listener to the file input element
 	document.getElementById('fileInput').addEventListener('change', onFileSelected);
+	
+	
+	// iOS no-show Virtual keyboard work-around
+	//<input type="text" id="hiddenInput" style="position:absolute; top:-100px; left:-100px;">
+	function getOS() {
+		var userAgent = window.navigator.userAgent,
+			platform = window.navigator.platform,
+			macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'],
+			windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'],
+			iosPlatforms = ['iPhone', 'iPad', 'iPod'],
+			os = null;
+		if (macosPlatforms.indexOf(platform) !== -1) {
+			os = 'Mac OS';
+		} else if (iosPlatforms.indexOf(platform) !== -1) {
+			os = 'iOS';
+		} else if (windowsPlatforms.indexOf(platform) !== -1) {
+			os = 'Windows';
+		} else if (/Android/.test(userAgent)) {
+			os = 'Android';
+		} else if (!os && /Linux/.test(platform)) {
+			os = 'Linux';
+		}
+		console.log("From JavaScript, OS = "+ os);
+		return os;
+	}
+	window.HOST_OS = getOS();
+	
+	if( getOS() == 'iOS'){  // This doesn't seem to work (show keyboard on iOS)
+		var hiddenInput = document.createElement('input');
+		hiddenInput.type = 'text';
+		hiddenInput.id = 'hiddenInput';
+		hiddenInput.style.display = style='position:absolute; top:-100px; left:-100px;';
+		
+		window.showKeyboard = function() {
+			document.getElementById('hiddenInput').focus();
+		}
+	}
 	"""
 	JavaScript.eval(js_code)
+
+func mobile_platform_check():
+	var js_window = JavaScript.get_interface("window")
+	print("JavaScript OS Check:  " + js_window.HOST_OS)
+	if js_window.HOST_OS == "iOS":
+		print("Running on iOS, add iOS info popup")
+		$MarginContainer/VBoxContainer/bottomPanel/HBoxContainer/iOSButton.visible = true
 	
 func fileLoaded(args:Array):
 	var base64String = args[0]
@@ -232,8 +281,17 @@ func fileLoaded(args:Array):
 	Globals.tecmoHelper.LoadRomBytesFromBase64String(base64String)
 	enable_buttons()
 
-
-
-
 func _on_deleteMeButton_pressed():
+	SceneManager.push_scene("res://Forms/EditPlayer2.tscn")
+
+
+func _on_iOS_button_pressed():
+	Globals.show_message(
+"""on iOS devices you may need to double-tap text 
+controls to get the virtual keyboard to popup.""", "iOS Quirks"
+		)
+
+
+func _on_editPlayer2Button_pressed():
+	print("edit player 2 clicked")
 	SceneManager.push_scene("res://Forms/EditPlayer2.tscn")

@@ -5,10 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-//using System.IO;
 using System.Text;
-//using System.Text.Json;
-//using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using TSBTool;
 
@@ -31,9 +28,9 @@ public partial class EditPlayer : Control
 	Label m_FaceLabel;
 	private LineEdit m_FirstNameTextBox;
 	private LineEdit m_LastNameTextBox;
-	private SpinBox m_JerseyNumberUpDown;
+	private NumericUpDown m_JerseyNumberUpDown;
 	private TecmoAttributeControl[] m_Attributes = null;
-	private SpinBox[] m_SimAttrs = null;
+	private NumericUpDown[] m_SimAttrs = null;
 
 	private TecmoAttributeControl m_RSBox;
 	private TecmoAttributeControl m_RPBox;
@@ -44,10 +41,10 @@ public partial class EditPlayer : Control
 	private TecmoAttributeControl m_ACCBox;
 	private TecmoAttributeControl m_APBBox;
 
-	private SpinBox m_Sim1UpDown;
-	private SpinBox m_Sim2UpDown;
-	private SpinBox m_Sim3UpDown;
-	private SpinBox m_Sim4UpDown;
+	private NumericUpDown m_Sim1UpDown;
+	private NumericUpDown m_Sim2UpDown;
+	private NumericUpDown m_Sim3UpDown;
+	private NumericUpDown m_Sim4UpDown;
 	private Label m_Sim1Label;
 	private Label m_Sim2Label;
 	private Label m_Sim3Label;
@@ -124,11 +121,11 @@ public partial class EditPlayer : Control
 		m_Attributes[6] = m_ACCBox;
 		m_Attributes[7] = m_APBBox;
 
-		m_Sim1UpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel1/HBoxContainer/m_Sim1UpDown");
-		m_Sim2UpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer/m_Sim2UpDown");
-		m_Sim3UpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer/m_Sim3UpDown");
-		m_Sim4UpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer/m_Sim4UpDown");
-		m_SimAttrs = new SpinBox[4];
+		m_Sim1UpDown = GetNode<NumericUpDown>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel1/HBoxContainer/m_Sim1UpDown");
+		m_Sim2UpDown = GetNode<NumericUpDown>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer/m_Sim2UpDown");
+		m_Sim3UpDown = GetNode<NumericUpDown>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer/m_Sim3UpDown");
+		m_Sim4UpDown = GetNode<NumericUpDown>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer/m_Sim4UpDown");
+		m_SimAttrs = new NumericUpDown[4];
 		m_SimAttrs[0] = m_Sim1UpDown;
 		m_SimAttrs[1] = m_Sim2UpDown;
 		m_SimAttrs[2] = m_Sim3UpDown;
@@ -144,7 +141,7 @@ public partial class EditPlayer : Control
 
 		m_FirstNameTextBox = GetNode<LineEdit>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer/m_FirstNameTextBox");
 		m_LastNameTextBox = GetNode<LineEdit>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer/m_LastNameTextBox");
-		m_JerseyNumberUpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/jerseyPanel/HBoxContainer/m_JerseyNumberDropUpDown");
+		m_JerseyNumberUpDown = GetNode<NumericUpDown>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/jerseyPanel/HBoxContainer/m_JerseyNumberDropUpDown");
 
 		m_PositionComboBox.Selected = 0;
 		m_TeamsComboBox.Selected = 0;
@@ -184,21 +181,15 @@ public partial class EditPlayer : Control
 		// add listeners
 		foreach(TecmoAttributeControl attr in m_Attributes)
 			attr.Connect("value_changed", this,nameof(Value_Changed));
-		foreach (SpinBox sb in m_SimAttrs)
+		foreach (NumericUpDown sb in m_SimAttrs)
 			sb.Connect("value_changed", this, nameof(Value_Changed));
 		m_JerseyNumberUpDown.Connect("value_changed", this, nameof(Value_Changed));
 
 		m_FirstNameTextBox.Connect("focus_entered", this, nameof(ShowVirtualKeyboard));
 		m_LastNameTextBox.Connect("focus_entered", this, nameof(ShowVirtualKeyboard));
 		m_JerseyNumberUpDown.GetLineEdit().Connect("focus_entered", this, nameof(ShowVirtualKeyboard));
-		foreach(SpinBox sb in m_SimAttrs)
+		foreach(NumericUpDown sb in m_SimAttrs)
 			sb.GetLineEdit().Connect("focus_entered", this, nameof(ShowVirtualKeyboard));
-
-		m_FirstNameTextBox.Connect("focus_exited", this, nameof(HideVirtualKeyboard));
-		m_LastNameTextBox.Connect("focus_exited", this, nameof(HideVirtualKeyboard));
-		m_JerseyNumberUpDown.GetLineEdit().Connect("focus_exited", this, nameof(HideVirtualKeyboard));
-		foreach (SpinBox sb in m_SimAttrs)
-			sb.GetLineEdit().Connect("focus_exited", this, nameof(HideVirtualKeyboard));
 
 		var clearFirstNameButton = GetNode<Button>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer/clearFirstNameButton");
 		var clearLastNameButton = GetNode<Button>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer/clearLastNameButton");
@@ -224,13 +215,14 @@ public partial class EditPlayer : Control
 	{
 		GD.Print("ShowVirtualKeyboard");
 		OS.ShowVirtualKeyboard();
+
+		if(OS.GetName() == "HTML5")
+		{
+			// doesn't seem to work
+			JavaScript.Eval("if(window.showKeyboard != null){ window.showKeyboard(); } " );
+		}
 	}
 
-	public void HideVirtualKeyboard()
-	{
-		GD.Print("HideVirtualKeyboard?");
-		//OS.HideVirtualKeyboard();
-	}
 
 	private bool changingPlayer = false;
 

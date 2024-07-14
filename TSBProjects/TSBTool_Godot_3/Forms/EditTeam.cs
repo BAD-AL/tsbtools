@@ -9,8 +9,8 @@ public partial class EditTeam : Control
 	private OptionButton m_TeamsComboBox;
 	private OptionButton m_FormationComboBox;
 	private OptionButton m_OffensivePrefomComboBox;
-	private SpinBox m_SimDefenseUpDown;
-	private SpinBox m_SimOffenseUpDown;
+	private NumericUpDown m_SimDefenseUpDown;
+	private NumericUpDown m_SimOffenseUpDown;
 
 
 	private PlayControl P1;
@@ -49,8 +49,8 @@ public partial class EditTeam : Control
 		m_TeamsComboBox = GetNode<OptionButton>("MarginContainer/VBoxContainer/teamOptionButton");
 		m_FormationComboBox = GetNode<OptionButton>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer/m_FormationComboBox");
 		m_OffensivePrefomComboBox = GetNode<OptionButton>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer/m_OffensivePrefomComboBox");
-		m_SimDefenseUpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer/m_SimDefenseUpDown");
-		m_SimOffenseUpDown = GetNode<SpinBox>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer/m_SimOffenseUpDown");
+		m_SimDefenseUpDown = GetNode<NumericUpDown>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer/m_SimDefenseUpDown");
+		m_SimOffenseUpDown = GetNode<NumericUpDown>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer/m_SimOffenseUpDown");
 		P1 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer/PlayControlP1");
 		P2 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer/PlayControlP2");
 		P3 = GetNode<PlayControl>("MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel6/HBoxContainer/PlayControlP3");

@@ -1,10 +1,13 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://Images/52.png" type="Texture" id=1]
 [ext_resource path="res://Forms/TextureRectWithMouse.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Forms/TecmoAttributeControl.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Themes/tecmo_menu_theme.tres" type="Theme" id=4]
 [ext_resource path="res://Forms/EditPlayer.cs" type="Script" id=5]
+[ext_resource path="res://Forms/NumericUpDown.tscn" type="PackedScene" id=6]
+[ext_resource path="res://Forms/TextBoxHack.gd" type="Script" id=7]
+[ext_resource path="res://Forms/FingerScroll.gd" type="Script" id=8]
 
 [node name="EditPlayer" type="Panel"]
 anchor_right = 1.0
@@ -74,6 +77,7 @@ margin_right = 1014.0
 margin_bottom = 592.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+script = ExtResource( 8 )
 
 [node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer/ScrollContainer"]
 margin_right = 1014.0
@@ -92,13 +96,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="m_FirstNameTextBox" type="LineEdit" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer"]
-margin_right = 421.0
+margin_right = 505.0
 margin_bottom = 50.0
 rect_min_size = Vector2( 200, 50 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
+script = ExtResource( 7 )
 
 [node name="clearFirstNameButton" type="Button" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel/HBoxContainer"]
+visible = false
 margin_left = 425.0
 margin_right = 505.0
 margin_bottom = 50.0
@@ -115,13 +121,15 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="m_LastNameTextBox" type="LineEdit" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer"]
-margin_right = 421.0
+margin_right = 505.0
 margin_bottom = 50.0
 rect_min_size = Vector2( 200, 50 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
+script = ExtResource( 7 )
 
 [node name="clearLastNameButton" type="Button" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel5/HBoxContainer"]
+visible = false
 margin_left = 425.0
 margin_right = 505.0
 margin_bottom = 50.0
@@ -196,17 +204,17 @@ anchor_bottom = 1.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/jerseyPanel/HBoxContainer"]
 margin_top = 27.0
-margin_right = 112.0
+margin_right = 160.0
 margin_bottom = 43.0
+rect_min_size = Vector2( 160, 0 )
 text = "Jersey#"
 
-[node name="m_JerseyNumberDropUpDown" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/jerseyPanel/HBoxContainer"]
-margin_left = 116.0
+[node name="m_JerseyNumberDropUpDown" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/jerseyPanel/HBoxContainer" instance=ExtResource( 6 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 164.0
 margin_right = 505.0
 margin_bottom = 70.0
-rect_min_size = Vector2( 150, 60 )
-size_flags_horizontal = 3
-max_value = 99.0
 
 [node name="m_RSBox" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer" instance=ExtResource( 3 )]
 anchor_right = 0.0
@@ -289,16 +297,17 @@ anchor_bottom = 1.0
 
 [node name="m_Sim1Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel1/HBoxContainer"]
 margin_top = 22.0
-margin_right = 112.0
+margin_right = 160.0
 margin_bottom = 38.0
+rect_min_size = Vector2( 160, 0 )
 text = "Sim Run"
 
-[node name="m_Sim1UpDown" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel1/HBoxContainer"]
-margin_left = 116.0
+[node name="m_Sim1UpDown" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel1/HBoxContainer" instance=ExtResource( 6 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 164.0
 margin_right = 505.0
 margin_bottom = 60.0
-rect_min_size = Vector2( 100, 0 )
-size_flags_horizontal = 3
 
 [node name="Panel2" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
 margin_left = 509.0
@@ -314,15 +323,17 @@ anchor_bottom = 1.0
 
 [node name="m_Sim2Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer"]
 margin_top = 22.0
-margin_right = 128.0
+margin_right = 160.0
 margin_bottom = 38.0
+rect_min_size = Vector2( 160, 0 )
 text = "Sim Pass"
 
-[node name="m_Sim2UpDown" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer"]
-margin_left = 132.0
+[node name="m_Sim2UpDown" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel2/HBoxContainer" instance=ExtResource( 6 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 164.0
 margin_right = 505.0
 margin_bottom = 60.0
-size_flags_horizontal = 3
 
 [node name="Panel3" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
 margin_top = 368.0
@@ -339,13 +350,15 @@ anchor_bottom = 1.0
 margin_top = 27.0
 margin_right = 160.0
 margin_bottom = 43.0
+rect_min_size = Vector2( 160, 0 )
 text = "Sim Pocket	"
 
-[node name="m_Sim3UpDown" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer"]
+[node name="m_Sim3UpDown" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel3/HBoxContainer" instance=ExtResource( 6 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
 margin_left = 164.0
 margin_right = 505.0
 margin_bottom = 70.0
-size_flags_horizontal = 3
 
 [node name="Panel4" type="Panel" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
 margin_left = 509.0
@@ -361,15 +374,17 @@ anchor_bottom = 1.0
 
 [node name="m_Sim4Label" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer"]
 margin_top = 27.0
-margin_right = 80.0
+margin_right = 160.0
 margin_bottom = 43.0
+rect_min_size = Vector2( 160, 0 )
 text = "Sim 4"
 
-[node name="m_Sim4UpDown" type="SpinBox" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer"]
-margin_left = 84.0
+[node name="m_Sim4UpDown" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer/Panel4/HBoxContainer" instance=ExtResource( 6 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 164.0
 margin_right = 505.0
 margin_bottom = 70.0
-size_flags_horizontal = 3
 
 [node name="displayLabel" type="Label" parent="MarginContainer/VBoxContainer/ScrollContainer/GridContainer"]
 margin_top = 442.0

@@ -1,0 +1,159 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://Themes/tecmo_menu_theme.tres" type="Theme" id=1]
+[ext_resource path="res://Forms/UI_Test.gd" type="Script" id=2]
+[ext_resource path="res://Fonts/LiberationMono-Regular.ttf" type="DynamicFontData" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 14
+font_data = ExtResource( 3 )
+
+[node name="UI_Test" type="Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+script = ExtResource( 2 )
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_constants/margin_top = 5
+custom_constants/margin_left = 5
+custom_constants/margin_bottom = 5
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 1024.0
+margin_bottom = 643.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="GridContainer" type="GridContainer" parent="MarginContainer/VBoxContainer"]
+margin_right = 1019.0
+margin_bottom = 104.0
+columns = 2
+
+[node name="Panel" type="Panel" parent="MarginContainer/VBoxContainer/GridContainer"]
+margin_right = 508.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer/Panel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="LineEdit" type="LineEdit" parent="MarginContainer/VBoxContainer/GridContainer/Panel/HBoxContainer"]
+margin_right = 424.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "LineEdit"
+
+[node name="clearButton" type="Button" parent="MarginContainer/VBoxContainer/GridContainer/Panel/HBoxContainer"]
+margin_left = 428.0
+margin_right = 508.0
+margin_bottom = 50.0
+text = "Clear"
+
+[node name="Panel2" type="Panel" parent="MarginContainer/VBoxContainer/GridContainer"]
+margin_left = 512.0
+margin_right = 1019.0
+margin_bottom = 50.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer/Panel2"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/GridContainer/Panel2/HBoxContainer"]
+margin_right = 507.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+custom_constants/margin_right = 10
+
+[node name="SpinBox" type="SpinBox" parent="MarginContainer/VBoxContainer/GridContainer/Panel2/HBoxContainer/MarginContainer"]
+margin_right = 497.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Panel3" type="Panel" parent="MarginContainer/VBoxContainer/GridContainer"]
+margin_top = 54.0
+margin_right = 508.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer/Panel3"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="TextEdit" type="TextEdit" parent="MarginContainer/VBoxContainer/GridContainer/Panel3/HBoxContainer"]
+margin_right = 424.0
+margin_bottom = 50.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "TextEdit"
+
+[node name="backSpaceLabel" type="Label" parent="MarginContainer/VBoxContainer/GridContainer/Panel3/HBoxContainer"]
+margin_left = 428.0
+margin_right = 508.0
+margin_bottom = 50.0
+mouse_filter = 1
+size_flags_vertical = 5
+text = "  BS "
+align = 1
+valign = 1
+
+[node name="Panel4" type="Panel" parent="MarginContainer/VBoxContainer/GridContainer"]
+margin_left = 512.0
+margin_top = 54.0
+margin_right = 1019.0
+margin_bottom = 104.0
+rect_min_size = Vector2( 0, 50 )
+size_flags_horizontal = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/GridContainer/Panel4"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="sendAndroidBackspaceLabel" type="Label" parent="MarginContainer/VBoxContainer/GridContainer/Panel4/HBoxContainer"]
+margin_right = 208.0
+margin_bottom = 50.0
+mouse_filter = 1
+size_flags_vertical = 5
+text = "  BS Android "
+align = 1
+valign = 1
+
+[node name="javascriptKeyboardLabel" type="Label" parent="MarginContainer/VBoxContainer/GridContainer/Panel4/HBoxContainer"]
+margin_left = 212.0
+margin_right = 420.0
+margin_bottom = 50.0
+mouse_filter = 1
+size_flags_vertical = 5
+text = " Keyboard JS "
+align = 1
+valign = 1
+
+[node name="eventLog" type="TextEdit" parent="MarginContainer/VBoxContainer"]
+margin_top = 108.0
+margin_right = 1019.0
+margin_bottom = 594.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_fonts/font = SubResource( 1 )
+syntax_highlighting = true
+
+[node name="closeButton" type="Button" parent="MarginContainer/VBoxContainer"]
+margin_top = 598.0
+margin_right = 1019.0
+margin_bottom = 638.0
+rect_min_size = Vector2( 0, 40 )
+text = "Close"
+
+[connection signal="pressed" from="MarginContainer/VBoxContainer/GridContainer/Panel/HBoxContainer/clearButton" to="." method="_on_clear_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/closeButton" to="." method="_on_close_button_pressed"]

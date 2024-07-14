@@ -175,20 +175,54 @@ margin_right = 1014.0
 margin_bottom = 638.0
 rect_min_size = Vector2( 0, 40 )
 
-[node name="aboutButton" type="Button" parent="MarginContainer/VBoxContainer/bottomPanel"]
-anchor_top = 0.5
-anchor_bottom = 0.5
-margin_top = -10.0
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/bottomPanel"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="aboutButton" type="Button" parent="MarginContainer/VBoxContainer/bottomPanel/HBoxContainer"]
 margin_right = 112.0
-margin_bottom = 10.0
+margin_bottom = 40.0
 rect_min_size = Vector2( 0, 30 )
 text = " About "
 
-[node name="tecmoControl" parent="MarginContainer/VBoxContainer/bottomPanel" instance=ExtResource( 6 )]
+[node name="iOSButton" type="Button" parent="MarginContainer/VBoxContainer/bottomPanel/HBoxContainer"]
+visible = false
+margin_left = 116.0
+margin_right = 276.0
+margin_bottom = 40.0
+text = "iOS quirks"
+
+[node name="uiTestButton" type="Button" parent="MarginContainer/VBoxContainer/bottomPanel/HBoxContainer"]
+visible = false
+margin_left = 116.0
+margin_right = 563.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 0, 25 )
+size_flags_horizontal = 3
+text = "UI Test"
+
+[node name="editPlayer2Button" type="Button" parent="MarginContainer/VBoxContainer/bottomPanel/HBoxContainer"]
+visible = false
+margin_left = 116.0
+margin_right = 356.0
+margin_bottom = 40.0
+text = " Edit player 2 "
+
+[node name="tecmoControl" parent="MarginContainer/VBoxContainer/bottomPanel/HBoxContainer" instance=ExtResource( 6 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 116.0
+margin_top = 12.0
+margin_right = 1014.0
+margin_bottom = 28.0
+size_flags_horizontal = 3
 
 [connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/loadRomButton" to="." method="_on_load_rom_button_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/editPlayersButton" to="." method="_on_edit_players_button_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/editTeamsButton" to="." method="_on_edit_teams_button_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/viewTextButton" to="." method="_on_view_text_button_pressed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/saveButton" to="." method="_on_save_button_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/bottomPanel/aboutButton" to="." method="_on_aboutButton_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/bottomPanel/HBoxContainer/aboutButton" to="." method="_on_aboutButton_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/bottomPanel/HBoxContainer/iOSButton" to="." method="_on_iOS_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/bottomPanel/HBoxContainer/uiTestButton" to="." method="_on_ui_test_button_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/bottomPanel/HBoxContainer/editPlayer2Button" to="." method="_on_editPlayer2Button_pressed"]
