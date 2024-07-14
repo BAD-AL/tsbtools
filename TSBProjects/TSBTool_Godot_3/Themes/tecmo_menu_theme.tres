@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=7 format=2]
+[gd_resource type="Theme" load_steps=8 format=2]
 
 [ext_resource path="res://Fonts/GF-TecmoNarrow.TTF" type="DynamicFontData" id=1]
 
@@ -7,7 +7,7 @@ content_margin_left = 4.0
 content_margin_right = 4.0
 content_margin_top = 4.0
 content_margin_bottom = 4.0
-bg_color = Color( 0.0862745, 0.290196, 0.623529, 1 )
+bg_color = Color( 0.286275, 0.337255, 0.423529, 1 )
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
@@ -16,6 +16,9 @@ expand_margin_left = 5.0
 expand_margin_right = 5.0
 expand_margin_top = 5.0
 expand_margin_bottom = 5.0
+
+[sub_resource type="StyleBoxFlat" id=6]
+bg_color = Color( 0.0666667, 0.317647, 0.588235, 1 )
 
 [sub_resource type="StyleBoxFlat" id=2]
 bg_color = Color( 0.0941176, 0.207843, 0.4, 1 )
@@ -47,7 +50,7 @@ Button/colors/font_color_hover = Color( 0.94, 0.94, 0.94, 1 )
 Button/colors/font_color_pressed = Color( 1, 1, 1, 1 )
 Button/constants/hseparation = 2
 Button/styles/disabled = SubResource( 1 )
-Button/styles/focus = null
+Button/styles/focus = SubResource( 6 )
 Button/styles/hover = null
 Button/styles/normal = SubResource( 2 )
 Button/styles/pressed = null

@@ -18,6 +18,7 @@ func _ready():
 	textBox.connect("gui_input", self, "_on_control_gui_input")
 	if Globals.tecmoHelper != null:
 		textBox.text += Globals.tecmoHelper.GetAll(1)
+	textBox.grab_focus()
 
 func addSyntaxHighlighting(tb:TextEdit):
 	tb.add_color_region("# ", "",  Color.gray, true)
@@ -53,6 +54,8 @@ func _input(event):
 			adjust_font_size(0.25)
 		elif event.button_index == BUTTON_WHEEL_DOWN:
 			adjust_font_size(-0.25)
+	elif event.is_action_pressed("back"):
+		_on_close_button_pressed()
 
 func adjust_font_size(delta):
 	base_font_size += delta

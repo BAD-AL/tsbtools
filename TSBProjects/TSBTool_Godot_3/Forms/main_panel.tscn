@@ -126,21 +126,21 @@ margin_right = 474.0
 margin_bottom = 390.0
 rect_clip_content = true
 size_flags_horizontal = 3
-custom_constants/separation = 4
+custom_constants/separation = 5
 alignment = 1
 
 [node name="loadRomButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
-margin_top = 124.0
+margin_top = 122.0
 margin_right = 454.0
-margin_bottom = 149.0
+margin_bottom = 147.0
 rect_min_size = Vector2( 0, 25 )
 size_flags_horizontal = 3
 text = "Load Rom"
 
 [node name="editPlayersButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
-margin_top = 153.0
+margin_top = 152.0
 margin_right = 454.0
-margin_bottom = 178.0
+margin_bottom = 177.0
 rect_min_size = Vector2( 0, 25 )
 size_flags_horizontal = 3
 text = "Edit Players"
@@ -154,17 +154,17 @@ size_flags_horizontal = 3
 text = "Edit Teams"
 
 [node name="viewTextButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
-margin_top = 211.0
+margin_top = 212.0
 margin_right = 454.0
-margin_bottom = 236.0
+margin_bottom = 237.0
 rect_min_size = Vector2( 0, 25 )
 size_flags_horizontal = 3
 text = "View/Edit Text"
 
 [node name="saveButton" type="Button" parent="MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer"]
-margin_top = 240.0
+margin_top = 242.0
 margin_right = 454.0
-margin_bottom = 265.0
+margin_bottom = 267.0
 rect_min_size = Vector2( 0, 25 )
 size_flags_horizontal = 3
 text = "Save"

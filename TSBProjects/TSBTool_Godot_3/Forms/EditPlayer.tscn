@@ -151,6 +151,7 @@ size_flags_horizontal = 3
 margin_right = 104.0
 margin_bottom = 70.0
 rect_min_size = Vector2( 30, 0 )
+focus_neighbour_right = NodePath("../m_NextPicture")
 size_flags_horizontal = 7
 text = "<"
 
@@ -187,6 +188,7 @@ margin_left = 400.0
 margin_right = 505.0
 margin_bottom = 70.0
 rect_min_size = Vector2( 30, 0 )
+focus_neighbour_left = NodePath("../m_PrevPicture")
 size_flags_horizontal = 3
 text = ">"
 

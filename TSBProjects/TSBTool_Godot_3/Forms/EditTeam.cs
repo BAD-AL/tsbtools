@@ -85,6 +85,32 @@ public partial class EditTeam : Control
 
 		CheckScreenSize();
 		GetTree().Root.Connect("size_changed", this, "CheckScreenSize");
+		m_TeamsComboBox.GrabFocus();
+	}
+
+	public override void _Input(InputEvent evt)
+	{
+		base._Input(evt);
+		if (evt.IsActionPressed("back"))
+		{
+			OptionButton optionButton = GetFocusedOptionButton();
+			if (optionButton != null && optionButton.GetPopup().IsVisible())
+				optionButton.GetPopup().Hide();
+			else
+				CloseButton_Pressed();
+		}
+	}
+
+	private OptionButton GetFocusedOptionButton()
+	{
+
+		Control focused_control = GetFocusOwner();
+		OptionButton optionButton = null;
+		if (focused_control != null)
+		{
+			optionButton = focused_control.GetParent() as OptionButton;
+		}
+		return optionButton;
 	}
 
 	public void OnPlayChanged(int newPlayNumber)

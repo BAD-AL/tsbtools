@@ -49,6 +49,7 @@ func _ready():
 	# Screen size stuff 
 	check_screen_size()
 	get_tree().get_root().connect("size_changed", self, "check_screen_size")
+	$MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/loadRomButton.grab_focus()
 	
 	if OS.get_name() == "HTML5":
 		myCallback = JavaScript.create_callback(self, "fileLoaded")
@@ -56,7 +57,11 @@ func _ready():
 		window.fileLoaded = myCallback
 		insert_html_and_js()
 		mobile_platform_check()
-
+		
+func _notification(what):
+	if what == NOTIFICATION_VISIBILITY_CHANGED:
+		$MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/loadRomButton.grab_focus()
+	
 func disable_buttons():
 	$MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/editPlayersButton.disabled = true
 	$MarginContainer/VBoxContainer/middlePanel/HBoxContainer/MarginContainer/Panel/MarginContainer/VBoxContainer/editTeamsButton.disabled = true
