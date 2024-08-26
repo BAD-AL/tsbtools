@@ -13,6 +13,9 @@ Note: If building this project, you'll want to have
 
 And you'll need to run the ```Lib.NET\create_links.bat``` file (to reference the core TSBTool code).
 
+## Debugging (VS 2022)
+ * Check thread https://forum.godotengine.org/t/godot-3-c-debugging-in-visual-studio-2022/78926
+
 A few issues I encountered:
 ### Issue 1
 The HTML5 mono export seemed to have trouble with GDScript -> C# communication using the following pattern:
