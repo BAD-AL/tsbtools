@@ -256,7 +256,7 @@ namespace TSBTool2
                 case "FS":
                 case "SS":
                 case "DB3":
-                    if (simVals.Length > 1)
+                    if (vals != null && vals.Length > 1)
                         simVals = string.Format("[{0:X2},{1:X2},{2:X2}]", vals[0] * 2, vals[1] * 3, vals[0] * 2);
                     else
                         simVals = "[10,10,10]";

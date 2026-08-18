@@ -340,14 +340,14 @@ namespace TSBTool
             this.season2MenuItem = new System.Windows.Forms.MenuItem();
             this.season3MenuItem = new System.Windows.Forms.MenuItem();
             this.allSeasonsMenuItem = new System.Windows.Forms.MenuItem();
-            this.mainAboutItem = new System.Windows.Forms.MenuItem();
-            this.aboutMenuItem = new System.Windows.Forms.MenuItem();
             this.convertMenuItem = new System.Windows.Forms.MenuItem();
             this.convertToTSB2TextToolStripMenuItem = new System.Windows.Forms.MenuItem();
             this.convertToTSB1TextToolStripMenuItem = new System.Windows.Forms.MenuItem();
             this.tsb3ToTsb2Item = new System.Windows.Forms.MenuItem();
             this.tsb2ToTsb3Item = new System.Windows.Forms.MenuItem();
             this.aboutConvertingToolStripMenuItem = new System.Windows.Forms.MenuItem();
+            this.mainAboutItem = new System.Windows.Forms.MenuItem();
+            this.aboutMenuItem = new System.Windows.Forms.MenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.statusBar1 = new System.Windows.Forms.StatusBar();
             this.saveDataButton = new System.Windows.Forms.Button();
@@ -635,19 +635,6 @@ namespace TSBTool
             this.allSeasonsMenuItem.Text = "All Seasons";
             this.allSeasonsMenuItem.Click += new System.EventHandler(this.seasonItemClicked);
             // 
-            // mainAboutItem
-            // 
-            this.mainAboutItem.Index = 6;
-            this.mainAboutItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.aboutMenuItem});
-            this.mainAboutItem.Text = "A&bout";
-            // 
-            // aboutMenuItem
-            // 
-            this.aboutMenuItem.Index = 0;
-            this.aboutMenuItem.Text = "About &TSBTool";
-            this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
-            // 
             // convertMenuItem
             // 
             this.convertMenuItem.Index = 5;
@@ -688,6 +675,19 @@ namespace TSBTool
             this.aboutConvertingToolStripMenuItem.Index = 4;
             this.aboutConvertingToolStripMenuItem.Text = "About Converting";
             this.aboutConvertingToolStripMenuItem.Click += new System.EventHandler(this.aboutConvertingToolStripMenuItem_Click);
+            // 
+            // mainAboutItem
+            // 
+            this.mainAboutItem.Index = 6;
+            this.mainAboutItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.aboutMenuItem});
+            this.mainAboutItem.Text = "A&bout";
+            // 
+            // aboutMenuItem
+            // 
+            this.aboutMenuItem.Index = 0;
+            this.aboutMenuItem.Text = "About &TSBTool";
+            this.aboutMenuItem.Click += new System.EventHandler(this.aboutMenuItem_Click);
             // 
             // panel1
             // 
@@ -998,18 +998,24 @@ namespace TSBTool
             TSBContentType rom_type = GetType(tool.RomVersion);
             string textToApply = mTextBox.Text;
 
-            if (text_type != rom_type)
+            if (text_type != rom_type && text_type != TSBContentType.Unknown)
             {
-                if (MessageBox.Show(String.Format(
-@"The content type shows as '{0}'. The ROM loaded is of type '{1}'
-Do you wish to try automatic conversion (this will modify the text in the editor)?",
+                DialogResult res =  MessageBox.Show(String.Format(
+@"The content type comes back as '{0}'. The ROM loaded is of type '{1}'.
+Do you wish to try automatic conversion?
+
+YES = Do the conversion (changes UI text) then apply/save.
+NO  = Do not do the conversion just apply the changes to the current ROM.
+CANCEL = Don't do anything, cancel current operation.
+",
     text_type, rom_type), "Warning",
-    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+                if( res == DialogResult.Yes)
                 {
                     textToApply = TSBTool2.TecmoConverter.Convert(text_type, rom_type, textToApply);
                     SetText(textToApply);
                 }
-                else
+                else if ( res == DialogResult.Cancel)
                 {
                     return;
                 }

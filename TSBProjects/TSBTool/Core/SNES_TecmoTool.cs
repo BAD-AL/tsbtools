@@ -646,7 +646,14 @@ Do you want to continue?", ROM_LENGTH);
 			if (shiftAmount != 0)
 			{
 				int currentPointerLocation = GetTeamStringTableStart() + 2 * stringIndex;
-				int lastPointerLocation = GetTeamStringTableStart() + 2 * NumberOfStringsInTeamStringTable;
+				// AdjustDataPointers treats lastPointerLocation as the address of the LAST valid
+				// pointer slot (inclusive -- see its "lastPointer" caller, which points directly at
+				// one), not one-past-the-end. The table has NumberOfStringsInTeamStringTable slots
+				// starting at GetTeamStringTableStart(), so the last slot is 2 bytes before that end
+				// address; passing the exclusive end here made AdjustDataPointers treat the first two
+                // bytes of string data (index 0's string, which sits immediately after the pointer
+                // table) as a phantom extra pointer and corrupt it whenever any string's length changed.
+				int lastPointerLocation = GetTeamStringTableStart() + 2 * NumberOfStringsInTeamStringTable - 2;
 				AdjustDataPointers(currentPointerLocation, shiftAmount, lastPointerLocation);
 				int startPosition = GetTeamStringTableLocation(stringIndex + 1, out junk) - 1;
 				int endPosition = 0x7330;
