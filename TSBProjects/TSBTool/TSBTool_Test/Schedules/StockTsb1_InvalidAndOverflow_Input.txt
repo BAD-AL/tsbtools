@@ -1,0 +1,198 @@
+WEEK 1
+poo at pee
+bills at dolphins
+
+WEEK 2
+bills at steelers
+colts at dolphins
+
+WEEK 3
+bills at jets
+colts at raiders
+patriots at steelers
+
+WEEK 4
+bills at buccaneers
+colts at lions
+dolphins at packers
+patriots at oilers
+
+WEEK 5
+bills at bears
+colts at seahawks
+dolphins at jets
+patriots at cardinals
+broncos at vikings
+
+WEEK 6
+bills at chiefs
+colts at steelers
+dolphins at patriots
+jets at browns
+bengals at seahawks
+oilers at broncos
+
+WEEK 7
+bills at colts
+dolphins at chiefs
+jets at oilers
+bengals at cowboys
+browns at redskins
+steelers at giants
+raiders at seahawks
+
+WEEK 8
+bills at bengals
+colts at jets
+dolphins at oilers
+patriots at vikings
+browns at chargers
+steelers at seahawks
+broncos at chiefs
+raiders at rams
+
+WEEK 9
+patriots at broncos
+bengals at oilers
+browns at steelers
+chiefs at raiders
+chargers at seahawks
+redskins at giants
+eagles at 49ers
+cardinals at vikings
+cowboys at lions
+
+WEEK 10
+bills at patriots
+colts at dolphins
+jets at packers
+bengals at browns
+oilers at redskins
+steelers at broncos
+giants at eagles
+cardinals at cowboys
+bears at lions
+
+WEEK 11
+bills at packers
+colts at jets
+dolphins at patriots
+bengals at steelers
+browns at eagles
+oilers at cowboys
+broncos at raiders
+chiefs at rams
+chargers at seahawks
+redskins at falcons
+giants at cardinals
+
+WEEK 12
+bills at dolphins
+colts at bears
+patriots at jets
+bengals at eagles
+browns at oilers
+steelers at redskins
+broncos at chiefs
+raiders at seahawks
+chargers at saints
+giants at cowboys
+cardinals at 49ers
+lions at rams
+
+WEEK 13
+bills at patriots
+colts at packers
+dolphins at bears
+jets at chargers
+bengals at raiders
+browns at chiefs
+oilers at steelers
+broncos at seahawks
+redskins at cowboys
+giants at buccaneers
+eagles at cardinals
+lions at vikings
+49ers at rams
+
+WEEK 14
+bills at jets
+colts at browns
+dolphins at buccaneers
+patriots at broncos
+bengals at giants
+oilers at eagles
+chiefs at seahawks
+raiders at chargers
+redskins at rams
+steelers at cowboys
+bears at lions
+packers at falcons
+49ers at saints
+saints at falcons
+
+WEEK 15
+bills at raiders
+colts at patriots
+dolphins at bengals
+jets at lions
+browns at broncos
+oilers at steelers
+chiefs at chargers
+seahawks at 49ers
+redskins at cardinals
+giants at eagles
+cowboys at saints
+bears at packers
+vikings at buccaneers
+rams at falcons
+saints at falcons
+
+WEEK 16
+bills at colts
+dolphins at chargers
+patriots at jets
+bengals at steelers
+browns at oilers
+broncos at cardinals
+chiefs at 49ers
+raiders at saints
+seahawks at falcons
+redskins at giants
+eagles at cowboys
+bears at buccaneers
+lions at packers
+vikings at rams
+bills at raiders
+colts at patriots
+
+WEEK 17
+bills at lions
+colts at buccaneers
+dolphins at jets
+patriots at bengals
+browns at steelers
+oilers at giants
+broncos at chargers
+chiefs at raiders
+seahawks at rams
+redskins at eagles
+cardinals at saints
+cowboys at falcons
+bears at 49ers
+bills at lions
+colts at buccaneers
+dolphins at jets
+patriots at bengals
+bills at lions
+colts at buccaneers
+dolphins at jets
+patriots at bengals
+browns at steelers
+oilers at giants
+broncos at chargers
+chiefs at raiders
+seahawks at rams
+redskins at eagles
+
+

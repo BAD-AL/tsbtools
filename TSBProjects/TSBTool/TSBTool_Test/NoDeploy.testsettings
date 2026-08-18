@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestSettings name="NoDeploy" id="b9c1c6a0-6b2a-4a0a-9b0a-1f2e3d4c5b6a" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Description>
+    Runs legacy MSTest (Microsoft.VisualStudio.QualityTools.UnitTestFramework) tests in-place
+    from bin\Debug instead of copying to a TestResults\...\Out deployment directory. Needed
+    because this VS2022 install's legacy test runner does not honor [DeploymentItem], so
+    Content items (e.g. the ROMs\*.nes fixtures, copied to bin\Debug via CopyToOutputDirectory)
+    never reach the deployment folder otherwise, and tests that load them fail with
+    FileNotFoundException.
+
+    Select via Test > Test Settings > Select Test Settings File in Visual Studio, or pass
+    /testsettings:NoDeploy.testsettings to MSTest.exe on the command line.
+  </Description>
+  <Deployment enabled="false" />
+  <Execution>
+    <TestTypeSpecific/>
+    <AgentRule name="Execution Agents">
+    </AgentRule>
+  </Execution>
+</TestSettings>
