@@ -137,5 +137,48 @@ namespace TSBTool_Test
             List<string> actual = SplitToNonEmptyLines(helper.GetSchedule());
             CollectionAssert.AreEqual(expected, actual, "Schedule read back after applying the alternate schedule should match the input exactly.");
         }
+
+        /// <summary>
+        /// Regression test for a bug found via 18Week_RealNFL_Hack_Documentation-1.md: the byte
+        /// immediately after the 18-entry games-per-week array (file 0x329DD) is documented -- and
+        /// confirmed present in the fixture ROM -- as a 0xFF terminator the running game depends on.
+        /// ScheduleHelper2.ClosePrevWeek() had no bounds check (unlike its sibling
+        /// SetupPointerForCurrentWeek(), which does), so supplying more weeks than the ROM supports
+        /// would silently overwrite that sentinel with the bogus extra week's game count when
+        /// ApplySchedule's unconditional final ClosePrevWeek() call ran.
+        /// </summary>
+        [TestMethod]
+        public void EighteenWeekRom_SchedulingANineteenthWeek_DoesNotCorruptGamesPerWeekTerminator()
+        {
+            const int terminatorLocation = 0x329DD;
+
+            byte[] rom = TestRoms.LoadRom("SbluemanBase_18week_RealNFL-1.nes");
+            Assert.AreEqual((byte)0xFF, rom[terminatorLocation], "Sanity check: the fixture ROM should have the documented 0xFF terminator before we touch anything.");
+
+            TestRoms.EnsureCXRomTeamsAreSet(rom);
+            CXRom18WeekScheduleHelper helper = new CXRom18WeekScheduleHelper(rom);
+
+            List<string> input = TestRoms.LoadScheduleLines("EighteenWeek_AlternateSchedule.txt");
+            input.Add("WEEK 19");
+            input.Add("bills at dolphins");
+
+            helper.ApplySchedule(input);
+
+            Assert.AreEqual((byte)0xFF, rom[terminatorLocation], "The games-per-week array's terminator byte must survive a bogus 19th week.");
+
+            List<string> errors = helper.GetErrorMessages() ?? new List<string>();
+            Assert.IsTrue(
+                errors.Any(e => e.IndexOf("Weeks 19", StringComparison.OrdinalIgnoreCase) >= 0),
+                "Expected an error about exceeding the week cap when scheduling a week 19.");
+
+            // The 18 real weeks should still be exactly what was supplied, unaffected by the rejected 19th.
+            for (int week = 0; week < ReversedGamesPerWeek.Length; week++)
+            {
+                Assert.AreEqual(
+                    ReversedGamesPerWeek[week],
+                    helper.GetGamesInWeek(week),
+                    string.Format("Week {0} game count should be unaffected by the rejected 19th week.", week + 1));
+            }
+        }
     }
 }

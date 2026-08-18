@@ -124,7 +124,7 @@ namespace TSBTool
 
         private void ClosePrevWeek()
         {
-			if( week > -1 )
+			if( week > -1 && week < totalWeeks )
 			{
 				int location = gamesPerWeekStartLoc + week;
 				outputRom[location] = (byte) week_game_count;
