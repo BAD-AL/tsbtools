@@ -32,7 +32,8 @@
     <StartPage />
     <StartProgram />
     <StartURL />
-    <StartWorkingDirectory />
+    <StartWorkingDirectory>
+    </StartWorkingDirectory>
     <StartWithIE>true</StartWithIE>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

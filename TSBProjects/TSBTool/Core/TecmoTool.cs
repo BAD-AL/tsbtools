@@ -588,7 +588,8 @@ Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 # -- Defensive Players:
 # Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, PI, QU, [Sim pass rush, Sim coverage].
 # -- Punters and Kickers:
-# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, KA, AKB,[ Sim kicking ability].",
+# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, KA, AKB,[ Sim kicking ability].
+",
             this.RomVersion);
 		}
 

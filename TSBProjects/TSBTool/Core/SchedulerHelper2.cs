@@ -16,11 +16,13 @@ namespace TSBTool
         protected int end_schedule_section = 0x3400e;
 		protected int gamesPerWeekStartLoc = 0x329c9;
         protected int weekPointersStartLoc = 0x329a7; // you need to swap these bytes
+		protected int weekPointerBaseConst = 0x89cb; // added to (2 * total_game_count) to form a week's pointer value
 		private int[] teamGames;
 		protected int total_games_possible = 238;
 		protected int gamePerWeekLimit = 14;
 		protected int totalGameLimit = 224;
 		protected int totalWeeks = 17;
+		protected int gamesPerTeamExpected = 16;
 
         private int week             = -1;
         private int week_game_count  =  0;
@@ -74,7 +76,7 @@ namespace TSBTool
 					{
 						if(week > totalWeeks-1 /*17*/)
 						{
-							AddMessage("Error! You can have only 17 weeks in a season.");
+							AddMessage(String.Format("Error! You can have only {0} weeks in a season.", totalWeeks));
 							break;
 						}
 						SetupWeek();
@@ -94,13 +96,13 @@ namespace TSBTool
 			ClosePrevWeek(); // close off last week.
 			if( week < totalWeeks-1 )
 			{
-				AddMessage("Warning! You didn't schedule all 17 weeks. The schedule could be messed up.");
+				AddMessage(string.Format("Warning! You didn't schedule all {0} weeks. The schedule could be messed up.", totalWeeks));
 			}
 			if( teamGames != null)
 			{
 				for( int i = 0;  i < teamGames.Length; i++)
 				{
-					if( teamGames[i] != 16 ) 
+					if( teamGames[i] != gamesPerTeamExpected )
 					{
 						AddMessage(string.Format(
 							"Warning! The {0} have {1} games scheduled.", 
@@ -135,11 +137,11 @@ namespace TSBTool
 
         private void SetupPointerForCurrentWeek()
         {
-            if( week == 0) 
+            if( week == 0)
                 return;
-            int val      = ( 2 * total_game_count) + 0x89cb;
+            int val      = ( 2 * total_game_count) + weekPointerBaseConst;
             int location = weekPointersStartLoc + (week * 2);
-			if( week < 17 )
+			if( week < totalWeeks )
 			{
 				outputRom[location+1]   = (byte) (val >> 8);
 				outputRom[location] = (byte) (val & 0x00ff);
@@ -232,8 +234,8 @@ namespace TSBTool
         /// <returns></returns>
         public string GetSchedule()
         {
-            StringBuilder sb = new StringBuilder(17*28*12);
-            for( int i =0; i < 17; i++)
+            StringBuilder sb = new StringBuilder(totalWeeks*28*12);
+            for( int i =0; i < totalWeeks; i++)
             {
                 sb.Append(string.Format("WEEK {0}\n",(i+1)));
                 sb.Append(GetWeek(i)+"\n");

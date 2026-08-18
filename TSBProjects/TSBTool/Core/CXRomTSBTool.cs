@@ -949,11 +949,18 @@ namespace TSBTool
 		/// </summary>
 		/// <param name="scheduleList"></param>
 		/// <returns></returns>
+		private CXRomScheduleHelper CreateScheduleHelper()
+		{
+			if( mRomType == ROM_TYPE.CXROM_18WEEK )
+				return new CXRom18WeekScheduleHelper( outputRom );
+			return new CXRomScheduleHelper( outputRom );
+		}
+
 		public override void ApplySchedule(System.Collections.Generic.List<string> scheduleList )
 		{
 			if( scheduleList != null && outputRom != null )
 			{
-				CXRomScheduleHelper sch = new CXRomScheduleHelper( outputRom );
+				CXRomScheduleHelper sch = CreateScheduleHelper();
 				sch.ApplySchedule( scheduleList );
 			}
 		}
@@ -974,7 +981,7 @@ namespace TSBTool
 			string ret = "";
 			if( outputRom != null && DoSchedule )
 			{
-				CXRomScheduleHelper sh2 = new CXRomScheduleHelper( outputRom );
+				CXRomScheduleHelper sh2 = CreateScheduleHelper();
 				ret = sh2.GetSchedule();
                 StaticUtils.ShowErrors();
 			}

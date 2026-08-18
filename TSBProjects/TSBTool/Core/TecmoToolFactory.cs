@@ -34,7 +34,7 @@ namespace TSBTool
 				return null;
 			}
 
-            if (type == ROM_TYPE.CXROM_v105 || type == ROM_TYPE.CXROM_v111)
+            if (type == ROM_TYPE.CXROM_v105 || type == ROM_TYPE.CXROM_v111 || type == ROM_TYPE.CXROM_18WEEK)
 			{
 				TecmoTool.Teams = new List<string>() {
 					"bills",     "dolphins", "patriots", "jets",
@@ -113,7 +113,11 @@ namespace TSBTool
                 }
                 else if (len == CXROM_V105_LEN)
 				{
-					ret = ROM_TYPE.CXROM_v105;
+                    // Some 18-week/17-game schedule ROMs (e.g. based on SbluemanBase_18week_RealNFL-1.nes)
+                    // are built on the CXRom base and happen to be the same length as stock CXROM_v105.
+                    // Distinguish them by checking whether the schedule's week-pointer table is internally
+                    // consistent with the 18-week schedule layout.
+                    ret = IsCXRom18WeekSchedule(rom) ? ROM_TYPE.CXROM_18WEEK : ROM_TYPE.CXROM_v105;
 				}
                 else if (len == CXROM_V111_LEN)
                 {
@@ -140,5 +144,52 @@ namespace TSBTool
 			}
 			return ret;
 		}
+
+        /// <summary>
+        /// Checks whether the ROM's schedule data matches the 18-week/17-game schedule layout
+        /// used by ROM_TYPE.CXROM_18WEEK (see CXRom18WeekScheduleHelper), as opposed to the stock
+        /// 17-week/16-game CXROM_v105 layout. Both layouts share the same size (CXROM_V105_LEN) and
+        /// the same weekPointersStartLoc, so this can't be determined from length alone.
+        ///
+        /// The check reads the candidate "games per week" byte array and verifies that every stored
+        /// week-pointer value equals (2 * cumulativeGamesBeforeWeek) + weekPointerBaseConst. This is
+        /// an arithmetic identity across 17 independent pointer entries, so it's extremely unlikely to
+        /// hold by coincidence against an unrelated/stock ROM.
+        /// </summary>
+        /// <param name="rom">the raw rom bytes</param>
+        /// <returns>true if the ROM's schedule matches the 18-week layout</returns>
+        private static bool IsCXRom18WeekSchedule(byte[] rom)
+        {
+            const int weekPointersStartLoc = 0x329a7;
+            const int gamesPerWeekStartLoc = 0x329cb;
+            const int totalWeeks           = 18;
+            const int weekPointerBaseConst = 0x8d26;
+            const int gamePerWeekLimit     = 16;
+
+            if (rom.Length < weekPointersStartLoc + (totalWeeks * 2))
+                return false;
+
+            int[] cumGamesBeforeWeek = new int[totalWeeks];
+            int cumulative = 0;
+            for (int week = 0; week < totalWeeks; week++)
+            {
+                int gamesInWeek = rom[gamesPerWeekStartLoc + week];
+                if (gamesInWeek < 1 || gamesInWeek > gamePerWeekLimit)
+                    return false;
+                cumGamesBeforeWeek[week] = cumulative;
+                cumulative += gamesInWeek;
+            }
+
+            for (int week = 1; week < totalWeeks; week++)
+            {
+                int location = weekPointersStartLoc + (week * 2);
+                int storedPointer = rom[location] | (rom[location + 1] << 8);
+                int expectedPointer = (2 * cumGamesBeforeWeek[week]) + weekPointerBaseConst;
+                if (storedPointer != expectedPointer)
+                    return false;
+            }
+
+            return true;
+        }
 	}
 }

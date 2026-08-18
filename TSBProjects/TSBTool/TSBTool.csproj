@@ -133,6 +133,9 @@
     <Compile Include="Core\CXRomScheduleHelper.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Core\CXRom18WeekScheduleHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="CxRomTeamHomeAwayUniformForm.cs">
       <SubType>Form</SubType>
     </Compile>

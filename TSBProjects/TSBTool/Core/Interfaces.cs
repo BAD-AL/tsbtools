@@ -25,6 +25,7 @@ namespace TSBTool
         NES_ORIGINAL_TSB,
         CXROM_v105,
         CXROM_v111,
+        CXROM_18WEEK,
         SNES_TSB1,
         SNES_TSB2,
         SNES_TSB3,

@@ -11,7 +11,7 @@ namespace TSBTool
 	/// <summary>
 	/// Summary description for Class1.
 	/// </summary>
-	class MainClass
+	public class MainClass
 	{
         //[DllImport("kernel32.dll")]
         //static extern IntPtr GetConsoleWindow();
@@ -54,13 +54,13 @@ namespace TSBTool
             {
                 OnWindows = false;
             }
-            modifyStuff = schedule = proBowl = 
-              TecmoTool.ShowColors = TecmoTool.ShowPlaybook = 
+            modifyStuff = schedule = proBowl = players = gui = stdin = printHelp =
+              TecmoTool.ShowColors = TecmoTool.ShowPlaybook =
               TecmoTool.ShowTeamFormation = false;
+            getFileName = null;
             //Junk(stuff);
             ArrayList args = GetArgs(stuff);
             ArrayList options = GetOptions(stuff);
-            SetupOptions(options);
             string romFile = GetRomFileName(args);
             if (romFile != null && romFile.ToLower().EndsWith(".smc"))
             {
@@ -70,6 +70,7 @@ namespace TSBTool
             {
                 outFileName = "output.nes";
             }
+            SetupOptions(options); // -out:, if given, overrides the extension-based default above
             string dataFile = GetInputFileName(args);
 
             if (stuff.Length == 0 || gui)
@@ -101,15 +102,25 @@ namespace TSBTool
                 Console.WriteLine(result);
                 return;
             }
-            
+
             try
             {
                 if (romFile != null && dataFile != null)
                     ModifyStuff(romFile, dataFile);
-                else if (romFile != null)
+                else if (romFile != null && stdin)
                     ModifyStuff(romFile, null);
                 else
+                {
+                    if (!players && !proBowl && !schedule &&
+                        !TecmoTool.ShowTeamFormation && ! TecmoTool.ShowColors && 
+                        !TecmoTool.ShowPlaybook
+                        )
+                    {
+                        // we'll just show these ones by default if we are printing stuff.
+                        players = schedule = true;
+                    }
                     PrintStuff(romFile);
+                }
             }
             catch (Exception e)
             {
@@ -273,7 +284,7 @@ The following are the available options.
 			}
 			StringBuilder stuff = new StringBuilder(77000);
 			tool.ShowOffPref = true;
-            if (players)
+            if (players || TecmoTool.ShowColors || TecmoTool.ShowPlaybook || TecmoTool.ShowTeamFormation)
             {
                 stuff.Append(tool.GetKey());
                 stuff.Append(tool.GetAll(1));
@@ -308,6 +319,7 @@ The following are the available options.
                 content = ReadFromStdin();
 
             tt.ProcessText(content);
+            tt.SaveRom(outFileName);
 		}
 
         private static string ReadFromStdin()

@@ -580,7 +580,8 @@ Do you want to continue?", ROM_LENGTH);
 #  Offensive pref values 0-3. 
 #     0 = Little more rushing, 1 = Heavy Rushing,
 #     2 = little more passing, 3 = Heavy Passing.
-# credit to elway7 for finding	'offense preference'", this.RomVersion);
+# credit to elway7 for finding	'offense preference'
+", this.RomVersion);
 		}
 
 		public string GetTeamPlayers(string team)

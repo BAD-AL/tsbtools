@@ -1,3 +1,7 @@
 /obj/*
 /obj/Debug/*
 *.suo
+TestResults/
+TSBTool_Test/TestResults/
+TSBTool_Test/bin/
+TSBTool_Test/obj/
