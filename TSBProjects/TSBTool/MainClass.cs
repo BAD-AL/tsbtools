@@ -32,6 +32,7 @@ namespace TSBTool
         private static bool modifyStuff, printHelp;
 		private static string outFileName = "output.nes";
 		private static string getFileName = null;
+		private static string colorsDebugTeam = null;
 
         public static bool OnWindows { get; set; }
 		/// <summary>
@@ -40,7 +41,6 @@ namespace TSBTool
 		[STAThread]
 		static void Main(string[] stuff)
 		{
-            StaticUtils.sMessageGiver = new WinFormsMessageGiver();
             RunMain(stuff);
 		}
 
@@ -58,6 +58,7 @@ namespace TSBTool
               TecmoTool.ShowColors = TecmoTool.ShowPlaybook =
               TecmoTool.ShowTeamFormation = false;
             getFileName = null;
+            colorsDebugTeam = null;
             //Junk(stuff);
             ArrayList args = GetArgs(stuff);
             ArrayList options = GetOptions(stuff);
@@ -78,11 +79,16 @@ namespace TSBTool
                 StaticUtils.GUI_MODE = true;
                 //if (OnWindows)
                 //    ShowWindow(GetConsoleWindow(), WindowShowStyle.Hide);
+                StaticUtils.sMessageGiver = new WinFormsMessageGiver();
                 Application.Run(new MainGUI(romFile, dataFile));
                 //if (OnWindows)
                 //    ShowWindow(GetConsoleWindow(), WindowShowStyle.Show);
 
                 return;
+            }
+            else
+            {
+                StaticUtils.sMessageGiver = new ConsoleMessageGiver();
             }
             if (printHelp)
             {
@@ -102,7 +108,25 @@ namespace TSBTool
                 Console.WriteLine(result);
                 return;
             }
-
+            if (colorsDebugTeam != null)
+            {
+                ITecmoContent tool = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom( romFile));
+                SNES_TecmoTool snesTool = tool as SNES_TecmoTool;
+                if (snesTool == null)
+                {
+                    Console.WriteLine("Colors debug info is only available for SNES TSB1 ROMs.");
+                }
+                else if (colorsDebugTeam.Length == 0)
+                {
+                    foreach (string team in TecmoTool.Teams)
+                        SNES_TecmoTool.PrintColorsDebugInfo(snesTool.GetColorsDebugInfo(team), team);
+                }
+                else
+                {
+                    SNES_TecmoTool.PrintColorsDebugInfo(snesTool.GetColorsDebugInfo(colorsDebugTeam), colorsDebugTeam);
+                }
+                return;
+            }
             try
             {
                 if (romFile != null && dataFile != null)
@@ -158,6 +182,7 @@ The following are the available options.
 -colors		Show Uniform Colors
 -out:filename	Save modified rom to <filename>.
 -get:filename   Use <filename> as a 'GetBytes' file (get rom locations specified in file, print to stdout)
+-colorsdebug:team   (SNES TSB1 only) Print every known uniform/helmet-color location for <team> with a console color swatch. Omit ':team' for all teams.
 ",MainClass.version)
 				);
 		}
@@ -204,6 +229,15 @@ The following are the available options.
 					string[] parts = option.Split(seps);
 					if(parts != null && parts.Length > 1 && parts[1].Length > 1)
 						getFileName = parts[1];
+				}
+				else if( option.StartsWith("-colorsdebug") || option.StartsWith("/colorsdebug"))
+				{
+					char[] seps = { ':' };
+					string[] parts = option.Split(seps); // team names (e.g. "bills") are always lowercase already
+					if(parts != null && parts.Length > 1 && parts[1].Length > 0)
+						colorsDebugTeam = parts[1];
+					else
+						colorsDebugTeam = ""; // "-colorsdebug" or "-colorsdebug:" with no team -> all teams
 				}
 				else
 				{

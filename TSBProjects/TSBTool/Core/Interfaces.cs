@@ -175,7 +175,7 @@ namespace TSBTool
 		void SetHomeUniform(string team, string colorString);
 
 		void SetAwayUniform(string team, string colorString);
-		
+
 		string GetGameUniform(string team);
 
 		void SetUniformUsage(string team, string usage);
@@ -224,6 +224,42 @@ namespace TSBTool
         string PromptForSetUserInput(string input);
 
 		void LogMessage(string message);
+    }
+
+    public class ConsoleMessageGiver : MessageGiver
+    {
+
+        #region MessageGiver Members
+
+        public void ShowMessageBox(string title, string message)
+        {
+            Console.WriteLine("Message");
+        }
+
+        public void ShowError(string title, string message)
+        {
+            Console.Error.WriteLine("Error: Message");
+        }
+
+        public bool ShowConfirmationDialog(string title, string message)
+        {
+            // this will never be seen either
+            Console.WriteLine("ShowConfirmationDialog => '{0}', auto confirm", message);
+            return true;
+        }
+
+        public string PromptForSetUserInput(string input)
+        {
+            Console.WriteLine("PromptForSetUserInput: you will never see this message in console mode");
+            return "";
+        }
+
+        public void LogMessage(string message)
+        {
+            Console.WriteLine("LogMessage: {0}",message);
+        }
+
+        #endregion
     }
 
 }

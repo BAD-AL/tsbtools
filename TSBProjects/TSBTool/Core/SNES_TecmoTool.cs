@@ -621,6 +621,22 @@ Do you want to continue?", ROM_LENGTH);
 				int teamIndex = GetTeamIndex(team);
 				result.Append(string.Format("TEAM_ABB={0},TEAM_CITY={1},TEAM_NAME={2}\n", GetTeamAbbreviation(teamIndex), GetTeamCity(teamIndex), GetTeamName(teamIndex)));
 			}
+			if (TecmoTool.ShowColors)
+			{
+				// GetChampColors is still an empty no-op stub on SNES (unlike NES, where it's always
+				// populated), so it's appended only if non-empty -- avoids printing a stray/broken
+				// trailing comma for a piece that doesn't exist here yet. Helmet color is included as
+				// part of GetGameUniform's Uniform1/Uniform2 strings, not a separate field.
+				StringBuilder colorsLine = new StringBuilder("COLORS ");
+				colorsLine.Append(GetGameUniform(team));
+				string champColors = GetChampColors(team);
+				if (!string.IsNullOrEmpty(champColors))
+					colorsLine.Append(", " + champColors);
+				string uniformUsage = GetUniformUsage(team);
+				if (!string.IsNullOrEmpty(uniformUsage))
+					colorsLine.Append(", " + uniformUsage);
+				result.Append(colorsLine.ToString() + "\n");
+			}
 
 			for(int i =0; i < positionNames.Length; i++)
 			{
@@ -2597,89 +2613,297 @@ Do you want to continue?", ROM_LENGTH);
 			}
 		}
         
-		private int mBillsUniformLoc = 0x2c2e4;// this is for the NES version
+		// Jersey/Pants/Helmet uniform data lives in two 32-byte blocks per team (Light-skin-player and
+		// Dark-skin-player variants, identical except for the skin-tone colors), for each of Home
+		// and Away. Addresses and layout confirmed against real ROM bytes + community documentation
+		// (War6's SNES TSB1 Editing Guide): jersey = bytes 08-0D (3 SNES colors), pants = bytes
+		// 0E-13 (3 SNES colors), helmet = bytes 14-17 (2 SNES colors: dark, medium/light), within each
+		// 16-color/32-byte block. Helmet is genuinely independent between Home and Away (confirmed by
+		// writing different colors to each and checking a home game and an away game in a real
+		// emulator -- both rendered correctly) -- not mirrored across all four of a team's blocks the
+		// way jersey/pants skin-tone variants are.
+		//
+		// Jersey's "dark" shade (mJerseyByteOffsets[0], byte 08) is deliberately NOT part of the
+		// editable format below -- pixel analysis of real sprite screenshots found it isn't used as a
+		// fabric-shading tint at all, but as the outline/border color for jersey numbers (confirmed
+		// against an actual in-game screenshot showing a jersey "1" outlined in exactly this value).
+		// SetHomeUniform/SetAwayUniform simply never write that byte, leaving each team's stock ROM
+		// value (and whatever number-outline color it was designed with) untouched.
+		private const int mHomeLightSkinUniformLoc = 0x158040;
+		private const int mHomeDarkSkinUniformLoc  = 0x158060;
+		private const int mAwayLightSkinUniformLoc = 0x158800;
+		private const int mAwayDarkSkinUniformLoc  = 0x158820;
+		private const int mUniformTeamStride        = 0x40;
+		private static readonly int[] mJerseyByteOffsets = { 0x08, 0x0A, 0x0C };
+		private static readonly int[] mPantsByteOffsets  = { 0x0E, 0x10, 0x12 };
+		private static readonly int[] mHelmetByteOffsets = { 0x14, 0x16 };
 
-		protected int BillsUniformLoc
+		private void WriteColor(int loc, string hex4)
 		{
-			get{ return mBillsUniformLoc;}
-			set{ mBillsUniformLoc = value;}
+			outputRom[loc]     = Convert.ToByte(hex4.Substring(0, 2), 16);
+			outputRom[loc + 1] = Convert.ToByte(hex4.Substring(2, 2), 16);
+		}
+
+		private string ReadColor(int loc)
+		{
+			return string.Format("{0:x2}{1:x2}", outputRom[loc], outputRom[loc + 1]);
+		}
+
+		/// <summary>
+		/// Writes a 28-hex-digit uniform color string (pants1,jersey2,pants2,jersey3,pants3,
+		/// helmetDark,helmetMedium - 7 SNES colors, 2 bytes/raw-file-order each, e.g. "FF7F" for white)
+		/// into both the light-skin and dark-skin blocks at the given base address, keeping them in
+		/// sync (confirmed identical except skin tone in the real ROM). Jersey's dark shade (see the
+		/// comment above this class's field declarations) is intentionally not part of this string and
+		/// is never touched. The given base addresses should be either the Home pair or the Away pair
+		/// -- never mixed -- since that's what keeps helmet color independent between Home and Away.
+		/// </summary>
+		private void WriteUniformBlock(int lightSkinBase, int darkSkinBase, string colorString)
+		{
+			foreach (int blockBase in new[] { lightSkinBase, darkSkinBase })
+			{
+				WriteColor(blockBase + mPantsByteOffsets[0], colorString.Substring(0, 4));
+				WriteColor(blockBase + mJerseyByteOffsets[1], colorString.Substring(4, 4));
+				WriteColor(blockBase + mPantsByteOffsets[1], colorString.Substring(8, 4));
+				WriteColor(blockBase + mJerseyByteOffsets[2], colorString.Substring(12, 4));
+				WriteColor(blockBase + mPantsByteOffsets[2], colorString.Substring(16, 4));
+				WriteColor(blockBase + mHelmetByteOffsets[0], colorString.Substring(20, 4));
+				WriteColor(blockBase + mHelmetByteOffsets[1], colorString.Substring(24, 4));
+			}
+		}
+
+		private string ReadUniformBlock(int blockBase)
+		{
+			StringBuilder sb = new StringBuilder(28);
+			sb.Append(ReadColor(blockBase + mPantsByteOffsets[0]));
+			sb.Append(ReadColor(blockBase + mJerseyByteOffsets[1]));
+			sb.Append(ReadColor(blockBase + mPantsByteOffsets[1]));
+			sb.Append(ReadColor(blockBase + mJerseyByteOffsets[2]));
+			sb.Append(ReadColor(blockBase + mPantsByteOffsets[2]));
+			sb.Append(ReadColor(blockBase + mHelmetByteOffsets[0]));
+			sb.Append(ReadColor(blockBase + mHelmetByteOffsets[1]));
+			return sb.ToString();
 		}
 
 		public virtual void SetHomeUniform(string team, string colorString)
 		{
-			int loc = GetUniformLoc(team);
-			if( loc > -1 )
+			int teamIndex = GetTeamIndex(team);
+			if( teamIndex < 0 || teamIndex >= 28 )
 			{
-				//				OutputRom[loc]     = pantsColor;
-				//				OutputRom[loc + 2] = jerseyColor;
+				StaticUtils.AddError(string.Format("ERROR! SetHomeUniform: team {0} is invalid.", team));
+				return;
 			}
+			if( colorString == null || colorString.Length != 28 )
+			{
+				StaticUtils.AddError(string.Format("ERROR! SetHomeUniform: expected 28 hex digits (pants1,jersey2,pants2,jersey3,pants3,helmetDark,helmetMedium), got '{0}'.", colorString));
+				return;
+			}
+			int offset = teamIndex * mUniformTeamStride;
+			WriteUniformBlock(mHomeLightSkinUniformLoc + offset, mHomeDarkSkinUniformLoc + offset, colorString);
 		}
 
 		public virtual void SetAwayUniform(string team, string colorString)
 		{
-			int loc = GetUniformLoc(team);
-			if( loc > -1 )
+			int teamIndex = GetTeamIndex(team);
+			if( teamIndex < 0 || teamIndex >= 28 )
 			{
-				//				OutputRom[loc + 3] = pantsColor;
-				//				OutputRom[loc + 5] = jerseyColor;
+				StaticUtils.AddError(string.Format("ERROR! SetAwayUniform: team {0} is invalid.", team));
+				return;
 			}
+			if( colorString == null || colorString.Length != 28 )
+			{
+				StaticUtils.AddError(string.Format("ERROR! SetAwayUniform: expected 28 hex digits (pants1,jersey2,pants2,jersey3,pants3,helmetDark,helmetMedium), got '{0}'.", colorString));
+				return;
+			}
+			int offset = teamIndex * mUniformTeamStride;
+			WriteUniformBlock(mAwayLightSkinUniformLoc + offset, mAwayDarkSkinUniformLoc + offset, colorString);
 		}
-
 
 		public virtual string GetHomeUniform(string team)
 		{
-			string ret = string.Empty;
-			int loc = GetUniformLoc(team);
-			if( loc > -1 )
-			{
-				//				ret = string.Format("Home=0x{0:x2}{1:x2}",
-				//					OutputRom[loc], 
-				//					OutputRom[loc + 2] );
-			}
-			return ret;
+			int teamIndex = GetTeamIndex(team);
+			if( teamIndex < 0 || teamIndex >= 28 )
+				return string.Empty;
+			int offset = teamIndex * mUniformTeamStride;
+			return string.Format("Uniform1=0x{0}", ReadUniformBlock(mHomeLightSkinUniformLoc + offset));
 		}
 
 		public virtual string GetAwayUniform(string team)
 		{
-			string ret = string.Empty;
-			int loc = GetUniformLoc(team);
-			if( loc > -1 )
-			{
-				//				ret = string.Format("Away=0x{0:x2}{1:x2}",
-				//					OutputRom[loc + 3], 
-				//					OutputRom[loc + 5] );
-			}
+			int teamIndex = GetTeamIndex(team);
+			if( teamIndex < 0 || teamIndex >= 28 )
+				return string.Empty;
+			int offset = teamIndex * mUniformTeamStride;
+			return string.Format("Uniform2=0x{0}", ReadUniformBlock(mAwayLightSkinUniformLoc + offset));
+		}
+
+		public virtual string GetGameUniform(string team)
+		{
+			string ret = string.Format("{0}, {1}", GetHomeUniform(team), GetAwayUniform(team));
 			return ret;
 		}
 
-		protected virtual int GetUniformLoc(string team)
+		public class ColorDebugEntry
 		{
-			int ret = -1;
-			int teamIndex = GetTeamIndex(team);
-			if( teamIndex > -1 && teamIndex < 28 )
+			public string Label;
+			public int Address;
+			public byte Byte0, Byte1;
+			public int R, G, B; // decoded 0-255, for display/console-swatch purposes
+
+			public string HexString { get { return string.Format("{0:x2}{1:x2}", Byte0, Byte1); } }
+		}
+
+		private static ColorDebugEntry MakeDebugEntry(byte[] rom, string label, int addr)
+		{
+			byte b0 = rom[addr];
+			byte b1 = rom[addr + 1];
+			int v = b0 | (b1 << 8);
+			return new ColorDebugEntry
 			{
-				ret = BillsUniformLoc + (teamIndex * 0xa);
-			}
-			return ret;
+				Label = label,
+				Address = addr,
+				Byte0 = b0,
+				Byte1 = b1,
+				R = (v & 0x1F) * 8,
+				G = ((v >> 5) & 0x1F) * 8,
+				B = ((v >> 10) & 0x1F) * 8,
+			};
 		}
-		
-		public virtual string GetGameUniform(string team)
+
+		/// <summary>
+		/// Diagnostic dump of every uniform-color location this project knows about for one team,
+		/// side by side: jersey/pants (home and away) and the in-game helmet color (dark + medium/
+		/// light shades). All real, all confirmed working in-game -- unlike the earlier version of
+		/// this tool, which also dumped the abandoned Large Helmet system (shell/intro/CP-index);
+		/// that whole system was removed, so there's nothing speculative left to show here.
+		/// </summary>
+		public System.Collections.Generic.List<ColorDebugEntry> GetColorsDebugInfo(string team)
 		{
-			string ret = string.Empty;
-			//			ret = string.Format("{0},{1}", GetHomeUniform(team), GetAwayUniform(team));
+			var ret = new System.Collections.Generic.List<ColorDebugEntry>();
+			int teamIndex = GetTeamIndex(team);
+			if( teamIndex < 0 || teamIndex >= 28 )
+				return ret;
+
+			int offset = teamIndex * mUniformTeamStride;
+			int homeBase = mHomeLightSkinUniformLoc + offset;
+			int awayBase = mAwayLightSkinUniformLoc + offset;
+
+			ret.Add(MakeDebugEntry(outputRom, "Jersey1 (Home, number outline -- not editable)", homeBase + mJerseyByteOffsets[0]));
+			ret.Add(MakeDebugEntry(outputRom, "Pants1 (Home)", homeBase + mPantsByteOffsets[0]));
+			ret.Add(MakeDebugEntry(outputRom, "Helmet1 (Home, dark)", homeBase + mHelmetByteOffsets[0]));
+			ret.Add(MakeDebugEntry(outputRom, "Helmet1 (Home, medium/light)", homeBase + mHelmetByteOffsets[1]));
+			ret.Add(MakeDebugEntry(outputRom, "Jersey2 (Away, number outline -- not editable)", awayBase + mJerseyByteOffsets[0]));
+			ret.Add(MakeDebugEntry(outputRom, "Pants2 (Away)", awayBase + mPantsByteOffsets[0]));
+			ret.Add(MakeDebugEntry(outputRom, "Helmet2 (Away, dark)", awayBase + mHelmetByteOffsets[0]));
+			ret.Add(MakeDebugEntry(outputRom, "Helmet2 (Away, medium/light)", awayBase + mHelmetByteOffsets[1]));
+
 			return ret;
 		}
+
+#if !BRIDGE_PROJECT
+		/// <summary>
+		/// Prints a human-readable dump of GetColorsDebugInfo's entries, plus a rough visual swatch
+		/// (nearest of the 16 standard console colors) so a mismatch is visible at a glance without
+		/// needing to load the ROM in an emulator or hex editor.
+		/// </summary>
+		public static void PrintColorsDebugInfo(System.Collections.Generic.List<ColorDebugEntry> entries, string team)
+		{
+			Console.WriteLine(string.Format("Uniform/helmet color debug info for '{0}':", team));
+			foreach (ColorDebugEntry e in entries)
+			{
+				ConsoleColor prevBg = Console.BackgroundColor;
+				ConsoleColor prevFg = Console.ForegroundColor;
+				Console.BackgroundColor = NearestConsoleColor(e.R, e.G, e.B);
+				Console.ForegroundColor = (e.R + e.G + e.B > 380) ? ConsoleColor.Black : ConsoleColor.White;
+				Console.Write("  ");
+				Console.BackgroundColor = prevBg;
+				Console.ForegroundColor = prevFg;
+				Console.WriteLine(string.Format(
+					"  {0,-24} 0x{1:X6}  {2}        RGB({3},{4},{5})",
+					e.Label, e.Address, e.HexString, e.R, e.G, e.B));
+			}
+		}
+
+		private static ConsoleColor NearestConsoleColor(int r, int g, int b)
+		{
+			// The 16 standard console colors, approximated as 0-255 RGB.
+			var palette = new System.Collections.Generic.Dictionary<ConsoleColor, int[]>();
+			palette[ConsoleColor.Black] = new int[] { 0, 0, 0 };
+			palette[ConsoleColor.DarkBlue] = new int[] { 0, 0, 139 };
+			palette[ConsoleColor.DarkGreen] = new int[] { 0, 100, 0 };
+			palette[ConsoleColor.DarkCyan] = new int[] { 0, 139, 139 };
+			palette[ConsoleColor.DarkRed] = new int[] { 139, 0, 0 };
+			palette[ConsoleColor.DarkMagenta] = new int[] { 139, 0, 139 };
+			palette[ConsoleColor.DarkYellow] = new int[] { 139, 139, 0 };
+			palette[ConsoleColor.Gray] = new int[] { 169, 169, 169 };
+			palette[ConsoleColor.DarkGray] = new int[] { 105, 105, 105 };
+			palette[ConsoleColor.Blue] = new int[] { 0, 0, 255 };
+			palette[ConsoleColor.Green] = new int[] { 0, 255, 0 };
+			palette[ConsoleColor.Cyan] = new int[] { 0, 255, 255 };
+			palette[ConsoleColor.Red] = new int[] { 255, 0, 0 };
+			palette[ConsoleColor.Magenta] = new int[] { 255, 0, 255 };
+			palette[ConsoleColor.Yellow] = new int[] { 255, 255, 0 };
+			palette[ConsoleColor.White] = new int[] { 255, 255, 255 };
+
+			ConsoleColor best = ConsoleColor.Black;
+			long bestDist = long.MaxValue;
+			foreach (System.Collections.Generic.KeyValuePair<ConsoleColor, int[]> kv in palette)
+			{
+				int dr = r - kv.Value[0];
+				int dg = g - kv.Value[1];
+				int db = b - kv.Value[2];
+				long dist = (long)dr * dr + (long)dg * dg + (long)db * db;
+				if (dist < bestDist)
+				{
+					bestDist = dist;
+					best = kv.Key;
+				}
+			}
+			return best;
+		}
+#endif
 
 		public virtual void SetDivChampColors(string team, string colorString)
 		{
 		}
-		public void SetUniformUsage(string team, string usage)
+		// Uniform-matchup table: which of a team's two uniforms (Home="dark"/Away="light") gets worn
+		// against each possible opponent -- keyed by opponent, not by home/away game location (per
+		// War6's guide and confirmed against the Bills' real 1993 schedule: they wear "Light" exactly
+		// once, vs. the Giants, regardless of which of the two games against a repeat opponent it is).
+		// 4 bytes (32 bits) per team, team order matching everywhere else in this project (BUF=0 ...
+		// SF=27); bit 7 (MSB) of byte 0 = opponent index 0, bit 0 (LSB) of byte 0 = opponent index 7,
+		// bit 7 of byte 1 = opponent index 8, and so on. 1=dark/home jersey, 0=light/away jersey.
+		// Confirmed against real ROM bytes: Bills' byte 1 (opponents 8-15) is 0xFE = 11111110 -- LSB
+		// (opponent index 15 = Giants) is the one 0 bit, matching the known Light-vs-Giants fact above.
+		private const int mUniformMatchupLoc = 0x1752;
+		private const int mUniformMatchupTeamStride = 4;
+
+		public virtual void SetUniformUsage(string team, string usage)
 		{
+			int teamIndex = GetTeamIndex(team);
+			if( teamIndex < 0 || teamIndex >= 28 )
+			{
+				StaticUtils.AddError(string.Format("ERROR! SetUniformUsage: team {0} is invalid.", team));
+				return;
+			}
+			if( usage == null || usage.Length != 8 )
+			{
+				StaticUtils.AddError(string.Format("ERROR! SetUniformUsage: expected 8 hex digits, got '{0}'.", usage));
+				return;
+			}
+			int loc = mUniformMatchupLoc + teamIndex * mUniformMatchupTeamStride;
+			for (int i = 0; i < 4; i++)
+				outputRom[loc + i] = Convert.ToByte(usage.Substring(i * 2, 2), 16);
 		}
 
-		public string GetUniformUsage(string team)
+		public virtual string GetUniformUsage(string team)
 		{
-			return String.Empty;
+			int teamIndex = GetTeamIndex(team);
+			if( teamIndex < 0 || teamIndex >= 28 )
+				return string.Empty;
+			int loc = mUniformMatchupLoc + teamIndex * mUniformMatchupTeamStride;
+			return string.Format("UniformUsage=0x{0:x2}{1:x2}{2:x2}{3:x2}",
+				outputRom[loc], outputRom[loc + 1], outputRom[loc + 2], outputRom[loc + 3]);
 		}
 		public virtual void SetConfChampColors(string team, string colorString)
 		{

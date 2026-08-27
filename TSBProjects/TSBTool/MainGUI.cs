@@ -1541,21 +1541,42 @@ This Program is not endorsed or related to the Tecmo video game company.
 
 		private void ModifyColors(string team)
 		{
-			UniformEditForm form = new UniformEditForm();
-			form.Data = mTextBox.Text;
-			form.CurrentTeam = team;
+            if (tool.RomVersion == ROM_TYPE.SNES_TSB1)
+            {
+                UniformEditForm_SNES_TSB1 form = new UniformEditForm_SNES_TSB1();
+                form.Data = mTextBox.Text;
+                form.CurrentTeam = team;
 
-			if( form.ShowDialog(this) == DialogResult.OK )
-			{
-				int index = mTextBox.SelectionStart;
-				SetText( form.Data);
-				if( mTextBox.Text.Length > index)
-				{
-					mTextBox.SelectionStart = index;
-					mTextBox.ScrollToCaret();
-				}
-			}
-			form.Dispose();
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    int index = mTextBox.SelectionStart;
+                    SetText(form.Data);
+                    if (mTextBox.Text.Length > index)
+                    {
+                        mTextBox.SelectionStart = index;
+                        mTextBox.ScrollToCaret();
+                    }
+                }
+                form.Dispose();
+            }
+            else
+            {
+                UniformEditForm form = new UniformEditForm();
+                form.Data = mTextBox.Text;
+                form.CurrentTeam = team;
+
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    int index = mTextBox.SelectionStart;
+                    SetText(form.Data);
+                    if (mTextBox.Text.Length > index)
+                    {
+                        mTextBox.SelectionStart = index;
+                        mTextBox.ScrollToCaret();
+                    }
+                }
+                form.Dispose();
+            }
 		}
 
 		private void ModifyPlayers(string team, string position)

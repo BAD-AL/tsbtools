@@ -254,6 +254,18 @@
     <Compile Include="UniformEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UniformEditForm_SNES_TSB1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UniformEditForm_SNES_TSB1.Designer.cs">
+      <DependentUpon>UniformEditForm_SNES_TSB1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SnesColorPickerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SnesColorPickerForm.Designer.cs">
+      <DependentUpon>SnesColorPickerForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="WeekScheduler.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -614,6 +626,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UniformEditForm.resx">
       <DependentUpon>UniformEditForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UniformEditForm_SNES_TSB1.resx">
+      <DependentUpon>UniformEditForm_SNES_TSB1.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="WeekScheduler.resx">

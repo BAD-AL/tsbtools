@@ -639,11 +639,12 @@ Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 //				result.Append(string.Format("COLORS {0}\n",
 //					GetUniformUsage(team)
 //					));
-				result.Append(string.Format("COLORS {0}, {1}, {2}\n",
+				string colorsLine = string.Format("COLORS {0}, {1}, {2}",
 					GetGameUniform(team),
 					GetChampColors(team),
 					GetUniformUsage(team)
-					));
+					);
+				result.Append(colorsLine + "\n");
 			}
 
 			for(int i =0; i < positionNames.Count; i++)

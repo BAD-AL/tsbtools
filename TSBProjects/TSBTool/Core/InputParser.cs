@@ -31,8 +31,8 @@ namespace TSBTool
         private static Regex offensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
         private static Regex playbookRegex = new Regex("PLAYBOOK (R[1-8]{4})\\s*,\\s*(P[1-8]{4})");
         private static Regex juiceRegex = new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)");
-        private static Regex homeRegex = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{6})");
-        private static Regex awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{6})");
+        private static Regex homeRegex = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{28}|[0-9a-fA-F]{6})");
+        private static Regex awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{28}|[0-9a-fA-F]{6})");
         private static Regex divChampRegex = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
         private static Regex confChampRegex = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
         private static Regex uniformUsageRegex = new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
