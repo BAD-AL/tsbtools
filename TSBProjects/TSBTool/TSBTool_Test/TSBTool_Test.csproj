@@ -44,6 +44,26 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestRoms.cs" />
     <Compile Include="RomTypeDetectionTests.cs" />
+    <Compile Include="GenesisTsb1Tests.cs" />
+    <Compile Include="GenesisTeamStringsTests.cs" />
+    <Compile Include="GenesisPlaybookTests.cs" />
+    <Compile Include="GenesisTeamSimDataTests.cs" />
+    <Compile Include="GenesisScheduleTests.cs" />
+    <Compile Include="GenesisRosterTests.cs" />
+    <Compile Include="GenesisAttributeTests.cs" />
+    <Compile Include="GenesisPlayerSimDataTests.cs" />
+    <Compile Include="GenesisReturnTeamTests.cs" />
+    <Compile Include="GenesisProBowlTests.cs" />
+    <Compile Include="GenesisUniformColorTests.cs" />
+    <Compile Include="GenesisRosterFitTests.cs" />
+    <Compile Include="GenesisRosterResolveTests.cs" />
+    <Compile Include="TestMessageGiver.cs" />
+    <Compile Include="GenesisFaceTests.cs" />
+    <Compile Include="GenesisFullDumpTests.cs" />
+    <Compile Include="GenesisYearTests.cs" />
+    <Compile Include="GenesisCliTests.cs" />
+    <Compile Include="PlayerNamesTests.cs" />
+    <Compile Include="NesSnesPlayerNamesCliTests.cs" />
     <Compile Include="ScheduleTests.cs" />
     <Compile Include="StockTsb1ScheduleTests.cs" />
     <Compile Include="FullRomDumpTests.cs" />
@@ -75,6 +95,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ROMs\TSB3.smc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\Genesis\Tecmo Super Bowl (USA) (October 1993).md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Schedules\EighteenWeek_AlternateSchedule.txt">

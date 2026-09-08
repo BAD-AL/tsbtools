@@ -12,6 +12,7 @@ namespace TSBTool
         public const int CXROM_V105_LEN    = 0x80010;
         public const int CXROM_V111_LEN    = 0xc0010;
         public const int SNES_TSB1_LEN     = 0x180000;
+        public const int GENESIS_TSB1_LEN  = 0x100000;
 
 		public static ITecmoContent GetToolForRom(byte[] rom)
 		{
@@ -78,6 +79,22 @@ namespace TSBTool
             {
                 tool = new TSBTool2.TSB3Tool(rom);
             }
+            else if (type == ROM_TYPE.GENESIS_TSB1)
+            {
+                // Core\InputParser.cs resolves team names via the shared static TecmoTool.Teams list
+                // (not a per-tool lookup), so every branch here that uses the Core InputParser must set
+                // it before constructing its tool -- same as the SNES_TSB1 branch above. Genesis's team
+                // order is confirmed identical to SNES's (see compressed-riding-rossum.md context).
+                TecmoTool.Teams = new List<string>(){
+                    "bills",   "colts",  "dolphins", "patriots",  "jets",
+                    "bengals", "browns", "oilers",   "steelers",
+                    "broncos", "chiefs", "raiders",  "chargers",  "seahawks",
+                    "cowboys", "giants", "eagles",   "cardinals", "redskins",
+                    "bears",   "lions",  "packers",  "vikings",   "buccaneers",
+                    "falcons", "rams",   "saints",   "49ers"
+                  };
+                tool = new Genesis_TSB1Tool(rom);
+            }
             else
             {
                 TecmoTool.Teams = new List<string>() {
@@ -127,6 +144,10 @@ namespace TSBTool
 				{
 					ret = ROM_TYPE.SNES_TSB1;
 				}
+                else if (len == GENESIS_TSB1_LEN && IsGenesisTsb1Rom(rom))
+                {
+                    ret = ROM_TYPE.GENESIS_TSB1;
+                }
                 else if (TSBTool2.TSB2Tool.IsTecmoSuperBowl2Rom(rom))
                 {
                     ret = ROM_TYPE.SNES_TSB2;
@@ -144,6 +165,21 @@ namespace TSBTool
 			}
 			return ret;
 		}
+
+        /// <summary>
+        /// Checks whether the ROM's Genesis cartridge header (starting at the standard file offset
+        /// 0x100) identifies it as this specific Tecmo Super Bowl 1993 Genesis ROM, rather than
+        /// trusting the 0x100000 length alone (some other unrelated 1MB Genesis ROM could share that
+        /// length).
+        /// </summary>
+        private static bool IsGenesisTsb1Rom(byte[] rom)
+        {
+            if (rom == null || rom.Length < 0x200)
+                return false;
+            List<long> segaHeader = StaticUtils.FindStringInFile("SEGA GENESIS", rom, 0x100, 0x200);
+            List<long> gameCode = StaticUtils.FindStringInFile("T-36016", rom, 0x100, 0x200);
+            return segaHeader.Count > 0 && gameCode.Count > 0;
+        }
 
         /// <summary>
         /// Checks whether the ROM's schedule data matches the 18-week/17-game schedule layout

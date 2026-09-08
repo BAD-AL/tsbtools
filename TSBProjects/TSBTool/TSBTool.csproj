@@ -219,6 +219,15 @@
     <Compile Include="Core\SNES_TecmoTool.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Core\Genesis_TSB1Tool.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Core\Genesis_ScheduleHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Core\PlayerNames.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Core\StaticUtils.cs" />
     <Compile Include="StringInputDlg.cs">
       <SubType>Form</SubType>

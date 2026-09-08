@@ -29,6 +29,7 @@ namespace TSBTool
         SNES_TSB1,
         SNES_TSB2,
         SNES_TSB3,
+        GENESIS_TSB1,
         READ_ONLY_ERROR
     }
 

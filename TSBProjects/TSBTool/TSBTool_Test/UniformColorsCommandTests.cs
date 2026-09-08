@@ -23,7 +23,7 @@ namespace TSBTool_Test
     /// entirely different from the NES/CXRom scheme. UniformUsage is also real on SNES (the
     /// uniform-matchup table); DivChamp/ConfChamp remain no-op stubs (SNES's Division/Conference
     /// Championship screens were confirmed in-game to reuse the plain jersey/pants data directly, no
-    /// separate table needed -- see Genesis_TSB1_plan.md). CXRomTSBTool
+    /// separate table needed -- see Genesis_TSB1_ROM_Findings.md). CXRomTSBTool
     /// only overrides the location functions (GetUniformLoc etc.), not the
     /// read/write logic itself, so it's covered by testing both a regular team (teamIndex &lt; 28,
     /// uses the inherited base offsets) and an expansion team (teamIndex &gt;= 30, uses CXRomTSBTool's

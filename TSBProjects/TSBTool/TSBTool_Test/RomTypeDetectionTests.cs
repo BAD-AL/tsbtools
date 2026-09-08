@@ -50,5 +50,13 @@ namespace TSBTool_Test
                 "it must be distinguished by inspecting the schedule's week-pointer table, " +
                 "not misdetected as CXROM_v105.");
         }
+
+        [TestMethod]
+        public void GenesisRom_IsDetectedAsGenesisTsb1()
+        {
+            byte[] rom = TestRoms.LoadRom(@"Genesis\Tecmo Super Bowl (USA) (October 1993).md");
+            ROM_TYPE type = TecmoToolFactory.CheckRomType(rom);
+            Assert.AreEqual(ROM_TYPE.GENESIS_TSB1, type);
+        }
     }
 }

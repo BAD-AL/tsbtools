@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -87,7 +88,7 @@ namespace TSBTool
         private MenuItem showTeamStringsMenuItem;
 		//filter="Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|All files (*.*)|*.*"
 		//private string nesFilter = "nes files (*.nes)|*.nes|SNES files (*.smc)|*.smc";
-		private string nesFilter = "TSB files (*.nes;*.smc)|*.nes;*.smc";
+        private string nesFilter = "TSB files (*.nes;*.smc;*.md;*.gen;*.bin)|*.nes;*.smc;*.md;*.gen;*.bin";
         private MenuItem seasonMenuItem;
         private MenuItem season1MenuItem;
         private MenuItem season2MenuItem;
@@ -123,6 +124,21 @@ namespace TSBTool
 				state1();
 
             PopulateHacksMenu();
+            // Show version 
+            this.Text = "TSBTool Supreme v" + MainClass.version;
+            //statusBar1.BackColor = Color.AliceBlue;
+            String newMessage = "# new version (2026) " + this.Text + @"
+# Edits Tecmo Super Bowl versions:
+# NES (28 Team)
+# NES (32 Team, 16 game schedule CXROM expanded)
+# NES (32 Team, 17 game schedule [CXROM, SBlueman, COA Elway] expanded) https://tecmobowl.org/forums/topic/75764-tsb-2027-base-standard-project-announcement/ 
+# SNES TSB1 (28 Team)
+# Genesis TSB1 (28 team) *new/experiential
+# SNES TSB2 (28 Team)
+# SNES TSB3 (30 Team)
+";
+            SetText(newMessage);
+            
 
 			if(dataFileName != null && dataFileName.Length > 0)
 			{
@@ -211,7 +227,7 @@ namespace TSBTool
             if (files != null && files.Length == 1)
             {
                 file = files[0].ToLower();
-                if (file.EndsWith(".nes") || file.EndsWith(".smc") || file.EndsWith(".sfc"))                {
+                if (file.EndsWith(".nes") || file.EndsWith(".smc") || file.EndsWith(".sfc") ||                     file.EndsWith(".md") || file.EndsWith(".bin")  )                {
                     LoadROM(file);
                 }
                 else if( file.EndsWith(".txt") || file.EndsWith(".csv"))
@@ -712,51 +728,61 @@ namespace TSBTool
             // 
             // saveDataButton
             // 
+            this.saveDataButton.BackColor = System.Drawing.SystemColors.Control;
             this.saveDataButton.Location = new System.Drawing.Point(276, 12);
             this.saveDataButton.Name = "saveDataButton";
             this.saveDataButton.Size = new System.Drawing.Size(128, 32);
             this.saveDataButton.TabIndex = 2;
             this.saveDataButton.Text = "&Save Data";
+            this.saveDataButton.UseVisualStyleBackColor = false;
             this.saveDataButton.Click += new System.EventHandler(this.saveDataButton_Click);
             this.saveDataButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
             // 
             // loadDataButton
             // 
+            this.loadDataButton.BackColor = System.Drawing.SystemColors.Control;
             this.loadDataButton.Location = new System.Drawing.Point(406, 12);
             this.loadDataButton.Name = "loadDataButton";
             this.loadDataButton.Size = new System.Drawing.Size(128, 32);
             this.loadDataButton.TabIndex = 3;
             this.loadDataButton.Text = "&Load Data";
+            this.loadDataButton.UseVisualStyleBackColor = false;
             this.loadDataButton.Click += new System.EventHandler(this.LoadDataMenuItem_Click);
             this.loadDataButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
             // 
             // viewContentsBbutton
             // 
+            this.viewContentsBbutton.BackColor = System.Drawing.SystemColors.Control;
             this.viewContentsBbutton.Location = new System.Drawing.Point(146, 12);
             this.viewContentsBbutton.Name = "viewContentsBbutton";
             this.viewContentsBbutton.Size = new System.Drawing.Size(128, 32);
             this.viewContentsBbutton.TabIndex = 1;
             this.viewContentsBbutton.Text = "View &Contents";
+            this.viewContentsBbutton.UseVisualStyleBackColor = false;
             this.viewContentsBbutton.Click += new System.EventHandler(this.viewTSBContentsMenuItem_Click);
             this.viewContentsBbutton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
             // 
             // loadTSBButton
             // 
+            this.loadTSBButton.BackColor = System.Drawing.SystemColors.Control;
             this.loadTSBButton.Location = new System.Drawing.Point(16, 12);
             this.loadTSBButton.Name = "loadTSBButton";
             this.loadTSBButton.Size = new System.Drawing.Size(128, 32);
             this.loadTSBButton.TabIndex = 0;
             this.loadTSBButton.Text = "&Load TSB Rom";
+            this.loadTSBButton.UseVisualStyleBackColor = false;
             this.loadTSBButton.Click += new System.EventHandler(this.loadTSBMenuItem_Click);
             this.loadTSBButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
             // 
             // applyButton
             // 
+            this.applyButton.BackColor = System.Drawing.SystemColors.Control;
             this.applyButton.Location = new System.Drawing.Point(536, 12);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(128, 32);
             this.applyButton.TabIndex = 4;
             this.applyButton.Text = "&Apply to Rom";
+            this.applyButton.UseVisualStyleBackColor = false;
             this.applyButton.Click += new System.EventHandler(this.applyButton_Click);
             this.applyButton.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loadTSBButton_KeyDown);
             // 
@@ -1020,7 +1046,35 @@ CANCEL = Don't do anything, cancel current operation.
                     return;
                 }
             }
-			tool.ProcessText(textToApply);
+
+            // Genesis TSB1's roster/name table has zero slack against the attribute table in the stock
+            // ROM (see Genesis_TSB1Tool.InsertPlayer's own comment) -- a real-world roster whose names
+            // are collectively longer than the original can overflow into neighboring data unless
+            // something is trimmed first. ResolveRosterFit/GetAllPlayers/RosterPlayer aren't part of
+            // ITecmoContent (no other ROM family has this problem, or at least none has been confirmed
+            // to), so this is deliberately special-cased here rather than made part of the shared apply
+            // path.
+            Genesis_TSB1Tool genesisTool = tool as Genesis_TSB1Tool;
+            if (genesisTool != null)
+            {
+                Genesis_TSB1Tool.RosterFitReport dryRun = genesisTool.ResolveRosterFit(textToApply, false);
+                bool needsIntervention = dryRun.AutoTrimmedPlayers.Count > 0 || dryRun.Suggestions.Count > 0 || dryRun.UnresolvedFailures.Count > 0;
+                if (needsIntervention)
+                {
+                    string summary = dryRun.ToString() + "\r\nClick OK to proceed with the plan above, or Cancel to go edit the roster text yourself first.";
+                    string result = RichTextDisplay.ShowMessage(
+                        "Roster name-length check",
+                        summary,
+                        SystemIcons.Warning,
+                        false,  // not editable -- this is a report, not something to edit in place
+                        true);  // show Cancel, so the user can back out and edit the roster text by hand
+                    if (result == null)
+                        return; // Cancel -- abort the whole apply, nothing written, nothing saved
+                    genesisTool.ResolveRosterFit(textToApply, true); // for real this time
+                }
+            }
+
+            tool.ProcessText(textToApply);
             tool.SaveRom(saveToFilename);
 			UpdateTitle(saveToFilename);
 		}

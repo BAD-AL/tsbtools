@@ -30,6 +30,7 @@ namespace TSBTool
 		//  -gui  -stdin
 			gui,  stdin, proBowl;
         private static bool modifyStuff, printHelp;
+        private static bool noAutoFit; // -noAutoFit: skip Genesis TSB1's auto-trim-unspecified-players step (on by default)
 		private static string outFileName = "output.nes";
 		private static string getFileName = null;
 		private static string colorsDebugTeam = null;
@@ -54,7 +55,7 @@ namespace TSBTool
             {
                 OnWindows = false;
             }
-            modifyStuff = schedule = proBowl = players = gui = stdin = printHelp =
+            modifyStuff = schedule = proBowl = players = gui = stdin = printHelp = noAutoFit =
               TecmoTool.ShowColors = TecmoTool.ShowPlaybook =
               TecmoTool.ShowTeamFormation = false;
             getFileName = null;
@@ -66,6 +67,10 @@ namespace TSBTool
             if (romFile != null && romFile.ToLower().EndsWith(".smc"))
             {
                 outFileName = "output.smc";
+            }
+            else if (romFile != null && (romFile.ToLower().EndsWith(".md") || romFile.ToLower().EndsWith(".bin")))
+            {
+                outFileName = "output.md";
             }
             else
             {
@@ -183,6 +188,7 @@ The following are the available options.
 -out:filename	Save modified rom to <filename>.
 -get:filename   Use <filename> as a 'GetBytes' file (get rom locations specified in file, print to stdout)
 -colorsdebug:team   (SNES TSB1 only) Print every known uniform/helmet-color location for <team> with a console color swatch. Omit ':team' for all teams.
+-noAutoFit  (Genesis/NES/SNES TSB1 only) Don't auto-trim unspecified players' names to fit the roster before applying. On by default (safe); this only reports what would be needed instead of doing it.
 ",MainClass.version)
 				);
 		}
@@ -274,6 +280,9 @@ The following are the available options.
                         case "-probowl": case "/probowl":
                             proBowl = true;
                             break;
+                        case "-noautofit": case "/noautofit":
+                            noAutoFit = true;
+                            break;
 						default:
 							Console.Error.WriteLine("Invalid option '{0}'",option);
 							break;
@@ -288,7 +297,7 @@ The following are the available options.
 			for(int i =0; i < args.Count; i++)
 			{
 				arg=args[i].ToString().ToLower();
-				if( (arg.EndsWith(".nes")|| arg.EndsWith(".smc")) && ! arg.StartsWith("-out:"))
+				if( (arg.EndsWith(".nes")|| arg.EndsWith(".smc") || arg.EndsWith(".md") || arg.EndsWith(".bin")) && ! arg.StartsWith("-out:"))
 					return args[i].ToString();
 			}
 			Console.Error.WriteLine("No valid rom file passed as an argument.");
@@ -301,7 +310,7 @@ The following are the available options.
 			for(int i =0; i < args.Count; i++)
 			{
 				arg=args[i].ToString().ToLower();
-				if(!arg.EndsWith(".nes")&& !arg.EndsWith(".smc") )
+				if(!arg.EndsWith(".nes")&& !arg.EndsWith(".smc") && !arg.EndsWith(".md") && !arg.EndsWith(".bin") )
 					return args[i].ToString();
 			}
 			Console.Error.WriteLine("No valid input file passed as an argument.");
@@ -351,6 +360,52 @@ The following are the available options.
                 content = File.ReadAllText(inputfile);
             else
                 content = ReadFromStdin();
+
+            // Genesis TSB1's roster/name table has zero slack against the attribute table in the stock
+            // ROM (see Genesis_TSB1Tool.InsertPlayer's own comment) -- special-cased the same way
+            // MainGUI.ApplyToRom is, since ResolveRosterFit isn't part of the shared ITecmoContent
+            // interface (no other ROM family has this problem, or at least none has been confirmed to).
+            // Default (-noAutoFit not given) is autoApply=true: just do it, matching this CLI's general
+            // "non-interactive, get it done" style rather than MainGUI's confirm-first dialog. With
+            // -noAutoFit, this only reports what would be needed and applies none of it -- the roster
+            // text itself is still applied either way below.
+            Genesis_TSB1Tool genesisTool = tt as Genesis_TSB1Tool;
+            if (genesisTool != null)
+            {
+                Genesis_TSB1Tool.RosterFitReport report = genesisTool.ResolveRosterFit(content, !noAutoFit);
+                bool needsIntervention = report.AutoTrimmedPlayers.Count > 0 || report.Suggestions.Count > 0 || report.UnresolvedFailures.Count > 0;
+                if (needsIntervention)
+                {
+                    Console.WriteLine("--- Roster name-length check ---");
+                    Console.WriteLine(report.ToString());
+                    Console.WriteLine(noAutoFit
+                        ? "-noAutoFit was given -- none of the above was applied. Re-run without it to auto-trim, or edit the roster text by hand first."
+                        : "The auto-trim above was applied.");
+                    Console.WriteLine("---------------------------------");
+                }
+            }
+
+            // Same problem class as Genesis, but for NES/SNES TSB1 -- see MainGUI.ApplyToRom's
+            // identical wiring for the full reasoning, including why PlayerNames.VerifyRomSafety is
+            // deliberately NOT run here (it false-positives on any legitimate non-roster edit sharing
+            // the name pool's boundary, e.g. formations/abilities/sim data from a full-featured
+            // apply). ResolveFit's own arithmetic is the real safety net, matching Genesis.
+            ITecmoTool nesOrSnesTool = tt as ITecmoTool;
+            PlayerNamesConfig config = nesOrSnesTool == null ? null : PlayerNames.ResolveConfigFor(nesOrSnesTool);
+            if (config != null)
+            {
+                PlayerNamesFitReport report = PlayerNames.ResolveFit(nesOrSnesTool, config, content, !noAutoFit);
+                bool needsIntervention = report.AutoTrimmedPlayers.Count > 0 || report.Suggestions.Count > 0 || report.UnresolvedFailures.Count > 0;
+                if (needsIntervention)
+                {
+                    Console.WriteLine("--- Roster name-length check ---");
+                    Console.WriteLine(report.ToString());
+                    Console.WriteLine(noAutoFit
+                        ? "-noAutoFit was given -- none of the above was applied. Re-run without it to auto-trim, or edit the roster text by hand first."
+                        : "The auto-trim above was applied.");
+                    Console.WriteLine("---------------------------------");
+                }
+            }
 
             tt.ProcessText(content);
             tt.SaveRom(outFileName);
