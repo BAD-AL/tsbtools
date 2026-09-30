@@ -8,7 +8,8 @@ using System.Text.RegularExpressions;
 namespace TSBTool_Test
 {
     /// <summary>
-    /// Loads the fixture files under TSBTool_Test\ROMs, \Schedules, and \FullRomDumps. These are
+    /// Loads the fixture files under TSBTool_Test\ROMs, \Schedules, \FullRomDumps, and \real-schedules.
+    /// These are
     /// copied next to the test assembly at build time (CopyToOutputDirectory), so a plain
     /// BaseDirectory-relative lookup finds them. Legacy MSTest must be run with deployment
     /// disabled (see NoDeploy.testsettings) since its runner doesn't honor [DeploymentItem]
@@ -76,6 +77,11 @@ namespace TSBTool_Test
         public static string GetFullRomDumpPath(string fileName)
         {
             return GetFixturePath("FullRomDumps", fileName);
+        }
+
+        public static string GetRealSchedulePath(string fileName)
+        {
+            return GetFixturePath("real-schedules", fileName);
         }
 
         public static string LoadFullRomDumpText(string fileName)

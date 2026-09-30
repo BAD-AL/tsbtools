@@ -368,7 +368,9 @@ namespace TSBTool2
         {
             SNES_TSB3_ScheduleHelper helper = new SNES_TSB3_ScheduleHelper(this);
             helper.SetWeekOneLocation(schedule_start_season_1, seventeenWeeks, scheduleTeamOrder);
-            helper.ApplySchedule(scheduleList);
+            // A 32-team schedule (or one a week too long/short) gets fitted to this ROM first --
+            // including TSB3's exactly-full weeks; see ScheduleTransformer.FitToRom.
+            helper.ApplySchedule(TSBTool.ScheduleTransformer.FitToRom(scheduleList, RomVersion, season));
         }
 
         public override string GetAll()

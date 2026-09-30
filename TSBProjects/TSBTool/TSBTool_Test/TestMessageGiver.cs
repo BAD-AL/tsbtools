@@ -13,11 +13,12 @@ namespace TSBTool_Test
     {
         public List<string> Errors = new List<string>();
         public List<string> Messages = new List<string>();
+        public List<string> Logs = new List<string>();
 
         public void ShowMessageBox(string title, string message) { Messages.Add(message); }
         public void ShowError(string title, string message) { Errors.Add(message); }
         public bool ShowConfirmationDialog(string title, string message) { return true; }
         public string PromptForSetUserInput(string input) { return ""; }
-        public void LogMessage(string message) { }
+        public void LogMessage(string message) { Logs.Add(message); }
     }
 }

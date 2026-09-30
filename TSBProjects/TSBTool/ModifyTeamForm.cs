@@ -928,7 +928,7 @@ namespace TSBTool
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.CancelButton = this.m_CancelButton;
-            this.ClientSize = new System.Drawing.Size(408, 418);
+            this.ClientSize = new System.Drawing.Size(408, 417);
             this.Controls.Add(this.m_AutoButton);
             this.Controls.Add(this.m_FormationComboBox);
             this.Controls.Add(this.label2);

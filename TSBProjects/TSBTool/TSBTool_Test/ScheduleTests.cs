@@ -15,6 +15,14 @@ namespace TSBTool_Test
     [TestClass]
     public class ScheduleTests
     {
+        // ScheduleHelper2 reports through the shared StaticUtils error list as well as its own
+        // messages list, so keep each test from seeing (or leaving behind) another test's errors.
+        [TestInitialize]
+        public void ClearStaticErrorsBefore() { StaticUtils.ClearErrors(); }
+
+        [TestCleanup]
+        public void ClearStaticErrorsAfter() { StaticUtils.ClearErrors(); }
+
         private static readonly int[] ExpectedGamesPerWeek =
             { 16, 16, 16, 16, 15, 14, 14, 14, 15, 14, 13, 16, 14, 15, 16, 16, 16, 16 };
 
@@ -147,6 +155,34 @@ namespace TSBTool_Test
         /// would silently overwrite that sentinel with the bogus extra week's game count when
         /// ApplySchedule's unconditional final ClosePrevWeek() call ran.
         /// </summary>
+        /// <summary>
+        /// The 18-week ROM's 272-game schedule applied directly to a 17-week CXROM's helper, which
+        /// holds 256: games past the limit are rejected with a message naming both teams (it used to
+        /// print the home team twice, e.g. "bills at bills").
+        /// </summary>
+        [TestMethod]
+        public void CxRomV105_GameLimitReached_MessageNamesBothTeams()
+        {
+            byte[] source = TestRoms.LoadRom("SbluemanBase_18week_RealNFL-1.nes");
+            TestRoms.EnsureCXRomTeamsAreSet(source);
+            List<string> schedule = SplitToNonEmptyLines(new CXRom18WeekScheduleHelper(source).GetSchedule());
+
+            byte[] rom = TestRoms.LoadRom("TSB 2007-32-105.nes");
+            TestRoms.EnsureCXRomTeamsAreSet(rom);
+            CXRomScheduleHelper helper = new CXRomScheduleHelper(rom);
+            helper.ApplySchedule(schedule);
+
+            List<string> limitErrors = (helper.GetErrorMessages() ?? new List<string>())
+                .Where(e => e.Contains("maximum game limit reached")).ToList();
+            Assert.IsTrue(limitErrors.Count > 0, "Expected game-limit errors for games past 256.");
+            foreach (string e in limitErrors)
+            {
+                System.Text.RegularExpressions.Match m = System.Text.RegularExpressions.Regex.Match(e, @"\) (\w+) at (\w+) will not");
+                Assert.IsTrue(m.Success, "Unexpected message format: " + e);
+                Assert.AreNotEqual(m.Groups[1].Value, m.Groups[2].Value, "Message should name both teams: " + e);
+            }
+        }
+
         [TestMethod]
         public void EighteenWeekRom_SchedulingANineteenthWeek_DoesNotCorruptGamesPerWeekTerminator()
         {

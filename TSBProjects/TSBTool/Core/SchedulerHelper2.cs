@@ -35,7 +35,11 @@ namespace TSBTool
 		protected virtual void AddMessage(String message)
 		{
 			if( message != null && message.Length > 0 )
-				messages.Add(message);
+			{
+				StaticUtils.AddError(message);
+				if( messages != null )
+					messages.Add(message);
+			}
 		}
 
 		/// <summary>
@@ -80,7 +84,7 @@ namespace TSBTool
 							break;
 						}
 						SetupWeek();
-                        StaticUtils.LogMessage(string.Format("Scheduleing {0}", line));   //Console.Error.WriteLine("Scheduleing {0}",line);
+                        StaticUtils.LogMessage(string.Format("Scheduling {0}", line));   //Console.Error.WriteLine("Scheduleing {0}",line);
 					}
 					else 
 					{
@@ -148,7 +152,7 @@ namespace TSBTool
 			}
 			else
 			{
-				AddMessage(string.Format("ERROR! To many Weeks {0}",week +1));
+				AddMessage(string.Format("ERROR! Too many Weeks {0}",week +1));
 			}
         }
 
@@ -252,7 +256,7 @@ namespace TSBTool
         {
 			if( week < 0 || week > totalWeeks-1 )
 			{
-				AddMessage("Programming Error! 'GetWeek' Week must be in the range 0-16.");
+				AddMessage(string.Format("Programming Error! 'GetWeek' Week must be in the range 0-{0}.", totalWeeks - 1));
 				return null;
 			}
 
@@ -307,8 +311,8 @@ namespace TSBTool
         {
 			if( week < 0 || week > totalWeeks-1)
 			{
-				AddMessage(string.Format("Programming Error! GetGamesInWeek Week {0} is invalid. Week range = 0-16.",
-					week));
+				AddMessage(string.Format("Programming Error! GetGamesInWeek Week {0} is invalid. Week range = 0-{1}.",
+					week, totalWeeks - 1));
 				return -1;
 			}
             int result = outputRom[gamesPerWeekStartLoc+week];
@@ -328,7 +332,7 @@ namespace TSBTool
 		{
 			if( week < 1 || week > totalWeeks )
 			{
-				AddMessage("Error! valid week range is 1-17.");
+				AddMessage(string.Format("Error! valid week range is 1-{0}.", totalWeeks));
 				return false;
 			}
 			week--;

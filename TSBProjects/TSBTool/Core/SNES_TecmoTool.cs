@@ -595,11 +595,8 @@ Do you want to continue?", ROM_LENGTH);
 			StringBuilder result = new StringBuilder(41* positionNames.Length);
 			string pos;
 			byte teamSimData = GetTeamSimData(team);
-			string data = "";
-			if(teamSimData < 0xf)
-				data = string.Format("0{0:x}",teamSimData);
-			else
-				data = string.Format("{0:x}",teamSimData);
+			// Always 2 hex digits -- the importer requires exactly 2 (0x0F used to come out as "f").
+			string data = string.Format("{0:x2}", teamSimData);
 			if( ShowOffPref )
 				data += GetTeamSimOffensePref(team);
 
@@ -2609,7 +2606,8 @@ Do you want to continue?", ROM_LENGTH);
 			if( scheduleList != null && outputRom != null )
 			{
 				SNES_ScheduleHelper sch = new SNES_ScheduleHelper( outputRom );
-				sch.ApplySchedule( scheduleList );
+				// A 32-team schedule gets fitted to this ROM's 28 teams first; see ScheduleTransformer.FitToRom.
+				sch.ApplySchedule( ScheduleTransformer.FitToRom( scheduleList, RomVersion ) );
 			}
 		}
         

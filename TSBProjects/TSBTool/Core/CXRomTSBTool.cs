@@ -961,7 +961,8 @@ namespace TSBTool
 			if( scheduleList != null && outputRom != null )
 			{
 				CXRomScheduleHelper sch = CreateScheduleHelper();
-				sch.ApplySchedule( scheduleList );
+				// A schedule for a different league or season length gets fitted to this ROM first; see ScheduleTransformer.FitToRom.
+				sch.ApplySchedule( ScheduleTransformer.FitToRom( scheduleList, RomVersion ) );
 			}
 		}
 

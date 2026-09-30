@@ -228,6 +228,9 @@
     <Compile Include="Core\PlayerNames.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Core\ScheduleTransformer.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Core\StaticUtils.cs" />
     <Compile Include="StringInputDlg.cs">
       <SubType>Form</SubType>

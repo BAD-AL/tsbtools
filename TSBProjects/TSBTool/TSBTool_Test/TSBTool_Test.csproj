@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="PlayerConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScheduleTransformerTests.cs" />
     <Compile Include="TestRoms.cs" />
     <Compile Include="RomTypeDetectionTests.cs" />
     <Compile Include="GenesisTsb1Tests.cs" />
@@ -49,6 +50,11 @@
     <Compile Include="GenesisPlaybookTests.cs" />
     <Compile Include="GenesisTeamSimDataTests.cs" />
     <Compile Include="GenesisScheduleTests.cs" />
+    <Compile Include="SnesScheduleTests.cs" />
+    <Compile Include="CrossRomScheduleTests.cs" />
+    <Compile Include="Tsb2Tsb3ScheduleFitTests.cs" />
+    <Compile Include="Tsb2Tsb3ScheduleHelperTests.cs" />
+    <Compile Include="TeamSimDataRoundTripTests.cs" />
     <Compile Include="GenesisRosterTests.cs" />
     <Compile Include="GenesisAttributeTests.cs" />
     <Compile Include="GenesisPlayerSimDataTests.cs" />

@@ -19,6 +19,14 @@ namespace TSBTool_Test
     [TestClass]
     public class StockTsb1ScheduleTests
     {
+        // ScheduleHelper2 reports through the shared StaticUtils error list as well as its own
+        // messages list, so keep each test from seeing (or leaving behind) another test's errors.
+        [TestInitialize]
+        public void ClearStaticErrorsBefore() { StaticUtils.ClearErrors(); }
+
+        [TestCleanup]
+        public void ClearStaticErrorsAfter() { StaticUtils.ClearErrors(); }
+
         private static List<string> SplitToNonEmptyLines(string schedule)
         {
             return schedule
@@ -138,6 +146,104 @@ namespace TSBTool_Test
             List<string> actual = SplitToNonEmptyLines(helper.GetSchedule());
             List<string> expected = LoadExpectedLines("StockTsb1_TooManyWeeks_Expected.txt");
             CollectionAssert.AreEqual(expected, actual, "Week 18 must not appear anywhere in the read-back schedule.");
+        }
+
+        /// <summary>
+        /// The stock ROM's own schedule plus an extra "WEEK 18" -- applied through the tool, the
+        /// extra (last) week is removed before writing, reported in the adjustment summary, and the
+        /// helper never sees it (no "Too many Weeks" error). Every other game is untouched.
+        /// </summary>
+        [TestMethod]
+        public void StockRom_ApplyScheduleThroughTool_EighteenthWeekIsRemovedAndReported()
+        {
+            byte[] rom = TestRoms.LoadRom("TSPRBOWL.nes");
+            ITecmoTool tool = (ITecmoTool)TecmoToolFactory.GetToolForRom(rom);
+            List<string> stock = SplitToNonEmptyLines(tool.GetSchedule());
+            List<string> input = new List<string>(stock);
+            input.Add("WEEK 18");
+            input.Add("oilers at buccaneers");
+
+            TestMessageGiver giver = new TestMessageGiver();
+            StaticUtils.sMessageGiver = giver;
+            try
+            {
+                tool.ApplySchedule(input);
+                StaticUtils.ShowErrors();
+
+                string all = string.Join("\n", giver.Errors.ToArray());
+                StringAssert.Contains(all, "Removed week 18 (this ROM holds 17 weeks) -- 1 games");
+                Assert.IsFalse(all.Contains("Too many Weeks"), all);
+                Assert.IsFalse(all.Contains("games scheduled"), all);
+                CollectionAssert.AreEqual(stock, SplitToNonEmptyLines(tool.GetSchedule()), "The 17 real weeks should be untouched.");
+            }
+            finally
+            {
+                StaticUtils.sMessageGiver = null;
+            }
+        }
+
+        /// <summary>
+        /// Two extra weeks (18 and 19) is past the one-week limit: treated as bad input, not
+        /// trimmed. The schedule goes to the helper as given, so its usual "Too many Weeks" error
+        /// appears alongside the week-count warning.
+        /// </summary>
+        [TestMethod]
+        public void StockRom_ApplyScheduleThroughTool_TwoExtraWeeksWarnsAndIsNotAdjusted()
+        {
+            byte[] rom = TestRoms.LoadRom("TSPRBOWL.nes");
+            ITecmoTool tool = (ITecmoTool)TecmoToolFactory.GetToolForRom(rom);
+            List<string> input = SplitToNonEmptyLines(tool.GetSchedule());
+            input.Add("WEEK 18");
+            input.Add("oilers at buccaneers");
+            input.Add("WEEK 19");
+            input.Add("bills at dolphins");
+
+            TestMessageGiver giver = new TestMessageGiver();
+            StaticUtils.sMessageGiver = giver;
+            try
+            {
+                tool.ApplySchedule(input);
+                StaticUtils.ShowErrors();
+
+                string all = string.Join("\n", giver.Errors.ToArray());
+                StringAssert.Contains(all, "Schedule has 19 weeks; this ROM holds 17 -- the schedule was not adjusted to fit this ROM; check that the whole season was included.");
+                Assert.IsFalse(all.Contains("Schedule adjusted"), all);
+                StringAssert.Contains(all, "Too many Weeks");
+            }
+            finally
+            {
+                StaticUtils.sMessageGiver = null;
+            }
+        }
+
+        /// <summary>
+        /// Same fixture as StockRom_FullSchedule_RoundTripsExactly (4 teams end at 15 games), but
+        /// applied through the tool the way InputParser does -- the "games scheduled" warnings must
+        /// reach the user via StaticUtils, not stay trapped in ScheduleHelper2's own list.
+        /// </summary>
+        [TestMethod]
+        public void StockRom_ApplyScheduleThroughTool_ReportsWarningsThroughStaticUtils()
+        {
+            byte[] rom = TestRoms.LoadRom("TSPRBOWL.nes");
+            ITecmoTool tool = (ITecmoTool)TecmoToolFactory.GetToolForRom(rom);
+
+            List<string> input = TestRoms.LoadScheduleLines("StockTsb1_FullSchedule_Input.txt");
+
+            TestMessageGiver giver = new TestMessageGiver();
+            StaticUtils.sMessageGiver = giver;
+            try
+            {
+                tool.ApplySchedule(input);
+                StaticUtils.ShowErrors();
+
+                string all = string.Join("\n", giver.Errors.ToArray());
+                foreach (string team in new[] { "cardinals", "packers", "rams", "vikings" })
+                    StringAssert.Contains(all, "The " + team + " have 15 games scheduled.");
+            }
+            finally
+            {
+                StaticUtils.sMessageGiver = null;
+            }
         }
     }
 }

@@ -185,7 +185,8 @@ namespace TSBTool
             StringBuilder result = new StringBuilder();
 
             byte teamSimData = GetTeamSimData(team);
-            string data = teamSimData < 0xf ? string.Format("0{0:x}", teamSimData) : string.Format("{0:x}", teamSimData);
+            // Always 2 hex digits -- the importer requires exactly 2 (0x0F used to come out as "f").
+            string data = string.Format("{0:x2}", teamSimData);
             if (ShowOffPref)
                 data += GetTeamSimOffensePref(team);
             result.Append(string.Format("TEAM = {0} SimData=0x{1}", team, data));
@@ -399,7 +400,8 @@ namespace TSBTool
             if (scheduleList != null && outputRom != null)
             {
                 Genesis_ScheduleHelper helper = new Genesis_ScheduleHelper(outputRom);
-                helper.ApplySchedule(scheduleList);
+                // A 32-team schedule gets fitted to this ROM's 28 teams first; see ScheduleTransformer.FitToRom.
+                helper.ApplySchedule(ScheduleTransformer.FitToRom(scheduleList, RomVersion));
             }
         }
 

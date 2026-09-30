@@ -56,7 +56,10 @@ namespace TSBTool2
             if (week > -1)
             {
                 int i = week_game_count;
-                while (i < 14)
+                // Clear every unused slot: TSB3 weeks can have 15, not just 14 -- a leftover game in
+                // the 15th slot would otherwise read back as scheduled.
+                int slots = week < gamesPerWeek.Length ? Math.Max(14, gamesPerWeek[week]) : 14;
+                while (i < slots)
                 {
                     ScheduleGame(0xff, 0xff, week, i /*week_game_count*/);
                     i++;
@@ -91,13 +94,15 @@ namespace TSBTool2
                 }
                 else if (line.StartsWith("week"))
                 {
-                    if (week > 18)
+                    // The season's real length (17 or 18), not a hard-coded 18 -- an extra week on a
+                    // 17-week season used to get through and crash.
+                    if (week >= gamesPerWeek.Length - 1)
                     {
-                        TSBTool.StaticUtils.AddError("Error! You can have a maximum of 18 weeks in a season.");
+                        TSBTool.StaticUtils.AddError(string.Format("Error! You can have a maximum of {0} weeks in a season.", gamesPerWeek.Length));
                         break;
                     }
                     CloseWeek();
-                    TSBTool.StaticUtils.LogMessage(String.Format( "Scheduleing {0}", line));
+                    TSBTool.StaticUtils.LogMessage(String.Format( "Scheduling {0}", line));
                 }
                 else
                 {
@@ -139,10 +144,14 @@ namespace TSBTool2
             {
                 awayTeam = m.Groups[1].ToString();
                 homeTeam = m.Groups[2].ToString();
-                if (week_game_count > Teams.Count/2)
+                // The week's own slot count (TSB3 weeks have 12-15), not half the teams -- and >=, not >:
+                // an extra game used to be written into the next week's first slot, or past the end
+                // of the season for its last week.
+                int slots = week >= 0 && week < gamesPerWeek.Length ? gamesPerWeek[week] : Teams.Count / 2;
+                if (week_game_count >= slots)
                 {
                     TSBTool.StaticUtils.AddError(string.Format(
-                        "Error! Week {0}: You can have no more than {1} games in a week.", week + 1, Teams.Count / 2));
+                        "Error! Week {0}: You can have no more than {1} games in a week.", week + 1, slots));
                     ret = false;
                 }
                 else if (ScheduleGame(awayTeam, homeTeam, week, week_game_count))
@@ -186,9 +195,9 @@ namespace TSBTool2
                     "Warning! Week {0}: The {1} are scheduled to play against themselves.", week + 1, awayTeam));
             }
 
-            if (week < 0 || week > 17)
+            if (week < 0 || week > gamesPerWeek.Length - 1)
             {
-                TSBTool.StaticUtils.AddError(string.Format("Week {0} is not valid. Weeks range 1 - 18.", week + 1));
+                TSBTool.StaticUtils.AddError(string.Format("Week {0} is not valid. Weeks range 1 - {1}.", week + 1, gamesPerWeek.Length));
                 return false;
             }
             if (GameLocation(week, gameOfWeek) < 0)

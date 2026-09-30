@@ -1046,7 +1046,9 @@ namespace TSBTool2
                 case 2: helper.SetWeekOneLocation(schedule_start_season_2, eighteenWeeks, teams); break;
                 case 3: helper.SetWeekOneLocation(schedule_start_season_3, seventeenWeeks, teams); break;
             }
-            helper.ApplySchedule(scheduleList);
+            // A 32-team schedule (or one a week too long/short for this season) gets fitted to this
+            // ROM first; see ScheduleTransformer.FitToRom.
+            helper.ApplySchedule(TSBTool.ScheduleTransformer.FitToRom(scheduleList, RomVersion, season));
         }
 
         public void ApplySet(string line)

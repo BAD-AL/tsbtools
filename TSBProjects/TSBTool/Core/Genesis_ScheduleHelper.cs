@@ -267,8 +267,12 @@ namespace TSBTool
 
         private void AddMessage(string message)
         {
-            if (message != null && message.Length > 0 && messages != null)
-                messages.Add(message);
+            if (message != null && message.Length > 0)
+            {
+                StaticUtils.AddError(message);
+                if (messages != null)
+                    messages.Add(message);
+            }
         }
 
         public List<string> GetErrorMessages()

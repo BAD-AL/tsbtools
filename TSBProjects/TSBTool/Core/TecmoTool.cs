@@ -604,11 +604,8 @@ Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			StringBuilder result = new StringBuilder(41* positionNames.Count);
 			string pos;
 			byte teamSimData = GetTeamSimData(team);
-			string data = "";
-			if(teamSimData < 0xf)
-				data = string.Format("0{0:x}",teamSimData);
-			else
-				data = string.Format("{0:x}",teamSimData);
+			// Always 2 hex digits -- the importer requires exactly 2 (0x0F used to come out as "f").
+			string data = string.Format("{0:x2}", teamSimData);
 			if( ShowOffPref )
 				data += GetTeamSimOffensePref(team);
 
@@ -2363,7 +2360,8 @@ Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			if( scheduleList != null && outputRom != null )
 			{
 				ScheduleHelper2 sch = new ScheduleHelper2( outputRom );
-				sch.ApplySchedule( scheduleList );
+				// A schedule for a different league or season length gets fitted to this ROM first; see ScheduleTransformer.FitToRom.
+				sch.ApplySchedule( ScheduleTransformer.FitToRom( scheduleList, RomVersion ) );
 			}
 		}
 

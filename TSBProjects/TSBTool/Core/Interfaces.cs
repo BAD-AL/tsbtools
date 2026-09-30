@@ -239,7 +239,7 @@ namespace TSBTool
 
         public void ShowError(string title, string message)
         {
-            Console.Error.WriteLine("Error: Message");
+            Console.Error.WriteLine("Error: {0}", message);
         }
 
         public bool ShowConfirmationDialog(string title, string message)

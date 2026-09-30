@@ -38,7 +38,7 @@ namespace TSBTool
 			else
 			{
 				AddMessage(string.Format(
-					"ERROR! maximum game limit reached ({0}) {1} at {1} will not be scheduled",
+					"ERROR! maximum game limit reached ({0}) {1} at {2} will not be scheduled",
 					total_games_possible ,awayTeam, homeTeam));
 			}
 			return ret;
