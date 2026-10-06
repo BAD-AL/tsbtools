@@ -414,6 +414,23 @@ Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 				string oldName = GetName(team,position);
 				byte[] bytes = new byte[1+fname.Length+lname.Length];
 				int change = bytes.Length - oldName.Length;
+
+				// A longer name shifts everything after it; if the name area doesn't have room, that
+				// shift runs past the area's end into whatever follows (on NES/CXROM: the attribute
+				// table, starting with the Bills' ratings). Reject the write instead, like
+				// Genesis_TSB1Tool.InsertPlayer does.
+				if (change > 0)
+				{
+					int freeBytes = GetNameAreaFreeBytes(team);
+					if (change > freeBytes)
+					{
+						StaticUtils.AddError(string.Format(
+							"ERROR! InsertPlayer: setting {0}'s {1} to '{2} {3}' would overflow the player name area by {4} byte(s) -- write rejected (the old name is kept). Shorten this (or another) player's name to fit.",
+							team, position, fname, lname, change - freeBytes));
+						return;
+					}
+				}
+
 				int i=0;
 				bytes[0] = number;
 				for(i=1; i < fname.Length+1; i++)
@@ -913,8 +930,49 @@ Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			// need to do a cleaver splice here.
 			ShiftDataAfter(team,position, change);
 			int j = 0;
-			for(int i = dataStart; j < bytes.Length; i++)
+			int i;
+			for(i = dataStart; j < bytes.Length; i++)
 				outputRom[i]= bytes[j++];
+
+			// The last name in an area is rewritten in place (nothing after it to shift). If it got
+			// shorter, clear its old tail -- left behind, those bytes would keep occupying the end of
+			// the area (ShiftDataAfter's 0xFF scan counts them as data), wasting that space.
+			if (change < 0 && IsLastNameInArea(team, position))
+			{
+				for (int k = 0; k < -change; k++)
+					outputRom[i + k] = 0xff;
+			}
+		}
+
+		/// <summary>
+		/// True for the last player stored in a name area -- the one ShiftDataAfter never shifts after.
+		/// NES: the last team's punter (falcons P).
+		/// </summary>
+		protected virtual bool IsLastNameInArea(string team, string position)
+		{
+			return team == teams[teams.Count - 1] && position == positionNames[positionNames.Count - 1];
+		}
+
+		// Last usable byte of the main player name/jersey area; the attribute table starts right after.
+		protected int nameAreaEnd = 0x0300F;
+
+		/// <summary>
+		/// How many more bytes the name area holding 'team' can take. Measured exactly the way
+		/// ShiftDataAfter finds the end of the data -- scanning back from nameAreaEnd over 0xFF
+		/// padding -- because that's the range it actually shifts. (The sentinel pointer at
+		/// lastPlayerNamePointer can sit before that: when the last team's punter gets a shorter name
+		/// it's written in place without shifting, and its old tail bytes are left behind.) The later of
+		/// the two is used. ShiftDataDown also copies the 0xFF byte just past the data, so the data's
+		/// exclusive end may grow only up to nameAreaEnd itself.
+		/// </summary>
+		protected virtual int GetNameAreaFreeBytes(string team)
+		{
+			int scannedEnd = nameAreaEnd;
+			while (scannedEnd > 0 && outputRom[scannedEnd] == 0xff)
+				scannedEnd--;
+			scannedEnd++;
+			int sentinelEnd = (outputRom[lastPlayerNamePointer] | (outputRom[lastPlayerNamePointer + 1] << 8)) + dataPositionOffset;
+			return nameAreaEnd - Math.Max(scannedEnd, sentinelEnd);
 		}
 
 		protected virtual void ShiftDataAfter(string team, string position, int shiftAmount)
@@ -928,7 +986,7 @@ Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			if(team == teams[teams.Count-1] && position == "P")
 				return;
 
-			int endPosition = 0x0300F; //(end of name-number segment)
+			int endPosition = nameAreaEnd; //(end of name-number segment)
 			while(outputRom[endPosition] == 0xff)
 				endPosition--;
 

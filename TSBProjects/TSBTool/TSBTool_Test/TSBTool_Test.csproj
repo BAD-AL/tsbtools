@@ -55,6 +55,10 @@
     <Compile Include="Tsb2Tsb3ScheduleFitTests.cs" />
     <Compile Include="Tsb2Tsb3ScheduleHelperTests.cs" />
     <Compile Include="TeamSimDataRoundTripTests.cs" />
+    <Compile Include="NesNameOverflowTests.cs" />
+    <Compile Include="CxRomPlayerNamesTests.cs" />
+    <Compile Include="RosterNamePlanTests.cs" />
+    <Compile Include="ErrorBoxMergeTests.cs" />
     <Compile Include="GenesisRosterTests.cs" />
     <Compile Include="GenesisAttributeTests.cs" />
     <Compile Include="GenesisPlayerSimDataTests.cs" />

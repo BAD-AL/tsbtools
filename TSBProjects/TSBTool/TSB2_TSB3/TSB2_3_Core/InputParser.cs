@@ -87,8 +87,8 @@ namespace TSBTool2
                 {
                     ProcessLine(lines[i]);
                 }
-                TSBTool.StaticUtils.ShowErrors();
                 ApplySchedule();
+                TSBTool.StaticUtils.ShowErrors(); // roster + every season's schedule problems together, in one box
             }
             catch (Exception e)
             {
@@ -102,16 +102,17 @@ namespace TSBTool2
                 //						"Error Processing line {0}:\t'{1}'.\n{2}\n{3}",
                 //						i,lines[i], e.Message,e.StackTrace);
                 sb.Append("\n\nOperation aborted at this point. Data not applied.");
-                TSBTool.StaticUtils.ShowError(sb.ToString());
+                TSBTool.StaticUtils.AddError(sb.ToString());
+                TSBTool.StaticUtils.ShowErrors(); // with whatever had collected before the abort
             }
         }
 
+        // Problems are collected, not shown -- the caller shows everything from the apply at once.
         protected virtual void ApplySchedule()
         {
             if (scheduleList != null)
             {
                 tool.ApplySchedule(season, scheduleList);
-                TSBTool.StaticUtils.ShowErrors();
                 scheduleList = null;
             }
         }
@@ -129,8 +130,8 @@ namespace TSBTool2
                     ProcessLine(line);
                     //Console.WriteLine("Line "+lineNumber);
                 }
-                TSBTool.StaticUtils.ShowErrors();
                 ApplySchedule();
+                TSBTool.StaticUtils.ShowErrors();
             }
             catch (Exception e)
             {

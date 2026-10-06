@@ -380,31 +380,30 @@ The following are the available options.
                     Console.WriteLine(report.ToString());
                     Console.WriteLine(noAutoFit
                         ? "-noAutoFit was given -- none of the above was applied. Re-run without it to auto-trim, or edit the roster text by hand first."
-                        : "The auto-trim above was applied.");
+                        : "The auto-trim and name shortening above were applied.");
                     Console.WriteLine("---------------------------------");
                 }
+                if (!noAutoFit)
+                    content = report.ApplySuggestions(content); // the shortenings the report listed
             }
 
-            // Same problem class as Genesis, but for NES/SNES TSB1 -- see MainGUI.ApplyToRom's
-            // identical wiring for the full reasoning, including why PlayerNames.VerifyRomSafety is
-            // deliberately NOT run here (it false-positives on any legitimate non-roster edit sharing
-            // the name pool's boundary, e.g. formations/abilities/sim data from a full-featured
-            // apply). ResolveFit's own arithmetic is the real safety net, matching Genesis.
-            ITecmoTool nesOrSnesTool = tt as ITecmoTool;
-            PlayerNamesConfig config = nesOrSnesTool == null ? null : PlayerNames.ResolveConfigFor(nesOrSnesTool);
-            if (config != null)
+            // Same problem class as Genesis, but for NES/SNES TSB1 and CXROM (MainGUI.ApplyToRom does the
+            // same, with one confirm dialog). One report covering every name area (CXROM has two) plus
+            // names over the length limit. PlayerNames.VerifyRomSafety is deliberately NOT run here: it
+            // false-positives on any legitimate non-roster edit sharing the name pool's boundary, e.g.
+            // formations/abilities/sim data from a full-featured apply. ResolveFit's own arithmetic plus
+            // InsertPlayer's bounds check are the safety net.
+            RosterNamePlan namePlan = PlayerNames.PlanFit(tt, content);
+            if (namePlan.NeedsAttention)
             {
-                PlayerNamesFitReport report = PlayerNames.ResolveFit(nesOrSnesTool, config, content, !noAutoFit);
-                bool needsIntervention = report.AutoTrimmedPlayers.Count > 0 || report.Suggestions.Count > 0 || report.UnresolvedFailures.Count > 0;
-                if (needsIntervention)
-                {
-                    Console.WriteLine("--- Roster name-length check ---");
-                    Console.WriteLine(report.ToString());
-                    Console.WriteLine(noAutoFit
-                        ? "-noAutoFit was given -- none of the above was applied. Re-run without it to auto-trim, or edit the roster text by hand first."
-                        : "The auto-trim above was applied.");
-                    Console.WriteLine("---------------------------------");
-                }
+                Console.WriteLine("--- Roster name check ---");
+                Console.Write(namePlan.ToString());
+                Console.WriteLine(noAutoFit
+                    ? "-noAutoFit was given -- none of the above was applied. Re-run without it to apply it, or edit the roster text by hand first."
+                    : "The changes above were applied.");
+                Console.WriteLine("-------------------------");
+                if (!noAutoFit)
+                    content = namePlan.Apply(tt, content);
             }
 
             tt.ProcessText(content);

@@ -59,6 +59,11 @@ namespace TSBTool_Test
             return path;
         }
 
+        public static string GetConversionTestPath(string fileName)
+        {
+            return GetFixturePath("ConversionTest", fileName);
+        }
+
         public static string GetRomPath(string fileName)
         {
             return GetFixturePath("ROMs", fileName);

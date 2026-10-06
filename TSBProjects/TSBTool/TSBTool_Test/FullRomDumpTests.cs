@@ -30,8 +30,13 @@ namespace TSBTool_Test
     ///   2. Some players' first names appear abbreviated ("michael dean" -> "m.") -- this matches a
     ///      fixed-width name field truncation already baked into the TSB 2007-32-111.nes fixture's
     ///      bytes, not something the read path does.
-    /// No missing or corrupted data in any case. Each _Expected.txt is the current, verified-
-    /// idempotent output (re-dumping the already-modified ROM reproduces it byte-for-byte).
+    /// Each _Expected.txt is the current, verified-idempotent output (re-dumping the already-modified
+    /// ROM reproduces it byte-for-byte). The CXROM_v111 fixtures (Test6/7/9) were regenerated on
+    /// 2026-10-03: the originals had ~100 garbled expansion-team names each ("alan BRANCHr",
+    /// "josh MORGANKSON") because CXRomTSBTool.AdjustDataPointers never moved v111's expansion name
+    /// pointers. After that fix, every player name matches its _Input.txt except the abbreviations
+    /// in (2) above, and no non-name field changed (CXRomPlayerNamesTests/NesNameOverflowTests cover
+    /// the fix directly).
     /// </summary>
     [TestClass]
     public class FullRomDumpTests

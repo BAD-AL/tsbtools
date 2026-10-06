@@ -64,29 +64,32 @@ namespace TSBTool_Test
         }
 
         [TestMethod]
-        public void CheckRosterFit_ReportsUnresolvedFailure_WhenAbbreviationAloneIsNotEnough()
+        public void CheckRosterFit_CutsTheLastNameToo_WhenAbbreviationAloneIsNotEnough()
         {
             byte[] rom = TestRoms.LoadRom(RomFileName);
 
             // Bills QB1 stock "jimKELLY" (oldLength=9). "alexander THUNDERBOLT" (newLength=21, delta=+12)
             // needs 12 bytes with zero slack available; "alexander" (9 letters) only saves 7 even fully
-            // abbreviated ("a."), leaving a 5-byte shortfall -- not resolvable by trimming this entry's
-            // first name alone.
+            // abbreviated ("a."), leaving a 5-byte shortfall. The last name is cut to what fits: 9 bytes
+            // = jersey + "a." + 6 letters -> "a. THUNDE". (It used to be reported as unfixable, and the
+            // write rejected while the rest of the line still applied -- old name, new ratings.)
             Genesis_TSB1Tool.RosterFitReport report = Genesis_TSB1Tool.CheckRosterFit(rom,
                 "TEAM = bills SimData=0x0\nQB1, alexander THUNDERBOLT, #7\n");
 
             Assert.IsFalse(report.Fits);
             Assert.AreEqual(12, report.OverflowBytes);
-            Assert.IsFalse(report.SafeToApplyInOrder);
-            Assert.AreEqual(0, report.Suggestions.Count);
+            Assert.IsTrue(report.SafeToApplyInOrder);
+            Assert.AreEqual(0, report.UnresolvedFailures.Count);
 
-            Assert.AreEqual(1, report.UnresolvedFailures.Count);
-            Genesis_TSB1Tool.RosterFitSuggestion f = report.UnresolvedFailures[0];
-            Assert.AreEqual("bills", f.Team);
-            Assert.AreEqual("QB1", f.Position);
-            Assert.AreEqual("alexander THUNDERBOLT", f.ProposedName);
-            Assert.IsNull(f.SuggestedName);
-            Assert.AreEqual(7, f.BytesSaved, "Should report the best it could do (max possible savings), even though it wasn't enough.");
+            Assert.AreEqual(1, report.Suggestions.Count);
+            Genesis_TSB1Tool.RosterFitSuggestion s = report.Suggestions[0];
+            Assert.AreEqual("bills", s.Team);
+            Assert.AreEqual("QB1", s.Position);
+            Assert.AreEqual("alexander THUNDERBOLT", s.ProposedName);
+            Assert.AreEqual("a. THUNDE", s.SuggestedName);
+            Assert.IsTrue(s.LastNameTruncated);
+            Assert.AreEqual(12, s.BytesSaved);
+            StringAssert.Contains(report.ToString(), "last name will be cut short too");
         }
 
         [TestMethod]

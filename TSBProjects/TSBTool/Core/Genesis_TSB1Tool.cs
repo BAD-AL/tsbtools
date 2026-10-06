@@ -896,6 +896,8 @@ namespace TSBTool
             public string ProposedName; // the too-long name as given in the roster text being checked
             public string SuggestedName;
             public int BytesSaved;
+            // True when a first initial alone wasn't enough and the last name was cut to fit as well.
+            public bool LastNameTruncated;
         }
 
         // One roster slot's current state, as read directly off the ROM -- see GetAllPlayers.
@@ -973,13 +975,14 @@ namespace TSBTool
             public bool SafeToApplyInOrder;
 
             // Players that would be rejected as originally written, at the point they're reached in the
-            // file, but succeed once their first name is abbreviated to a single initial. Listed in file
-            // order (the order a real apply would hit them), not by savings size.
+            // file, but succeed once their first name is abbreviated to a single initial -- and, if that
+            // alone isn't enough, their last name cut to fit (LastNameTruncated). Listed in file order
+            // (the order a real apply would hit them), not by savings size. ApplySuggestions writes them
+            // into the text to apply.
             public List<RosterFitSuggestion> Suggestions = new List<RosterFitSuggestion>();
 
-            // Players that would still be rejected even after fully abbreviating their own first name --
-            // the shortfall is bigger than a first-name trim alone can cover. Needs a different fix (a
-            // last-name trim too, or freeing more slack from an earlier player in the file).
+            // Players that would still be rejected with even a one-letter last name -- needs room freed
+            // from an earlier player in the file.
             public List<RosterFitSuggestion> UnresolvedFailures = new List<RosterFitSuggestion>();
 
             // Only populated by ResolveRosterFit, never by CheckRosterFit: roster slots the given text
@@ -1007,22 +1010,43 @@ namespace TSBTool
                     sb.Append("\r\n");
                 }
 
-                if (Suggestions.Count > 0)
+                List<RosterFitSuggestion> initials = Suggestions.FindAll(s => !s.LastNameTruncated);
+                List<RosterFitSuggestion> cut = Suggestions.FindAll(s => s.LastNameTruncated);
+                if (initials.Count > 0)
                 {
-                    sb.AppendFormat("The following {0} player(s) that WERE specified will have their first name shortened, since trimming unspecified players alone wasn't enough:\r\n", Suggestions.Count);
-                    foreach (RosterFitSuggestion s in Suggestions)
+                    sb.AppendFormat("The following {0} player(s) that WERE specified will have their first name shortened, since trimming unspecified players alone wasn't enough:\r\n", initials.Count);
+                    foreach (RosterFitSuggestion s in initials)
+                        sb.AppendFormat("  {0,-12} {1,-5} '{2}'  ->  '{3}'  (saves {4})\r\n", s.Team, s.Position, s.ProposedName, s.SuggestedName, s.BytesSaved);
+                    sb.Append("\r\n");
+                }
+
+                if (cut.Count > 0)
+                {
+                    sb.AppendFormat("The following {0} player(s) still didn't fit with just an initial, so their last name will be cut short too:\r\n", cut.Count);
+                    foreach (RosterFitSuggestion s in cut)
                         sb.AppendFormat("  {0,-12} {1,-5} '{2}'  ->  '{3}'  (saves {4})\r\n", s.Team, s.Position, s.ProposedName, s.SuggestedName, s.BytesSaved);
                     sb.Append("\r\n");
                 }
 
                 if (UnresolvedFailures.Count > 0)
                 {
-                    sb.AppendFormat("WARNING: the following {0} player(s) cannot be fixed automatically at all -- their name is too short to abbreviate enough. Unless something else frees up more room, these will keep their OLD name instead of the one specified:\r\n", UnresolvedFailures.Count);
+                    sb.AppendFormat("WARNING: the following {0} player(s) cannot be fixed automatically at all -- there's no room left even for a one-letter last name. Unless something else frees up more room, these will keep their OLD name and jersey number instead of the ones specified (the rest of the line is still applied):\r\n", UnresolvedFailures.Count);
                     foreach (RosterFitSuggestion f in UnresolvedFailures)
                         sb.AppendFormat("  {0,-12} {1,-5} '{2}'  (best possible saving: {3}, not enough)\r\n", f.Team, f.Position, f.ProposedName, f.BytesSaved);
                 }
 
                 return sb.ToString();
+            }
+
+            // rosterText with each of Suggestions' players given its shortened name -- what the report
+            // tells the user will happen. Run before ProcessText, so the real apply follows the same
+            // space budget the report simulated.
+            public string ApplySuggestions(string rosterText)
+            {
+                Dictionary<string, string> names = new Dictionary<string, string>();
+                foreach (RosterFitSuggestion s in Suggestions)
+                    names[s.Team + "|" + s.Position] = s.SuggestedName;
+                return PlayerNames.RenamePlayersInText(rosterText, names);
             }
         }
 
@@ -1099,12 +1123,31 @@ namespace TSBTool
                     suggestion.BytesSaved = maxSavings;
                     report.Suggestions.Add(suggestion);
                     runningSlack -= abbreviatedDelta;
+                    continue;
+                }
+
+                // An initial alone isn't enough: also cut the last name to whatever fits. Better a
+                // clipped name than a rejected one -- a rejected name keeps the OLD player's name and
+                // jersey while the rest of the line (face, ratings, sim data) still applies.
+                string shortFirst = maxSavings > 0 ? e.FirstName.Substring(0, 1).ToLower() + "." : e.FirstName;
+                int lastRoom = e.OldLength + runningSlack - 1 - shortFirst.Length;
+                if (lastRoom >= 1)
+                {
+                    RosterFitSuggestion suggestion = new RosterFitSuggestion();
+                    suggestion.Team = e.Team;
+                    suggestion.Position = e.Position;
+                    suggestion.ProposedName = e.FirstName + " " + e.LastName;
+                    suggestion.SuggestedName = shortFirst + " " + e.LastName.Substring(0, lastRoom);
+                    suggestion.BytesSaved = (e.FirstName.Length - shortFirst.Length) + (e.LastName.Length - lastRoom);
+                    suggestion.LastNameTruncated = true;
+                    report.Suggestions.Add(suggestion);
+                    runningSlack -= (1 + shortFirst.Length + lastRoom) - e.OldLength;
                 }
                 else
                 {
-                    // Even a full first-name abbreviation isn't enough -- the write would still be
-                    // rejected by a real InsertPlayer call, which leaves state unchanged, so
-                    // runningSlack is deliberately left as-is here too.
+                    // Not even a one-letter last name fits -- the write would still be rejected by a
+                    // real InsertPlayer call, which leaves state unchanged, so runningSlack is
+                    // deliberately left as-is here too.
                     RosterFitSuggestion failure = new RosterFitSuggestion();
                     failure.Team = e.Team;
                     failure.Position = e.Position;

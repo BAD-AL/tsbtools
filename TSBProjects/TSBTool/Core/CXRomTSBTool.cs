@@ -820,9 +820,31 @@ namespace TSBTool
 				ShiftDataDown(startPosition, endPosition, shiftAmount, outputRom);
 		}
 
+		// The four expansion teams' names live in their own area, which ShiftDataAfter shifts up to
+		// m_ExpansionSegmentEnd-17 (keeping clear of the bytes CheckROMVersion guards at save). Its
+		// data ends at the pointer after the cardinals' punter. The other 28 teams use the main area.
+		protected override int GetNameAreaFreeBytes(string team)
+		{
+			if (GetTeamIndex(team) > 29)
+				return (m_ExpansionSegmentEnd - 17) - GetNextDataPosition("cardinals", "P");
+			return base.GetNameAreaFreeBytes(team);
+		}
+
+		// Two areas, two last names: the panthers' punter (team 27, end of the main area) and the
+		// cardinals' punter (team 33, end of the expansion area) -- matching ShiftDataAfter's own
+		// early returns.
+		protected override bool IsLastNameInArea(string team, string position)
+		{
+			int teamIndex = GetTeamIndex(team);
+			return position == "P" && (teamIndex == 27 || teamIndex == 33);
+		}
+
 		protected override void AdjustDataPointers(int pos, int change, int lastPointer)
 		{
-			if (pos >= GetTeamStringTableStart()) // doing Team String table stuff
+			// Only pointers inside the team string table itself; v111's expansion name pointers
+			// (0x3e054+) are past the table's start too.
+			int stringTableStart = GetTeamStringTableStart();
+			if (pos >= stringTableStart && pos <= stringTableStart + 2 * NumberOfStringsInTeamStringTable) // doing Team String table stuff
 			{
 				base.AdjustDataPointers(pos, change, lastPointer);
 				return;

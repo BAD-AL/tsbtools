@@ -96,6 +96,8 @@ namespace TSBTool
         public string ProposedName;
         public string SuggestedName;
         public int BytesSaved;
+        // True when a first initial alone wasn't enough and the last name was cut to fit as well.
+        public bool LastNameTruncated;
     }
 
     public class PlayerNamesFitReport
@@ -118,11 +120,28 @@ namespace TSBTool
         public List<PlayerNameEntry> AutoTrimmedPlayers = new List<PlayerNameEntry>();
         public int SlackFreedByAutoTrim;
 
+        // Names over the platform's length limit, shortened by the same rule InsertPlayer uses (which
+        // would otherwise warn about each one after the apply). Independent of room.
+        public List<PlayerNamesSuggestion> LengthCapped = new List<PlayerNamesSuggestion>();
+
+        public bool NeedsAttention
+        {
+            get { return AutoTrimmedPlayers.Count > 0 || Suggestions.Count > 0 || UnresolvedFailures.Count > 0 || LengthCapped.Count > 0; }
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("This roster needs {0} more byte(s) than the ROM currently has free.\r\n\r\n",
-                Math.Max(0, NeededSlack - AvailableSlack));
+            if (LengthCapped.Count > 0)
+            {
+                sb.AppendFormat("The following {0} name(s) are over the length limit and will be shortened:\r\n", LengthCapped.Count);
+                foreach (PlayerNamesSuggestion s in LengthCapped)
+                    sb.AppendFormat("  {0,-12} {1,-5} '{2}'  ->  '{3}'\r\n", s.Team, s.Position, s.ProposedName, s.SuggestedName);
+                sb.Append("\r\n");
+            }
+            if (!Fits)
+                sb.AppendFormat("This roster needs {0} more byte(s) than the ROM currently has free.\r\n\r\n",
+                    Math.Max(0, NeededSlack - AvailableSlack));
 
             if (AutoTrimmedPlayers.Count > 0)
             {
@@ -133,22 +152,75 @@ namespace TSBTool
                 sb.Append("\r\n");
             }
 
-            if (Suggestions.Count > 0)
+            List<PlayerNamesSuggestion> initials = Suggestions.FindAll(s => !s.LastNameTruncated);
+            List<PlayerNamesSuggestion> cut = Suggestions.FindAll(s => s.LastNameTruncated);
+            if (initials.Count > 0)
             {
-                sb.AppendFormat("The following {0} player(s) that WERE specified will have their first name shortened, since trimming unspecified players alone wasn't enough:\r\n", Suggestions.Count);
-                foreach (PlayerNamesSuggestion s in Suggestions)
+                sb.AppendFormat("The following {0} player(s) that WERE specified will have their first name shortened, since trimming unspecified players alone wasn't enough:\r\n", initials.Count);
+                foreach (PlayerNamesSuggestion s in initials)
+                    sb.AppendFormat("  {0,-12} {1,-5} '{2}'  ->  '{3}'  (saves {4})\r\n", s.Team, s.Position, s.ProposedName, s.SuggestedName, s.BytesSaved);
+                sb.Append("\r\n");
+            }
+
+            if (cut.Count > 0)
+            {
+                sb.AppendFormat("The following {0} player(s) still didn't fit with just an initial, so their last name will be cut short too:\r\n", cut.Count);
+                foreach (PlayerNamesSuggestion s in cut)
                     sb.AppendFormat("  {0,-12} {1,-5} '{2}'  ->  '{3}'  (saves {4})\r\n", s.Team, s.Position, s.ProposedName, s.SuggestedName, s.BytesSaved);
                 sb.Append("\r\n");
             }
 
             if (UnresolvedFailures.Count > 0)
             {
-                sb.AppendFormat("WARNING: the following {0} player(s) cannot be fixed automatically at all -- their name is too short to abbreviate enough. Unless something else frees up more room, these will keep their OLD name instead of the one specified:\r\n", UnresolvedFailures.Count);
+                sb.AppendFormat("WARNING: the following {0} player(s) cannot be fixed automatically at all -- there's no room left even for a one-letter last name. Unless something else frees up more room, these will keep their OLD name and jersey number instead of the ones specified (the rest of the line is still applied):\r\n", UnresolvedFailures.Count);
                 foreach (PlayerNamesSuggestion f in UnresolvedFailures)
                     sb.AppendFormat("  {0,-12} {1,-5} '{2}'  (best possible saving: {3}, not enough)\r\n", f.Team, f.Position, f.ProposedName, f.BytesSaved);
             }
 
             return sb.ToString();
+        }
+    }
+
+    // Every name area's fit report for one apply (CXROM has two areas; NES/SNES one), so the user sees
+    // one report and confirms once. Built by PlayerNames.PlanFit (a dry run -- nothing written).
+    public class RosterNamePlan
+    {
+        public List<PlayerNamesConfig> Configs = new List<PlayerNamesConfig>();
+        public List<PlayerNamesFitReport> Reports = new List<PlayerNamesFitReport>();
+
+        public bool NeedsAttention
+        {
+            get { return Reports.Exists(r => r.NeedsAttention); }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Reports.Count; i++)
+            {
+                if (!Reports[i].NeedsAttention)
+                    continue;
+                if (Reports.Count > 1)
+                    sb.AppendFormat("=== {0} ===\r\n", Configs[i].PlatformName);
+                sb.Append(Reports[i].ToString()).Append("\r\n");
+            }
+            return sb.ToString();
+        }
+
+        // Carries out the plan: trims unmentioned players in the ROM (each area's ResolveFit with
+        // autoApply) and returns rosterText with the reported names shortened, ready for ProcessText.
+        // The areas are independent, so this matches the dry run the report was built from.
+        public string Apply(ITecmoContent tool, string rosterText)
+        {
+            ITecmoTool nesOrSnesTool = tool as ITecmoTool;
+            for (int i = 0; i < Reports.Count; i++)
+            {
+                if (!Reports[i].NeedsAttention)
+                    continue;
+                PlayerNamesFitReport report = PlayerNames.ResolveFit(nesOrSnesTool, Configs[i], rosterText, true);
+                rosterText = PlayerNames.ApplySuggestions(rosterText, report);
+            }
+            return rosterText;
         }
     }
 
@@ -162,18 +234,74 @@ namespace TSBTool
         // Genesis_TSB1Tool.ResolveRosterFit for this exact problem.
         public static PlayerNamesConfig ResolveConfigFor(ITecmoTool tool)
         {
+            List<PlayerNamesConfig> configs = ResolveConfigsFor(tool);
+            return configs.Count > 0 ? configs[0] : null;
+        }
+
+        // One config per separately-bounded name area on the ROM: NES and SNES have one; the 32-team
+        // CXROM hacks have two -- the main area (their first 28 teams, which are NOT NES's 28: CXROM has
+        // titans/jaguars/panthers/ravens/texans there, in its own order) and a separate expansion area
+        // for the 49ers/rams/seahawks/cardinals. Each area must be checked on its own: growth in one
+        // can't use the other's free space. Empty for ROM types without a check (TSB2/TSB3/Genesis).
+        public static List<PlayerNamesConfig> ResolveConfigsFor(ITecmoTool tool)
+        {
+            List<PlayerNamesConfig> configs = new List<PlayerNamesConfig>();
             switch (tool.RomVersion)
             {
                 case ROM_TYPE.NES_ORIGINAL_TSB:
+                    configs.Add(PlayerNamesConfig.Nes);
+                    break;
                 case ROM_TYPE.CXROM_v105:
                 case ROM_TYPE.CXROM_v111:
                 case ROM_TYPE.CXROM_18WEEK:
-                    return PlayerNamesConfig.Nes;
+                    configs.AddRange(BuildCxRomConfigs((TecmoTool)tool));
+                    break;
                 case ROM_TYPE.SNES_TSB1:
-                    return PlayerNamesConfig.Snes;
-                default:
-                    return null;
+                    configs.Add(PlayerNamesConfig.Snes);
+                    break;
             }
+            return configs;
+        }
+
+        // Dry run of every name area's check for tool + rosterText, as one plan: one report to show
+        // (MainGUI's single dialog, MainClass's single printout) and one Apply. Empty plan for ROM
+        // types without a check (Genesis has its own ResolveRosterFit; TSB2/TSB3 have none).
+        public static RosterNamePlan PlanFit(ITecmoContent tool, string rosterText)
+        {
+            RosterNamePlan plan = new RosterNamePlan();
+            ITecmoTool nesOrSnesTool = tool as ITecmoTool;
+            if (nesOrSnesTool == null)
+                return plan;
+            foreach (PlayerNamesConfig config in ResolveConfigsFor(nesOrSnesTool))
+            {
+                plan.Configs.Add(config);
+                plan.Reports.Add(ResolveFit(nesOrSnesTool, config, rosterText, false));
+            }
+            return plan;
+        }
+
+        // Built from the ROM itself rather than as fixed statics: the team list comes from the
+        // CXROM team order TecmoToolFactory installs (indices 0-27 main area, 28-29 the Pro Bowl
+        // "AFC"/"NFC" entries, 30-33 expansion), and each area's start is its first player's data
+        // position (never moves -- only later records shift), which differs between v105/v111/18-week.
+        // Boundaries match what the tool's own InsertPlayer/ShiftDataAfter enforce: the main area
+        // ends at 0x300F (TecmoTool.nameAreaEnd), the expansion area at m_ExpansionSegmentEnd-17
+        // (0x3FFDF, see CXRomTSBTool.ShiftDataAfter).
+        private static List<PlayerNamesConfig> BuildCxRomConfigs(TecmoTool tool)
+        {
+            List<string> all = TecmoTool.Teams;
+            string[] mainTeams = all.GetRange(0, 28).ToArray();
+            string[] expansionTeams = all.GetRange(30, 4).ToArray();
+            string[] positions = PlayerNamesConfig.Nes.Positions;
+
+            List<PlayerNamesConfig> configs = new List<PlayerNamesConfig>();
+            configs.Add(new PlayerNamesConfig("CXROM main teams", mainTeams, positions,
+                tool.GetDataPosition(mainTeams[0], positions[0]), 0x300F,
+                PlayerNamesConfig.Nes.MaxNameLength, PlayerNamesConfig.Nes.LnameTruncateThreshold));
+            configs.Add(new PlayerNamesConfig("CXROM " + string.Join("/", expansionTeams), expansionTeams, positions,
+                tool.GetDataPosition(expansionTeams[0], positions[0]), 0x3FFDF,
+                PlayerNamesConfig.Nes.MaxNameLength, PlayerNamesConfig.Nes.LnameTruncateThreshold));
+            return configs;
         }
 
         private static readonly Regex teamLineRegex = new Regex("TEAM\\s*=\\s*([0-9a-z]+)");
@@ -228,6 +356,7 @@ namespace TSBTool
             public string Position;
             public string FirstName;
             public string LastName;
+            public string RawName;   // as written in the text, before the platform's length cap
         }
 
         // Parses a (possibly partial) roster text block -- same TEAM=/POS-line shape ProcessText itself
@@ -263,9 +392,11 @@ namespace TSBTool
                 string lname = InputParser.GetLastName(line);
                 if (string.IsNullOrEmpty(fname) || string.IsNullOrEmpty(lname))
                     continue;
+                string rawName = fname + " " + lname;
                 ApplyPlatformCap(config, ref fname, ref lname);
 
                 OverlayEntry entry = new OverlayEntry();
+                entry.RawName = rawName;
                 entry.Team = currentTeam;
                 entry.Position = pos;
                 entry.FirstName = fname;
@@ -313,7 +444,20 @@ namespace TSBTool
 
             Dictionary<string, OverlayEntry> overlayByKey = new Dictionary<string, OverlayEntry>();
             foreach (OverlayEntry o in overlay)
+            {
                 overlayByKey[o.Team + "|" + o.Position] = o;
+                string capped = o.FirstName + " " + o.LastName;
+                if (o.RawName != capped && currentByKey.ContainsKey(o.Team + "|" + o.Position))
+                {
+                    PlayerNamesSuggestion s = new PlayerNamesSuggestion();
+                    s.Team = o.Team;
+                    s.Position = o.Position;
+                    s.ProposedName = o.RawName;
+                    s.SuggestedName = capped;
+                    s.BytesSaved = o.RawName.Length - capped.Length;
+                    report.LengthCapped.Add(s);
+                }
+            }
 
             int cumulative = 0;
             int neededSlack = 0;
@@ -386,6 +530,25 @@ namespace TSBTool
                     suggestion.BytesSaved = maxSavings;
                     report.Suggestions.Add(suggestion);
                     runningSlack -= abbreviatedDelta;
+                    continue;
+                }
+
+                // An initial alone isn't enough: also cut the last name to whatever fits. Better a
+                // clipped name than a rejected one -- a rejected name keeps the OLD player's name and
+                // jersey while the rest of the line (face, ratings, sim data) still applies.
+                string shortFirst = maxSavings > 0 ? o.FirstName.Substring(0, 1).ToLower() + "." : o.FirstName;
+                int lastRoom = existing.Length + runningSlack - 1 - shortFirst.Length;
+                if (lastRoom >= 1)
+                {
+                    PlayerNamesSuggestion suggestion = new PlayerNamesSuggestion();
+                    suggestion.Team = o.Team;
+                    suggestion.Position = o.Position;
+                    suggestion.ProposedName = o.FirstName + " " + o.LastName;
+                    suggestion.SuggestedName = shortFirst + " " + o.LastName.Substring(0, lastRoom);
+                    suggestion.BytesSaved = (o.FirstName.Length - shortFirst.Length) + (o.LastName.Length - lastRoom);
+                    suggestion.LastNameTruncated = true;
+                    report.Suggestions.Add(suggestion);
+                    runningSlack -= (1 + shortFirst.Length + lastRoom) - existing.Length;
                 }
                 else
                 {
@@ -401,6 +564,61 @@ namespace TSBTool
             report.SafeToApplyInOrder = report.UnresolvedFailures.Count == 0;
 
             return report;
+        }
+
+        private static readonly Regex playerLineNameRegex = new Regex("^(\\s*[A-Z]+[1-4]?\\s*,\\s*)([^,]+)(,.*)$");
+
+        // Rewrites the roster text so each of report.Suggestions' and report.LengthCapped's players is
+        // given its shortened name -- what the report tells the user will happen. Matches players the same
+        // way ResolveFit/ProcessText do (current "TEAM =" block + position); every other line is left
+        // exactly as it was. Run before ProcessText, so the shortened names are what actually get
+        // written, and the real apply follows the same space budget ResolveFit simulated.
+        public static string ApplySuggestions(string rosterText, PlayerNamesFitReport report)
+        {
+            if (rosterText == null || report == null || (report.Suggestions.Count == 0 && report.LengthCapped.Count == 0))
+                return rosterText;
+
+            // Room suggestions are made from the already-capped name, so they win.
+            Dictionary<string, string> suggested = new Dictionary<string, string>();
+            foreach (PlayerNamesSuggestion s in report.LengthCapped)
+                suggested[s.Team + "|" + s.Position] = s.SuggestedName;
+            foreach (PlayerNamesSuggestion s in report.Suggestions)
+                suggested[s.Team + "|" + s.Position] = s.SuggestedName;
+            return RenamePlayersInText(rosterText, suggested);
+        }
+
+        // Gives each "team|POSITION" player in namesByTeamPos its new name in rosterText; every other
+        // line is left exactly as it was. Shared with Genesis_TSB1Tool.RosterFitReport.ApplySuggestions.
+        public static string RenamePlayersInText(string rosterText, Dictionary<string, string> namesByTeamPos)
+        {
+            if (rosterText == null || namesByTeamPos.Count == 0)
+                return rosterText;
+            Dictionary<string, string> suggested = namesByTeamPos;
+            string[] lines = rosterText.Split('\n');
+            string currentTeam = null;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string trimmed = lines[i].Trim();
+                Match teamMatch = teamLineRegex.Match(trimmed);
+                if (teamMatch.Success)
+                {
+                    currentTeam = teamMatch.Groups[1].ToString();
+                    continue;
+                }
+                if (currentTeam == null)
+                    continue;
+                Match posMatch = posLineRegex.Match(trimmed);
+                if (!posMatch.Success)
+                    continue;
+
+                string newName;
+                if (!suggested.TryGetValue(currentTeam + "|" + posMatch.Groups[1].ToString(), out newName))
+                    continue;
+                Match nameMatch = playerLineNameRegex.Match(lines[i].TrimEnd('\r'));
+                if (nameMatch.Success)
+                    lines[i] = nameMatch.Groups[1].Value + newName + nameMatch.Groups[3].Value + (lines[i].EndsWith("\r") ? "\r" : "");
+            }
+            return string.Join("\n", lines);
         }
 
         private static int CandidateSavings(PlayerNameEntry e)

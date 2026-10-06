@@ -1070,8 +1070,28 @@ CANCEL = Don't do anything, cancel current operation.
                         true);  // show Cancel, so the user can back out and edit the roster text by hand
                     if (result == null)
                         return; // Cancel -- abort the whole apply, nothing written, nothing saved
-                    genesisTool.ResolveRosterFit(textToApply, true); // for real this time
+                    Genesis_TSB1Tool.RosterFitReport report = genesisTool.ResolveRosterFit(textToApply, true); // for real this time
+                    textToApply = report.ApplySuggestions(textToApply); // the shortenings the dialog listed
                 }
+            }
+
+            // Same check for NES/SNES TSB1 and CXROM (PlayerNames), matching MainClass: ONE report
+            // covering every name area (CXROM has two) plus names over the length limit, confirmed once
+            // before anything is written -- Cancel leaves the ROM untouched. The shortened names go
+            // into the text being applied (so InsertPlayer has nothing left to warn about); the editor
+            // text is unchanged.
+            RosterNamePlan namePlan = PlayerNames.PlanFit(tool, textToApply);
+            if (namePlan.NeedsAttention)
+            {
+                string result = RichTextDisplay.ShowMessage(
+                    "Roster name check",
+                    namePlan.ToString() + "Click OK to proceed with the plan above, or Cancel to go edit the roster text yourself first.",
+                    SystemIcons.Warning,
+                    false,  // not editable -- this is a report
+                    true);  // show Cancel
+                if (result == null)
+                    return; // Cancel -- nothing written, nothing saved
+                textToApply = namePlan.Apply(tool, textToApply);
             }
 
             tool.ProcessText(textToApply);

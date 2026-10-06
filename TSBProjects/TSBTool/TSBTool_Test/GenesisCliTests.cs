@@ -127,6 +127,39 @@ namespace TSBTool_Test
             });
         }
 
+        [TestMethod]
+        public void GenesisRom_CliDefault_FullRosterOfLongerNames_ShorteningsApplied_NothingRejected()
+        {
+            // Every roster slot specified, each name lengthened -- so trimming unmentioned players can't
+            // help, and the report's first-initial and cut-last-name shortenings must really be applied
+            // (they used to be report-only: those players were rejected, keeping the OLD name while the
+            // rest of their line still applied).
+            RunInScratchDir(scratchDir =>
+            {
+                string localRomName = "genesis.md";
+                File.Copy(TestRoms.GetRomPath(RomFileName), Path.Combine(scratchDir, localRomName));
+                Genesis_TSB1Tool stock = (Genesis_TSB1Tool)TecmoToolFactory.GetToolForRom(TestRoms.LoadRom(RomFileName));
+                string text = System.Text.RegularExpressions.Regex.Replace(stock.GetAll(1),
+                    "^([A-Z]+[1-4]?, )([a-z.]+) ([A-Z.]+),", "${1}${2}xx ${3}XX,", System.Text.RegularExpressions.RegexOptions.Multiline);
+                File.WriteAllText(Path.Combine(scratchDir, "input.txt"), text);
+
+                Genesis_TSB1Tool.RosterFitReport dryRun = stock.ResolveRosterFit(text, false);
+                Assert.AreEqual(0, dryRun.UnresolvedFailures.Count, dryRun.ToString());
+                Assert.IsTrue(dryRun.Suggestions.Exists(s => s.LastNameTruncated), "Sanity: this roster needs cut last names.\n" + dryRun);
+
+                TextWriter oldErr = Console.Error;
+                StringWriter err = new StringWriter();
+                Console.SetError(err);
+                try { MainClass.RunMain(new[] { localRomName, "input.txt", "-out:output.md" }); }
+                finally { Console.SetError(oldErr); }
+
+                Assert.IsFalse(err.ToString().Contains("would overflow"), err.ToString());
+                Genesis_TSB1Tool tool = (Genesis_TSB1Tool)TecmoToolFactory.GetToolForRom(File.ReadAllBytes(Path.Combine(scratchDir, "output.md")));
+                foreach (Genesis_TSB1Tool.RosterFitSuggestion s in dryRun.Suggestions)
+                    Assert.AreEqual(s.SuggestedName.Replace(" ", ""), tool.GetPlayerName(s.Team, s.Position), s.Team + " " + s.Position);
+            });
+        }
+
         private static void RunInScratchDir(Action<string> test)
         {
             string scratchDir = Path.Combine(Path.GetTempPath(), "TSBToolGenesisCliTest_" + Guid.NewGuid().ToString("N"));
