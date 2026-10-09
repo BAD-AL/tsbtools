@@ -34,6 +34,8 @@ namespace TSBTool
 		private static string outFileName = "output.nes";
 		private static string getFileName = null;
 		private static string colorsDebugTeam = null;
+		private static string statsFileName = null;
+		private static bool statsCsv = false;
 
         public static bool OnWindows { get; set; }
 		/// <summary>
@@ -60,6 +62,8 @@ namespace TSBTool
               TecmoTool.ShowTeamFormation = false;
             getFileName = null;
             colorsDebugTeam = null;
+            statsFileName = null;
+            statsCsv = false;
             //Junk(stuff);
             ArrayList args = GetArgs(stuff);
             ArrayList options = GetOptions(stuff);
@@ -98,6 +102,12 @@ namespace TSBTool
             if (printHelp)
             {
                 PrintHelp();
+                return;
+            }
+
+            if (statsFileName != null)
+            {
+                PrintSeasonStats(statsFileName, romFile);
                 return;
             }
 
@@ -157,6 +167,37 @@ namespace TSBTool
             }
         }
 
+		/// <summary>
+		/// -stats: prints the season stats from an ares save state of Genesis TSB (.bs1) or a battery save
+		/// of SNES (.srm) or NES (.sav) TSB. The ROM is optional; it only supplies the player names.
+		/// </summary>
+		private static void PrintSeasonStats(string stateFile, string romFile)
+		{
+			if (!File.Exists(stateFile))
+			{
+				Console.Error.WriteLine("ERROR! Season stats file '{0}' not found.", stateFile);
+				return;
+			}
+			string error;
+			SeasonStats stats = SeasonStats.FromFile(File.ReadAllBytes(stateFile), out error);
+			if (stats == null)
+			{
+				Console.Error.WriteLine("ERROR! " + error);
+				return;
+			}
+			ITecmoTool rom = null;
+			if (romFile != null)
+			{
+				rom = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom(romFile)) as ITecmoTool;
+				if (!stats.IsRomForTheseStats(rom))
+				{
+					Console.Error.WriteLine("'{0}' isn't a {1} TSB ROM; players are shown by position.", romFile, stats.RomKind);
+					rom = null;
+				}
+			}
+			Console.Write(statsCsv ? stats.ToCsv(rom) : stats.ToText(rom));
+		}
+
 		public static void PrintHelp()
 		{
 		//   -j             -n     -f     -a         -s   
@@ -188,6 +229,13 @@ The following are the available options.
 -out:filename	Save modified rom to <filename>.
 -get:filename   Use <filename> as a 'GetBytes' file (get rom locations specified in file, print to stdout)
 -colorsdebug:team   (SNES TSB1 only) Print every known uniform/helmet-color location for <team> with a console color swatch. Omit ':team' for all teams.
+-stats:file      (Genesis/SNES/NES TSB1 only) Print the season stats from a Genesis ares emulator save state
+                 (.bs1) saved at the 'Season Menu' screen, or a SNES (.srm) or NES (.sav) battery save. Give the
+                 ROM too (the one the season was played with) to show player names.
+-csv             With -stats: print the stats as CSV instead (one row per player, for spreadsheets):
+                 TSBToolSupreme Genesis_TSB.md -stats:MySeason.bs1 -csv > MySeason.csv
+                 TSBToolSupreme TSB1.smc -stats:TSB1.srm -csv > MySeason.csv
+                 TSBToolSupreme TSPRBOWL.nes -stats:TSPRBOWL.sav -csv > MySeason.csv
 -noAutoFit  (Genesis/NES/SNES TSB1 only) Don't auto-trim unspecified players' names to fit the roster before applying. On by default (safe); this only reports what would be needed instead of doing it.
 ",MainClass.version)
 				);
@@ -222,19 +270,26 @@ The following are the available options.
 			for(int i =0;i < options.Count; i++)
 			{
 				option = options[i].ToString().ToLower();
-				if(option.StartsWith("-out:") || option.StartsWith("/out:") && option.Length > 5)
+				if(option.StartsWith("-out:") || option.StartsWith("/out:"))
 				{
-					char[] seps = { ':' };
-					string[] parts = option.Split(seps);
-					if(parts != null && parts.Length > 1 && parts[1].Length > 1)
-						outFileName = parts[1];
+					// keep the path's case and any ':' in it (C:\...)
+					string path = options[i].ToString().Substring("-out:".Length);
+					if (path.Length > 1)
+						outFileName = path;
 				}
 				else if( option.StartsWith("-get:") || option.StartsWith("/get:"))
 				{
-					char[] seps = { ':' };
-					string[] parts = option.Split(seps);
-					if(parts != null && parts.Length > 1 && parts[1].Length > 1)
-						getFileName = parts[1];
+					// keep the path's case and any ':' in it (C:\...)
+					string path = options[i].ToString().Substring("-get:".Length);
+					if (path.Length > 1)
+						getFileName = path;
+				}
+				else if( option.StartsWith("-stats:") || option.StartsWith("/stats:"))
+				{
+					// keep the path's case and any ':' in it (C:\...)
+					string path = options[i].ToString().Substring("-stats:".Length);
+					if (path.Length > 0)
+						statsFileName = path;
 				}
 				else if( option.StartsWith("-colorsdebug") || option.StartsWith("/colorsdebug"))
 				{
@@ -282,6 +337,9 @@ The following are the available options.
                             break;
                         case "-noautofit": case "/noautofit":
                             noAutoFit = true;
+                            break;
+                        case "-csv": case "/csv":
+                            statsCsv = true;
                             break;
 						default:
 							Console.Error.WriteLine("Invalid option '{0}'",option);

@@ -1,0 +1,78 @@
+====================================================================================================
+SIM TEST: GEN_07h_FixDefenseRollScaled
+ROM:      GEN_07h_FixDefenseRollScaled.bin   (platform: GENESIS)
+====================================================================================================
+
+QUESTION
+  Stock + GENESIS_FIX_SIM_BUGS + the defense roll using 3/8 of the defense value: normal scoring, smaller spread than GEN_07d?
+
+WHAT IS DIFFERENT IN THIS ROM
+  Stock sim data (the game's own values for every team). The stock ROM plus GENESIS_FIX_SIM_BUGS, plus a small routine at 0xDF100 so the defense roll uses defense value * 3/8.
+
+GROUPS
+  A  (stock + fix + roll scaled 3/8): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (stock + fix + roll scaled 3/8): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (stock + fix + roll scaled 3/8): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (stock + fix + roll scaled 3/8): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Scoring near GEN_07a; points allowed spread between teams smaller than GEN_07d (sd 59).
+  - Save an ares state (.bs1) at the Season Menu after the season: every column can be read from it.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Pts for   | Pts allowed | Rush att  | Rush yds  | Pass att  | Pass yds  | Sacks made | INTs made
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  bills        | A    |  371      |  286        |  224      |  2194     |  202      |  2566     |  38        |  12      
+  jets         | A    |  342      |  327        |  260      |  2224     |  183      |  1818     |  30        |  6       
+  steelers     | A    |  362      |  331        |  227      |  2080     |  182      |  1779     |  35        |  9       
+  chargers     | A    |  337      |  310        |  249      |  1873     |  197      |  2254     |  32        |  5       
+  eagles       | A    |  350      |  274        |  243      |  2327     |  183      |  2000     |  26        |  8       
+  lions        | A    |  349      |  331        |  192      |  2002     |  196      |  1968     |  27        |  11      
+  falcons      | A    |  361      |  390        |  223      |  1801     |  199      |  2355     |  29        |  5       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  colts        | B    |  254      |  331        |  252      |  1486     |  210      |  2116     |  36        |  13      
+  bengals      | B    |  365      |  335        |  259      |  2494     |  161      |  1705     |  22        |  11      
+  broncos      | B    |  312      |  303        |  231      |  1753     |  213      |  2268     |  25        |  4       
+  seahawks     | B    |  303      |  340        |  240      |  1828     |  173      |  2014     |  31        |  1       
+  cardinals    | B    |  305      |  344        |  247      |  1803     |  204      |  2347     |  20        |  5       
+  packers      | B    |  254      |  274        |  194      |  1364     |  208      |  2066     |  24        |  15      
+  rams         | B    |  246      |  363        |  228      |  1699     |  197      |  2316     |  25        |  7       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  dolphins     | C    |  308      |  312        |  216      |  1636     |  215      |  2375     |  30        |  8       
+  browns       | C    |  304      |  297        |  195      |  1190     |  258      |  2734     |  34        |  6       
+  chiefs       | C    |  316      |  309        |  290      |  2173     |  171      |  2149     |  30        |  6       
+  cowboys      | C    |  370      |  220        |  243      |  2236     |  174      |  1886     |  39        |  9       
+  redskins     | C    |  312      |  290        |  250      |  2075     |  203      |  2282     |  20        |  9       
+  vikings      | C    |  301      |  305        |  229      |  2027     |  168      |  1630     |  30        |  9       
+  saints       | C    |  290      |  317        |  251      |  1889     |  193      |  2294     |  29        |  7       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  patriots     | D    |  261      |  374        |  221      |  1466     |  226      |  2365     |  30        |  7       
+  oilers       | D    |  345      |  348        |  158      |  1436     |  199      |  2487     |  39        |  2       
+  raiders      | D    |  266      |  261        |  255      |  1869     |  149      |  1742     |  42        |  4       
+  giants       | D    |  253      |  350        |  275      |  2040     |  176      |  1901     |  31        |  7       
+  bears        | D    |  341      |  381        |  230      |  1879     |  211      |  2463     |  21        |  3       
+  buccaneers   | D    |  348      |  327        |  270      |  2510     |  170      |  1668     |  16        |  6       
+  49ers        | D    |  402      |  298        |  206      |  2046     |  221      |  2526     |  25        |  8       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+
+GROUP AVERAGES (optional)
+  A (stock + fix + roll scaled 3/8): Pts for 353.1, Pts allowed 321.3, Rush att 231.1, Rush yds 2071.6, Pass att 191.7, Pass yds 2105.7, Sacks made 31.0, INTs made 8.0   (7 teams; averages per team, ratios from group totals)
+  B (stock + fix + roll scaled 3/8): Pts for 291.3, Pts allowed 327.1, Rush att 235.9, Rush yds 1775.3, Pass att 195.1, Pass yds 2118.9, Sacks made 26.1, INTs made 8.0   (7 teams; averages per team, ratios from group totals)
+  C (stock + fix + roll scaled 3/8): Pts for 314.4, Pts allowed 292.9, Rush att 239.1, Rush yds 1889.4, Pass att 197.4, Pass yds 2192.9, Sacks made 30.3, INTs made 7.7   (7 teams; averages per team, ratios from group totals)
+  D (stock + fix + roll scaled 3/8): Pts for 316.6, Pts allowed 334.1, Rush att 230.7, Rush yds 1892.3, Pass att 193.1, Pass yds 2164.6, Sacks made 29.1, INTs made 5.3   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  All values read from the ares save state GEN_07h_FixDefenseRollScaled.bs1 (TSBTool -stats), not typed from the screens.
+  
+
+CONCLUSION
+  
+
+Tested by: ____________   Date: ____________   Emulator: ____________

@@ -65,14 +65,16 @@ namespace TSBTool_Test
             string lastCityBefore = tool.GetTeamCity(lastIndex);
             string lastNameBefore = tool.GetTeamName(lastIndex);
 
+            // The stock table has no spare bytes, so a longer string needs room made first: the city
+            // gets shorter (DALLAS -> Test, -2), then the nickname longer (COWBOYS -> TESTERSXX, +2).
             string command = string.Format(
-                "TEAM = {0} SimData=0x0\nTEAM_ABB=TEST,TEAM_CITY=Test City,TEAM_NAME=TESTERS",
+                "TEAM = {0} SimData=0x0\nTEAM_ABB=TEST,TEAM_CITY=Test,TEAM_NAME=TESTERSXX",
                 middleTeam);
             tool.ProcessText(command);
 
             Assert.AreEqual("TEST", tool.GetTeamAbbreviation(middleIndex));
-            Assert.AreEqual("Test City", tool.GetTeamCity(middleIndex));
-            Assert.AreEqual("TESTERS", tool.GetTeamName(middleIndex));
+            Assert.AreEqual("Test", tool.GetTeamCity(middleIndex));
+            Assert.AreEqual("TESTERSXX", tool.GetTeamName(middleIndex));
 
             Assert.AreEqual(firstAbbBefore, tool.GetTeamAbbreviation(firstIndex), "Earlier team's abbreviation should be untouched.");
             Assert.AreEqual(firstCityBefore, tool.GetTeamCity(firstIndex), "Earlier team's city should be untouched.");
@@ -80,6 +82,56 @@ namespace TSBTool_Test
             Assert.AreEqual(lastAbbBefore, tool.GetTeamAbbreviation(lastIndex), "Later team's abbreviation should be untouched.");
             Assert.AreEqual(lastCityBefore, tool.GetTeamCity(lastIndex), "Later team's city should be untouched.");
             Assert.AreEqual(lastNameBefore, tool.GetTeamName(lastIndex), "Later team's name should be untouched.");
+        }
+
+        // The team string table (abbreviations, cities, nicknames, ...) ends at 0x4ABF with no spare
+        // bytes in the stock ROM. A longer string must be rejected unless an earlier edit made room, and
+        // the shift that makes room must never write past the table's end.
+        private const int TeamStringTableDataEnd = 0x4ABF;
+        private const int CheckedBytesAfterTable = 0x100;
+
+        [TestMethod]
+        public void GenesisRom_TeamCity_LongerWithNoRoom_IsRejected_RomUnchanged()
+        {
+            byte[] rom = TestRoms.LoadRom(RomFileName);
+            byte[] romBefore = (byte[])rom.Clone();
+            Genesis_TSB1Tool tool = (Genesis_TSB1Tool)TecmoToolFactory.GetToolForRom(rom);
+            TestMessageGiver giver = new TestMessageGiver();
+            StaticUtils.ClearErrors();
+            StaticUtils.sMessageGiver = giver;
+            try
+            {
+                tool.SetTeamCity(0, "BUFFALO CITY");
+                StaticUtils.ShowErrors();
+
+                CollectionAssert.AreEqual(romBefore, tool.OutputRom, "A string that doesn't fit must be rejected entirely.");
+                Assert.AreEqual(1, giver.Errors.Count);
+                StringAssert.Contains(giver.Errors[0], "BUFFALO CITY");
+            }
+            finally
+            {
+                StaticUtils.sMessageGiver = null;
+                StaticUtils.ClearErrors();
+            }
+        }
+
+        [TestMethod]
+        public void GenesisRom_TeamCity_LongerAfterAShorterOne_FitsAndLeavesBytesAfterTheTableUntouched()
+        {
+            byte[] rom = TestRoms.LoadRom(RomFileName);
+            byte[] romBefore = (byte[])rom.Clone();
+            Genesis_TSB1Tool tool = (Genesis_TSB1Tool)TecmoToolFactory.GetToolForRom(rom);
+
+            tool.SetTeamCity(3, "N E");           // NEW ENGLAND -> N E: 8 bytes of room
+            tool.SetTeamCity(0, "BUFFALO CITY");  // +5
+
+            Assert.AreEqual("N E", tool.GetTeamCity(3));
+            Assert.AreEqual("BUFFALO CITY", tool.GetTeamCity(0));
+            Assert.AreEqual("BILLS", tool.GetTeamName(0));
+            Assert.AreEqual("SAN FRANCISCO", tool.GetTeamCity(27));
+            Assert.AreEqual("49ERS", tool.GetTeamName(27));
+            for (int i = TeamStringTableDataEnd; i < TeamStringTableDataEnd + CheckedBytesAfterTable; i++)
+                Assert.AreEqual(romBefore[i], tool.OutputRom[i], string.Format("Byte 0x{0:X} after the table changed.", i));
         }
 
         [TestMethod]

@@ -222,6 +222,18 @@
     <Compile Include="Core\Genesis_TSB1Tool.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Core\GenesisSeasonStats.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Core\SeasonStats.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Core\SnesSeasonStats.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Core\NesSeasonStats.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Core\Genesis_ScheduleHelper.cs">
       <SubType>Code</SubType>
     </Compile>

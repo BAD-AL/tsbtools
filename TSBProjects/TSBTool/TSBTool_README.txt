@@ -1,5 +1,13 @@
 TSBToolSupreme README
 ======================================================================================================
+TSBToolSupreme Version 1.4.0.0 (10 Oct 2026)
+1. Support for Genesis TSB1 (+ bug fixes for Simulation, stat saving)
+2. View Stats from Save state (.sram, .sav, .bs1 [ares genesis])
+	Tested with emulators:
+	- https://github.com/SourMesen/Mesen2 ( NES/SNES )
+	- https://ares-emu.net/ ( Genesis )
+3. Name length checking, prompting, fixing
+======================================================================================================
 TSBToolSupreme Version 1.3.0.2 (18 Aug 2026)
 1. Support for 'new' 18-game NES ROM (Coach Elway, sblueman)
 2. Command-line usage bug fixes.
@@ -371,8 +379,18 @@ Note: Lines that start with the '#' character are ignored.
 #To modify a team's roster and sim data do the following.
 TEAM = bills SimData=0xab
 # The line above will tell the program that you are editing the roster for the bills.
-#the SimData is used when the cpu simulates games, this will give the bills an offense sim number
-#of 'a' (10) and the defense a sim number of 'b' (11). 0-9, a-f are valid (hex digits).
+#the SimData is used when the cpu simulates games, this will give the bills a rush defense sim number
+#of 'a' (10) and a pass defense sim number of 'b' (11). 0-9, a-f are valid (hex digits).
+#An optional 3rd digit is the run/pass preference for simulated games (e.g. SimData=0xab1).
+#Genesis TSB1 note: the Genesis game has a bug where preference 1 (heavy rushing) actually plays
+#as heavy passing (about 72% passes), and a bug that makes the rush/pass defense digits count for
+#little (the defense roll reads a random byte that is almost always 0). Add a line
+#'GENESIS_FIX_SIM_BUGS' to fix both (other ROM types ignore that line). With defense counting, the
+#game would score about 40% less, so the fix also rebalances the sim (defense roll, pass play and
+#run-play yardage tuned so a stock season keeps stock scoring and passing; it uses 32 unused bytes at
+#0xDF100). It also fixes a Genesis bug in the season stats: after each game (simmed or played) the
+#receiving-TD total is divided by 4 before the game's TDs are added, so receivers end a season with
+#0-2 TDs. When applying to a Genesis ROM in the GUI, you'll be asked about it.
 
 # now to modify a player. The following line will set data for QB1 on the bills.
 QB1, jim Kelly, Face=0x22, #12, 25, 69, 13, 13, 56, 81, 81, 81 ,[3, 12, 3 ]
@@ -428,6 +446,38 @@ cmd> TSBToolSupreme TSB.nes Data.txt
 To create a new TSB file based on the contents of TSB.nes, modified with the data contained 
 in the file Data.txt do the following:
 cmd> TSBToolSupreme TSB.nes Data.txt -out:MyFile.nes
+
+Genesis season stats (ares save states):
+The Genesis game's battery save can't be read, but an ares emulator save state can. Save the state
+(.bs1) at the 'Season Menu' screen, then view the season's standings, team totals and every
+player's passing, rushing, receiving, defense, kicking, punting and return stats:
+cmd> TSBToolSupreme Genesis_TSB.md -stats:MySeason.bs1
+The ROM (the one the season was played with) is optional; it only supplies the player names.
+Without it players are shown by position ('QB1 Bills', 'RB1 Bills', ...).
+In the GUI use 'File -> Save States -> View Season Stats (.bs1/.srm/.sav)', or drop the .bs1 file on the
+window (names come from the loaded ROM). Kick/punt returns are kept per 'return team' player, so
+they're shown under that player when the ROM is given, and as 'RET1'-'RET3' without it.
+For spreadsheets, add '-csv' to get one CSV row per player (Team, Position, Group, Name, then every
+stat; Group is QB, RB, WR, TE, DL, LB, DB, K or P, so you can filter by position and sort by any stat):
+cmd> TSBToolSupreme Genesis_TSB.md -stats:MySeason.bs1 -csv > MySeason.csv
+In the GUI use 'File -> Save States -> View Season Stats (.bs1/.srm/.sav -> .csv)'.
+
+SNES season stats (battery saves):
+The same stats are read from the SNES TSB1 game's battery save (.srm, 8 KB -- the file the emulator
+writes next to the ROM, or in its 'Saves' folder, when the game is closed). No save state needed:
+cmd> TSBToolSupreme TSB1.smc -stats:TSB1.srm
+cmd> TSBToolSupreme TSB1.smc -stats:TSB1.srm -csv > MySeason.csv
+In the GUI the same menu items read .srm files too, or drop the .srm file on the window.
+(Safeties aren't kept in the save, so a team's points can be 2 more than its TDs and kicks add up to.)
+
+NES season stats (battery saves):
+And from the NES game's battery save (.sav, 8 KB, same as above), for the original 28-team game and
+the 32-team ROMs built on CXROM v1.05 (checked with 'TSB 2007-32-105' and SBlueman's 18-week base):
+cmd> TSBToolSupreme TSB.nes -stats:TSB.sav
+cmd> TSBToolSupreme TSB.nes -stats:TSB.sav -csv > MySeason.csv
+In the GUI the same menu items read .sav files too, or drop the .sav file on the window.
+The NES game keeps kick/punt returns per RB/WR/TE, so they're always shown under that player. A
+season yards total that went below 0 is kept as 0 by the game. (Safeties aren't kept either.)
 
 Pipes and re-direction
 This program was created with pipes and re-direction in mind. If you wanted to pipe the output 

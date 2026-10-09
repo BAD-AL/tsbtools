@@ -69,6 +69,11 @@
     <Compile Include="GenesisRosterResolveTests.cs" />
     <Compile Include="TestMessageGiver.cs" />
     <Compile Include="GenesisFaceTests.cs" />
+    <Compile Include="GenesisSimBugFixTests.cs" />
+    <Compile Include="GenesisSeasonStatsTests.cs" />
+    <Compile Include="SnesSeasonStatsTests.cs" />
+    <Compile Include="NesSeasonStatsTests.cs" />
+    <Compile Include="SimFormulaTests.cs" />
     <Compile Include="GenesisFullDumpTests.cs" />
     <Compile Include="GenesisYearTests.cs" />
     <Compile Include="GenesisCliTests.cs" />
@@ -108,6 +113,33 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ROMs\Genesis\Tecmo Super Bowl (USA) (October 1993).md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\Genesis\SaveStates\GEN_06b_SeasonMenu.bs1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\Genesis\SaveStates\GEN_05b_SeasonMenu.bs1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\Genesis\SaveStates\GEN_08b_SeasonMenu.bs1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\Genesis\SaveStates\GEN_05b_NoSeasonStats.bs1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\SNES\SaveRam\SNES_05_TeamDefense.srm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\SNES\SaveRam\SNES_06_RunPassPref.srm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\NES\SaveRam\TSPRBOWL.sav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\NES\SaveRam\TSB 2007-32-105.sav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\NES\SaveRam\SbluemanBase_18week_RealNFL-1.sav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Schedules\EighteenWeek_AlternateSchedule.txt">

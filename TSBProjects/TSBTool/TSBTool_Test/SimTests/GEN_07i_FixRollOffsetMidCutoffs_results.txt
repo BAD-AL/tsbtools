@@ -1,0 +1,78 @@
+====================================================================================================
+SIM TEST: GEN_07i_FixRollOffsetMidCutoffs
+ROM:      GEN_07i_FixRollOffsetMidCutoffs.bin   (platform: GENESIS)
+====================================================================================================
+
+QUESTION
+  Stock + GENESIS_FIX_SIM_BUGS + defense roll value - 83 + run cutoffs halfway to NES: stock scoring without the GEN_07g run inflation?
+
+WHAT IS DIFFERENT IN THIS ROM
+  Stock sim data (the game's own values for every team). The stock ROM plus GENESIS_FIX_SIM_BUGS, plus the GEN_07d routine at 0xDF100 (defense value - 83) and run-play cutoffs 39/71/A9/D2.
+
+GROUPS
+  A  (stock + fix + roll offset 83 + midpoint run cutoffs): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (stock + fix + roll offset 83 + midpoint run cutoffs): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (stock + fix + roll offset 83 + midpoint run cutoffs): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (stock + fix + roll offset 83 + midpoint run cutoffs): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - About 20 pts/game and about 130 rush yds/game (GEN_07d 18.3 / 115, GEN_07g 21.7 / 152), defense effect like GEN_07d.
+  - Save an ares state (.bs1) at the Season Menu after the season: every column can be read from it.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Pts for   | Pts allowed | Rush att  | Rush yds  | Pass att  | Pass yds  | Sacks made | INTs made
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  bills        | A    |  405      |  294        |  238      |  2504     |  160      |  1690     |  29        |  15      
+  jets         | A    |  304      |  318        |  258      |  2176     |  207      |  1806     |  26        |  12      
+  steelers     | A    |  335      |  305        |  219      |  2255     |  181      |  1830     |  23        |  9       
+  chargers     | A    |  285      |  259        |  242      |  1886     |  196      |  1864     |  32        |  6       
+  eagles       | A    |  356      |  320        |  211      |  2227     |  161      |  2033     |  31        |  3       
+  lions        | A    |  344      |  328        |  206      |  2063     |  176      |  1949     |  30        |  11      
+  falcons      | A    |  324      |  400        |  211      |  1767     |  214      |  2085     |  36        |  5       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  colts        | B    |  243      |  370        |  245      |  1786     |  192      |  1725     |  25        |  9       
+  bengals      | B    |  301      |  424        |  234      |  2400     |  194      |  1974     |  28        |  5       
+  broncos      | B    |  241      |  310        |  260      |  2237     |  175      |  1174     |  36        |  8       
+  seahawks     | B    |  259      |  298        |  288      |  2510     |  157      |  1503     |  29        |  7       
+  cardinals    | B    |  291      |  355        |  243      |  1914     |  207      |  1932     |  23        |  8       
+  packers      | B    |  253      |  386        |  184      |  1523     |  239      |  2523     |  24        |  7       
+  rams         | B    |  301      |  427        |  210      |  1824     |  229      |  2623     |  22        |  9       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  dolphins     | C    |  367      |  252        |  213      |  1828     |  211      |  2282     |  32        |  12      
+  browns       | C    |  275      |  347        |  186      |  1467     |  219      |  2346     |  23        |  12      
+  chiefs       | C    |  306      |  245        |  261      |  2257     |  164      |  1784     |  42        |  10      
+  cowboys      | C    |  450      |  207        |  244      |  2729     |  179      |  1811     |  22        |  21      
+  redskins     | C    |  352      |  337        |  236      |  2191     |  167      |  1641     |  18        |  13      
+  vikings      | C    |  350      |  302        |  239      |  2250     |  179      |  1976     |  30        |  10      
+  saints       | C    |  365      |  258        |  243      |  2389     |  201      |  1687     |  39        |  11      
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  patriots     | D    |  257      |  401        |  245      |  2028     |  204      |  1854     |  30        |  9       
+  oilers       | D    |  430      |  215        |  189      |  1983     |  231      |  2987     |  47        |  15      
+  raiders      | D    |  339      |  261        |  276      |  2022     |  166      |  1865     |  29        |  9       
+  giants       | D    |  307      |  380        |  264      |  2358     |  175      |  1642     |  35        |  7       
+  bears        | D    |  284      |  295        |  208      |  1911     |  196      |  1854     |  33        |  7       
+  buccaneers   | D    |  374      |  369        |  231      |  2214     |  186      |  2004     |  22        |  6       
+  49ers        | D    |  309      |  344        |  204      |  2310     |  217      |  1902     |  29        |  8       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+
+GROUP AVERAGES (optional)
+  A (stock + fix + roll offset 83 + midpoint run cutoffs): Pts for 336.1, Pts allowed 317.7, Rush att 226.4, Rush yds 2125.4, Pass att 185.0, Pass yds 1893.9, Sacks made 29.6, INTs made 8.7   (7 teams; averages per team, ratios from group totals)
+  B (stock + fix + roll offset 83 + midpoint run cutoffs): Pts for 269.9, Pts allowed 367.1, Rush att 237.7, Rush yds 2027.7, Pass att 199.0, Pass yds 1922.0, Sacks made 26.7, INTs made 7.6   (7 teams; averages per team, ratios from group totals)
+  C (stock + fix + roll offset 83 + midpoint run cutoffs): Pts for 352.1, Pts allowed 278.3, Rush att 231.7, Rush yds 2158.7, Pass att 188.6, Pass yds 1932.4, Sacks made 29.4, INTs made 12.7   (7 teams; averages per team, ratios from group totals)
+  D (stock + fix + roll offset 83 + midpoint run cutoffs): Pts for 328.6, Pts allowed 323.6, Rush att 231.0, Rush yds 2118.0, Pass att 196.4, Pass yds 2015.4, Sacks made 32.1, INTs made 8.7   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  All values read from the ares save state GEN_07i_FixRollOffsetMidCutoffs.bs1 (TSBTool -stats), not typed from the screens.
+  
+
+CONCLUSION
+  
+
+Tested by: ____________   Date: ____________   Emulator: ____________

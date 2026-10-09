@@ -1,0 +1,78 @@
+====================================================================================================
+SIM TEST: GEN_07g2_FixRollOffsetNesCutoffsRepeat
+ROM:      GEN_07g2_FixRollOffsetNesCutoffsRepeat.bin   (platform: GENESIS)
+====================================================================================================
+
+QUESTION
+  GEN_07g again (same ROM bytes): how much do the season numbers move between two seasons?
+
+WHAT IS DIFFERENT IN THIS ROM
+  Stock sim data (the game's own values for every team). Same as GEN_07g: stock + GENESIS_FIX_SIM_BUGS + defense roll value - 83 (routine at 0xDF100) + NES/SNES run-play cutoffs.
+
+GROUPS
+  A  (repeat of GEN_07g): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (repeat of GEN_07g): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (repeat of GEN_07g): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (repeat of GEN_07g): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Close to GEN_07g (21.7 pts/game, 152 rush yds/game); the differences show the season-to-season noise.
+  - Save an ares state (.bs1) at the Season Menu after the season: every column can be read from it.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Pts for   | Pts allowed | Rush att  | Rush yds  | Pass att  | Pass yds  | Sacks made | INTs made
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  bills        | A    |  434      |  353        |  205      |  2740     |  176      |  2032     |  39        |  13      
+  jets         | A    |  306      |  462        |  247      |  2743     |  190      |  1493     |  31        |  5       
+  steelers     | A    |  406      |  278        |  242      |  2867     |  184      |  1926     |  35        |  13      
+  chargers     | A    |  360      |  289        |  245      |  2394     |  143      |  1617     |  37        |  5       
+  eagles       | A    |  393      |  291        |  227      |  2984     |  157      |  1677     |  34        |  10      
+  lions        | A    |  415      |  370        |  203      |  2480     |  201      |  2448     |  29        |  10      
+  falcons      | A    |  352      |  417        |  204      |  2130     |  205      |  2091     |  40        |  9       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  colts        | B    |  285      |  352        |  243      |  2194     |  208      |  1741     |  27        |  7       
+  bengals      | B    |  332      |  431        |  263      |  2883     |  155      |  1472     |  28        |  8       
+  broncos      | B    |  348      |  314        |  211      |  2126     |  153      |  1843     |  31        |  8       
+  seahawks     | B    |  321      |  338        |  248      |  2512     |  167      |  1517     |  35        |  7       
+  cardinals    | B    |  284      |  351        |  244      |  2243     |  169      |  1685     |  31        |  8       
+  packers      | B    |  295      |  410        |  152      |  1523     |  203      |  2195     |  34        |  6       
+  rams         | B    |  336      |  434        |  230      |  2208     |  225      |  2387     |  23        |  5       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  dolphins     | C    |  353      |  307        |  209      |  2210     |  192      |  1934     |  28        |  9       
+  browns       | C    |  328      |  373        |  182      |  1743     |  247      |  2540     |  29        |  12      
+  chiefs       | C    |  358      |  331        |  269      |  2676     |  157      |  1622     |  27        |  11      
+  cowboys      | C    |  384      |  295        |  237      |  2809     |  157      |  1805     |  35        |  9       
+  redskins     | C    |  445      |  295        |  236      |  2619     |  177      |  1915     |  26        |  15      
+  vikings      | C    |  362      |  310        |  246      |  2485     |  148      |  1636     |  34        |  13      
+  saints       | C    |  349      |  302        |  236      |  2465     |  183      |  2075     |  35        |  7       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  patriots     | D    |  347      |  432        |  212      |  2137     |  205      |  2289     |  28        |  10      
+  oilers       | D    |  420      |  346        |  160      |  1987     |  223      |  2906     |  28        |  12      
+  raiders      | D    |  355      |  325        |  277      |  2679     |  131      |  1548     |  20        |  9       
+  giants       | D    |  359      |  463        |  291      |  2912     |  164      |  1610     |  26        |  6       
+  bears        | D    |  323      |  354        |  271      |  2964     |  177      |  1593     |  27        |  10      
+  buccaneers   | D    |  362      |  444        |  279      |  3093     |  205      |  1526     |  15        |  12      
+  49ers        | D    |  387      |  332        |  215      |  2745     |  198      |  2123     |  22        |  13      
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+
+GROUP AVERAGES (optional)
+  A (repeat of GEN_07g): Pts for 380.9, Pts allowed 351.4, Rush att 224.7, Rush yds 2619.7, Pass att 179.4, Pass yds 1897.7, Sacks made 35.0, INTs made 9.3   (7 teams; averages per team, ratios from group totals)
+  B (repeat of GEN_07g): Pts for 314.4, Pts allowed 375.7, Rush att 227.3, Rush yds 2241.3, Pass att 182.9, Pass yds 1834.3, Sacks made 29.9, INTs made 7.0   (7 teams; averages per team, ratios from group totals)
+  C (repeat of GEN_07g): Pts for 368.4, Pts allowed 316.1, Rush att 230.7, Rush yds 2429.6, Pass att 180.1, Pass yds 1932.4, Sacks made 30.6, INTs made 10.9   (7 teams; averages per team, ratios from group totals)
+  D (repeat of GEN_07g): Pts for 364.7, Pts allowed 385.1, Rush att 243.6, Rush yds 2645.3, Pass att 186.1, Pass yds 1942.1, Sacks made 23.7, INTs made 10.3   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  All values read from the ares save state GEN_07g2_FixRollOffsetNesCutoffsRepeat.bs1 (TSBTool -stats), not typed from the screens.
+  
+
+CONCLUSION
+  
+
+Tested by: ____________   Date: ____________   Emulator: ____________

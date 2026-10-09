@@ -209,6 +209,49 @@ namespace TSBTool_Test
             }
         }
 
+        // Once an edit has made room (a shorter name), a later longer name fits -- but the shift that makes
+        // room for it must move only the live name data, not the leftover room at the end of the table:
+        // moving the whole region pushed its last bytes into the attribute table, overwriting the Bills'
+        // QB1 record (seen applying a full SNES roster: Jim Kelly came out Face=0x4b, 75, 31, 31, 75...).
+        private const int AttributeTableStart = 0x89FC;
+        private const int AttributeTableLength = 896 * 5;
+
+        private static void AssertAttributeTableUntouched(byte[] before, byte[] after)
+        {
+            for (int i = AttributeTableStart; i < AttributeTableStart + AttributeTableLength; i++)
+                Assert.AreEqual(before[i], after[i], string.Format("Attribute table byte 0x{0:X} changed.", i));
+        }
+
+        [TestMethod]
+        public void GenesisRom_InsertPlayer_LongerLastEntryAfterAShorterName_LeavesAttributeTableUntouched()
+        {
+            byte[] rom = TestRoms.LoadRom(RomFileName);
+            byte[] romBefore = (byte[])rom.Clone();
+            Genesis_TSB1Tool tool = (Genesis_TSB1Tool)TecmoToolFactory.GetToolForRom(rom);
+
+            tool.InsertPlayer("49ers", "P", "p", "49ERS", 0x09);           // frees room
+            tool.InsertPlayer("49ers", "DB2", "merton", "HANKSXX", 0x36);  // stock "mertonHANKS" + 2
+
+            Assert.AreEqual("mertonHANKSXX", tool.GetPlayerName("49ers", "DB2"));
+            Assert.AreEqual("jimKELLY", tool.GetPlayerName("bills", "QB1"));
+            AssertAttributeTableUntouched(romBefore, tool.OutputRom);
+        }
+
+        [TestMethod]
+        public void GenesisRom_InsertPlayer_LongerEarlyEntryAfterAShorterName_LeavesAttributeTableUntouched()
+        {
+            byte[] rom = TestRoms.LoadRom(RomFileName);
+            byte[] romBefore = (byte[])rom.Clone();
+            Genesis_TSB1Tool tool = (Genesis_TSB1Tool)TecmoToolFactory.GetToolForRom(rom);
+
+            tool.InsertPlayer("49ers", "QB1", "x", "X", 0x00);                      // frees room
+            tool.InsertPlayer("bills", "RB1", "alexander", "THUNDERBOLT", 0x22);   // grows
+
+            Assert.AreEqual("alexanderTHUNDERBOLT", tool.GetPlayerName("bills", "RB1"));
+            Assert.AreEqual("mertonHANKS", tool.GetPlayerName("49ers", "DB2"));
+            AssertAttributeTableUntouched(romBefore, tool.OutputRom);
+        }
+
         [TestMethod]
         public void Compress49ersNames_ReplacesAllThirtyTwoPositionsWithPositionPlusFortyNiners()
         {

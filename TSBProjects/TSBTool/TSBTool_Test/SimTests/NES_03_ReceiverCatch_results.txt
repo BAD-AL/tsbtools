@@ -1,0 +1,80 @@
+====================================================================================================
+SIM TEST: NES_03_ReceiverCatch
+ROM:      NES_03_ReceiverCatch.nes   (platform: NES)
+====================================================================================================
+
+QUESTION
+  How much does a receiver's Sim catch change completions? (Open question 1: pass outcomes)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: All RB/WR/TE Sim catch = 0 / 5 / 10 / 15 by group. All teams preference 3 (70% pass).
+
+GROUPS
+  A  (Sim catch 0): bills, jets, steelers, chargers, eagles, lions, 49ers
+  B  (Sim catch 5): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (Sim catch 10): dolphins, browns, chiefs, redskins, cowboys, vikings, saints
+  D  (Sim catch 15): patriots, oilers, raiders, giants, bears, buccaneers, falcons
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Completion % should rise from group A to D.
+  - Compare with NES_02: which of QB Sim pass / receiver Sim catch moves completions more?
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Pass att  | Comp      | Pass yds  | INT thrown
+  -------------+------+-----------+-----------+-----------+-----------
+  bills        | A    |  241      |  149      |  3,898    |   14      
+  jets         | A    |  236      |  126      |  3,250    |   18      
+  steelers     | A    |  252      |  132      |  3,367    |   18      
+  chargers     | A    |  263      |  134      |  3,344    |   22      
+  eagles       | A    |  288      |  144      |  3,489    |   32      
+  lions        | A    |  262      |  135      |  3,155    |   23      
+  49ers        | A    |  249      |  141      |  3,683    |   15      
+  -------------+------+-----------+-----------+-----------+-----------
+  colts        | B    |  238      |  142      |  3,596    |   17      
+  bengals      | B    |  275      |  152      |  3,688    |   16      
+  broncos      | B    |  251      |  145      |  3,886    |   16      
+  seahawks     | B    |  270      |  160      |  4,061    |   22      
+  cardinals    | B    |  282      |  154      |  3,587    |   28      
+  packers      | B    |  264      |  147      |  3,624    |   17      
+  rams         | B    |  223      |  134      |  3,592    |   22      
+  -------------+------+-----------+-----------+-----------+-----------
+  dolphins     | C    |   266     |  162      |  4,218    |   22      
+  browns       | C    |   240     |  135      |  3,136    |   17      
+  chiefs       | C    |   243     |  160      |  4,110    |   13      
+  redskins     | C    |   265     |  156      |  3,828    |   21      
+  cowboys      | C    |   250     |  156      |  3,753    |   15      
+  vikings      | C    |   252     |  154      |  3,747    |   20      
+  saints       | C    |   257     |  165      |  3,894    |   18      
+  -------------+------+-----------+-----------+-----------+-----------
+  patriots     | D    |   256     |   165     |  4,073    |  21       
+  oilers       | D    |   253     |   180     |  4,342    |  14       
+  raiders      | D    |   251     |   170     |  4,054    |  13       
+  giants       | D    |   247     |   171     |  4,269    |  15       
+  bears        | D    |   241     |   167     |  4,047    |  16       
+  buccaneers   | D    |   253     |   173     |  3,991    |  15       
+  falcons      | D    |   262     |   169     |  3,791    |  20       
+  -------------+------+-----------+-----------+-----------+-----------
+
+GROUP AVERAGES (optional)
+  A (Sim catch 0): Pass att 255.9, Comp 137.3, Pass yds 3455.1, INT thrown 20.3, Comp % 53.7, Yds/comp 25.2   (7 teams; averages per team, ratios from group totals)
+  B (Sim catch 5): Pass att 257.6, Comp 147.7, Pass yds 3719.1, INT thrown 19.7, Comp % 57.3, Yds/comp 25.2   (7 teams; averages per team, ratios from group totals)
+  C (Sim catch 10): Pass att 253.3, Comp 155.4, Pass yds 3812.3, INT thrown 18.0, Comp % 61.4, Yds/comp 24.5   (7 teams; averages per team, ratios from group totals)
+  D (Sim catch 15): Pass att 251.9, Comp 170.7, Pass yds 4081.0, INT thrown 16.3, Comp % 67.8, Yds/comp 23.9   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  
+
+CONCLUSION
+  
+
+Tested by: _cbadal_______   Date: ___10/6/2026____   Emulator: ____MSEEN____

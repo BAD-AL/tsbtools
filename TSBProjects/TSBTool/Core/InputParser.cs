@@ -188,6 +188,13 @@ namespace TSBTool
 			{
 				tool.ApplySet(line);
 			}
+            else if (line == "GENESIS_FIX_SIM_BUGS")
+            {
+                // Genesis-only game fix; other ROM types ignore the line.
+                Genesis_TSB1Tool genesisTool = tool as Genesis_TSB1Tool;
+                if (genesisTool != null)
+                    genesisTool.FixSimBugs();
+            }
             else if ((m = playbookRegex.Match(line)) != Match.Empty)
 			{
 				if( m != Match.Empty )

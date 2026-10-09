@@ -176,7 +176,7 @@ namespace TSBTool
 		{
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RichTextDisplay));
-            this.richTextBox = new System.Windows.Forms.RichTextBox();
+            this.richTextBox = new SearchTextBox();
             this.contextMenu1 = new System.Windows.Forms.ContextMenu();
             this.mContextLoadMenuItem = new System.Windows.Forms.MenuItem();
             this.mContextSaveMenuItem = new System.Windows.Forms.MenuItem();

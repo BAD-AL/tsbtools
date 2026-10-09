@@ -1,0 +1,84 @@
+====================================================================================================
+SIM TEST: NES_09_DefenderWeights
+ROM:      NES_09_DefenderWeights.nes   (platform: NES)
+====================================================================================================
+
+QUESTION
+  Do defenders' Sim pass rush / Sim coverage only decide WHO gets sacks and INTs, not how many? Which byte drives which? What happens to leftover weight? (Open question 4)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: Defender [pass rush, coverage]: A = everyone [23, 23]; B = pass rush RE 255, others 0 / coverage LE 255, others 0; C = everyone [0, 0]; D = everyone [200, 200].
+
+GROUPS
+  A  (all [23,23]): bills, jets, steelers, chargers, eagles, lions, 49ers
+  B  (RE rush 255 / LE cover 255, rest 0): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (all [0,0]): dolphins, browns, chiefs, redskins, cowboys, vikings, saints
+  D  (all [200,200]): patriots, oilers, raiders, giants, bears, buccaneers, falcons
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - How credit is picked (code $9789 / $9802): random 0-255, take each of the first 10 defenders (RE, NT, LE, ROLB, RILB, LILB, LOLB, RCB, LCB, FS) in turn: if the number is below his value he gets it, otherwise subtract his value and go on. Whatever is left goes to the SS. Stock teams' 11 values add up to 255.
+  - If the values only pick WHO gets credit: team sacks and team INTs about the same in all four groups.
+  - A: sacks/INTs spread about evenly (about 9% each; SS a little more).
+  - B: the RE gets every sack and the LE every INT -- shows pass rush drives sacks, coverage drives INTs.
+  - C: the SS gets every sack and every INT (all the weight is leftover).
+  - D: the RE gets about 78% and the NT about 22% of both; nobody else gets any (values are not scaled when the total is over 255).
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Team sacks | Team INTs | RE sacks  | NT sacks  | SS sacks  | LE INTs   | SS INTs   | Pts allowed
+  -------------+------+------------+-----------+-----------+-----------+-----------+-----------+-----------+------------
+  bills        | A    |    33      |    17     |   3       |   2       |  5        |     1     |   4       |    382     
+  jets         | A    |    35      |    15     |   7       |   3       |  3        |     3     |   1       |    398     
+  steelers     | A    |    31      |    10     |   2       |   6       |  3        |     0     |   0       |    356     
+  chargers     | A    |    39      |    14     |   6       |   2       |  5        |     2     |   1       |    377     
+  eagles       | A    |    42      |    16     |   5       |   5       |  4        |     0     |   3       |    344  
+  lions        | A    |    22      |    15     |   1       |   2       |  3        |     3     |   2       |    421     
+  49ers        | A    |    37      |    17     |   2       |   5       |  3        |     0     |   2       |    328     
+  -------------+------+------------+-----------+-----------+-----------+-----------+-----------+-----------+------------
+  colts        | B    |    34      |    15     |   33      |   0       |  1        |     15    |   0       |    348     
+  bengals      | B    |    42      |    11     |   42      |   0       |  0        |     11    |   0       |    341     
+  broncos      | B    |    37      |    13     |   37      |   0       |  0        |     13    |   0       |    373     
+  seahawks     | B    |    41      |    10     |   39      |   0       |  2        |     10    |   0       |    379     
+  cardinals    | B    |    23      |    10     |   23      |   0       |  0        |     10    |   0       |    467  
+  packers      | B    |    28      |    13     |   27      |   0       |  1        |     13    |   0       |    403     
+  rams         | B    |    31      |    16     |   29      |   0       |  2        |     16    |   0       |    399     
+  -------------+------+------------+-----------+-----------+-----------+-----------+-----------+-----------+------------
+  dolphins     | C    |    37      |    15     |   0       |   0       |  37       |     0     |   15      |    377     
+  browns       | C    |    29      |    20     |   0       |   0       |  29       |     0     |   20      |    361     
+  chiefs       | C    |    33      |    14     |   0       |   0       |  33       |     0     |   14      |    402     
+  redskins     | C    |    44      |    17     |   0       |   0       |  44       |     0     |   17      |    331     
+  cowboys      | C    |    23      |    13     |   0       |   0       |  23       |     0     |   13      |    422     
+  vikings      | C    |    23      |    17     |   0       |   0       |  23       |     0     |   17      |    375     
+  saints       | C    |    46      |    15     |   0       |   0       |  46       |     0     |   15      |    379     
+  -------------+------+------------+-----------+-----------+-----------+-----------+-----------+-----------+------------
+  patriots     | D    |    37      |    14     |   31      |   6       |  0        |     0     |   0       |    378     
+  oilers       | D    |    29      |    11     |   26      |   3       |  0        |     0     |   0       |    387     
+  raiders      | D    |    19      |    13     |   14      |   5       |  0        |     0     |   0       |    388     
+  giants       | D    |    33      |    18     |   30      |   3       |  0        |     0     |   0       |    394     
+  bears        | D    |    31      |    15     |   30      |   1       |  0        |     0     |   0       |    402     
+  buccaneers   | D    |    40      |    15     |   29      |   11      |  0        |     0     |   0       |    367     
+  falcons      | D    |    40      |    14     |   36      |   4       |  0        |     0     |   0       |    361     
+  -------------+------+------------+-----------+-----------+-----------+-----------+-----------+-----------+------------
+
+GROUP AVERAGES (optional)
+  A (all [23,23]): Team sacks 34.1, Team INTs 14.9, RE sacks 3.7, NT sacks 3.6, SS sacks 3.7, LE INTs 1.3, SS INTs 1.9, Pts allowed 372.3, RE % of sacks 11, NT % of sacks 10, SS % of sacks 11, LE % of INTs 9, SS % of INTs 12   (7 teams; averages per team, ratios from group totals)
+  B (RE rush 255 / LE cover 255, rest 0): Team sacks 33.7, Team INTs 12.6, RE sacks 32.9, NT sacks 0.0, SS sacks 0.9, LE INTs 12.6, SS INTs 0.0, Pts allowed 387.1, RE % of sacks 97, NT % of sacks 0, SS % of sacks 3, LE % of INTs 100, SS % of INTs 0   (7 teams; averages per team, ratios from group totals)
+  C (all [0,0]): Team sacks 33.6, Team INTs 15.9, RE sacks 0.0, NT sacks 0.0, SS sacks 33.6, LE INTs 0.0, SS INTs 15.9, Pts allowed 378.1, RE % of sacks 0, NT % of sacks 0, SS % of sacks 100, LE % of INTs 0, SS % of INTs 100   (7 teams; averages per team, ratios from group totals)
+  D (all [200,200]): Team sacks 32.7, Team INTs 14.3, RE sacks 28.0, NT sacks 4.7, SS sacks 0.0, LE INTs 0.0, SS INTs 0.0, Pts allowed 382.4, RE % of sacks 86, NT % of sacks 14, SS % of sacks 0, LE % of INTs 0, SS % of INTs 0   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  
+
+CONCLUSION
+  
+
+Tested by: __CBADAL_______   Date: ___10/7/2026___   Emulator: __MSEEN_____

@@ -15,11 +15,9 @@ namespace TSBTool_Test
     // no bounds check at all and just applies whatever it's given (auto-abbreviated to its own cap), so
     // -noAutoFit's only real, testable guarantee is that it skips the auto-trim step itself.
     //
-    // Uses relative filenames + a CurrentDirectory swap, exactly like GenesisCliTests' RunInScratchDir --
-    // MainClass's own "-out:"/"-get:" option parsing does a naive Split(':'), which mangles an absolute
-    // Windows path (the drive letter's own colon splits it too), so an absolute "-out:" value silently
-    // saves to a bogus one-or-two-character filename instead. Relative filenames are the only form that
-    // survives that parsing intact.
+    // Uses relative filenames + a CurrentDirectory swap, exactly like GenesisCliTests' RunInScratchDir.
+    // (Originally because "-out:"/"-get:" parsing split on ':' and mangled absolute Windows paths; that's
+    // fixed now -- see GenesisCliTests' Cli_OutFileName_* / Cli_GetFileName_* tests.)
     [TestClass]
     public class NesSnesPlayerNamesCliTests
     {

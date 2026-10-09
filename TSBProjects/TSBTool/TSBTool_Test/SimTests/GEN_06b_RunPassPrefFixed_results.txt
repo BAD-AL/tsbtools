@@ -1,0 +1,83 @@
+====================================================================================================
+SIM TEST: GEN_06b_RunPassPrefFixed
+ROM:      GEN_06b_RunPassPrefFixed.bin   (platform: GENESIS)
+====================================================================================================
+
+QUESTION
+  Does GENESIS_FIX_SIM_BUGS make preference 1 play as heavy rushing?
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: Run/pass preference = 0 / 1 / 2 / 3 by group, and the GENESIS_FIX_SIM_BUGS game fix is applied.
+
+GROUPS
+  A  (Preference 0): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (Preference 1): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (Preference 2): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (Preference 3): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Like NES_06: pass share about A 42%, B 38%, C 55%, D 62% (GEN_06 without the fix had B at 72%).
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Rush att  | Pass att  | Pass %
+  -------------+------+-----------+-----------+----------
+  bills        | A    |  256      |   201     | 44.0     
+  jets         | A    |  248      |   201     | 44.8     
+  steelers     | A    |  220      |   207     | 48.5     
+  chargers     | A    |  259      |   171     | 39.8     
+  eagles       | A    |  250      |   197     | 44.1     
+  lions        | A    |  250      |   156     | 38.4     
+  falcons      | A    |  259      |   180     | 41.0     
+  -------------+------+-----------+-----------+----------
+  colts        | B    |  261      |   157     | 37.6     
+  bengals      | B    |  273      |   167     | 38.0     
+  broncos      | B    |  269      |   163     | 37.7     
+  seahawks     | B    |  258      |   144     | 35.8     
+  cardinals    | B    |  275      |   162     | 37.1     
+  packers      | B    |  271      |   156     | 36.5     
+  rams         | B    |  282      |   147     | 34.3     
+  -------------+------+-----------+-----------+----------
+  dolphins     | C    |  223      |   216     | 49.2     
+  browns       | C    |  201      |   211     | 51.2     
+  chiefs       | C    |  204      |   216     | 51.4     
+  cowboys      | C    |  218      |   200     | 47.8     
+  redskins     | C    |  223      |   232     | 51.0     
+  vikings      | C    |  217      |   238     | 52.3     
+  saints       | C    |  213      |   221     | 50.9     
+  -------------+------+-----------+-----------+----------
+  patriots     | D    |  184      |   231     | 55.7     
+  oilers       | D    |  215      |   260     | 54.7     
+  raiders      | D    |  170      |   228     | 57.3     
+  giants       | D    |  190      |   234     | 55.2     
+  bears        | D    |  181      |   233     | 56.3     
+  buccaneers   | D    |  179      |   232     | 56.4     
+  49ers        | D    |  200      |   252     | 55.8     
+  -------------+------+-----------+-----------+----------
+
+GROUP AVERAGES (optional)
+  A (Preference 0): Rush att 248.9, Pass att 187.6, Pass % 43.0   (7 teams; averages per team, ratios from group totals)
+  B (Preference 1): Rush att 269.9, Pass att 156.6, Pass % 36.7   (7 teams; averages per team, ratios from group totals)
+  C (Preference 2): Rush att 214.1, Pass att 219.1, Pass % 50.6   (7 teams; averages per team, ratios from group totals)
+  D (Preference 3): Rush att 188.4, Pass att 238.6, Pass % 55.9   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  vikings rush att corrected 185 -> 217 from the ares save state (confirmed by your rushing re-read, Rushing.csv).
+  giants rush att corrected 187 -> 190 from the ares save state (confirmed by your rushing re-read, Rushing.csv).
+  raiders rush att corrected 237 -> 170 from the ares save state (confirmed by your rushing re-read, Rushing.csv).
+  dolphins rush att corrected 225 -> 223 from the ares save state (confirmed by your rushing re-read, Rushing.csv).
+  
+
+CONCLUSION
+  
+
+Tested by: __cbadal_______   Date: __10/7/2026___   Emulator: __ares___

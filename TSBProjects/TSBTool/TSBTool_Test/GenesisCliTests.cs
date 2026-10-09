@@ -160,6 +160,72 @@ namespace TSBTool_Test
             });
         }
 
+        [TestMethod]
+        public void Cli_OutFileName_KeepsItsCase()
+        {
+            RunInScratchDir(scratchDir =>
+            {
+                string localRomName = "genesis.md";
+                File.Copy(TestRoms.GetRomPath(RomFileName), Path.Combine(scratchDir, localRomName));
+                string inputFile = "input.txt";
+                File.WriteAllText(Path.Combine(scratchDir, inputFile), "TEAM = bills SimData=0x0\n");
+
+                MainClass.RunMain(new[] { localRomName, inputFile, "-out:GEN_Output_Mixed.md" });
+
+                // File.Exists ignores case on Windows, so look at the name actually written
+                string[] written = Directory.GetFiles(scratchDir, "*output_mixed.md");
+                Assert.AreEqual(1, written.Length);
+                Assert.AreEqual("GEN_Output_Mixed.md", Path.GetFileName(written[0]));
+            });
+        }
+
+        [TestMethod]
+        public void Cli_OutFileName_FullPathWithDrive_IsUsed()
+        {
+            RunInScratchDir(scratchDir =>
+            {
+                string localRomName = "genesis.md";
+                File.Copy(TestRoms.GetRomPath(RomFileName), Path.Combine(scratchDir, localRomName));
+                string inputFile = "input.txt";
+                File.WriteAllText(Path.Combine(scratchDir, inputFile), "TEAM = bills SimData=0x0\n");
+                string fullOut = Path.Combine(Path.Combine(scratchDir, "sub dir"), "Full.md");
+                Directory.CreateDirectory(Path.GetDirectoryName(fullOut));
+                StringAssert.Contains(fullOut, ":"); // e.g. C:\Users\...
+
+                MainClass.RunMain(new[] { localRomName, inputFile, "-out:" + fullOut });
+
+                Assert.IsTrue(File.Exists(fullOut), "Expected the ROM written to " + fullOut);
+            });
+        }
+
+        [TestMethod]
+        public void Cli_GetFileName_FullPathWithDrive_IsUsed()
+        {
+            RunInScratchDir(scratchDir =>
+            {
+                string localRomName = "genesis.md";
+                File.Copy(TestRoms.GetRomPath(RomFileName), Path.Combine(scratchDir, localRomName));
+                string getFile = Path.Combine(Path.Combine(scratchDir, "sub dir"), "Locations.txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(getFile));
+                File.WriteAllText(getFile, "0x100 - 0x10F\n");
+                StringAssert.Contains(getFile, ":"); // e.g. C:\Users\...
+
+                TextWriter originalOut = Console.Out;
+                StringWriter captured = new StringWriter();
+                Console.SetOut(captured);
+                try
+                {
+                    MainClass.RunMain(new[] { localRomName, "-get:" + getFile });
+                }
+                finally
+                {
+                    Console.SetOut(originalOut);
+                }
+
+                StringAssert.Contains(captured.ToString(), "SET(0x100", "Expected the -get: file's locations printed.");
+            });
+        }
+
         private static void RunInScratchDir(Action<string> test)
         {
             string scratchDir = Path.Combine(Path.GetTempPath(), "TSBToolGenesisCliTest_" + Guid.NewGuid().ToString("N"));

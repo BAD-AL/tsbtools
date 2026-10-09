@@ -1,0 +1,81 @@
+====================================================================================================
+SIM TEST: NES_08_Returners
+ROM:      NES_08_Returners.nes   (platform: NES)
+====================================================================================================
+
+QUESTION
+  Which sim value do kick and punt returners use? (Open question 3)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: All RB/WR/TE (Sim rush, Sim yards per catch): A = (0, 0), B = (15, 0), C = (0, 15), D = (15, 15). Every skill player on a team is identical, so it does not matter which one is the returner.
+
+GROUPS
+  A  (rush 0 / ypc 0): bills, jets, steelers, chargers, eagles, lions, 49ers
+  B  (rush 15 / ypc 0): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (rush 0 / ypc 15): dolphins, browns, chiefs, redskins, cowboys, vikings, saints
+  D  (rush 15 / ypc 15): patriots, oilers, raiders, giants, bears, buccaneers, falcons
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - If returners use Sim rush: B and D return well, A and C poorly.
+  - If returners use Sim yards per catch: C and D return well, A and B poorly.
+  - If all four groups are the same, the returner value comes from somewhere else (e.g. another player's byte).
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | KR att    | KR yds    | KR avg    | PR att    | PR yds    | PR avg
+  -------------+------+-----------+-----------+-----------+-----------+-----------+----------
+  bills        | A    |  71       |  1167     | 16.4      |   16      |  183      | 11.4     
+  jets         | A    |  73       |  1251     | 17.1      |   10      |  95       | 9.5      
+  steelers     | A    |  69       |  1220     | 17.7      |   10      |  53       | 5.3      
+  chargers     | A    |  63       |  1103     | 17.5      |   12      |  136      | 11.3     
+  eagles       | A    |  68       |  1044     | 15.4      |   11      |   90      | 8.2      
+  lions        | A    |  68       |  1261     | 18.5      |   11      |   76      | 6.9      
+  49ers        | A    |  80       |  1359     | 17.0      |   11      |   84      | 7.6      
+  -------------+------+-----------+-----------+-----------+-----------+-----------+----------
+  colts        | B    |  65       |  1755     | 27.0      |   15      |   224     | 14.9     
+  bengals      | B    |  68       |  1846     | 27.1      |   11      |    93     | 8.5      
+  broncos      | B    |  67       |  1855     | 27.7      |   14      |    192    | 13.7     
+  seahawks     | B    |  68       |  1813     | 26.7      |   17      |    204    | 12.0     
+  cardinals    | B    |  65       |  1647     | 25.3      |   16      |    178    | 11.1     
+  packers      | B    |  70       |  1892     | 27.0      |   10      |    148    | 14.8     
+  rams         | B    |  71       |  1952     | 27.5      |   12      |    133    | 11.1     
+  -------------+------+-----------+-----------+-----------+-----------+-----------+----------
+  dolphins     | C    |  75       |  1311     | 17.5      |   11      |    98     | 8.9      
+  browns       | C    |  76       |  1183     | 15.6      |   15      |    134    | 8.9      
+  chiefs       | C    |  74       |  1260     | 17.0      |   12      |    119    | 9.9      
+  redskins     | C    |  81       |  1339     | 16.5      |   10      |    88     | 8.8      
+  cowboys      | C    |  75       |  1359     | 18.1      |   10      |   106     | 10.6     
+  vikings      | C    |  83       |  1367     | 16.5      |   15      |   114     | 7.6      
+  saints       | C    |  72       |  1202     | 16.7      |   9       |   112     | 12.4     
+  -------------+------+-----------+-----------+-----------+-----------+-----------+----------
+  patriots     | D    |   69      |   1781    | 25.8      |   11      |   139     | 12.6     
+  oilers       | D    |   66      |   1195    | 18.1      |   16      |   131     | 8.2      
+  raiders      | D    |   73      |   1798    | 24.6      |   10      |   63      | 6.3      
+  giants       | D    |   45      |   1183    | 26.3      |   14      |  171      | 12.2     
+  bears        | D    |   72      |   1844    | 25.6      |   11      |  102      | 9.3      
+  buccaneers   | D    |   62      |   1616    | 26.1      |   20      |  232      | 11.6     
+  falcons      | D    |   75      |   2047    | 27.3      |   11      |  107      | 9.7      
+  -------------+------+-----------+-----------+-----------+-----------+-----------+----------
+
+GROUP AVERAGES (optional)
+  A (rush 0 / ypc 0): KR att 70.3, KR yds 1200.7, PR att 11.6, PR yds 102.4, KR avg 17.1, PR avg 8.9   (7 teams; averages per team, ratios from group totals)
+  B (rush 15 / ypc 0): KR att 67.7, KR yds 1822.9, PR att 13.6, PR yds 167.4, KR avg 26.9, PR avg 12.3   (7 teams; averages per team, ratios from group totals)
+  C (rush 0 / ypc 15): KR att 76.6, KR yds 1288.7, PR att 11.7, PR yds 110.1, KR avg 16.8, PR avg 9.4   (7 teams; averages per team, ratios from group totals)
+  D (rush 15 / ypc 15): KR att 66.0, KR yds 1637.7, PR att 13.3, PR yds 135.0, KR avg 24.8, PR avg 10.2   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  KR ave, PR ave can be calculated.
+
+CONCLUSION
+  
+
+Tested by: _cbadal_______   Date: ____10/7/2026__   Emulator: __MSEEN______

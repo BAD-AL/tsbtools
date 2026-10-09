@@ -568,7 +568,7 @@ Do you want to continue?", ROM_LENGTH);
 # -- Quarterbacks:
 # Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].
 # -- Offensive Skill players (non-QB):
-# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, BC, REC, [Sim rush, Sim catch, Sim punt Ret, Sim kick ret].
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, BC, REC, [Sim rush, Sim catch, Sim yards per catch, Sim targets].
 # -- Offensive Linemen:
 # Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP
 # -- Defensive Players:
@@ -576,7 +576,7 @@ Do you want to continue?", ROM_LENGTH);
 # -- Punters and Kickers:
 # Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, KA, AKB,[ Sim kicking ability].
 # TEAM:\n
-#  name, SimData  0x<offense><defense><offense preference>
+#  name, SimData  0x<rush defense><pass defense><offense preference>
 #  Offensive pref values 0-3. 
 #     0 = Little more rushing, 1 = Heavy Rushing,
 #     2 = little more passing, 3 = Heavy Passing.
@@ -1523,9 +1523,9 @@ Do you want to continue?", ROM_LENGTH);
 
 		/// <summary>
 		/// Returns the simulation data for the given team.
-		/// Simulation data is of the form '0xNN' where N is a number 1-F (hex).
-		/// A team's sim data of '0x57' signifies that the team has a simulation figure of
-		/// '5' for offense, and '7' for defense.
+		/// Simulation data is of the form '0xNN' where N is a hex digit 0-F.
+		/// High digit = rush defense, low digit = pass defense: '0x57' means rush defense 5,
+		/// pass defense 7. (NES sim code: run plays use the defending team's high digit, pass plays its low digit.)
 		/// </summary>
 		/// <param name="team">The team of interest</param>
 		/// <returns></returns>
@@ -1541,10 +1541,10 @@ Do you want to continue?", ROM_LENGTH);
 		}
 
 		/// <summary>
-		/// Sets the given team's offense and defense sim values.
-		/// Simulation data is of the form '0xNN' where N is a number 1-F (hex).
-		/// A team's sim data of '0x57' signifies that the team has a simulation figure of
-		/// '5' for offense, and '7' for defense.
+		/// Sets the given team's rush defense and pass defense sim values.
+		/// Simulation data is of the form '0xNN' where N is a hex digit 0-F.
+		/// High digit = rush defense, low digit = pass defense: '0x57' means rush defense 5,
+		/// pass defense 7. (NES sim code: run plays use the defending team's high digit, pass plays its low digit.)
 		/// </summary>
 		/// <param name="team">The team to set.</param>
 		/// <param name="values">The value to set it to.</param>
@@ -1590,7 +1590,7 @@ Do you want to continue?", ROM_LENGTH);
 		}
 
 		/// <summary>
-		/// Sets the team sim offense tendency . 
+		/// Gets the team sim offense tendency . 
 		/// 00 = Little more rushing, 01 = Heavy Rushing, 
 		/// 02 = little more passing, 03 = Heavy Passing. 
 		/// </summary>

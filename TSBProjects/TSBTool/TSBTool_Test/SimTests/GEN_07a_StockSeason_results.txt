@@ -1,0 +1,78 @@
+====================================================================================================
+SIM TEST: GEN_07a_StockSeason
+ROM:      GEN_07a_StockSeason.bin   (platform: GENESIS)
+====================================================================================================
+
+QUESTION
+  How much do teams score in a stock Genesis season (the game's own sim data, no fixes)? Baseline for GEN_07b.
+
+WHAT IS DIFFERENT IN THIS ROM
+  Stock sim data (the game's own values for every team). Nothing: this is the stock ROM, byte for byte.
+
+GROUPS
+  A  (stock): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (stock): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (stock): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (stock): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Normal-looking Genesis scores. Compare the league totals with GEN_07b.
+  - Save an ares state (.bs1) at the Season Menu after the season: every column can be read from it.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Pts for   | Pts allowed | Rush att  | Rush yds  | Pass att  | Pass yds  | Sacks made | INTs made
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  bills        | A    |  409      |  325        |  245      |  2895     |  164      |  1909     |  37        |  9       
+  jets         | A    |  387      |  237        |  290      |  2307     |  201      |  1883     |  23        |  24      
+  steelers     | A    |  359      |  284        |  219      |  2006     |  189      |  2226     |  18        |  16      
+  chargers     | A    |  284      |  270        |  255      |  1854     |  192      |  2119     |  41        |  10      
+  eagles       | A    |  360      |  319        |  217      |  2710     |  177      |  1755     |  42        |  9       
+  lions        | A    |  323      |  378        |  175      |  2416     |  190      |  1886     |  28        |  5       
+  falcons      | A    |  370      |  340        |  196      |  1700     |  211      |  2281     |  28        |  17      
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  colts        | B    |  254      |  375        |  216      |  1455     |  225      |  2443     |  24        |  7       
+  bengals      | B    |  359      |  360        |  237      |  2630     |  178      |  2129     |  35        |  13      
+  broncos      | B    |  321      |  362        |  234      |  2289     |  180      |  1894     |  19        |  8       
+  seahawks     | B    |  346      |  339        |  244      |  2084     |  173      |  1923     |  36        |  10      
+  cardinals    | B    |  332      |  359        |  228      |  1938     |  186      |  2401     |  36        |  10      
+  packers      | B    |  316      |  332        |  186      |  1365     |  265      |  3029     |  40        |  12      
+  rams         | B    |  365      |  321        |  233      |  1910     |  241      |  2701     |  24        |  13      
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  dolphins     | C    |  314      |  313        |  237      |  1960     |  216      |  2480     |  25        |  8       
+  browns       | C    |  356      |  328        |  213      |  1585     |  255      |  3033     |  34        |  12      
+  chiefs       | C    |  307      |  402        |  84       |  548      |  298      |  3657     |  41        |  10      
+  cowboys      | C    |  352      |  287        |  223      |  2597     |  181      |  1881     |  28        |  12      
+  redskins     | C    |  243      |  343        |  236      |  2084     |  189      |  1711     |  35        |  9       
+  vikings      | C    |  377      |  294        |  249      |  2448     |  187      |  1750     |  28        |  15      
+  saints       | C    |  315      |  391        |  250      |  2294     |  182      |  2250     |  32        |  9       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  patriots     | D    |  289      |  380        |  202      |  1431     |  214      |  2187     |  21        |  11      
+  oilers       | D    |  370      |  309        |  149      |  1470     |  242      |  3018     |  26        |  12      
+  raiders      | D    |  350      |  374        |  132      |  940      |  292      |  3447     |  34        |  17      
+  giants       | D    |  278      |  392        |  120      |  1101     |  267      |  2941     |  32        |  4       
+  bears        | D    |  326      |  282        |  227      |  2022     |  230      |  2371     |  35        |  6       
+  buccaneers   | D    |  327      |  340        |  238      |  2556     |  203      |  1622     |  31        |  9       
+  49ers        | D    |  351      |  304        |  221      |  2209     |  216      |  2235     |  33        |  10      
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+
+GROUP AVERAGES (optional)
+  A (stock): Pts for 356.0, Pts allowed 307.6, Rush att 228.1, Rush yds 2269.7, Pass att 189.1, Pass yds 2008.4, Sacks made 31.0, INTs made 12.9   (7 teams; averages per team, ratios from group totals)
+  B (stock): Pts for 327.6, Pts allowed 349.7, Rush att 225.4, Rush yds 1953.0, Pass att 206.9, Pass yds 2360.0, Sacks made 30.6, INTs made 10.4   (7 teams; averages per team, ratios from group totals)
+  C (stock): Pts for 323.4, Pts allowed 336.9, Rush att 213.1, Rush yds 1930.9, Pass att 215.4, Pass yds 2394.6, Sacks made 31.9, INTs made 10.7   (7 teams; averages per team, ratios from group totals)
+  D (stock): Pts for 327.3, Pts allowed 340.1, Rush att 184.1, Rush yds 1675.6, Pass att 237.7, Pass yds 2545.9, Sacks made 30.3, INTs made 9.9   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  All values read from the ares save state GEN_07a_StockSeason.bs1 (TSBTool -stats), not typed from the screens.
+  
+
+CONCLUSION
+  
+
+Tested by: ____________   Date: ____________   Emulator: ____________

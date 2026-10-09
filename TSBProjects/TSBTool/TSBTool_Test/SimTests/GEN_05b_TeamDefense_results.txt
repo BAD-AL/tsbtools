@@ -1,0 +1,83 @@
+====================================================================================================
+SIM TEST: GEN_05b_TeamDefense
+ROM:      GEN_05b_TeamDefense.bin   (platform: GENESIS)
+====================================================================================================
+
+QUESTION
+  GEN_05 again, built after the TSBTool fix for the Genesis sim-block team order (cowboys/redskins, falcons/49ers were swapped in GEN_05).
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: Same as NES_05: Team SimData A = 0x00, B = 0xF0, C = 0x0F, D = 0xFF. Preference 0 for all.
+
+GROUPS
+  A  (SimData 0x00): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (SimData 0xF0): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (SimData 0x0F): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (SimData 0xFF): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Same pattern as NES_05 if Genesis works the same way: high digit cuts rush yards allowed,
+  - low digit cuts pass yards allowed and adds sacks/INTs. Check the team screen shows yards ALLOWED, not gained.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Rush yds allowed | Pass yds allowed | Pts allowed | Sacks made | INTs made
+  -------------+------+------------------+------------------+-------------+------------+----------
+  bills        | A    |  2339            |   2361           |  372        |  27        |    6     
+  jets         | A    |  2657            |   2447           |  374        |    20      |    9     
+  steelers     | A    | 2422             |   2375           |  414        |    22      |    11     
+  chargers     | A    | 2586             |   2223           |  370        |    22      |    9    
+  eagles       | A    |  2529            |   2374           |  413        |    24      |    6    
+  lions        | A    |  2488            |   2281           |  403        |    12      |    12     
+  falcons      | A    |  2721            |   2595           |  430        |    19      |    6    
+  -------------+------+------------------+------------------+-------------+------------+----------
+  colts        | B    | 2462             |   2187           |  343        |    22      |    9     
+  bengals      | B    | 2460             |   2231           |  355        |    28      |    6     
+  broncos      | B    |  2017            |    2102          |  331        |    25      |   5     
+  seahawks     | B    |  2212            |   2556           |  391        |     23     |   9      
+  cardinals    | B    |  2347            |   2525           |  404        |   29       |   6       
+  packers      | B    |  2606            |   2078           | 369         |   17       |   3      
+  rams         | B    |   2279           |   1997           |  316        |   23       |   11      
+  -------------+------+------------------+------------------+-------------+------------+----------
+  dolphins     | C    |   2238           |   2402           |  379        |   24       |   6     
+  browns       | C    |  2502            |    1772          |  344        |   30       |   11      
+  chiefs       | C    |  2423            |  2253            | 376         |   24       |   12     
+  cowboys      | C    | 2339             |   2288           |   413       |   22       |   6     
+  redskins     | C    |  2386            |  2044            |  329        |   31       |   9      
+  vikings      | C    |  2472            |   1806           |  341        |   22       |   7      
+  saints       | C    |  2557            |   2128           |  349        |   32       |   10      
+  -------------+------+------------------+------------------+-------------+------------+----------
+  patriots     | D    |  1948            |    2046          |  333        |   25       |   7     
+  oilers       | D    |  2701            |    2116          |  332        |   18       |   6      
+  raiders      | D    |  1907            |     2198         |  360        |   31       |   16      
+  giants       | D    |  2593            |   1892           |  363        |   21       |   3     
+  bears        | D    |   2158           |   2102           |   317       |   23       |   8      
+  buccaneers   | D    |   2104           |     2275         |  339        |   16       |  10      
+  49ers        | D    |    2141          |     1998         |   375       |   23       |  4      
+  -------------+------+------------------+------------------+-------------+------------+----------
+
+GROUP AVERAGES (optional)
+  A (SimData 0x00): Rush yds allowed 2534.6, Pass yds allowed 2379.4, Pts allowed 396.6, Sacks made 20.9, INTs made 8.4   (7 teams; averages per team, ratios from group totals)
+  B (SimData 0xF0): Rush yds allowed 2340.4, Pass yds allowed 2239.4, Pts allowed 358.4, Sacks made 23.9, INTs made 7.0   (7 teams; averages per team, ratios from group totals)
+  C (SimData 0x0F): Rush yds allowed 2416.7, Pass yds allowed 2099.0, Pts allowed 361.6, Sacks made 26.4, INTs made 8.7   (7 teams; averages per team, ratios from group totals)
+  D (SimData 0xFF): Rush yds allowed 2221.7, Pass yds allowed 2089.6, Pts allowed 345.6, Sacks made 22.4, INTs made 7.7   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  Bills sacks corrected 25 -> 27 (re-counted; matches the ares save state).
+  Steelers pts allowed corrected 444 -> 414 from the ares save state (GEN_05b_TeamDefense.bs1); all other
+  yards/points cells match the save state.
+  
+
+CONCLUSION
+  
+
+Tested by: __cbadal______   Date: __10/7/2026_____   Emulator: ___ares_____

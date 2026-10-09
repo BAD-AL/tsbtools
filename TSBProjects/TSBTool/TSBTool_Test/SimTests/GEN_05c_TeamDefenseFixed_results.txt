@@ -1,0 +1,83 @@
+====================================================================================================
+SIM TEST: GEN_05c_TeamDefenseFixed
+ROM:      GEN_05c_TeamDefenseFixed.bin   (platform: GENESIS)
+====================================================================================================
+
+QUESTION
+  Does GENESIS_FIX_SIM_BUGS (defense roll fix) make team defense SimData count like it does on NES?
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: Same as GEN_05b (Team SimData A = 0x00, B = 0xF0, C = 0x0F, D = 0xFF, preference 0), plus the GENESIS_FIX_SIM_BUGS game fix.
+
+GROUPS
+  A  (SimData 0x00): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (SimData 0xF0): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (SimData 0x0F): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (SimData 0xFF): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Bigger group differences than GEN_05b, closer to NES_05: high digit cuts rush yds allowed (NES A-D 2353/1431/2417/1440),
+  - low digit cuts pass yds allowed and adds sacks/INTs; pts allowed NES 486/418/424/324 (GEN_05b 397/358/362/346).
+  - Also compare league rush yards with GEN_05b: Genesis run-play tiers are stingier than NES, so runs may come out short.
+  - Save an ares state (.bs1) after the season: yards and points allowed can be checked from it.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Rush yds allowed | Pass yds allowed | Pts allowed | Sacks made | INTs made
+  -------------+------+------------------+------------------+-------------+------------+----------
+  bills        | A    |  2055            |  1754            |  268        |  26        |  14      
+  jets         | A    |  1629            |  2196            |  288        |  33        |  10      
+  steelers     | A    |  1830            |  2155            |  257        |  26        |  10      
+  chargers     | A    |  1810            |  2058            |  304        |  28        |  10      
+  eagles       | A    |  1929            |  1816            |  313        |  26        |  12      
+  lions        | A    |  1715            |  2186            |  320        |  24        |  14      
+  falcons      | A    |  2098            |  2048            |  313        |  22        |  15      
+  -------------+------+------------------+------------------+-------------+------------+----------
+  colts        | B    |  986             |  2384            |  218        |  33        |  7       
+  bengals      | B    |  1081            |  2104            |  234        |  28        |  11      
+  broncos      | B    |  939             |  2106            |  180        |  34        |  14      
+  seahawks     | B    |  918             |  2073            |  170        |  37        |  14      
+  cardinals    | B    |  1121            |  2241            |  249        |  28        |  10      
+  packers      | B    |  919             |  2288            |  220        |  29        |  20      
+  rams         | B    |  1054            |  1813            |  223        |  25        |  14      
+  -------------+------+------------------+------------------+-------------+------------+----------
+  dolphins     | C    |  1954            |  1628            |  255        |  28        |  12      
+  browns       | C    |  1792            |  1395            |  256        |  36        |  22      
+  chiefs       | C    |  1874            |  1826            |  277        |  33        |  16      
+  cowboys      | C    |  1968            |  1410            |  237        |  29        |  15      
+  redskins     | C    |  2037            |  1926            |  308        |  38        |  12      
+  vikings      | C    |  1853            |  1327            |  265        |  37        |  8       
+  saints       | C    |  1972            |  1284            |  240        |  28        |  23      
+  -------------+------+------------------+------------------+-------------+------------+----------
+  patriots     | D    |  890             |  1616            |  149        |  42        |  16      
+  oilers       | D    |  1074            |  1587            |  115        |  42        |  19      
+  raiders      | D    |  976             |  1885            |  202        |  49        |  21      
+  giants       | D    |  1005            |  1515            |  131        |  49        |  15      
+  bears        | D    |  1050            |  1537            |  165        |  35        |  18      
+  buccaneers   | D    |  1128            |  1625            |  163        |  27        |  19      
+  49ers        | D    |  928             |  1616            |  180        |  35        |  14      
+  -------------+------+------------------+------------------+-------------+------------+----------
+
+GROUP AVERAGES (optional)
+  A (SimData 0x00): Rush yds allowed 1866.6, Pass yds allowed 2030.4, Pts allowed 294.7, Sacks made 26.4, INTs made 12.1   (7 teams; averages per team, ratios from group totals)
+  B (SimData 0xF0): Rush yds allowed 1002.6, Pass yds allowed 2144.1, Pts allowed 213.4, Sacks made 30.6, INTs made 12.9   (7 teams; averages per team, ratios from group totals)
+  C (SimData 0x0F): Rush yds allowed 1921.4, Pass yds allowed 1542.3, Pts allowed 262.6, Sacks made 32.7, INTs made 15.4   (7 teams; averages per team, ratios from group totals)
+  D (SimData 0xFF): Rush yds allowed 1007.3, Pass yds allowed 1625.9, Pts allowed 157.9, Sacks made 39.9, INTs made 17.4   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  All values read from the ares save state GEN_05c_TeamDefenseFixed.bs1 (TSBTool -stats), not typed from the screens.
+  
+
+CONCLUSION
+  
+
+Tested by: ____________   Date: ____________   Emulator: ____________

@@ -23,8 +23,9 @@ namespace TSBTool
 
         private const int ROM_LENGTH = TecmoToolFactory.GENESIS_TSB1_LEN;
 
-        // Team order/indexing matches every table in this ROM (0=Bills...27=49ers) -- confirmed
+        // Team order/indexing for the roster and other team tables (0=Bills...27=49ers) -- confirmed
         // against TSBTool_Test\Genesis_TSB1_ROM_Findings.md, and identical to SNES_TecmoTool's own team order.
+        // The sim blocks are the exception, see mSimTeams.
         private static string[] teams =
         {
             "bills",   "colts",  "dolphins", "patriots",  "jets",
@@ -34,6 +35,24 @@ namespace TSBTool
             "bears",   "lions",  "packers",  "vikings",   "buccaneers",
             "falcons", "rams",   "saints",   "49ers"
         };
+
+        // Sim-block order: the game reaches each team's sim block (0xDEA86) through a pointer table at
+        // 0xDEA0E that sends team 14 to block 18 and team 24 to block 27 (and back) -- same swaps as
+        // SNES_TecmoTool.mSimTeams. Stock data agrees: block 18 holds the 1992 Cowboys, block 24 Steve Young.
+        private static string[] mSimTeams =
+        {
+            "bills",    "colts",  "dolphins", "patriots",  "jets",
+            "bengals",  "browns", "oilers",   "steelers",
+            "broncos",  "chiefs", "raiders",  "chargers",  "seahawks",
+            "redskins", "giants", "eagles",   "cardinals", "cowboys",
+            "bears",    "lions",  "packers",  "vikings",   "buccaneers",
+            "49ers",    "rams",   "saints",   "falcons"
+        };
+
+        private static int GetSimTeamIndex(string team)
+        {
+            return Array.IndexOf(mSimTeams, team);
+        }
 
         // Roster slot order -- confirmed against TSBTool_Test\Genesis_TSB1_ROM_Findings.md's
         // "Roster slot order -- solved" section: all 32 slots use exactly SNES TSB1's own
@@ -96,7 +115,7 @@ namespace TSBTool
 # -- Quarterbacks:
 # Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].
 # -- Offensive Skill players (non-QB):
-# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, BC, REC, [Sim rush, Sim catch, Sim punt Ret, Sim kick ret].
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, BC, REC, [Sim rush, Sim catch, Sim yards per catch, Sim targets].
 # -- Offensive Linemen:
 # Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP
 # -- Defensive Players:
@@ -104,10 +123,14 @@ namespace TSBTool
 # -- Punters and Kickers:
 # Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, KA, AKB,[ Sim kicking ability].
 # TEAM:\n
-#  name, SimData  0x<offense><defense><offense preference>
+#  name, SimData  0x<rush defense><pass defense><offense preference>
 #  Offensive pref values 0-3. 
-#     0 = Little more rushing, 1 = Heavy Rushing,
+#     0 = Little more rushing, 1 = Heavy Rushing (*Genesis bug: actually plays as heavy passing, about 72% pass*),
 #     2 = little more passing, 3 = Heavy Passing.
+#     Add a line 'GENESIS_FIX_SIM_BUGS' to fix the game so that 1 plays as Heavy Rushing
+#     (also fixes a Genesis bug that makes the rush/pass defense digits count for little, and
+#     rebalances the sim so scoring and passing stay at stock levels; and a Genesis bug that loses
+#     most receiving TDs from the season stats).
 ", this.RomVersion);
         }
 
@@ -278,18 +301,31 @@ namespace TSBTool
                 int currentPointerLocation = teamStringTablePointerStart + 4 * stringIndex;
                 int lastPointerLocation = teamStringTablePointerStart + 4 * (teamStringTableCount - 1);
 
+                // The last pointer is a sentinel marking the end of the live string data. The stock
+                // table has no spare bytes before teamStringTableDataEnd, so a longer string only fits
+                // when an earlier edit made room; otherwise the shift would write past the table.
+                int junk;
+                int oldContentEnd = GetTeamStringTableLocation(teamStringTableCount - 1, out junk);
+                if (shiftAmount > teamStringTableDataEnd - oldContentEnd)
+                {
+                    StaticUtils.AddError(string.Format(
+                        "ERROR! Genesis_TSB1Tool: '{0}' is {1} byte(s) too long to fit in the team name table -- not applied. Shorten it (or another team's abbreviation/city/name) to make room.",
+                        newValue, shiftAmount - (teamStringTableDataEnd - oldContentEnd)));
+                    return;
+                }
+
                 // Read the OLD (pre-shift) location of the *next* string's data before adjusting any
                 // pointers, so the byte-shift range below reflects where the bytes physically are right
                 // now, not where the (about to be updated) pointer will claim they are.
-                int junk;
                 int oldNextStringLocation = GetTeamStringTableLocation(stringIndex + 1, out junk);
 
                 AdjustTeamStringTablePointers(currentPointerLocation, shiftAmount, lastPointerLocation);
 
+                // shift only the live data (up to the old sentinel), never the spare bytes after it
                 if (shiftAmount < 0)
-                    ShiftBytesUp(oldNextStringLocation, teamStringTableDataEnd - 1, shiftAmount);
+                    ShiftBytesUp(oldNextStringLocation, oldContentEnd - 1, shiftAmount);
                 else
-                    ShiftBytesDown(oldNextStringLocation, teamStringTableDataEnd - 1, shiftAmount);
+                    ShiftBytesDown(oldNextStringLocation, oldContentEnd - 1, shiftAmount);
             }
 
             int writeLength;
@@ -497,12 +533,12 @@ namespace TSBTool
         // 0xB58E, or both; both are written for now).
         private const int teamSimBlockStart = 0xDEA86;
         private const int teamSimBlockSize = 0x30;
-        private const int teamSimSummaryOffset = 0x2F; // team-level offense(hi nibble)/defense(lo nibble) summary
+        private const int teamSimSummaryOffset = 0x2F; // team-level rush defense(hi nibble)/pass defense(lo nibble)
         private const int teamSimOffensivePrefStart = 0xB58E; // 1 byte/team, values 0-3
 
         public byte GetTeamSimData(string team)
         {
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             if (teamIndex < 0)
                 return 0x00;
             return outputRom[teamSimBlockStart + teamIndex * teamSimBlockSize + teamSimSummaryOffset];
@@ -510,7 +546,7 @@ namespace TSBTool
 
         public void SetTeamSimData(string team, byte data)
         {
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             if (teamIndex < 0)
             {
                 StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetTeamSimData: team '{0}' is invalid.", team));
@@ -545,6 +581,189 @@ namespace TSBTool
             }
             outputRom[teamSimOffensivePrefStart + teamIndex] = (byte)val;
             return true;
+        }
+
+        // Genesis game bug (not in NES/SNES): the play-calling code for run/pass preference 1 at
+        // 0xDE790 compares the roll with $99 but has no branch after it, so "heavy rushing" always
+        // passes (~72% pass in a simmed season). Its run code is already there, unreached, at 0xDE7AE.
+        // The fix adds the branch in place: bcs.s run, and the pass side ends with bra.s to the run
+        // code's store/exit at 0xDE7B8. Applied by the GENESIS_FIX_SIM_BUGS line (or the GUI prompt).
+        private const int pref1PlayCallLoc = 0xDE790;
+
+        private static readonly byte[] pref1PlayCallStock =
+        {
+            0x0C, 0x39, 0x00, 0x99, 0x00, 0xFF, 0x33, 0xB3, // cmpi.b #$99,$ff33b3
+            0x10, 0x39, 0x00, 0xFF, 0x33, 0xB1,             // move.b $ff33b1,d0
+            0x02, 0x00, 0x00, 0x03,                         // andi.b #3,d0
+            0x58, 0x00,                                     // addq.b #4,d0
+            0x13, 0xC0, 0x00, 0xFF, 0x33, 0xB3,             // move.b d0,$ff33b3
+            0x60, 0x00, 0xF9, 0x38                          // bra.w  $DE0E4
+        };
+
+        private static readonly byte[] pref1PlayCallFixed =
+        {
+            0x0C, 0x39, 0x00, 0x99, 0x00, 0xFF, 0x33, 0xB3, // cmpi.b #$99,$ff33b3
+            0x65, 0x14,                                     // bcs.s  $DE7AE (roll < $99: run)
+            0x10, 0x39, 0x00, 0xFF, 0x33, 0xB1,             // move.b $ff33b1,d0
+            0x02, 0x00, 0x00, 0x03,                         // andi.b #3,d0
+            0x58, 0x00,                                     // addq.b #4,d0 (pass)
+            0x60, 0x10,                                     // bra.s  $DE7B8 (store + exit)
+            0x4E, 0x71, 0x4E, 0x71, 0x4E, 0x71              // nop x3 (never reached)
+        };
+
+        // Genesis game bug (not in NES/SNES): the sim defense roll at 0xDC198 (run and pass plays) reads
+        // the TOP byte of the sim's random long at $FF339C, which the generator at 0xDCF24 always leaves
+        // 0, instead of the random low byte $FF339F (NES reads $3B there). So the opponent's team SimData
+        // counts for nothing on 2 of the 4 matchup types and is never random. The fix is the address byte.
+        private const int defenseRollLoc = 0xDC220;
+        private static readonly byte[] defenseRollStock = { 0x10, 0x39, 0x00, 0xFF, 0x33, 0x9C }; // move.b $ff339c,d0
+        private static readonly byte[] defenseRollFixed = { 0x10, 0x39, 0x00, 0xFF, 0x33, 0x9F }; // move.b $ff339f,d0
+
+        // With defense counting, a stock season scores ~40% less (the game's balance was set around the
+        // bug), so the defense fix comes with a rebalance, simmed in SimTests GEN_07j (stock scoring and
+        // passing, defense digits still matter): the defense roll uses (value - 83) and the main pass
+        // play takes 32 more off the pass defense value, via two small routines in unused (0xFF) space
+        // after the sim data, and the run-play cutoffs move halfway to the NES/SNES ones (34/67/9A/CD).
+        private static readonly byte[] freeSpace16 =
+        {
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+        };
+        private const int rollOffsetCallLoc = 0xDC23A; // in the defense roll
+        private static readonly byte[] rollOffsetCallStock = { 0x32, 0x39, 0x00, 0xFF, 0x33, 0xA8 }; // move.w $ff33a8,d1
+        private static readonly byte[] rollOffsetCallFixed = { 0x4E, 0xB9, 0x00, 0x0D, 0xF1, 0x00 }; // jsr $DF100
+        private const int rollOffsetRoutineLoc = 0xDF100;
+        private static readonly byte[] rollOffsetRoutine =
+        {
+            0x32, 0x39, 0x00, 0xFF, 0x33, 0xA8, // move.w $ff33a8,d1 (defense value)
+            0x04, 0x41, 0x00, 0x53,             // subi.w #83,d1
+            0x64, 0x02,                         // bcc.s  +2
+            0x72, 0x00,                         // moveq  #0,d1 (not below 0)
+            0x4E, 0x75                          // rts
+        };
+        private const int passOffsetCallLoc = 0xDBD24; // in the pass play, just before it calls the defense roll
+        private static readonly byte[] passOffsetCallStock = { 0x33, 0xC0, 0x00, 0xFF, 0x33, 0xA8 }; // move.w d0,$ff33a8
+        private static readonly byte[] passOffsetCallFixed = { 0x4E, 0xB9, 0x00, 0x0D, 0xF1, 0x10 }; // jsr $DF110
+        private const int passOffsetRoutineLoc = 0xDF110;
+        private static readonly byte[] passOffsetRoutine =
+        {
+            0x04, 0x40, 0x00, 0x20,             // subi.w #32,d0 (pass defense value)
+            0x64, 0x02,                         // bcc.s  +2
+            0x70, 0x00,                         // moveq  #0,d0 (not below 0)
+            0x33, 0xC0, 0x00, 0xFF, 0x33, 0xA8, // move.w d0,$ff33a8
+            0x4E, 0x75                          // rts
+        };
+
+        // Genesis game bug: after each game (simmed or played), the season totals are updated stat by stat
+        // (0xDDCE2 -> 0xDD4EE, handlers at 0xDD0C2). The receiving-TD handler (stat $0A, 0xDD816) reads
+        // the season value with the QB pass-TD helper 0xDD330 (byte >> 2, pass TDs are stored x4) though
+        // receiving TDs are a plain byte, so each game the total becomes old/4 + this game's TDs (a
+        // season ends at 0-2). The fix calls the plain-byte helper 0xDD318 instead.
+        private const int recTdSeasonReadLoc = 0xDD818;
+        private static readonly byte[] recTdSeasonReadStock = { 0x61, 0x00, 0xFB, 0x16 }; // bsr.w $DD330
+        private static readonly byte[] recTdSeasonReadFixed = { 0x61, 0x00, 0xFA, 0xFE }; // bsr.w $DD318
+
+        private class SimPatchPart
+        {
+            public int Location;
+            public byte[] Stock;
+            public byte[] Fixed;
+            public SimPatchPart(int location, byte[] stock, byte[] fixedBytes)
+            {
+                Location = location;
+                Stock = stock;
+                Fixed = fixedBytes;
+            }
+        }
+
+        // GENESIS_FIX_SIM_BUGS patch groups. A group is written all or nothing: only when every part
+        // is the stock or fixed code (so the routines never go over another hack's code, and the
+        // defense fix never goes in without its rebalance).
+        private static readonly SimPatchPart[][] simBugPatches =
+        {
+            new SimPatchPart[] { new SimPatchPart(pref1PlayCallLoc, pref1PlayCallStock, pref1PlayCallFixed) },
+            new SimPatchPart[]
+            {
+                new SimPatchPart(defenseRollLoc, defenseRollStock, defenseRollFixed),
+                new SimPatchPart(rollOffsetRoutineLoc, freeSpace16, rollOffsetRoutine),
+                new SimPatchPart(rollOffsetCallLoc, rollOffsetCallStock, rollOffsetCallFixed),
+                new SimPatchPart(passOffsetRoutineLoc, freeSpace16, passOffsetRoutine),
+                new SimPatchPart(passOffsetCallLoc, passOffsetCallStock, passOffsetCallFixed),
+                // run-play yardage cutoffs (stock 3E/7B/B8/D7)
+                new SimPatchPart(0xDBA55, new byte[] { 0x3E }, new byte[] { 0x39 }),
+                new SimPatchPart(0xDBA6D, new byte[] { 0x7B }, new byte[] { 0x71 }),
+                new SimPatchPart(0xDBA85, new byte[] { 0xB8 }, new byte[] { 0xA9 }),
+                new SimPatchPart(0xDBA9D, new byte[] { 0xD7 }, new byte[] { 0xD2 })
+            },
+            new SimPatchPart[] { new SimPatchPart(recTdSeasonReadLoc, recTdSeasonReadStock, recTdSeasonReadFixed) }
+        };
+
+        private bool RomBytesMatch(int location, byte[] expected)
+        {
+            for (int i = 0; i < expected.Length; i++)
+            {
+                if (outputRom[location + i] != expected[i])
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>True when the ROM still has the original (unfixed) code for any of the sim bugs.</summary>
+        public bool HasSimBugs()
+        {
+            foreach (SimPatchPart[] group in simBugPatches)
+            {
+                foreach (SimPatchPart part in group)
+                {
+                    if (RomBytesMatch(part.Location, part.Stock))
+                        return true;
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Applies the sim fixes (preference 1; defense roll + rebalance; season receiving TDs), each
+        /// group on its own. Returns true when the ROM ends up fully fixed (including when it already
+        /// was); false (with an error) when the code at a location in a group isn't the stock or fixed
+        /// code -- nothing in that group is written, the other groups still are.
+        /// </summary>
+        public bool FixSimBugs()
+        {
+            bool ret = true;
+            int alreadyFixed = 0;
+            foreach (SimPatchPart[] group in simBugPatches)
+            {
+                SimPatchPart unknown = null;
+                bool groupFixed = true;
+                foreach (SimPatchPart part in group)
+                {
+                    if (RomBytesMatch(part.Location, part.Fixed))
+                        continue;
+                    groupFixed = false;
+                    if (!RomBytesMatch(part.Location, part.Stock))
+                    {
+                        unknown = part;
+                        break;
+                    }
+                }
+                if (groupFixed)
+                    alreadyFixed++;
+                else if (unknown != null)
+                {
+                    StaticUtils.AddError(string.Format(
+                        "ERROR! GENESIS_FIX_SIM_BUGS: the code at 0x{0:X} isn't the original Genesis code (another patch?). That fix not applied.",
+                        unknown.Location));
+                    ret = false;
+                }
+                else
+                {
+                    foreach (SimPatchPart part in group)
+                        Array.Copy(part.Fixed, 0, outputRom, part.Location, part.Fixed.Length);
+                }
+            }
+            if (alreadyFixed == simBugPatches.Length)
+                Console.WriteLine("GENESIS_FIX_SIM_BUGS: the sim fix is already present in this ROM.");
+            return ret;
         }
         // SNES's per-team offensive formation is a single flat byte (0-2) at 0xedf3+teamIndex -- looked
         // for a Genesis equivalent using the same trusted-team byte-matching technique that found
@@ -624,8 +843,10 @@ namespace TSBTool
                 StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetFace: invalid team '{0}'/position '{1}', or face {2} outside 0x00-0xD4.", team, position, face));
                 return;
             }
+            // Only bit 0x80 is the skin flag; keep the rest (8 stock players have an unexplained 0x20).
+            int loc = attributeRecordStart + playerIndex * attributeRecordSize + 2;
             byte skin = (byte)(face < 0x53 ? 0x00 : 0x80);
-            outputRom[attributeRecordStart + playerIndex * attributeRecordSize + 2] = skin;
+            outputRom[loc] = (byte)((outputRom[loc] & 0x7F) | skin);
         }
 
         public int GetFace(string team, string position)
@@ -739,8 +960,8 @@ namespace TSBTool
         // protocol needs a space between them (matching "QB1, jim KELLY, ..." -- posNameFaceRegex
         // splits first/last name on the last space), so this inserts one at the lowercase->uppercase
         // transition (first name is always lowercase, last name always UPPERCASE) for GetPlayerData's
-        // use only -- doesn't change GetPlayerName's own contract.
-        private string GetDisplayName(string team, string position)
+        // use (and GenesisSeasonStats' names) -- doesn't change GetPlayerName's own contract.
+        public string GetDisplayName(string team, string position)
         {
             string raw = GetPlayerName(team, position);
             if (string.IsNullOrEmpty(raw))
@@ -831,12 +1052,16 @@ namespace TSBTool
                 int lastPointerLocation = rosterSentinelPointerLoc;
 
                 int oldNextLocation = thisPtr + oldLength;
+                // End of the live name data (the sentinel, before it moves). Shift only up to here:
+                // shifting through rosterDataEnd-1 also moved the spare bytes after it, and their last
+                // shiftAmount bytes landed in the attribute table (the Bills' QB1 record).
+                int oldContentEnd = GetRosterSentinelValue();
 
                 AdjustRosterPointers(currentPointerLocation, shiftAmount, lastPointerLocation);
                 if (shiftAmount < 0)
-                    ShiftBytesUp(oldNextLocation, rosterDataEnd - 1, shiftAmount);
+                    ShiftBytesUp(oldNextLocation, oldContentEnd - 1, shiftAmount);
                 else
-                    ShiftBytesDown(oldNextLocation, rosterDataEnd - 1, shiftAmount);
+                    ShiftBytesDown(oldNextLocation, oldContentEnd - 1, shiftAmount);
             }
 
             int writeLength;
@@ -1458,9 +1683,8 @@ namespace TSBTool
 
         // Player-level sim/CPU data: offensive positions (QB1,QB2,RB1-4,WR1-4,TE1-2, positionIndex
         // 0-11) live at 0xDEA86 + teamIndex*0x30 + positionIndex*2 -- confirmed identical formula to
-        // SNES_TecmoTool.GetQBSimData/GetSkillSimData, and (unlike SNES) Genesis uses the plain main
-        // team order throughout, no mSimTeams-style reordering (confirmed via the SNES-comparison
-        // investigation, see Genesis_TSB1_ROM_Findings.md).
+        // SNES_TecmoTool.GetQBSimData/GetSkillSimData, including the sim-block team order (teamIndex
+        // here comes from GetSimTeamIndex, see mSimTeams).
         //
         // QB (2 bytes -> 3 values) and skill (2 bytes -> 4 values) interpret those 2 bytes
         // differently -- this is a real SNES behavior, not a Genesis-specific quirk: QB's 2nd byte is
@@ -1474,7 +1698,7 @@ namespace TSBTool
                 StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetQBSimData: '{0}' is not QB1 or QB2.", pos));
                 return;
             }
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             if (teamIndex < 0 || data == null || data.Length < 3)
             {
                 StaticUtils.AddError(string.Format("Error setting sim data for {0}, {1}. Sim data not set.", team, pos));
@@ -1546,7 +1770,7 @@ namespace TSBTool
                 StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetSkillSimData: '{0}' is not a skill position.", pos));
                 return;
             }
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             int positionIndex = GetPositionIndex(pos);
             if (teamIndex < 0 || data == null || data.Length < 4)
             {
@@ -1618,7 +1842,7 @@ namespace TSBTool
                 StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetDefensiveSimData: '{0}' is not a defensive position.", pos));
                 return;
             }
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             if (teamIndex < 0 || data == null || data.Length < 2)
             {
                 StaticUtils.AddError(string.Format("Error setting sim data for {0}, {1}. Sim data not set.", team, pos));
@@ -1653,13 +1877,13 @@ namespace TSBTool
         }
 
         // Kicking (hi nibble) / punting (lo nibble) share one byte at 0x2E -- confirmed identical to
-        // SNES_TecmoTool.SetKickingSimData/SetPuntingSimData, just retargeted to Genesis's base and
-        // plain main team order.
+        // SNES_TecmoTool.SetKickingSimData/SetPuntingSimData, just retargeted to Genesis's base
+        // (same sim-block team order).
         private const int kickPuntSimOffset = 0x2E;
 
         public void SetPuntingSimData(string team, int data)
         {
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             if (teamIndex < 0)
             {
                 StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetPuntingSimData: team '{0}' is invalid.", team));
@@ -1673,7 +1897,7 @@ namespace TSBTool
 
         public void SetKickingSimData(string team, int data)
         {
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             if (teamIndex < 0)
             {
                 StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetKickingSimData: team '{0}' is invalid.", team));
@@ -1693,7 +1917,7 @@ namespace TSBTool
         {
             if (pos != "QB1" && pos != "QB2")
                 return null;
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             if (teamIndex < 0)
                 return null;
             int loc = OffensiveSimLoc(teamIndex, pos == "QB2" ? 1 : 0);
@@ -1704,7 +1928,7 @@ namespace TSBTool
         {
             if (Array.IndexOf(skillPositions, pos) < 0)
                 return null;
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             int positionIndex = GetPositionIndex(pos);
             if (teamIndex < 0)
                 return null;
@@ -1717,7 +1941,7 @@ namespace TSBTool
             int defIndex = GetPositionIndex(pos) - 17;
             if (Array.IndexOf(defensivePositions, pos) < 0 || defIndex < 0 || defIndex > 10)
                 return null;
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             if (teamIndex < 0)
                 return null;
             int loc = teamSimBlockStart + teamIndex * teamSimBlockSize + defensiveSimPassRushOffset + defIndex;
@@ -1726,7 +1950,7 @@ namespace TSBTool
 
         private int[] GetKickingSimData(string team)
         {
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             if (teamIndex < 0)
                 return null;
             int loc = teamSimBlockStart + teamIndex * teamSimBlockSize + kickPuntSimOffset;
@@ -1735,7 +1959,7 @@ namespace TSBTool
 
         private int[] GetPuntingSimData(string team)
         {
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetSimTeamIndex(team);
             if (teamIndex < 0)
                 return null;
             int loc = teamSimBlockStart + teamIndex * teamSimBlockSize + kickPuntSimOffset;

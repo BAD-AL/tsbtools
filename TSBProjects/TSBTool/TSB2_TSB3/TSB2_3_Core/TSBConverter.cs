@@ -9,7 +9,7 @@ namespace TSBTool2
     /// 0     1     2     3       4  5   6   7    8  9   10  11    12          13        14
     /// pos, name, face, number, RS, RP, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].
     /// QB1,qb BILLS, Face=0x52, #0, 25, 69, 13, 13, 56, 81, 81, 81 ,[3, 12, 3 ] *tsb1PlayerLine
-    ///                          RS, RP, MS, HP, BC, REC, [Sim rush, Sim catch, Sim punt Ret, Sim kick ret]. -> Skill
+    ///                          RS, RP, MS, HP, BC, REC, [Sim rush, Sim catch, Sim yards per catch, Sim targets]. -> Skill
     ///                          RS, RP, MS, HP, PI, QU, [Sim pass rush, Sim coverage].                     --> Defense
     ///                          RS, RP, MS, HP, KA, AKB,[ Sim kicking ability].                            --> Punter/Kicker
     /// pos, name, face, number, RS  RP  MS  HP  BB  PS  PC  PA  AR CO [sim vals]

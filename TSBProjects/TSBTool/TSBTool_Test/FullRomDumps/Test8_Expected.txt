@@ -8,7 +8,7 @@
 # -- Quarterbacks:
 # Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].
 # -- Offensive Skill players (non-QB):
-# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, BC, REC, [Sim rush, Sim catch, Sim punt Ret, Sim kick ret].
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, BC, REC, [Sim rush, Sim catch, Sim yards per catch, Sim targets].
 # -- Offensive Linemen:
 # Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP
 # -- Defensive Players:
@@ -16,7 +16,7 @@
 # -- Punters and Kickers:
 # Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, KA, AKB,[ Sim kicking ability].
 # TEAM:\n
-#  name, SimData  0x<offense><defense><offense preference>
+#  name, SimData  0x<rush defense><pass defense><offense preference>
 #  Offensive pref values 0-3. 
 #     0 = Little more rushing, 1 = Heavy Rushing,
 #     2 = little more passing, 3 = Heavy Passing.

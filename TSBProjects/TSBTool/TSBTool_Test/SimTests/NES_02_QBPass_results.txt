@@ -1,0 +1,81 @@
+====================================================================================================
+SIM TEST: NES_02_QBPass
+ROM:      NES_02_QBPass.nes   (platform: NES)
+====================================================================================================
+
+QUESTION
+  How much does the QB's Sim pass change completions, yards, sacks and interceptions? (Open questions 1 and 4)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: QB1/QB2 Sim pass = 0 / 5 / 10 / 15 by group. All teams preference 3 (70% pass).
+
+GROUPS
+  A  (QB Sim pass 0): bills, jets, steelers, chargers, eagles, lions, 49ers
+  B  (QB Sim pass 5): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (QB Sim pass 10): dolphins, browns, chiefs, redskins, cowboys, vikings, saints
+  D  (QB Sim pass 15): patriots, oilers, raiders, giants, bears, buccaneers, falcons
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Completion % should rise from group A to D.
+  - If INTs thrown or times sacked also change with Sim pass, the QB value feeds into whether those happen.
+  - If sacks/INTs are flat across groups, they are decided by something else (see NES_05 / NES_07).
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Pass att  | Comp      | Pass yds  | TD        | INT thrown | Sacked
+  -------------+------+-----------+-----------+-----------+-----------+------------+----------
+  bills        | A    |  257      |  128      |  3,068    |  29       |  25        |          
+  jets         | A    |  258      |  133      |  3,384    |  28       |  21        |          
+  steelers     | A    |  242      |  130      |  3,265    |  31       |  23        |          
+  chargers     | A    |  268      |  144      |  3,675    |  30       |  24        |          
+  eagles       | A    |  263      |  140      |  3,542    |  35       |  17        |          
+  lions        | A    |  265      |  132      |  3,222    |  33       |  20        |          
+  49ers        | A    |  253      |  132      |  3,172    |  32       |  25        |          
+  -------------+------+-----------+-----------+-----------+-----------+------------+----------
+  colts        | B    |   250     |  155      |  3,939    |  38       |  22        |          
+  bengals      | B    |   253     |  163      |  3,840    |  42       |  14        |          
+  broncos      | B    |   251     |  149      |  3,665    |  38       |  19        |          
+  seahawks     | B    |   263     |  143      |  3,457    |  41       |  19        |          
+  cardinals    | B    |   256     |  143      |  3,462    |  26       |  21        |          
+  packers      | B    |   268     |  162      |  4,164    |  38       |  22        |          
+  rams         | B    |   255     |  145      |  3,747    |  33       |  19        |          
+  -------------+------+-----------+-----------+-----------+-----------+------------+----------
+  dolphins     | C    |   272     |  170      |  3,984    |  49       |  10        |          
+  browns       | C    |   254     |  163      |  3,895    |  41       |  15        |          
+  chiefs       | C    |   277     |  174      |  4,150    |  41       |  18        |          
+  redskins     | C    |   254     |  167      |  4,415    |  45       |  16        |          
+  cowboys      | C    |   259     |  172      |  4,387    |  48       |  16        |          
+  vikings      | C    |   244     |  169      |  4,288    |  51       |   9        |          
+  saints       | C    |   247     |  149      |  3,627    |  38       |  12        |          
+  -------------+------+-----------+-----------+-----------+-----------+------------+----------
+  patriots     | D    |   239     |  178      |  4,385    |  46       |  14        |          
+  oilers       | D    |   269     |  181      |  4,228    |  43       |  16        |          
+  raiders      | D    |   265     |  192      |  4,314    |  50       |  18        |          
+  giants       | D    |   278     |  188      |  4,593    |  42       |  15        |          
+  bears        | D    |   238     |  168      |  3,989    |  37       |   7        |          
+  buccaneers   | D    |   240     |  165      |  4,098    |  48       |  10        |          
+  falcons      | D    |   256     |  191      |  4,644    |  50       |   9        |          
+  -------------+------+-----------+-----------+-----------+-----------+------------+----------
+
+GROUP AVERAGES (optional)
+  A (QB Sim pass 0): Pass att 258.0, Comp 134.1, Pass yds 3332.6, TD 31.1, INT thrown 22.1, Comp % 52.0, Yds/comp 24.8   (7 teams; averages per team, ratios from group totals)
+  B (QB Sim pass 5): Pass att 256.6, Comp 151.4, Pass yds 3753.4, TD 36.6, INT thrown 19.4, Comp % 59.0, Yds/comp 24.8   (7 teams; averages per team, ratios from group totals)
+  C (QB Sim pass 10): Pass att 258.1, Comp 166.3, Pass yds 4106.6, TD 44.7, INT thrown 13.7, Comp % 64.4, Yds/comp 24.7   (7 teams; averages per team, ratios from group totals)
+  D (QB Sim pass 15): Pass att 255.0, Comp 180.4, Pass yds 4321.6, TD 45.1, INT thrown 12.7, Comp % 70.8, Yds/comp 24.0   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  
+
+CONCLUSION
+  
+
+Tested by: __cbadal______   Date: ____10/6/2026____   Emulator: _MSEEN________

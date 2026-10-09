@@ -1,0 +1,83 @@
+====================================================================================================
+SIM TEST: NES_07_Scramble
+ROM:      NES_07_Scramble.nes   (platform: NES)
+====================================================================================================
+
+QUESTION
+  How often does the QB scramble, and does the pocket value control it? (Open question 2)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: QB1/QB2 Sim pocket = 0 / 1 / 2 / 3 by group, QB Sim rush 15 (so scrambles show up as QB rushing). All teams preference 3 (70% pass).
+
+GROUPS
+  A  (Pocket 0): bills, jets, steelers, chargers, eagles, lions, 49ers
+  B  (Pocket 1): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (Pocket 2): dolphins, browns, chiefs, redskins, cowboys, vikings, saints
+  D  (Pocket 3): patriots, oilers, raiders, giants, bears, buccaneers, falcons
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Code as read (lookup then AND #3): chance per pass play = pocket 0: 3/256, 1: 1/256, 2: 1/256, 3: 0.
+  -   -> with ~400 pass plays per team-season: A ~4-5 QB runs, B and C ~1-2, D 0.
+  - If instead the table is meant as-is (51/25/13/8 out of 256): A ~80, B ~40, C ~20, D ~12 QB runs per season.
+  - Group D (pocket 3) QB runs, if any, come from designed runs, not scrambles.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | QB rush att | QB rush yds | Pass att  | Sacked
+  -------------+------+-------------+-------------+-----------+----------
+  bills        | A    |   3         |   39        |  254      |          
+  jets         | A    |   8         |   156       |  243      |          
+  steelers     | A    |   2         |   18        |  262      |          
+  chargers     | A    |   3         |   54        |  256      |          
+  eagles       | A    |   36        |   355       |  259      |          
+  lions        | A    |   49        |   464       |  272      |          
+  49ers        | A    |   1         |    7        |  258      |          
+  -------------+------+-------------+-------------+-----------+----------
+  colts        | B    |   0         |   0         |  266      |          
+  bengals      | B    |   2         |   31        |  244      |          
+  broncos      | B    |   1         |   16        |  257      |          
+  seahawks     | B    |   1         |   13        |  268      |          
+  cardinals    | B    |   1         |   0         |  252      |          
+  packers      | B    |   1         |   13        |  260      |          
+  rams         | B    |   1         |   32        |  253      |          
+  -------------+------+-------------+-------------+-----------+----------
+  dolphins     | C    |   0         |   0         |   279     |          
+  browns       | C    |   0         |   0         |   253     |          
+  chiefs       | C    |   2         |  45         |   245     |          
+  redskins     | C    |   3         |  52         |   239     |          
+  cowboys      | C    |   1         |  28         |   262     |          
+  vikings      | C    |   0         |   0         |   257     |          
+  saints       | C    |   2         |  32         |   241     |          
+  -------------+------+-------------+-------------+-----------+----------
+  patriots     | D    |   0         |   0         |   255     |          
+  oilers       | D    |   52        |   512       |   248     |          
+  raiders      | D    |   0         |   0         |   267     |          
+  giants       | D    |   0         |   0         |   266     |          
+  bears        | D    |   0         |   0         |   262     |          
+  buccaneers   | D    |   0         |   0         |   248     |          
+  falcons      | D    |   34        |   414       |   250     |          
+  -------------+------+-------------+-------------+-----------+----------
+
+GROUP AVERAGES (optional)
+  A (Pocket 0): QB rush att 14.6, QB rush yds 156.1, Pass att 257.7, QB yds/run 10.7   (7 teams; averages per team, ratios from group totals)
+  B (Pocket 1): QB rush att 1.0, QB rush yds 15.0, Pass att 257.1, QB yds/run 15.0   (7 teams; averages per team, ratios from group totals)
+  C (Pocket 2): QB rush att 1.1, QB rush yds 22.4, Pass att 253.7, QB yds/run 19.6   (7 teams; averages per team, ratios from group totals)
+  D (Pocket 3): QB rush att 12.3, QB rush yds 132.3, Pass att 256.6, QB yds/run 10.8   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  Some teams have Running plays for their QBs [oilers, eagles, lions, falcons ], these QBs will have more rushes than the others.
+  'Times your QB is  sacked' is not tracked by the game. 
+
+CONCLUSION
+  
+
+Tested by: __cbadal_____   Date: ___10/6/2026__   Emulator: ___MSEEN____

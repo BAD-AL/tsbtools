@@ -1,0 +1,82 @@
+====================================================================================================
+SIM TEST: NES_05_TeamDefense
+ROM:      NES_05_TeamDefense.nes   (platform: NES)
+====================================================================================================
+
+QUESTION
+  Do the team SimData digits control rush defense (high) and pass defense (low)? Do they affect sacks and interceptions? (Open question 4)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: Team SimData: A = 0x00 (rush 0, pass 0), B = 0xF0 (rush 15, pass 0), C = 0x0F (rush 0, pass 15), D = 0xFF. Preference 0 for all.
+
+GROUPS
+  A  (SimData 0x00): bills, jets, steelers, chargers, eagles, lions, 49ers
+  B  (SimData 0xF0): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (SimData 0x0F): dolphins, browns, chiefs, redskins, cowboys, vikings, saints
+  D  (SimData 0xFF): patriots, oilers, raiders, giants, bears, buccaneers, falcons
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Rush yds allowed: low for B and D, high for A and C.
+  - Pass yds allowed: low for C and D, high for A and B.
+  - If sacks/INTs made follow the low digit (C, D high), pass defense decides whether they happen.
+  - KR yds allowed low for B and D would confirm the high digit also acts as kick coverage.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Rush yds allowed | Pass yds allowed | Pts allowed | Sacks made | INTs made | KR yds allowed
+  -------------+------+------------------+------------------+-------------+------------+-----------+---------------
+  bills        | A    |  2516            |   2994           |    512      |   31       |     8     |               
+  jets         | A    |  2254            |   3193           |    499      |   20       |     7     |               
+  steelers     | A    |  2284            |   3314           |    486      |   26       |     10    |               
+  chargers     | A    |  2081            |   2957           |    474      |   22       |     11    |               
+  eagles       | A    |  2530            |   2440           |    447      |   32       |     10    |               
+  lions        | A    |  2423            |   3219           |    495      |   21       |     7     |               
+  49ers        | A    |   2380           |   2547           |    487      |   24       |     9     |               
+  -------------+------+------------------+------------------+-------------+------------+-----------+---------------
+  colts        | B    |  1552            |   3511           |   448       |   33       |     11    |               
+  bengals      | B    |  1230            |   3569           |   403       |   41       |      8    |               
+  broncos      | B    |  1496            |   3369           |   412       |   22       |     11    |               
+  seahawks     | B    |  1424            |   3136           |   400       |   25       |      8    |               
+  cardinals    | B    |  1474            |   3184           |   381       |   27       |     15    |               
+  packers      | B    |  1337            |   3807           |   441       |   25       |      9    |               
+  rams         | B    |  1501            |   3589           |   443       |   31       |     12    |               
+  -------------+------+------------------+------------------+-------------+------------+-----------+---------------
+  dolphins     | C    |  2360            |   2042           |  393        |   29       |     12    |               
+  browns       | C    |  2176            |   2597           |  421        |   42       |     16    |               
+  chiefs       | C    |  2435            |   2820           |  489        |   37       |      9    |               
+  redskins     | C    |  2535            |   2192           |  408        |   31       |     18    |               
+  cowboys      | C    |  2856            |   2188           |  432        |   35       |     10    |               
+  vikings      | C    |  1983            |   2827           |  389        |   42       |     16    |               
+  saints       | C    |  2577            |   2384           |  435        |   37       |     14    |               
+  -------------+------+------------------+------------------+-------------+------------+-----------+---------------
+  patriots     | D    |  1482            |   3015           |   345       |   31       |     13    |               
+  oilers       | D    |  1348            |   2548           |   328       |   37       |     17    |               
+  raiders      | D    |  1435            |   2695           |   318       |   42       |     18    |               
+  giants       | D    |  1237            |   2672           |   271       |   50       |     19    |               
+  bears        | D    |  1657            |   2676           |   362       |   33       |     17    |               
+  buccaneers   | D    |  1394            |   2868           |   335       |   39       |     13    |               
+  falcons      | D    |  1529            |   2532           |   306       |   39       |     13    |               
+  -------------+------+------------------+------------------+-------------+------------+-----------+---------------
+
+GROUP AVERAGES (optional)
+  A (SimData 0x00): Rush yds allowed 2352.6, Pass yds allowed 2952.0, Pts allowed 485.7, Sacks made 25.1, INTs made 8.9   (7 teams; averages per team, ratios from group totals)
+  B (SimData 0xF0): Rush yds allowed 1430.6, Pass yds allowed 3452.1, Pts allowed 418.3, Sacks made 29.1, INTs made 10.6   (7 teams; averages per team, ratios from group totals)
+  C (SimData 0x0F): Rush yds allowed 2417.4, Pass yds allowed 2435.7, Pts allowed 423.9, Sacks made 36.1, INTs made 13.6   (7 teams; averages per team, ratios from group totals)
+  D (SimData 0xFF): Rush yds allowed 1440.3, Pass yds allowed 2715.1, Pts allowed 323.6, Sacks made 38.7, INTs made 15.7   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+Not many DBs have Interceptions, no SS or FS have any sacks or interceptions   
+
+CONCLUSION
+  
+
+Tested by: __cbadal______   Date: __10/6/2026_   Emulator: _____MSEEN___

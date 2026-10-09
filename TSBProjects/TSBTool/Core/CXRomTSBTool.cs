@@ -548,7 +548,7 @@ namespace TSBTool
 		}
 
 		/// <summary>
-		/// Sets the team sim offense tendency . 
+		/// Gets the team sim offense tendency . 
 		/// 00 = Little more rushing, 01 = Heavy Rushing, 
 		/// 02 = little more passing, 03 = Heavy Passing. 
 		/// </summary>
@@ -624,9 +624,9 @@ namespace TSBTool
 
 		/// <summary>
 		/// Returns the simulation data for the given team.
-		/// Simulation data is of the form '0xNN' where N is a number 1-F (hex).
-		/// A team's sim data of '0x57' signifies that the team has a simulation figure of
-		/// '5' for offense, and '7' for defense.
+		/// Simulation data is of the form '0xNN' where N is a hex digit 0-F.
+		/// High digit = rush defense, low digit = pass defense: '0x57' means rush defense 5,
+		/// pass defense 7. (NES sim code: run plays use the defending team's high digit, pass plays its low digit.)
 		/// </summary>
 		/// <param name="team">The team of interest</param>
 		/// <returns></returns>
@@ -645,10 +645,10 @@ namespace TSBTool
 		}
 
 		/// <summary>
-		/// Sets the given team's offense and defense sim values.
-		/// Simulation data is of the form '0xNN' where N is a number 1-F (hex).
-		/// A team's sim data of '0x57' signifies that the team has a simulation figure of
-		/// '5' for offense, and '7' for defense.
+		/// Sets the given team's rush defense and pass defense sim values.
+		/// Simulation data is of the form '0xNN' where N is a hex digit 0-F.
+		/// High digit = rush defense, low digit = pass defense: '0x57' means rush defense 5,
+		/// pass defense 7. (NES sim code: run plays use the defending team's high digit, pass plays its low digit.)
 		/// </summary>
 		/// <param name="team">The team to set.</param>
 		/// <param name="values">The value to set it to.</param>

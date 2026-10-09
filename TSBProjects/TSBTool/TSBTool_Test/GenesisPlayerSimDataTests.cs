@@ -9,8 +9,8 @@ namespace TSBTool_Test
     /// defensive positions (RE..SS) at 0x18/0x23 offsets within the same block; kicking/punting share
     /// one nibble-packed byte at 0x2E. All formulas confirmed identical to SNES_TecmoTool's own
     /// GetQBSimData/GetSkillSimData/GetDefensiveSimData/GetKickingSimData/GetPuntingSimData -- see
-    /// Genesis_TSB1_ROM_Findings.md's sim/CPU data section. Genesis uses the plain main team order throughout
-    /// (no SNES-style mSimTeams reordering quirk, confirmed by the fork investigation).
+    /// Genesis_TSB1_ROM_Findings.md's sim/CPU data section. Like SNES, the sim blocks are in their own
+    /// team order (cowboys/redskins and falcons/49ers swapped) -- see the swapped-block tests below.
     /// </summary>
     [TestClass]
     public class GenesisPlayerSimDataTests
@@ -132,6 +132,38 @@ namespace TSBTool_Test
 
             tool.SetPuntingSimData("bills", 3);
             Assert.AreEqual((byte)((9 << 4) | 3), tool.OutputRom[loc], "Setting punting must preserve the already-set kicking nibble.");
+        }
+
+        // The game reaches each team's sim block through a pointer table at 0xDEA0E that swaps
+        // teams 14<->18 (cowboys/redskins) and 24<->27 (falcons/49ers), same as SNES. Stock data:
+        // block 18 holds the 1992 Cowboys (team byte 0xFD), block 24 holds Steve Young (QB1 rush 9, pass 12).
+        [TestMethod]
+        public void GenesisRom_StockSimData_ReadsFromSwappedBlocks()
+        {
+            byte[] rom = TestRoms.LoadRom(RomFileName);
+            Genesis_TSB1Tool tool = (Genesis_TSB1Tool)TecmoToolFactory.GetToolForRom(rom);
+
+            Assert.AreEqual((byte)0xFD, tool.GetTeamSimData("cowboys"));
+            Assert.AreEqual(rom[SimBlockStart + 14 * SimBlockSize + 0x2F], tool.GetTeamSimData("redskins"));
+            CollectionAssert.AreEqual(new[] { 9, 12, 0 }, tool.GetPlayerSimData("49ers", "QB1"));
+            CollectionAssert.AreEqual(new[] { 5, 9, 1 }, tool.GetPlayerSimData("falcons", "QB1"));
+        }
+
+        [TestMethod]
+        public void GenesisRom_SimDataSetters_WriteToSwappedBlocks()
+        {
+            byte[] rom = TestRoms.LoadRom(RomFileName);
+            ITecmoTool tool = (ITecmoTool)TecmoToolFactory.GetToolForRom(rom);
+
+            tool.SetTeamSimData("cowboys", 0x12);
+            tool.SetQBSimData("falcons", "QB1", new int[] { 3, 4, 5 });
+            tool.SetDefensiveSimData("redskins", "RE", new int[] { 77, 66 });
+            tool.SetKickingSimData("49ers", 7);
+
+            Assert.AreEqual((byte)0x12, tool.OutputRom[SimBlockStart + 18 * SimBlockSize + 0x2F]);
+            Assert.AreEqual((byte)0x34, tool.OutputRom[OffensiveLoc(27, 0)]);
+            Assert.AreEqual((byte)77, tool.OutputRom[SimBlockStart + 14 * SimBlockSize + 0x18]);
+            Assert.AreEqual(7, tool.OutputRom[SimBlockStart + 24 * SimBlockSize + 0x2E] >> 4);
         }
 
         [TestMethod]

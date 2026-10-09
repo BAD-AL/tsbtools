@@ -1,0 +1,1323 @@
+# TSBTool Forum: https://tecmobowl.org/forums/topic/11106-tsb-editor-tsbtool-supreme-season-generator/
+# Editing: Tecmo Super Bowl I (Genesis) [GENESIS_TSB1]
+# 
+# Double click on a team name (or playbook) to bring up the edit Team GUI.
+# Double click on a player to bring up the edit player GUI (Click 'Sim Data'
+#   button to find out more on Sim Data). 
+# Key
+# -- Quarterbacks:
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].
+# -- Offensive Skill players (non-QB):
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, BC, REC, [Sim rush, Sim catch, Sim yards per catch, Sim targets].
+# -- Offensive Linemen:
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP
+# -- Defensive Players:
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, PI, QU, [Sim pass rush, Sim coverage].
+# -- Punters and Kickers:
+# Position, Name (first LAST), FaceID, Jersey number, RP, RS, MS, HP, KA, AKB,[ Sim kicking ability].
+# TEAM:\n
+#  name, SimData  0x<rush defense><pass defense><offense preference>
+#  Offensive pref values 0-3. 
+#     0 = Little more rushing, 1 = Heavy Rushing (*Genesis bug: actually plays as heavy passing, about 72% pass*),
+#     2 = little more passing, 3 = Heavy Passing.
+#     Add a line 'GENESIS_FIX_SIM_BUGS' to fix the game so that 1 plays as Heavy Rushing.
+YEAR=1993
+TEAM = bills SimData=0x880
+QB1, jim KELLY, Face=0x0, #12, 25, 69, 13, 13, 63, 63, 75, 69,[4, 8, 3 ]
+QB2, frank REICH, Face=0x0, #14, 25, 69, 13, 13, 38, 44, 44, 56,[4, 8, 3 ]
+RB1, thurman THOMAS, Face=0x80, #34, 44, 69, 69, 25, 56, 63,[8, 8, 8, 8 ]
+RB2, kenneth DAVIS, Face=0x80, #23, 44, 69, 44, 50, 56, 31,[8, 8, 8, 8 ]
+RB3, carwell GARDNER, Face=0x80, #35, 44, 69, 25, 56, 56, 31,[8, 8, 8, 8 ]
+RB4, eddie FULLER, Face=0x80, #33, 25, 69, 31, 19, 56, 25,[8, 8, 8, 8 ]
+WR1, don BEEBE, Face=0x0, #82, 31, 69, 56, 13, 56, 44,[8, 8, 8, 8 ]
+WR2, andre REED, Face=0x80, #83, 31, 69, 50, 13, 44, 69,[8, 8, 8, 8 ]
+WR3, bill BROOKS, Face=0x80, #80, 31, 69, 38, 13, 69, 56,[8, 8, 8, 8 ]
+WR4, al EDWARDS, Face=0x80, #85, 31, 69, 31, 13, 56, 44,[8, 8, 8, 8 ]
+TE1, keith MCKELLER, Face=0x80, #84, 44, 69, 31, 38, 56, 44,[8, 8, 8, 8 ]
+TE2, pete METZELAARS, Face=0x0, #88, 44, 69, 38, 31, 56, 38,[8, 8, 8, 8 ]
+C, kent HULL, Face=0x0, #67, 25, 69, 38, 69
+LG, jim RITCHER, Face=0x0, #51, 25, 69, 25, 56
+RG, glenn PARKER, Face=0x0, #74, 25, 69, 31, 63
+LT, jerry CRAFTS, Face=0x0, #66, 25, 69, 25, 44
+RT, howard BALLARD, Face=0x80, #75, 25, 69, 19, 69
+RE, bruce SMITH, Face=0x80, #78, 38, 50, 56, 69, 19, 81,[30, 30 ]
+NT, jeff WRIGHT, Face=0x0, #91, 25, 38, 38, 44, 19, 38,[30, 30 ]
+LE, phil HANSEN, Face=0x0, #90, 31, 44, 44, 56, 19, 56,[30, 30 ]
+ROLB, mark MADDOX, Face=0x80, #55, 31, 38, 31, 44, 19, 38,[30, 30 ]
+RILB, c. BENNETT, Face=0x80, #97, 38, 56, 69, 56, 19, 69,[30, 30 ]
+LILB, keith WILLIS, Face=0x80, #93, 31, 31, 44, 44, 31, 50,[30, 30 ]
+LOLB, marvcus PATTON, Face=0x80, #53, 25, 44, 31, 63, 31, 19,[30, 30 ]
+RCB, nate ODOMES, Face=0x80, #37, 31, 38, 44, 50, 50, 50,[30, 30 ]
+LCB, kirby JACKSON, Face=0x80, #47, 25, 50, 38, 31, 38, 31,[30, 30 ]
+FS, mark KELSO, Face=0x0, #38, 38, 44, 50, 50, 69, 69,[30, 30 ]
+SS, henry JONES, Face=0x80, #20, 31, 44, 56, 56, 75, 63,[30, 30 ]
+K, steve CHRISTIE, Face=0x0, #2, 56, 81, 81, 31, 56, 56,[8 ]
+P, chris MOHR, Face=0x0, #9, 25, 81, 44, 31, 31, 38,[8 ]
+DB1, james WILLIAMS, Face=0x80, #29, 25, 31, 31, 38, 38, 44
+DB2, matt DARBY, Face=0x80, #43, 25, 31, 31, 63, 38, 19
+RETURN_TEAM RB2, WR4, RCB
+KR, RB2
+PR, WR4
+
+TEAM = colts SimData=0x881
+QB1, jeff GEORGE, Face=0x0, #11, 25, 69, 13, 13, 50, 44, 56, 50,[4, 8, 3 ]
+QB2, don MAJKOWSKI, Face=0x0, #7, 25, 69, 13, 13, 38, 50, 44, 44,[4, 8, 3 ]
+RB1, rodney CULVER, Face=0x80, #35, 38, 69, 38, 50, 63, 38,[8, 8, 8, 8 ]
+RB2, anthony JOHNSON, Face=0x80, #23, 38, 69, 44, 44, 63, 50,[8, 8, 8, 8 ]
+RB3, ken CLARK, Face=0x80, #32, 38, 69, 31, 50, 63, 25,[8, 8, 8, 8 ]
+RB4, ed TONER, Face=0x0, #28, 44, 69, 25, 56, 63, 25,[8, 8, 8, 8 ]
+WR1, reggie LANGHORNE, Face=0x80, #85, 31, 69, 31, 13, 63, 50,[8, 8, 8, 8 ]
+WR2, jessie HESTER, Face=0x80, #84, 31, 69, 38, 13, 69, 56,[8, 8, 8, 8 ]
+WR3, clarence VERDIN, Face=0x80, #83, 44, 69, 44, 38, 63, 25,[8, 8, 8, 8 ]
+WR4, aaron COX, Face=0x80, #80, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+TE1, kerry CASH, Face=0x80, #88, 31, 69, 38, 44, 69, 50,[8, 8, 8, 8 ]
+TE2, charles ARBUCKLE, Face=0x80, #81, 25, 69, 19, 44, 63, 25,[8, 8, 8, 8 ]
+C, kirk LOWDERMILK, Face=0x0, #63, 38, 69, 25, 63
+LG, mike HELDT, Face=0x0, #56, 25, 69, 19, 38
+RG, ron SOLT, Face=0x0, #66, 19, 69, 25, 44
+LT, kevin CALL, Face=0x0, #71, 25, 69, 25, 50
+RT, will WOLFORD, Face=0x0, #67, 25, 69, 19, 63
+RE, sam CLANCY, Face=0x80, #76, 25, 38, 38, 44, 19, 38,[30, 30 ]
+NT, jon HAND, Face=0x80, #78, 25, 31, 31, 56, 19, 31,[30, 30 ]
+LE, steve EMTMAN, Face=0x0, #90, 38, 50, 50, 56, 25, 75,[30, 30 ]
+ROLB, jeff HERROD, Face=0x80, #54, 31, 38, 50, 50, 19, 63,[30, 30 ]
+RILB, quentin CORYATT, Face=0x80, #55, 38, 44, 50, 44, 19, 31,[30, 30 ]
+LILB, duane BICKETT, Face=0x0, #50, 31, 38, 44, 50, 31, 38,[30, 30 ]
+LOLB, chip BANKS, Face=0x80, #51, 31, 38, 38, 31, 31, 50,[30, 30 ]
+RCB, tony STARGELL, Face=0x80, #45, 25, 38, 31, 44, 44, 38,[30, 30 ]
+LCB, john BAYLOR, Face=0x80, #36, 38, 44, 38, 31, 50, 50,[30, 30 ]
+FS, chris GOODE, Face=0x80, #37, 25, 31, 44, 38, 38, 31,[30, 30 ]
+SS, eugene DANIEL, Face=0x80, #38, 25, 31, 31, 31, 44, 38,[30, 30 ]
+K, dean BIASUCCI, Face=0x0, #4, 56, 81, 81, 31, 50, 25,[8 ]
+P, rohn STARK, Face=0x0, #3, 25, 81, 44, 31, 75, 69,[8 ]
+DB1, ashley AMBROSE, Face=0x80, #33, 25, 31, 31, 31, 38, 69
+DB2, jason BELSER, Face=0x80, #29, 25, 31, 38, 44, 38, 31
+RETURN_TEAM WR3, RB3, RCB
+KR, WR3
+PR, WR3
+
+TEAM = dolphins SimData=0x882
+QB1, dan MARINO, Face=0x0, #13, 25, 69, 13, 13, 81, 69, 63, 69,[4, 8, 3 ]
+QB2, scott MITCHELL, Face=0x0, #19, 25, 69, 13, 13, 44, 38, 25, 44,[4, 8, 3 ]
+RB1, mark HIGGS, Face=0x80, #21, 38, 69, 50, 44, 56, 19,[8, 8, 8, 8 ]
+RB2, keith BYARS, Face=0x80, #41, 38, 69, 38, 38, 56, 63,[8, 8, 8, 8 ]
+RB3, aaron CRAVER, Face=0x80, #34, 31, 69, 38, 31, 56, 25,[8, 8, 8, 8 ]
+RB4, james SAXON, Face=0x80, #22, 38, 69, 31, 25, 56, 19,[8, 8, 8, 8 ]
+WR1, irving FRYAR, Face=0x80, #80, 31, 69, 44, 13, 69, 63,[8, 8, 8, 8 ]
+WR2, mark INGRAM, Face=0x80, #1, 31, 69, 38, 13, 56, 50,[8, 8, 8, 8 ]
+WR3, tony MARTIN, Face=0x80, #89, 31, 69, 31, 13, 44, 44,[8, 8, 8, 8 ]
+WR4, scott MILLER, Face=0x0, #82, 38, 69, 25, 13, 56, 38,[8, 8, 8, 8 ]
+TE1, keith JACKSON, Face=0x80, #88, 44, 69, 38, 63, 56, 63,[8, 8, 8, 8 ]
+TE2, greg BATY, Face=0x20, #84, 25, 69, 19, 44, 56, 25,[8, 8, 8, 8 ]
+C, jeff UHLENHAKE, Face=0x0, #63, 25, 69, 31, 56
+LG, keith SIMS, Face=0x80, #69, 25, 69, 31, 69
+RG, eddie BLAKE, Face=0x80, #66, 25, 69, 38, 50
+LT, richmond WEBB, Face=0x80, #78, 31, 69, 38, 69
+RT, mark DENNIS, Face=0x0, #74, 25, 69, 25, 63
+RE, jeff CROSS, Face=0x80, #91, 31, 38, 50, 56, 19, 31,[30, 30 ]
+NT, mike GOLIC, Face=0x0, #96, 38, 50, 44, 56, 19, 44,[30, 30 ]
+LE, marco COLEMAN, Face=0x80, #90, 25, 38, 38, 56, 19, 19,[30, 30 ]
+ROLB, bryan COX, Face=0x80, #51, 38, 50, 63, 56, 31, 69,[30, 30 ]
+RILB, john GRIMSLEY, Face=0x0, #59, 25, 31, 38, 31, 19, 50,[30, 30 ]
+LILB, john OFFERDAHL, Face=0x0, #56, 31, 38, 56, 50, 19, 50,[30, 30 ]
+LOLB, david GRIGGS, Face=0x80, #92, 31, 31, 44, 50, 19, 38,[30, 30 ]
+RCB, j.b. BROWN, Face=0x80, #37, 25, 31, 44, 31, 50, 44,[30, 30 ]
+LCB, troy VINCENT, Face=0x80, #23, 25, 38, 44, 31, 44, 56,[30, 30 ]
+FS, louis OLIVER, Face=0x80, #25, 31, 38, 50, 56, 56, 75,[30, 30 ]
+SS, jarvis WILLIAMS, Face=0x80, #26, 38, 31, 44, 50, 50, 56,[30, 30 ]
+K, pete STOYANOVICH, Face=0x0, #10, 56, 81, 81, 31, 75, 69,[8 ]
+P, reggie ROBY, Face=0x80, #4, 25, 81, 44, 31, 50, 69,[8 ]
+DB1, vestee JACKSON, Face=0x80, #24, 25, 38, 38, 31, 50, 50
+DB2, liffort HOBLEY, Face=0x80, #29, 25, 31, 31, 63, 38, 31
+RETURN_TEAM WR3, WR4, SS
+KR, SS
+PR, WR4
+
+TEAM = patriots SimData=0x883
+QB1, scott ZOLAK, Face=0x0, #16, 25, 69, 13, 13, 50, 38, 38, 44,[4, 8, 3 ]
+QB2, scott SECULES, Face=0x0, #10, 25, 69, 13, 13, 31, 38, 44, 50,[4, 8, 3 ]
+RB1, jon VAUGHN, Face=0x80, #24, 38, 69, 44, 31, 44, 31,[8, 8, 8, 8 ]
+RB2, leonard RUSSELL, Face=0x80, #32, 38, 69, 38, 38, 50, 25,[8, 8, 8, 8 ]
+RB3, sam GASH, Face=0x80, #33, 31, 69, 38, 31, 50, 38,[8, 8, 8, 8 ]
+RB4, scott LOCKWOOD, Face=0x0, #40, 25, 69, 31, 31, 50, 25,[8, 8, 8, 8 ]
+WR1, greg MCMURTRY, Face=0x80, #86, 31, 69, 38, 13, 50, 50,[8, 8, 8, 8 ]
+WR2, michael TIMPSON, Face=0x80, #83, 31, 69, 31, 13, 50, 44,[8, 8, 8, 8 ]
+WR3, mike FARR, Face=0x80, #81, 38, 69, 25, 13, 50, 38,[8, 8, 8, 8 ]
+WR4, h.l. DYKES, Face=0x80, #88, 31, 69, 25, 13, 50, 44,[8, 8, 8, 8 ]
+TE1, marv COOK, Face=0x0, #85, 44, 69, 31, 44, 44, 63,[8, 8, 8, 8 ]
+TE2, ben COATES, Face=0x80, #87, 25, 69, 19, 63, 50, 19,[8, 8, 8, 8 ]
+C, bill LEWIS, Face=0x0, #75, 25, 69, 25, 56
+LG, eugene CHUNG, Face=0x0, #69, 25, 69, 25, 44
+RG, calvin STEPHENS, Face=0x80, #68, 25, 69, 19, 38
+LT, bruce ARMSTRONG, Face=0x80, #78, 25, 69, 25, 63
+RT, pat HARLOW, Face=0x0, #77, 25, 69, 19, 31
+RE, brent WILLIAMS, Face=0x80, #96, 25, 31, 25, 63, 19, 38,[30, 30 ]
+NT, tim GOAD, Face=0x0, #72, 25, 31, 38, 31, 19, 38,[30, 30 ]
+LE, ray AGNEW, Face=0x80, #92, 25, 31, 38, 38, 19, 63,[30, 30 ]
+ROLB, andre TIPPETT, Face=0x80, #56, 38, 44, 56, 56, 19, 56,[30, 30 ]
+RILB, vincent BROWN, Face=0x80, #59, 31, 38, 50, 56, 31, 63,[30, 30 ]
+LILB, eugene LOCKHART, Face=0x80, #51, 25, 31, 38, 56, 19, 31,[30, 30 ]
+LOLB, david HOWARD, Face=0x80, #99, 31, 31, 38, 31, 31, 25,[30, 30 ]
+RCB, maurice HURST, Face=0x80, #37, 25, 31, 38, 44, 50, 44,[30, 30 ]
+LCB, jerome HENDERSON, Face=0x80, #36, 25, 31, 44, 25, 50, 44,[30, 30 ]
+FS, tim GORDON, Face=0x80, #41, 25, 31, 38, 31, 38, 31,[30, 30 ]
+SS, john GRANDY, Face=0x20, #25, 31, 31, 38, 31, 44, 38,[30, 30 ]
+K, charlie BAUMANN, Face=0x0, #8, 56, 81, 81, 31, 44, 44,[8 ]
+P, shawn MCCARTHY, Face=0x0, #5, 25, 81, 44, 31, 38, 31,[8 ]
+DB1, reyna THOMPSON, Face=0x80, #21, 25, 31, 31, 31, 44, 38
+DB2, roger BROWN, Face=0x80, #47, 31, 31, 31, 25, 19, 25
+RETURN_TEAM WR2, WR3, RCB
+KR, WR3
+PR, WR2
+
+TEAM = jets SimData=0x880
+QB1, boomer ESIASON, Face=0x0, #7, 25, 69, 13, 13, 63, 38, 44, 56,[4, 8, 3 ]
+QB2, browning NAGLE, Face=0x0, #8, 25, 69, 13, 13, 44, 44, 38, 38,[4, 8, 3 ]
+RB1, johnny JOHNSON, Face=0x80, #39, 38, 69, 50, 25, 69, 31,[8, 8, 8, 8 ]
+RB2, brad BAXTER, Face=0x80, #30, 44, 69, 31, 50, 63, 25,[8, 8, 8, 8 ]
+RB3, scottie GRAHAM, Face=0x80, #35, 38, 69, 38, 31, 63, 25,[8, 8, 8, 8 ]
+RB4, pat CHAFFEY, Face=0x0, #28, 31, 69, 31, 31, 63, 44,[8, 8, 8, 8 ]
+WR1, chris BURKETT, Face=0x80, #87, 31, 69, 38, 13, 63, 56,[8, 8, 8, 8 ]
+WR2, rob MOORE, Face=0x80, #85, 31, 69, 44, 13, 63, 56,[8, 8, 8, 8 ]
+WR3, terance MATHIS, Face=0x80, #81, 31, 69, 31, 13, 63, 38,[8, 8, 8, 8 ]
+WR4, rob CARPENTER, Face=0x80, #82, 31, 69, 31, 13, 44, 44,[8, 8, 8, 8 ]
+TE1, johnny MITCHELL, Face=0x80, #83, 25, 69, 31, 50, 63, 31,[8, 8, 8, 8 ]
+TE2, james THORNTON, Face=0x0, #80, 25, 69, 19, 31, 63, 25,[8, 8, 8, 8 ]
+C, jim SWEENEY, Face=0x0, #53, 25, 69, 25, 56
+LG, dwayne WHITE, Face=0x80, #67, 25, 69, 19, 69
+RG, dave CADIGAN, Face=0x0, #66, 25, 69, 31, 50
+LT, siupeli MALAMALA, Face=0x80, #75, 19, 69, 31, 56
+RT, jeff CRISWELL, Face=0x0, #69, 31, 69, 31, 63
+RE, mark GUNN, Face=0x80, #96, 25, 31, 25, 56, 19, 25,[30, 30 ]
+NT, jeff LAGEMAN, Face=0x0, #56, 25, 31, 31, 63, 19, 31,[30, 30 ]
+LE, leonard MARSHALL, Face=0x80, #70, 31, 38, 50, 50, 19, 63,[30, 30 ]
+ROLB, mo LEWIS, Face=0x80, #57, 25, 31, 50, 50, 31, 25,[30, 30 ]
+RILB, paul FRASE, Face=0x0, #91, 25, 38, 38, 50, 19, 38,[30, 30 ]
+LILB, kyle CLIFTON, Face=0x0, #59, 38, 31, 44, 56, 31, 38,[30, 30 ]
+LOLB, bobby HOUSTON, Face=0x80, #55, 31, 38, 44, 38, 31, 38,[30, 30 ]
+RCB, eric THOMAS, Face=0x80, #22, 31, 38, 50, 38, 50, 56,[30, 30 ]
+LCB, clifford HICKS, Face=0x80, #25, 25, 31, 31, 38, 38, 31,[30, 30 ]
+FS, ronnie LOTT, Face=0x80, #42, 38, 50, 50, 56, 44, 63,[30, 30 ]
+SS, b. WASHINGTON, Face=0x80, #48, 31, 38, 44, 25, 56, 50,[30, 30 ]
+K, cary BLANCHARD, Face=0x0, #10, 56, 81, 81, 31, 44, 50,[8 ]
+P, louie AGUIAR, Face=0x0, #4, 25, 81, 44, 31, 63, 50,[8 ]
+DB1, kevin PORTER, Face=0x80, #27, 25, 31, 50, 31, 31, 44
+DB2, dennis PRICE, Face=0x80, #20, 25, 31, 31, 31, 44, 38
+RETURN_TEAM WR3, WR4, RCB
+KR, WR3
+PR, WR4
+
+TEAM = bengals SimData=0x881
+QB1, david KLINGLER, Face=0x0, #7, 25, 69, 19, 13, 31, 44, 38, 44,[4, 8, 3 ]
+QB2, jay SCHROEDER, Face=0x0, #10, 25, 69, 13, 13, 75, 31, 31, 44,[4, 8, 3 ]
+RB1, harold GREEN, Face=0x80, #28, 38, 69, 56, 25, 75, 38,[8, 8, 8, 8 ]
+RB2, derrick FENNER, Face=0x80, #44, 38, 69, 31, 63, 69, 25,[8, 8, 8, 8 ]
+RB3, eric BALL, Face=0x80, #42, 38, 69, 38, 31, 63, 31,[8, 8, 8, 8 ]
+RB4, ostell MILES, Face=0x80, #36, 25, 69, 31, 31, 63, 25,[8, 8, 8, 8 ]
+WR1, carl PICKENS, Face=0x80, #80, 31, 69, 38, 13, 44, 44,[8, 8, 8, 8 ]
+WR2, eddie BROWN, Face=0x80, #81, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+WR3, reggie REMBERT, Face=0x80, #88, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, milt STEGALL, Face=0x80, #84, 31, 69, 25, 13, 63, 38,[8, 8, 8, 8 ]
+TE1, jeff THOMASON, Face=0x0, #49, 25, 69, 25, 63, 63, 25,[8, 8, 8, 8 ]
+TE2, craig THOMPSON, Face=0x80, #48, 31, 69, 25, 38, 63, 38,[8, 8, 8, 8 ]
+C, mike ARTHUR, Face=0x0, #65, 25, 69, 19, 50
+LG, jon MELANDER, Face=0x0, #62, 25, 69, 25, 44
+RG, bruce KOZERSKI, Face=0x0, #64, 19, 69, 25, 56
+LT, joe WALTER, Face=0x0, #63, 25, 69, 19, 50
+RT, kirk SCRAFFORD, Face=0x0, #76, 25, 69, 31, 31
+RE, daniel STUBBS, Face=0x80, #96, 31, 44, 44, 50, 19, 69,[30, 30 ]
+NT, tim KRUMRIE, Face=0x0, #69, 25, 38, 38, 50, 19, 69,[30, 30 ]
+LE, lamar ROGERS, Face=0x80, #79, 25, 38, 38, 44, 19, 44,[30, 30 ]
+ROLB, james FRANCIS, Face=0x80, #50, 38, 38, 44, 56, 44, 50,[30, 30 ]
+RILB, ray BENTLEY, Face=0x0, #57, 31, 38, 44, 31, 19, 56,[30, 30 ]
+LILB, randy KIRK, Face=0x0, #55, 25, 31, 31, 25, 19, 31,[30, 30 ]
+LOLB, alfred WILLIAMS, Face=0x80, #94, 38, 44, 56, 56, 19, 56,[30, 30 ]
+RCB, mitchell PRICE, Face=0x80, #32, 31, 31, 38, 44, 38, 31,[30, 30 ]
+LCB, rod JONES, Face=0x80, #25, 25, 31, 38, 38, 44, 38,[30, 30 ]
+FS, darryl WILLIAMS, Face=0x80, #31, 25, 31, 44, 44, 38, 50,[30, 30 ]
+SS, david FULCHER, Face=0x80, #33, 31, 38, 50, 69, 44, 44,[30, 30 ]
+K, jim BREECH, Face=0x0, #3, 56, 81, 81, 31, 31, 19,[8 ]
+P, p BENGALS, Face=0x0, #0, 25, 81, 44, 31, 25, 19,[8 ]
+DB1, leonard WHEELER, Face=0x80, #37, 25, 38, 38, 38, 44, 38
+DB2, mike BRIM, Face=0x80, #43, 19, 38, 31, 50, 38, 56
+RETURN_TEAM RB3, WR1, RCB
+KR, RB3
+PR, WR1
+
+TEAM = browns SimData=0x882
+QB1, bernie KOSAR, Face=0x0, #19, 25, 69, 13, 13, 44, 56, 63, 63,[4, 8, 3 ]
+QB2, vinny TESTAVERDE, Face=0x0, #12, 25, 69, 25, 13, 56, 44, 38, 38,[4, 8, 3 ]
+RB1, kevin MACK, Face=0x80, #34, 38, 69, 44, 56, 75, 25,[8, 8, 8, 8 ]
+RB2, eric METCALF, Face=0x80, #21, 44, 69, 38, 25, 69, 63,[8, 8, 8, 8 ]
+RB3, tommy VARDELL, Face=0x0, #44, 38, 69, 38, 50, 81, 25,[8, 8, 8, 8 ]
+RB4, leroy HOARD, Face=0x80, #33, 25, 69, 31, 31, 44, 19,[8, 8, 8, 8 ]
+WR1, michael JACKSON, Face=0x80, #1, 31, 69, 44, 13, 69, 56,[8, 8, 8, 8 ]
+WR2, mark CARRIER, Face=0x80, #83, 31, 69, 38, 13, 69, 56,[8, 8, 8, 8 ]
+WR3, shawn COLLINS, Face=0x80, #80, 31, 69, 25, 13, 69, 44,[8, 8, 8, 8 ]
+WR4, patrick ROWE, Face=0x80, #86, 31, 69, 31, 13, 69, 38,[8, 8, 8, 8 ]
+TE1, brian KINCHEN, Face=0x0, #88, 25, 69, 31, 44, 69, 38,[8, 8, 8, 8 ]
+TE2, scott GALBRAITH, Face=0x80, #81, 25, 69, 19, 50, 69, 19,[8, 8, 8, 8 ]
+C, jay HILGENBERG, Face=0x0, #63, 25, 69, 31, 69
+LG, ed KING, Face=0x80, #68, 25, 69, 19, 38
+RG, houston HOOVER, Face=0x80, #64, 25, 69, 25, 50
+LT, bob DAHL, Face=0x0, #72, 25, 69, 19, 50
+RT, tony JONES, Face=0x80, #66, 19, 69, 31, 56
+RE, jerry BALL, Face=0x80, #93, 44, 31, 31, 69, 19, 44,[30, 30 ]
+NT, m.d. PERRY, Face=0x80, #92, 38, 44, 44, 63, 19, 69,[30, 30 ]
+LE, rob BURNETT, Face=0x80, #90, 31, 44, 50, 56, 19, 50,[30, 30 ]
+ROLB, james JONES, Face=0x80, #96, 25, 38, 44, 44, 19, 38,[30, 30 ]
+RILB, david BRANDON, Face=0x80, #58, 31, 38, 44, 50, 31, 56,[30, 30 ]
+LILB, mike JOHNSON, Face=0x80, #59, 38, 44, 50, 56, 31, 56,[30, 30 ]
+LOLB, clay MATTHEWS, Face=0x0, #57, 31, 44, 44, 44, 31, 50,[30, 30 ]
+RCB, terry TAYLOR, Face=0x80, #24, 25, 31, 31, 38, 44, 50,[30, 30 ]
+LCB, everson WALLS, Face=0x80, #28, 31, 31, 44, 31, 50, 50,[30, 30 ]
+FS, harlon BARNETT, Face=0x80, #37, 31, 31, 44, 38, 44, 31,[30, 30 ]
+SS, stevon MOORE, Face=0x80, #27, 31, 38, 50, 44, 44, 50,[30, 30 ]
+K, matt STOVER, Face=0x0, #3, 56, 81, 81, 31, 44, 38,[8 ]
+P, brian HANSEN, Face=0x0, #11, 25, 81, 44, 31, 31, 31,[8 ]
+DB1, najee MUSTAFAA, Face=0x80, #48, 31, 38, 44, 50, 44, 38
+DB2, randy HILLIARD, Face=0x80, #39, 25, 31, 25, 31, 38, 31
+RETURN_TEAM RB2, RB4, RCB
+KR, RB2
+PR, RB2
+
+TEAM = oilers SimData=0x883
+QB1, warren MOON, Face=0x80, #1, 25, 69, 19, 13, 63, 75, 69, 56,[4, 8, 3 ]
+QB2, cody CARLSON, Face=0x0, #14, 25, 69, 19, 13, 44, 50, 44, 44,[4, 8, 3 ]
+RB1, lorenzo WHITE, Face=0x80, #44, 38, 69, 56, 44, 75, 56,[8, 8, 8, 8 ]
+RB2, ernest GIVINS, Face=0x80, #81, 31, 69, 56, 13, 63, 69,[8, 8, 8, 8 ]
+RB3, spencer TILLMAN, Face=0x80, #32, 38, 69, 31, 31, 63, 19,[8, 8, 8, 8 ]
+RB4, damon MAYS, Face=0x20, #86, 25, 69, 31, 13, 63, 19,[8, 8, 8, 8 ]
+WR1, haywood JEFFIRES, Face=0x80, #84, 31, 69, 38, 13, 63, 75,[8, 8, 8, 8 ]
+WR2, curtis DUNCAN, Face=0x80, #80, 31, 69, 38, 13, 69, 63,[8, 8, 8, 8 ]
+WR3, gary BROWN, Face=0x80, #33, 31, 69, 25, 50, 63, 19,[8, 8, 8, 8 ]
+WR4, leonard HARRIS, Face=0x80, #83, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+TE1, w. SLAUGHTER, Face=0x80, #89, 38, 69, 44, 19, 44, 44,[8, 8, 8, 8 ]
+TE2, gary WELLMAN, Face=0x0, #88, 25, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+C, bruce MATTHEWS, Face=0x0, #74, 25, 69, 25, 75
+LG, mike MUNCHAK, Face=0x0, #63, 25, 69, 31, 69
+RG, doug DAWSON, Face=0x0, #66, 25, 69, 25, 50
+LT, kevin DONNALLEY, Face=0x0, #77, 25, 69, 25, 63
+RT, david WILLIAMS, Face=0x0, #73, 25, 69, 31, 56
+RE, sean JONES, Face=0x80, #96, 31, 44, 44, 56, 25, 50,[30, 30 ]
+NT, ray CHILDRESS, Face=0x0, #79, 38, 50, 63, 69, 19, 69,[30, 30 ]
+LE, william FULLER, Face=0x80, #95, 31, 44, 44, 56, 19, 50,[30, 30 ]
+ROLB, joe BOWDEN, Face=0x80, #58, 31, 25, 31, 31, 19, 38,[30, 30 ]
+RILB, al SMITH, Face=0x80, #54, 38, 44, 50, 63, 31, 75,[30, 30 ]
+LILB, eddie ROBINSON, Face=0x80, #50, 31, 31, 31, 50, 19, 38,[30, 30 ]
+LOLB, lee WILLIAMS, Face=0x80, #97, 31, 38, 44, 44, 19, 56,[30, 30 ]
+RCB, darryll LEWIS, Face=0x80, #29, 25, 31, 44, 25, 38, 44,[30, 30 ]
+LCB, cris DISHMAN, Face=0x80, #28, 38, 50, 56, 38, 44, 56,[30, 30 ]
+FS, marcus ROBERTSON, Face=0x80, #31, 31, 31, 38, 44, 44, 38,[30, 30 ]
+SS, bubba MCDOWELL, Face=0x80, #25, 38, 31, 50, 50, 50, 56,[30, 30 ]
+K, al DEL GRECO, Face=0x0, #3, 56, 81, 81, 31, 56, 69,[8 ]
+P, greg MONTGOMERY, Face=0x0, #9, 25, 81, 44, 31, 63, 69,[8 ]
+DB1, bo ORLANDO, Face=0x0, #26, 25, 31, 19, 31, 38, 31
+DB2, mike DUMAS, Face=0x80, #38, 25, 31, 38, 31, 25, 38
+RETURN_TEAM TE2, TE1, RCB
+KR, RCB
+PR, TE2
+
+TEAM = steelers SimData=0x880
+QB1, neil O.DONNELL, Face=0x0, #14, 25, 69, 13, 13, 44, 50, 50, 50,[4, 8, 3 ]
+QB2, mike TOMCZAK, Face=0x0, #18, 25, 69, 13, 13, 38, 31, 38, 31,[4, 8, 3 ]
+RB1, barry FOSTER, Face=0x80, #29, 63, 69, 56, 56, 63, 44,[8, 8, 8, 8 ]
+RB2, merril HOGE, Face=0x0, #33, 38, 69, 25, 75, 44, 38,[8, 8, 8, 8 ]
+RB3, warren WILLIAMS, Face=0x80, #42, 25, 69, 31, 31, 63, 25,[8, 8, 8, 8 ]
+RB4, leroy THOMPSON, Face=0x80, #34, 31, 69, 31, 31, 44, 44,[8, 8, 8, 8 ]
+WR1, jeff GRAHAM, Face=0x80, #81, 31, 69, 38, 13, 69, 56,[8, 8, 8, 8 ]
+WR2, dwight STONE, Face=0x80, #20, 38, 69, 38, 13, 69, 50,[8, 8, 8, 8 ]
+WR3, ernie MILLS, Face=0x80, #89, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, c. DAVENPORT, Face=0x80, #80, 25, 69, 25, 13, 63, 38,[8, 8, 8, 8 ]
+TE1, eric GREEN, Face=0x80, #86, 38, 69, 44, 56, 63, 63,[8, 8, 8, 8 ]
+TE2, adrian COOPER, Face=0x80, #87, 31, 69, 25, 44, 63, 38,[8, 8, 8, 8 ]
+C, dermontti DAWSON, Face=0x80, #63, 25, 69, 31, 50
+LG, duval LOVE, Face=0x80, #67, 25, 69, 19, 63
+RG, carlton HASELRIG, Face=0x80, #77, 25, 69, 25, 56
+LT, j. STRZELCZYK, Face=0x0, #73, 25, 69, 19, 44
+RT, leon SEARCY, Face=0x80, #72, 25, 69, 25, 50
+RE, donald EVANS, Face=0x80, #66, 31, 38, 38, 50, 19, 31,[30, 30 ]
+NT, gerald WILLIAMS, Face=0x80, #98, 50, 38, 38, 56, 19, 31,[30, 30 ]
+LE, kenny DAVIDSON, Face=0x80, #64, 25, 44, 44, 50, 19, 31,[30, 30 ]
+ROLB, greg LLOYD, Face=0x80, #95, 38, 50, 50, 56, 31, 63,[30, 30 ]
+RILB, david LITTLE, Face=0x80, #50, 25, 31, 56, 50, 31, 69,[30, 30 ]
+LILB, bryan HINKLE, Face=0x0, #53, 25, 31, 31, 25, 19, 31,[30, 30 ]
+LOLB, kevin GREENE, Face=0x0, #91, 38, 44, 56, 63, 19, 63,[30, 30 ]
+RCB, rod WOODSON, Face=0x0, #26, 38, 44, 75, 50, 44, 69,[30, 30 ]
+LCB, david JOHNSON, Face=0x80, #44, 25, 31, 50, 38, 56, 63,[30, 30 ]
+FS, darren PERRY, Face=0x80, #39, 31, 38, 44, 31, 56, 50,[30, 30 ]
+SS, carnell LAKE, Face=0x80, #37, 25, 38, 38, 50, 44, 50,[30, 30 ]
+K, gary ANDERSON, Face=0x0, #1, 56, 81, 81, 31, 56, 38,[8 ]
+P, mark ROYALS, Face=0x0, #3, 25, 81, 44, 31, 38, 25,[8 ]
+DB1, richard SHELTON, Face=0x80, #24, 25, 31, 25, 25, 38, 31
+DB2, sammy WALKER, Face=0x80, #23, 25, 31, 38, 25, 38, 44
+RETURN_TEAM WR2, WR3, RCB
+KR, RCB
+PR, WR2
+
+TEAM = broncos SimData=0x881
+QB1, john ELWAY, Face=0x0, #7, 25, 69, 31, 31, 75, 44, 63, 56,[4, 8, 3 ]
+QB2, tommy MADDOX, Face=0x0, #8, 25, 69, 13, 13, 38, 44, 31, 25,[4, 8, 3 ]
+RB1, rod BERNSTINE, Face=0x80, #33, 56, 69, 44, 69, 63, 19,[8, 8, 8, 8 ]
+RB2, reggie RIVERS, Face=0x80, #38, 44, 69, 38, 25, 63, 50,[8, 8, 8, 8 ]
+RB3, greg LEWIS, Face=0x80, #20, 25, 69, 31, 38, 63, 25,[8, 8, 8, 8 ]
+RB4, robert DELPINO, Face=0x80, #39, 38, 69, 31, 31, 63, 38,[8, 8, 8, 8 ]
+WR1, vance JOHNSON, Face=0x80, #82, 31, 69, 38, 13, 63, 56,[8, 8, 8, 8 ]
+WR2, derek RUSSELL, Face=0x80, #85, 31, 69, 25, 13, 63, 50,[8, 8, 8, 8 ]
+WR3, cedric TILLMAN, Face=0x80, #87, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, emile HARRY, Face=0x80, #83, 31, 69, 25, 13, 63, 38,[8, 8, 8, 8 ]
+TE1, shannon SHARPE, Face=0x80, #84, 44, 69, 38, 31, 63, 63,[8, 8, 8, 8 ]
+TE2, reggie JOHNSON, Face=0x80, #89, 31, 69, 25, 63, 63, 25,[8, 8, 8, 8 ]
+C, keith KARTZ, Face=0x0, #72, 25, 69, 31, 44
+LG, doug WIDELL, Face=0x0, #67, 25, 69, 25, 44
+RG, brian HABIB, Face=0x0, #75, 25, 69, 19, 56
+LT, don MAGGS, Face=0x0, #78, 25, 69, 19, 63
+RT, ken LANIER, Face=0x80, #76, 19, 69, 25, 38
+RE, kenny WALKER, Face=0x80, #96, 25, 31, 31, 56, 19, 44,[30, 30 ]
+NT, greg KRAGEN, Face=0x0, #71, 25, 38, 38, 56, 19, 38,[30, 30 ]
+LE, shane DRONETT, Face=0x0, #99, 25, 31, 31, 50, 19, 50,[30, 30 ]
+ROLB, mike CROEL, Face=0x80, #51, 31, 38, 56, 50, 19, 56,[30, 30 ]
+RILB, karl MECKLENBURG, Face=0x0, #77, 38, 44, 44, 56, 19, 69,[30, 30 ]
+LILB, john SULLINS, Face=0x0, #50, 25, 31, 31, 25, 19, 31,[30, 30 ]
+LOLB, simon FLETCHER, Face=0x80, #73, 56, 44, 63, 69, 19, 69,[30, 30 ]
+RCB, wymon HENDERSON, Face=0x80, #24, 31, 38, 44, 31, 50, 44,[30, 30 ]
+LCB, tyrone BRAXTON, Face=0x80, #34, 38, 38, 38, 31, 44, 31,[30, 30 ]
+FS, steve ATWATER, Face=0x80, #27, 38, 50, 63, 69, 44, 69,[30, 30 ]
+SS, dennis SMITH, Face=0x80, #49, 31, 31, 56, 56, 50, 56,[30, 30 ]
+K, david TREADWELL, Face=0x0, #9, 56, 81, 81, 31, 63, 50,[8 ]
+P, mike HORAN, Face=0x0, #2, 25, 81, 44, 31, 31, 50,[8 ]
+DB1, charles DIMRY, Face=0x80, #29, 25, 31, 38, 25, 44, 38
+DB2, frank ROBINSON, Face=0x80, #36, 25, 31, 44, 19, 38, 31
+RETURN_TEAM RB4, WR2, RCB
+KR, RB4
+PR, WR2
+
+TEAM = chiefs SimData=0x882
+QB1, qb CHIEFS, Face=0x0, #19, 25, 69, 13, 13, 56, 75, 69, 69,[4, 8, 3 ]
+QB2, dave KRIEG, Face=0x0, #17, 25, 69, 13, 13, 63, 38, 31, 50,[4, 8, 3 ]
+RB1, barry WORD, Face=0x80, #23, 44, 69, 44, 69, 69, 19,[8, 8, 8, 8 ]
+RB2, christian OKOYE, Face=0x80, #35, 44, 69, 38, 75, 63, 13,[8, 8, 8, 8 ]
+RB3, harvey WILLIAMS, Face=0x80, #44, 38, 69, 38, 31, 69, 25,[8, 8, 8, 8 ]
+RB4, todd MCNAIR, Face=0x80, #48, 31, 69, 25, 19, 63, 50,[8, 8, 8, 8 ]
+WR1, j.j. BIRDEN, Face=0x80, #88, 31, 69, 38, 13, 44, 56,[8, 8, 8, 8 ]
+WR2, willie DAVIS, Face=0x80, #84, 31, 69, 44, 13, 63, 50,[8, 8, 8, 8 ]
+WR3, tim BARNETT, Face=0x80, #82, 31, 69, 38, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, fred JONES, Face=0x80, #80, 31, 69, 25, 13, 63, 31,[8, 8, 8, 8 ]
+TE1, keith CASH, Face=0x80, #89, 25, 69, 31, 56, 63, 31,[8, 8, 8, 8 ]
+TE2, jonathan HAYES, Face=0x80, #85, 31, 69, 25, 44, 63, 25,[8, 8, 8, 8 ]
+C, tim GRUNHARD, Face=0x0, #61, 25, 69, 31, 63
+LG, dave SZOTT, Face=0x0, #79, 25, 69, 31, 50
+RG, danny VILLA, Face=0x0, #72, 25, 69, 19, 38
+LT, john ALT, Face=0x0, #76, 25, 69, 25, 56
+RT, rich BALDINGER, Face=0x0, #77, 19, 69, 31, 38
+RE, leonard GRIFFIN, Face=0x80, #98, 31, 44, 38, 31, 19, 31,[30, 30 ]
+NT, dan SALEAUMUA, Face=0x0, #97, 25, 38, 38, 56, 19, 31,[30, 30 ]
+LE, neil SMITH, Face=0x80, #90, 31, 56, 63, 69, 25, 75,[30, 30 ]
+ROLB, derrick THOMAS, Face=0x80, #58, 44, 56, 69, 63, 19, 75,[30, 30 ]
+RILB, tracy SIMIEN, Face=0x80, #54, 31, 31, 38, 44, 44, 44,[30, 30 ]
+LILB, percy SNOW, Face=0x80, #55, 25, 31, 31, 38, 19, 31,[30, 30 ]
+LOLB, lonnie MARTS, Face=0x80, #51, 31, 44, 31, 50, 31, 50,[30, 30 ]
+RCB, kevin ROSS, Face=0x80, #31, 38, 50, 50, 38, 44, 50,[30, 30 ]
+LCB, dale CARTER, Face=0x80, #34, 38, 44, 50, 56, 69, 69,[30, 30 ]
+FS, charles MINCY, Face=0x80, #42, 38, 44, 38, 31, 50, 44,[30, 30 ]
+SS, martin BAYLESS, Face=0x80, #30, 38, 25, 38, 50, 38, 44,[30, 30 ]
+K, nick LOWERY, Face=0x0, #8, 56, 81, 81, 31, 81, 75,[8 ]
+P, bryan BARKER, Face=0x0, #4, 25, 81, 44, 31, 56, 50,[8 ]
+DB1, albert LEWIS, Face=0x80, #29, 25, 31, 38, 19, 38, 44
+DB2, david WHITMORE, Face=0x80, #41, 25, 31, 31, 38, 31, 50
+RETURN_TEAM RB3, RB4, LCB
+KR, RB3
+PR, LCB
+
+TEAM = raiders SimData=0x883
+QB1, jeff HOSTETLER, Face=0x0, #15, 25, 69, 25, 13, 56, 50, 44, 56,[4, 8, 3 ]
+QB2, todd MARINOVICH, Face=0x0, #12, 25, 69, 13, 13, 44, 31, 38, 25,[4, 8, 3 ]
+RB1, gaston GREEN, Face=0x80, #22, 38, 69, 44, 31, 81, 19,[8, 8, 8, 8 ]
+RB2, steve SMITH, Face=0x80, #35, 44, 69, 25, 63, 81, 38,[8, 8, 8, 8 ]
+RB3, nick BELL, Face=0x80, #38, 38, 69, 38, 50, 63, 19,[8, 8, 8, 8 ]
+RB4, n. MCCALLUM, Face=0x80, #41, 38, 69, 31, 31, 63, 25,[8, 8, 8, 8 ]
+WR1, tim BROWN, Face=0x80, #81, 31, 69, 56, 13, 44, 56,[8, 8, 8, 8 ]
+WR2, james LOFTON, Face=0x80, #80, 31, 69, 25, 13, 63, 56,[8, 8, 8, 8 ]
+WR3, willie GAULT, Face=0x80, #83, 31, 69, 44, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, alexander WRIGHT, Face=0x80, #89, 31, 69, 56, 13, 63, 25,[8, 8, 8, 8 ]
+TE1, ethan HORTON, Face=0x80, #88, 31, 69, 38, 50, 63, 56,[8, 8, 8, 8 ]
+TE2, andrew GLOVER, Face=0x80, #87, 31, 69, 25, 44, 63, 25,[8, 8, 8, 8 ]
+C, don MOSEBER, Face=0x0, #72, 25, 69, 38, 63
+LG, steve WISNIEWSKI, Face=0x0, #76, 25, 69, 25, 69
+RG, max MONTOYA, Face=0x0, #65, 25, 69, 19, 50
+LT, steve WRIGHT, Face=0x0, #66, 19, 69, 31, 38
+RT, gerald PERRY, Face=0x80, #71, 25, 69, 19, 63
+RE, greg TOWNSEND, Face=0x80, #93, 38, 44, 50, 63, 19, 63,[30, 30 ]
+NT, howie LONG, Face=0x0, #75, 38, 44, 50, 69, 19, 75,[30, 30 ]
+LE, anthony SMITH, Face=0x80, #94, 38, 50, 63, 63, 19, 69,[30, 30 ]
+ROLB, aaron WALLACE, Face=0x80, #51, 31, 44, 44, 50, 19, 44,[30, 30 ]
+RILB, anthony BELL, Face=0x80, #59, 25, 31, 44, 44, 19, 38,[30, 30 ]
+LILB, winston MOSS, Face=0x80, #99, 25, 38, 38, 38, 19, 44,[30, 30 ]
+LOLB, joe KELLY, Face=0x80, #57, 25, 31, 31, 38, 19, 31,[30, 30 ]
+RCB, l. WASHINGTON, Face=0x80, #48, 38, 38, 50, 31, 44, 44,[30, 30 ]
+LCB, terry MCDANIEL, Face=0x80, #36, 38, 44, 56, 44, 50, 75,[30, 30 ]
+FS, eddie ANDERSON, Face=0x80, #33, 25, 44, 50, 50, 50, 44,[30, 30 ]
+SS, derrick HOSKINS, Face=0x80, #20, 25, 31, 38, 38, 38, 31,[30, 30 ]
+K, jeff JAEGER, Face=0x0, #18, 56, 81, 81, 31, 63, 56,[8 ]
+P, jeff GOSSETT, Face=0x0, #7, 25, 81, 44, 31, 63, 69,[8 ]
+DB1, dan LAND, Face=0x80, #25, 25, 31, 31, 25, 44, 38
+DB2, torin DORN, Face=0x80, #46, 25, 31, 44, 25, 38, 50
+RETURN_TEAM WR1, WR4, RCB
+KR, WR4
+PR, WR1
+
+TEAM = chargers SimData=0x880
+QB1, stan HUMPHRIES, Face=0x0, #12, 25, 69, 13, 13, 50, 44, 50, 63,[4, 8, 3 ]
+QB2, john FRIESZ, Face=0x0, #17, 25, 69, 13, 13, 38, 31, 38, 38,[4, 8, 3 ]
+RB1, marion BUTTS, Face=0x80, #35, 38, 69, 56, 25, 63, 38,[8, 8, 8, 8 ]
+RB2, ronnie HARMON, Face=0x80, #33, 31, 69, 31, 38, 63, 69,[8, 8, 8, 8 ]
+RB3, eric BIENIEMY, Face=0x80, #32, 50, 69, 31, 19, 63, 25,[8, 8, 8, 8 ]
+RB4, s. HENDRICKSON, Face=0x20, #34, 31, 69, 31, 50, 63, 19,[8, 8, 8, 8 ]
+WR1, nate LEWIS, Face=0x80, #81, 31, 69, 38, 13, 69, 50,[8, 8, 8, 8 ]
+WR2, anthony MILLER, Face=0x80, #83, 31, 69, 38, 13, 69, 75,[8, 8, 8, 8 ]
+WR3, brian BRENNAN, Face=0x0, #13, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, shawn JEFFERSON, Face=0x80, #80, 31, 69, 25, 13, 63, 25,[8, 8, 8, 8 ]
+TE1, derrick WALKER, Face=0x80, #89, 31, 69, 31, 50, 63, 50,[8, 8, 8, 8 ]
+TE2, duane YOUNG, Face=0x80, #87, 25, 69, 19, 63, 63, 19,[8, 8, 8, 8 ]
+C, mike ZANDOFSKY, Face=0x0, #70, 25, 69, 31, 63
+LG, eric MOTEN, Face=0x80, #77, 25, 69, 25, 50
+RG, joe MILINICHIK, Face=0x0, #75, 25, 69, 38, 63
+LT, stan BROCK, Face=0x0, #67, 25, 69, 31, 50
+RT, harry SWAYNE, Face=0x80, #72, 25, 69, 25, 56
+RE, burt GROSSMAN, Face=0x0, #92, 31, 44, 44, 56, 19, 69,[30, 30 ]
+NT, chris MIMS, Face=0x80, #94, 38, 56, 50, 63, 19, 56,[30, 30 ]
+LE, leslie O.NEAL, Face=0x80, #91, 38, 56, 56, 75, 19, 69,[30, 30 ]
+ROLB, sam ANNO, Face=0x0, #52, 25, 31, 38, 44, 19, 31,[30, 30 ]
+RILB, gary PLUMMER, Face=0x0, #50, 31, 44, 38, 38, 31, 50,[30, 30 ]
+LILB, junior SEAU, Face=0x80, #55, 44, 50, 63, 69, 38, 81,[30, 30 ]
+LOLB, jerrol WILLIAMS, Face=0x80, #57, 38, 38, 44, 50, 31, 50,[30, 30 ]
+RCB, donald FRANK, Face=0x80, #27, 31, 38, 44, 44, 44, 56,[30, 30 ]
+LCB, gill BYRD, Face=0x80, #22, 44, 50, 63, 44, 50, 63,[30, 30 ]
+FS, stanley RICHARD, Face=0x80, #24, 31, 38, 38, 38, 38, 44,[30, 30 ]
+SS, floyd FIELDS, Face=0x80, #26, 25, 31, 31, 31, 44, 38,[30, 30 ]
+K, john CARNEY, Face=0x0, #3, 56, 81, 81, 31, 69, 50,[8 ]
+P, john KIDD, Face=0x0, #10, 25, 81, 44, 31, 56, 50,[8 ]
+DB1, sean VANHORSE, Face=0x80, #25, 25, 31, 31, 25, 44, 44
+DB2, delton HALL, Face=0x80, #36, 25, 31, 38, 25, 38, 31
+RETURN_TEAM RB3, WR1, LCB
+KR, WR1
+PR, RB3
+
+TEAM = seahawks SimData=0x881
+QB1, dan MCGWIRE, Face=0x0, #10, 25, 69, 13, 13, 38, 31, 38, 50,[4, 8, 3 ]
+QB2, stan GELBAUGH, Face=0x0, #18, 25, 69, 13, 13, 44, 38, 31, 44,[4, 8, 3 ]
+RB1, chris WARREN, Face=0x80, #42, 38, 69, 56, 25, 75, 38,[8, 8, 8, 8 ]
+RB2, j.l. WILLIAMS, Face=0x80, #32, 25, 69, 38, 56, 50, 69,[8, 8, 8, 8 ]
+RB3, rueben MAYES, Face=0x80, #36, 31, 69, 31, 31, 50, 25,[8, 8, 8, 8 ]
+RB4, tracy JOHNSON, Face=0x80, #43, 44, 69, 25, 44, 50, 25,[8, 8, 8, 8 ]
+WR1, kelvin MARTIN, Face=0x80, #84, 31, 69, 38, 13, 69, 50,[8, 8, 8, 8 ]
+WR2, brian BLADES, Face=0x80, #89, 25, 69, 31, 13, 50, 44,[8, 8, 8, 8 ]
+WR3, tommy KANE, Face=0x80, #81, 31, 69, 38, 13, 50, 38,[8, 8, 8, 8 ]
+WR4, robb THOMAS, Face=0x0, #86, 31, 69, 25, 13, 50, 31,[8, 8, 8, 8 ]
+TE1, ferrell EDMUNDS, Face=0x80, #82, 25, 69, 38, 50, 50, 44,[8, 8, 8, 8 ]
+TE2, paul GREEN, Face=0x0, #87, 25, 69, 19, 44, 50, 19,[8, 8, 8, 8 ]
+C, grant FEASEL, Face=0x0, #54, 25, 69, 25, 50
+LG, andy HECK, Face=0x0, #66, 25, 69, 25, 56
+RG, darrick BRILZ, Face=0x0, #64, 25, 69, 31, 44
+LT, ray ROBERTS, Face=0x80, #73, 25, 69, 19, 31
+RT, bill HITCHCOCK, Face=0x0, #76, 25, 69, 19, 38
+RE, tony WOODS, Face=0x80, #57, 25, 31, 31, 50, 19, 44,[30, 30 ]
+NT, cortez KENNEDY, Face=0x80, #99, 50, 50, 63, 75, 19, 81,[30, 30 ]
+LE, jeff BRYANT, Face=0x80, #77, 25, 38, 38, 50, 19, 38,[30, 30 ]
+ROLB, rufus PORTER, Face=0x80, #97, 31, 38, 44, 50, 19, 56,[30, 30 ]
+RILB, rod STEPHENS, Face=0x80, #94, 25, 31, 38, 31, 19, 44,[30, 30 ]
+LILB, e.j. JUNIOR, Face=0x80, #93, 31, 44, 38, 31, 19, 38,[30, 30 ]
+LOLB, terry WOODEN, Face=0x80, #90, 25, 31, 31, 38, 31, 50,[30, 30 ]
+RCB, patrick HUNTER, Face=0x80, #27, 31, 44, 38, 31, 44, 38,[30, 30 ]
+LCB, dwayne HARPER, Face=0x80, #29, 31, 38, 38, 38, 44, 50,[30, 30 ]
+FS, eugene ROBINSON, Face=0x80, #41, 38, 44, 50, 63, 69, 63,[30, 30 ]
+SS, robert BLACKMON, Face=0x80, #25, 25, 38, 44, 50, 44, 38,[30, 30 ]
+K, john KASAY, Face=0x0, #4, 56, 81, 81, 31, 38, 25,[8 ]
+P, rick TUTEN, Face=0x0, #14, 25, 81, 44, 31, 56, 25,[8 ]
+DB1, dedrick DODGE, Face=0x80, #33, 31, 25, 25, 38, 13, 25
+DB2, rafael ROBINSON, Face=0x80, #37, 31, 31, 31, 25, 19, 31
+RETURN_TEAM RB1, WR1, RCB
+KR, RB1
+PR, RB1
+
+TEAM = cowboys SimData=0x882
+QB1, troy AIKMAN, Face=0x0, #8, 25, 69, 13, 13, 63, 69, 69, 63,[4, 8, 3 ]
+QB2, hugh MILLEN, Face=0x0, #7, 25, 69, 13, 13, 44, 38, 25, 44,[4, 8, 3 ]
+RB1, emmitt SMITH, Face=0x80, #22, 56, 69, 63, 50, 69, 50,[8, 8, 8, 8 ]
+RB2, daryl JOHNSTON, Face=0x0, #48, 38, 69, 31, 56, 69, 38,[8, 8, 8, 8 ]
+RB3, tommie AGEE, Face=0x80, #34, 38, 69, 31, 38, 69, 19,[8, 8, 8, 8 ]
+RB4, derrick GAINER, Face=0x80, #39, 31, 69, 25, 44, 69, 19,[8, 8, 8, 8 ]
+WR1, michael IRVIN, Face=0x80, #88, 31, 69, 38, 13, 69, 69,[8, 8, 8, 8 ]
+WR2, alvin HARPER, Face=0x80, #80, 31, 69, 44, 13, 69, 56,[8, 8, 8, 8 ]
+WR3, jimmy SMITH, Face=0x80, #82, 31, 69, 25, 13, 69, 44,[8, 8, 8, 8 ]
+WR4, tyrone WILLIAMS, Face=0x80, #86, 31, 69, 31, 13, 69, 38,[8, 8, 8, 8 ]
+TE1, jay NOVACEK, Face=0x0, #84, 44, 69, 31, 38, 69, 69,[8, 8, 8, 8 ]
+TE2, alfredo ROBERTS, Face=0x80, #87, 31, 69, 25, 44, 69, 25,[8, 8, 8, 8 ]
+C, mark STEPNOSKI, Face=0x0, #53, 25, 69, 38, 56
+LG, nate NEWTON, Face=0x80, #61, 25, 69, 19, 69
+RG, john GESEK, Face=0x0, #63, 25, 69, 31, 63
+LT, erik WILLIAMS, Face=0x80, #79, 25, 69, 19, 69
+RT, mark TUINEI, Face=0x0, #71, 31, 69, 31, 56
+RE, tony TOLBERT, Face=0x80, #92, 31, 44, 44, 44, 19, 50,[30, 30 ]
+NT, russell MARYLAND, Face=0x80, #67, 31, 38, 38, 63, 19, 31,[30, 30 ]
+LE, jim JEFFCOAT, Face=0x80, #77, 38, 44, 56, 50, 19, 56,[30, 30 ]
+ROLB, ken NORTON, Face=0x80, #51, 38, 44, 50, 50, 19, 69,[30, 30 ]
+RILB, robert JONES, Face=0x80, #55, 25, 31, 44, 44, 19, 44,[30, 30 ]
+LILB, vinson SMITH, Face=0x80, #57, 31, 38, 44, 50, 19, 56,[30, 30 ]
+LOLB, charles HALEY, Face=0x80, #94, 38, 50, 63, 56, 19, 75,[30, 30 ]
+RCB, larry BROWN, Face=0x80, #24, 38, 44, 44, 38, 44, 50,[30, 30 ]
+LCB, kevin SMITH, Face=0x80, #26, 25, 38, 50, 25, 44, 38,[30, 30 ]
+FS, thomas EVERETT, Face=0x80, #27, 31, 38, 50, 50, 44, 69,[30, 30 ]
+SS, j. WASHINGTON, Face=0x80, #37, 38, 44, 50, 38, 44, 50,[30, 30 ]
+K, lin ELLIOTT, Face=0x0, #2, 56, 81, 81, 31, 38, 44,[8 ]
+P, mike SAXON, Face=0x0, #4, 25, 81, 44, 31, 25, 31,[8 ]
+DB1, kenneth GANT, Face=0x80, #29, 25, 31, 31, 31, 38, 50
+DB2, clayton HOLMES, Face=0x80, #47, 19, 31, 31, 25, 31, 25
+RETURN_TEAM WR2, WR4, LCB
+KR, WR2
+PR, WR4
+
+TEAM = giants SimData=0x883
+QB1, phil SIMMS, Face=0x0, #11, 25, 69, 13, 13, 38, 56, 50, 56,[4, 8, 3 ]
+QB2, kent GRAHAM, Face=0x0, #10, 25, 69, 19, 13, 38, 31, 38, 44,[4, 8, 3 ]
+RB1, rodney HAMPTON, Face=0x80, #27, 38, 69, 56, 25, 75, 25,[8, 8, 8, 8 ]
+RB2, jarrod BUNCH, Face=0x80, #33, 38, 69, 38, 63, 63, 19,[8, 8, 8, 8 ]
+RB3, david MEGGETT, Face=0x80, #30, 44, 69, 44, 19, 63, 38,[8, 8, 8, 8 ]
+RB4, lewis TILLMAN, Face=0x80, #34, 25, 69, 31, 31, 63, 25,[8, 8, 8, 8 ]
+WR1, ed MCCAFFREY, Face=0x0, #81, 31, 69, 31, 13, 63, 56,[8, 8, 8, 8 ]
+WR2, mark JACKSON, Face=0x80, #18, 31, 69, 44, 13, 69, 63,[8, 8, 8, 8 ]
+WR3, stephen BAKER, Face=0x80, #85, 31, 69, 31, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, mike SHERRARD, Face=0x80, #19, 31, 69, 38, 13, 63, 50,[8, 8, 8, 8 ]
+TE1, howard CROSS, Face=0x80, #87, 25, 69, 38, 50, 44, 38,[8, 8, 8, 8 ]
+TE2, derek BROWN, Face=0x80, #86, 25, 69, 19, 56, 63, 19,[8, 8, 8, 8 ]
+C, bart OATES, Face=0x0, #65, 25, 69, 31, 38
+LG, william ROBERTS, Face=0x80, #66, 25, 69, 19, 50
+RG, eric MOORE, Face=0x80, #60, 25, 69, 25, 50
+LT, brian WILLIAMS, Face=0x0, #59, 25, 69, 25, 56
+RT, doug RIESENBERG, Face=0x0, #72, 25, 69, 19, 44
+RE, mike FOX, Face=0x0, #93, 31, 38, 38, 44, 19, 44,[30, 30 ]
+NT, erik HOWARD, Face=0x0, #74, 25, 31, 31, 31, 19, 38,[30, 30 ]
+LE, eric DORSEY, Face=0x80, #77, 25, 31, 31, 44, 19, 50,[30, 30 ]
+ROLB, lawrence TAYLOR, Face=0x80, #56, 38, 50, 56, 63, 31, 75,[30, 30 ]
+RILB, pepper JOHNSON, Face=0x80, #52, 31, 50, 44, 56, 31, 50,[30, 30 ]
+LILB, carlton BAILEY, Face=0x80, #54, 31, 38, 44, 31, 19, 63,[30, 30 ]
+LOLB, michael BROOKS, Face=0x80, #94, 31, 44, 56, 69, 31, 56,[30, 30 ]
+RCB, perry WILLIAMS, Face=0x80, #23, 25, 31, 50, 25, 38, 44,[30, 30 ]
+LCB, mark COLLINS, Face=0x80, #25, 25, 38, 44, 44, 44, 38,[30, 30 ]
+FS, myron GUYTON, Face=0x80, #29, 44, 44, 50, 50, 38, 44,[30, 30 ]
+SS, greg JACKSON, Face=0x80, #47, 31, 50, 56, 38, 50, 56,[30, 30 ]
+K, matt BAHR, Face=0x0, #9, 56, 81, 81, 31, 56, 50,[8 ]
+P, sean LANDETA, Face=0x20, #5, 25, 81, 44, 31, 50, 44,[8 ]
+DB1, phil SPARKS, Face=0x80, #22, 31, 31, 31, 25, 19, 31
+DB2, jesse CAMPBELL, Face=0x80, #37, 31, 19, 31, 25, 31, 25
+RETURN_TEAM RB2, RB3, RCB
+KR, RB3
+PR, RB3
+
+TEAM = eagles SimData=0x880
+QB1, r. CUNNINGHAM, Face=0x80, #12, 25, 69, 50, 13, 75, 63, 56, 63,[4, 8, 3 ]
+QB2, bubby BRISTER, Face=0x0, #6, 25, 69, 13, 13, 63, 31, 38, 44,[4, 8, 3 ]
+RB1, herschel WALKER, Face=0x80, #34, 50, 69, 50, 50, 63, 44,[8, 8, 8, 8 ]
+RB2, heath SHERMAN, Face=0x80, #23, 44, 69, 44, 31, 63, 25,[8, 8, 8, 8 ]
+RB3, tony BROOKS, Face=0x80, #39, 31, 69, 25, 50, 63, 25,[8, 8, 8, 8 ]
+RB4, siran STACY, Face=0x80, #27, 25, 69, 31, 31, 63, 25,[8, 8, 8, 8 ]
+WR1, fred BARNETT, Face=0x80, #86, 31, 69, 44, 13, 63, 63,[8, 8, 8, 8 ]
+WR2, calvin WILLIAMS, Face=0x80, #89, 31, 69, 38, 13, 69, 50,[8, 8, 8, 8 ]
+WR3, vai SIKAHEMA, Face=0x80, #22, 44, 69, 38, 13, 75, 25,[8, 8, 8, 8 ]
+WR4, bill HESS, Face=0x0, #80, 31, 69, 31, 13, 63, 38,[8, 8, 8, 8 ]
+TE1, mark BAVARO, Face=0x0, #88, 31, 69, 38, 56, 63, 44,[8, 8, 8, 8 ]
+TE2, pat BEACH, Face=0x0, #83, 25, 69, 19, 63, 63, 19,[8, 8, 8, 8 ]
+C, david ALEXANDER, Face=0x0, #72, 25, 69, 31, 56
+LG, mike SCHAD, Face=0x0, #79, 25, 69, 19, 31
+RG, brian BALDINGER, Face=0x80, #62, 25, 69, 25, 50
+LT, b. THOMPSON, Face=0x80, #71, 25, 69, 25, 63
+RT, eric FLOYD, Face=0x80, #61, 25, 69, 19, 38
+RE, clyde SIMMONS, Face=0x80, #96, 44, 56, 69, 69, 19, 81,[30, 30 ]
+NT, andy HARMON, Face=0x0, #91, 31, 44, 44, 63, 19, 50,[30, 30 ]
+LE, tim HARRIS, Face=0x80, #97, 38, 50, 63, 69, 19, 69,[30, 30 ]
+ROLB, ken ROSE, Face=0x80, #55, 25, 31, 44, 25, 19, 31,[30, 30 ]
+RILB, william THOMAS, Face=0x80, #51, 25, 31, 31, 38, 31, 44,[30, 30 ]
+LILB, byron EVANS, Face=0x80, #56, 25, 44, 50, 50, 44, 50,[30, 30 ]
+LOLB, seth JOYNER, Face=0x80, #59, 38, 44, 63, 50, 44, 69,[30, 30 ]
+RCB, eric ALLEN, Face=0x80, #21, 38, 50, 56, 38, 50, 75,[30, 30 ]
+LCB, otis SMITH, Face=0x80, #30, 31, 44, 38, 38, 31, 38,[30, 30 ]
+FS, erik MCMILLAN, Face=0x80, #42, 38, 31, 56, 50, 38, 50,[30, 30 ]
+SS, andre WATERS, Face=0x80, #20, 38, 38, 31, 38, 25, 50,[30, 30 ]
+K, roger RUZEK, Face=0x0, #7, 56, 81, 81, 31, 38, 31,[8 ]
+P, jeff FEAGLES, Face=0x0, #5, 25, 81, 44, 31, 50, 44,[8 ]
+DB1, william FRIZZELL, Face=0x0, #33, 31, 31, 31, 25, 31, 31
+DB2, rich MIANO, Face=0x0, #38, 31, 25, 25, 25, 44, 38
+RETURN_TEAM RB1, WR3, FS
+KR, WR3
+PR, WR3
+
+TEAM = cardinals SimData=0x881
+QB1, steve BEUERLEIN, Face=0x0, #7, 25, 69, 13, 13, 50, 50, 44, 44,[4, 8, 3 ]
+QB2, chris CHANDLER, Face=0x0, #17, 25, 69, 13, 13, 38, 44, 44, 38,[4, 8, 3 ]
+RB1, garrison HEARST, Face=0x80, #0, 44, 69, 56, 19, 63, 38,[8, 8, 8, 8 ]
+RB2, ernie JONES, Face=0x80, #86, 31, 69, 31, 13, 63, 44,[8, 8, 8, 8 ]
+RB3, johnny BAILEY, Face=0x80, #20, 44, 69, 38, 44, 69, 38,[8, 8, 8, 8 ]
+RB4, larry CENTERS, Face=0x80, #37, 31, 69, 25, 31, 63, 63,[8, 8, 8, 8 ]
+WR1, gary CLARK, Face=0x80, #84, 31, 69, 44, 13, 63, 69,[8, 8, 8, 8 ]
+WR2, randal HILL, Face=0x80, #81, 31, 69, 38, 13, 63, 56,[8, 8, 8, 8 ]
+WR3, eric BLOUNT, Face=0x80, #25, 25, 69, 19, 38, 75, 19,[8, 8, 8, 8 ]
+WR4, anthony EDWARDS, Face=0x80, #83, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+TE1, walter REEVES, Face=0x80, #89, 25, 69, 25, 63, 63, 31,[8, 8, 8, 8 ]
+TE2, butch ROLLE, Face=0x80, #82, 25, 69, 19, 44, 63, 25,[8, 8, 8, 8 ]
+C, ed CUNNINGHAM, Face=0x0, #59, 25, 69, 38, 50
+LG, vernice SMITH, Face=0x80, #69, 25, 69, 19, 44
+RG, lance SMITH, Face=0x80, #61, 25, 69, 25, 56
+LT, luis SHARPE, Face=0x80, #67, 25, 69, 31, 50
+RT, willie WILLIAMS, Face=0x80, #60, 19, 69, 25, 56
+RE, eric SWANN, Face=0x80, #98, 25, 31, 38, 38, 19, 38,[30, 30 ]
+NT, keith RUCKER, Face=0x80, #79, 25, 31, 31, 38, 19, 44,[30, 30 ]
+LE, mike JONES, Face=0x80, #75, 31, 38, 44, 44, 19, 50,[30, 30 ]
+ROLB, ken HARVEY, Face=0x80, #56, 31, 38, 44, 56, 19, 44,[30, 30 ]
+RILB, tyronne STOWE, Face=0x80, #90, 31, 38, 44, 56, 19, 50,[30, 30 ]
+LILB, eric HILL, Face=0x80, #58, 25, 44, 38, 50, 19, 50,[30, 30 ]
+LOLB, freddie.joe NUNN, Face=0x80, #50, 25, 38, 31, 38, 19, 25,[30, 30 ]
+RCB, robert MASSEY, Face=0x80, #40, 44, 38, 50, 44, 56, 63,[30, 30 ]
+LCB, aeneas WILLIAMS, Face=0x80, #35, 31, 38, 38, 44, 44, 50,[30, 30 ]
+FS, chuck CECIL, Face=0x0, #26, 31, 44, 56, 63, 50, 75,[30, 30 ]
+SS, dave DUERSON, Face=0x80, #22, 25, 31, 31, 31, 38, 31,[30, 30 ]
+K, greg DAVIS, Face=0x0, #5, 56, 81, 81, 31, 25, 38,[8 ]
+P, rich CAMARILLO, Face=0x0, #16, 25, 81, 44, 31, 75, 69,[8 ]
+DB1, john BOOTY, Face=0x80, #42, 25, 31, 25, 19, 25, 50
+DB2, michael ZORDICH, Face=0x0, #38, 25, 31, 38, 31, 44, 44
+RETURN_TEAM RB3, WR4, RCB
+KR, RB3
+PR, RB3
+
+TEAM = redskins SimData=0x882
+QB1, mark RYPIEN, Face=0x0, #11, 25, 69, 13, 13, 69, 50, 50, 63,[4, 8, 3 ]
+QB2, chris HAKEL, Face=0x0, #6, 25, 69, 13, 13, 25, 31, 44, 31,[4, 8, 3 ]
+RB1, earnest BYNER, Face=0x80, #21, 38, 69, 50, 31, 75, 44,[8, 8, 8, 8 ]
+RB2, tim MCGEE, Face=0x80, #85, 31, 69, 38, 13, 69, 50,[8, 8, 8, 8 ]
+RB3, ricky ERVINS, Face=0x80, #32, 38, 69, 44, 31, 75, 31,[8, 8, 8, 8 ]
+RB4, robert GREEN, Face=0x80, #39, 25, 69, 31, 31, 69, 25,[8, 8, 8, 8 ]
+WR1, carl HARRY, Face=0x80, #24, 31, 69, 25, 13, 69, 44,[8, 8, 8, 8 ]
+WR2, ricky SANDERS, Face=0x80, #83, 31, 69, 44, 13, 69, 56,[8, 8, 8, 8 ]
+WR3, brian MITCHELL, Face=0x80, #30, 38, 69, 38, 38, 69, 25,[8, 8, 8, 8 ]
+WR4, stephen HOBBS, Face=0x80, #86, 31, 69, 25, 13, 69, 38,[8, 8, 8, 8 ]
+TE1, terry ORR, Face=0x80, #89, 38, 69, 38, 44, 69, 38,[8, 8, 8, 8 ]
+TE2, ron MIDDLETON, Face=0x80, #87, 25, 69, 19, 63, 69, 19,[8, 8, 8, 8 ]
+C, jeff BOSTIC, Face=0x0, #53, 25, 69, 19, 63
+LG, mark SCHLERETH, Face=0x0, #69, 25, 69, 31, 56
+RG, raleigh MCKENZIE, Face=0x80, #63, 25, 69, 38, 50
+LT, jim LACHEY, Face=0x80, #79, 31, 69, 31, 75
+RT, ed SIMMONS, Face=0x80, #76, 31, 69, 31, 63
+RE, al NOGA, Face=0x0, #97, 38, 44, 50, 56, 19, 50,[30, 30 ]
+NT, tim JOHNSON, Face=0x80, #78, 31, 38, 38, 56, 19, 44,[30, 30 ]
+LE, charles MANN, Face=0x80, #71, 31, 44, 50, 63, 19, 63,[30, 30 ]
+ROLB, carl BANKS, Face=0x80, #58, 31, 44, 38, 56, 19, 44,[30, 30 ]
+RILB, kurt GOUVEIA, Face=0x0, #54, 38, 44, 50, 50, 44, 63,[30, 30 ]
+LILB, rick GRAF, Face=0x0, #90, 25, 31, 31, 38, 31, 44,[30, 30 ]
+LOLB, andre COLLINS, Face=0x80, #55, 38, 44, 44, 50, 31, 44,[30, 30 ]
+RCB, darrell GREEN, Face=0x80, #28, 38, 50, 63, 38, 44, 63,[30, 30 ]
+LCB, aj. JOHNSON, Face=0x80, #47, 38, 38, 50, 38, 44, 38,[30, 30 ]
+FS, danny COPELAND, Face=0x80, #26, 25, 38, 38, 44, 38, 44,[30, 30 ]
+SS, brad EDWARDS, Face=0x0, #27, 38, 44, 50, 56, 63, 56,[30, 30 ]
+K, chip LOHMILLER, Face=0x0, #8, 56, 81, 81, 31, 63, 75,[8 ]
+P, kelly GOODBURN, Face=0x0, #2, 25, 81, 44, 31, 25, 19,[8 ]
+DB1, alvoid MAYS, Face=0x80, #20, 19, 31, 31, 25, 31, 25
+DB2, todd BOWLES, Face=0x80, #22, 25, 31, 38, 19, 38, 31
+RETURN_TEAM RB4, WR3, LCB
+KR, WR3
+PR, WR3
+
+TEAM = bears SimData=0x883
+QB1, jim HARBAUGH, Face=0x0, #4, 25, 69, 25, 13, 44, 50, 44, 63,[4, 8, 3 ]
+QB2, peter.tom WILLIS, Face=0x0, #10, 25, 69, 13, 13, 44, 38, 31, 44,[4, 8, 3 ]
+RB1, craig HEYWARD, Face=0x80, #45, 50, 69, 25, 94, 69, 25,[8, 8, 8, 8 ]
+RB2, neal ANDERSON, Face=0x80, #35, 38, 69, 44, 44, 63, 50,[8, 8, 8, 8 ]
+RB3, darren LEWIS, Face=0x80, #33, 38, 69, 38, 31, 63, 25,[8, 8, 8, 8 ]
+RB4, mark GREEN, Face=0x80, #31, 38, 69, 31, 19, 63, 31,[8, 8, 8, 8 ]
+WR1, tom WADDLE, Face=0x0, #87, 31, 69, 44, 13, 63, 50,[8, 8, 8, 8 ]
+WR2, wendell DAVIS, Face=0x80, #82, 31, 69, 38, 13, 69, 56,[8, 8, 8, 8 ]
+WR3, eric WRIGHT, Face=0x80, #83, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, anthony MORGAN, Face=0x80, #81, 31, 69, 31, 13, 63, 38,[8, 8, 8, 8 ]
+TE1, keith JENNINGS, Face=0x80, #85, 31, 69, 31, 44, 63, 38,[8, 8, 8, 8 ]
+TE2, kelly BLACKWELL, Face=0x0, #89, 25, 69, 19, 44, 63, 25,[8, 8, 8, 8 ]
+C, jerry FONTENOT, Face=0x0, #67, 25, 69, 31, 44
+LG, mark BORTZ, Face=0x0, #62, 25, 69, 25, 56
+RG, mirko JURKOVIC, Face=0x0, #64, 25, 69, 19, 38
+LT, troy AUZENNE, Face=0x0, #70, 25, 69, 25, 56
+RT, keith VAN HORNE, Face=0x0, #78, 25, 69, 19, 44
+RE, richard DENT, Face=0x80, #95, 31, 44, 50, 75, 19, 56,[30, 30 ]
+NT, william PERRY, Face=0x80, #72, 25, 44, 25, 69, 19, 44,[30, 30 ]
+LE, steve MCMICHAEL, Face=0x0, #76, 38, 44, 56, 63, 19, 56,[30, 30 ]
+ROLB, jim MORRISSEY, Face=0x0, #51, 38, 44, 44, 56, 31, 44,[30, 30 ]
+RILB, joe CAIN, Face=0x80, #92, 31, 44, 44, 56, 19, 44,[30, 30 ]
+LILB, john ROPER, Face=0x80, #55, 31, 38, 44, 44, 19, 44,[30, 30 ]
+LOLB, trace ARMSTRONG, Face=0x0, #93, 31, 44, 50, 44, 19, 50,[30, 30 ]
+RCB, lemuel STINSON, Face=0x80, #32, 31, 31, 44, 31, 38, 44,[30, 30 ]
+LCB, donnell WOOLFORD, Face=0x80, #21, 38, 50, 56, 44, 69, 63,[30, 30 ]
+FS, mark CARRIER, Face=0x80, #20, 38, 44, 50, 50, 38, 63,[30, 30 ]
+SS, shaun GAYLE, Face=0x80, #23, 38, 38, 44, 56, 44, 50,[30, 30 ]
+K, k BEARS, Face=0x0, #0, 56, 81, 81, 31, 44, 44,[8 ]
+P, chris GARDOCKI, Face=0x0, #17, 25, 81, 44, 31, 56, 31,[8 ]
+DB1, maurice DOUGLASS, Face=0x80, #37, 25, 31, 38, 31, 19, 44
+DB2, markus PAUL, Face=0x80, #36, 25, 31, 25, 38, 25, 50
+RETURN_TEAM RB3, RB4, LCB
+KR, LCB
+PR, LCB
+
+TEAM = lions SimData=0x880
+QB1, rodney PEETE, Face=0x80, #9, 25, 69, 19, 13, 50, 44, 44, 31,[4, 8, 3 ]
+QB2, erik KRAMER, Face=0x0, #12, 25, 69, 13, 13, 44, 38, 50, 44,[4, 8, 3 ]
+RB1, barry SANDERS, Face=0x80, #20, 38, 69, 69, 31, 63, 44,[8, 8, 8, 8 ]
+RB2, brett PERRIMAN, Face=0x80, #80, 31, 69, 31, 13, 63, 63,[8, 8, 8, 8 ]
+RB3, ed TILLISON, Face=0x80, #34, 38, 69, 31, 25, 63, 25,[8, 8, 8, 8 ]
+RB4, mel GRAY, Face=0x80, #23, 50, 69, 44, 19, 75, 19,[8, 8, 8, 8 ]
+WR1, herman MOORE, Face=0x80, #84, 31, 69, 44, 13, 63, 56,[8, 8, 8, 8 ]
+WR2, willie GREEN, Face=0x80, #86, 31, 69, 31, 13, 63, 50,[8, 8, 8, 8 ]
+WR3, james JONES, Face=0x80, #30, 38, 69, 25, 25, 63, 25,[8, 8, 8, 8 ]
+WR4, aubrey MATTHEWS, Face=0x80, #83, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+TE1, rodney HOLMAN, Face=0x80, #81, 31, 69, 31, 44, 63, 44,[8, 8, 8, 8 ]
+TE2, reggie BARRETT, Face=0x80, #40, 31, 69, 19, 13, 63, 38,[8, 8, 8, 8 ]
+C, kevin GLOVER, Face=0x80, #53, 25, 69, 31, 50
+LG, david RICHARDS, Face=0x0, #63, 25, 69, 19, 56
+RG, bill FRALIC, Face=0x0, #79, 25, 69, 31, 31
+LT, lomas BROWN, Face=0x80, #75, 25, 69, 25, 63
+RT, larry THARPE, Face=0x80, #71, 25, 69, 19, 44
+RE, kelvin PRITCHETT, Face=0x80, #94, 31, 50, 50, 56, 19, 56,[30, 30 ]
+NT, marc SPINDLER, Face=0x0, #93, 31, 38, 38, 44, 19, 44,[30, 30 ]
+LE, victor JONES, Face=0x80, #57, 25, 31, 31, 38, 19, 31,[30, 30 ]
+ROLB, george JAMISON, Face=0x80, #58, 38, 44, 44, 50, 19, 50,[30, 30 ]
+RILB, dennis GIBSON, Face=0x0, #98, 25, 31, 31, 44, 19, 31,[30, 30 ]
+LILB, chris SPIELMAN, Face=0x0, #54, 31, 44, 50, 63, 19, 63,[30, 30 ]
+LOLB, pat SWILLING, Face=0x80, #56, 44, 50, 63, 69, 19, 75,[30, 30 ]
+RCB, kevin SCOTT, Face=0x80, #38, 25, 31, 38, 19, 38, 31,[30, 30 ]
+LCB, ray CROCKETT, Face=0x80, #39, 38, 44, 50, 44, 50, 50,[30, 30 ]
+FS, bennie BLADES, Face=0x80, #36, 25, 44, 50, 50, 44, 63,[30, 30 ]
+SS, william WHITE, Face=0x80, #35, 25, 38, 44, 44, 50, 56,[30, 30 ]
+K, jason HANSON, Face=0x0, #4, 56, 81, 81, 31, 63, 44,[8 ]
+P, jim ARNOLD, Face=0x0, #6, 25, 81, 44, 31, 63, 38,[8 ]
+DB1, harry COLON, Face=0x80, #21, 19, 31, 31, 25, 31, 25
+DB2, junior ROBINSON, Face=0x80, #27, 31, 31, 31, 25, 19, 31
+RETURN_TEAM RB3, RB4, RCB
+KR, RB4
+PR, RB4
+
+TEAM = packers SimData=0x881
+QB1, brett FAVRE, Face=0x0, #4, 25, 69, 19, 13, 63, 63, 56, 50,[4, 8, 3 ]
+QB2, ken O.BRIEN, Face=0x0, #8, 25, 69, 13, 13, 31, 44, 50, 50,[4, 8, 3 ]
+RB1, john STEPHENS, Face=0x80, #32, 38, 69, 38, 31, 81, 25,[8, 8, 8, 8 ]
+RB2, darrell THOMPSON, Face=0x80, #39, 38, 69, 31, 50, 50, 19,[8, 8, 8, 8 ]
+RB3, edgar BENNETT, Face=0x80, #34, 38, 69, 31, 25, 50, 25,[8, 8, 8, 8 ]
+RB4, marcus WILSON, Face=0x80, #29, 25, 69, 31, 31, 50, 31,[8, 8, 8, 8 ]
+WR1, sterling SHARPE, Face=0x80, #84, 31, 69, 56, 13, 50, 75,[8, 8, 8, 8 ]
+WR2, mark CLAYTON, Face=0x80, #83, 31, 69, 38, 13, 50, 63,[8, 8, 8, 8 ]
+WR3, sanjay BEACH, Face=0x80, #82, 31, 69, 25, 13, 50, 44,[8, 8, 8, 8 ]
+WR4, robert BROOKS, Face=0x80, #87, 31, 69, 31, 13, 75, 38,[8, 8, 8, 8 ]
+TE1, jackie HARRIS, Face=0x80, #80, 38, 69, 31, 50, 50, 63,[8, 8, 8, 8 ]
+TE2, ed WEST, Face=0x80, #86, 25, 69, 19, 63, 50, 19,[8, 8, 8, 8 ]
+C, james CAMPEN, Face=0x0, #63, 25, 69, 31, 50
+LG, harry GALBREATH, Face=0x80, #76, 25, 69, 31, 69
+RG, ron HALLSTROM, Face=0x0, #65, 25, 69, 19, 56
+LT, ken RUETTGERS, Face=0x0, #75, 25, 69, 25, 44
+RT, tunch ILKIN, Face=0x0, #79, 19, 69, 25, 50
+RE, bill MAAS, Face=0x0, #77, 25, 31, 44, 56, 19, 63,[30, 30 ]
+NT, matt BROCK, Face=0x0, #62, 38, 38, 31, 56, 19, 56,[30, 30 ]
+LE, reggie WHITE, Face=0x80, #92, 44, 56, 69, 75, 19, 81,[30, 30 ]
+ROLB, bryce PAUP, Face=0x0, #95, 38, 44, 44, 50, 19, 56,[30, 30 ]
+RILB, johnny HOLLAND, Face=0x80, #50, 38, 44, 50, 56, 44, 50,[30, 30 ]
+LILB, brian NOBLE, Face=0x0, #91, 38, 44, 44, 50, 19, 50,[30, 30 ]
+LOLB, tony BENNETT, Face=0x80, #90, 31, 38, 50, 56, 19, 69,[30, 30 ]
+RCB, terrell BUCKLEY, Face=0x80, #27, 38, 44, 50, 44, 44, 56,[30, 30 ]
+LCB, carl CARTER, Face=0x80, #21, 25, 31, 44, 31, 38, 31,[30, 30 ]
+FS, tim HAUCK, Face=0x0, #24, 31, 38, 38, 44, 38, 38,[30, 30 ]
+SS, leroy BUTLER, Face=0x80, #36, 38, 38, 50, 50, 38, 56,[30, 30 ]
+K, chris JACKE, Face=0x0, #13, 56, 81, 81, 31, 63, 44,[8 ]
+P, bryan WAGNER, Face=0x0, #9, 25, 81, 44, 31, 31, 19,[8 ]
+DB1, roland MITCHELL, Face=0x80, #47, 19, 31, 31, 25, 31, 25
+DB2, mike PRIOR, Face=0x0, #45, 25, 31, 38, 31, 19, 44
+RETURN_TEAM RB3, WR4, RCB
+KR, WR4
+PR, RCB
+
+TEAM = vikings SimData=0x882
+QB1, qb VIKINGS, Face=0x0, #0, 25, 69, 13, 13, 44, 63, 50, 44,[4, 8, 3 ]
+QB2, sean SALISBURY, Face=0x0, #12, 25, 69, 13, 13, 50, 38, 50, 31,[4, 8, 3 ]
+RB1, terry ALLEN, Face=0x80, #21, 38, 69, 56, 38, 63, 50,[8, 8, 8, 8 ]
+RB2, roger CRAIG, Face=0x80, #33, 38, 69, 38, 25, 63, 44,[8, 8, 8, 8 ]
+RB3, keith HENDERSON, Face=0x80, #30, 31, 69, 25, 44, 44, 19,[8, 8, 8, 8 ]
+RB4, darrin NELSON, Face=0x80, #20, 38, 69, 38, 25, 50, 25,[8, 8, 8, 8 ]
+WR1, chris CARTER, Face=0x80, #80, 31, 69, 38, 13, 63, 56,[8, 8, 8, 8 ]
+WR2, anthony CARTER, Face=0x80, #81, 31, 69, 31, 13, 63, 50,[8, 8, 8, 8 ]
+WR3, ronnie WEST, Face=0x80, #35, 31, 69, 31, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, gene THOMAS, Face=0x80, #86, 31, 69, 31, 13, 63, 38,[8, 8, 8, 8 ]
+TE1, steve JORDAN, Face=0x80, #83, 38, 69, 38, 50, 63, 44,[8, 8, 8, 8 ]
+TE2, mike TICE, Face=0x0, #87, 31, 69, 25, 44, 63, 31,[8, 8, 8, 8 ]
+C, adam SCHREIBER, Face=0x0, #60, 25, 69, 19, 44
+LG, randall MCDANIEL, Face=0x80, #64, 25, 69, 25, 63
+RG, todd KALIS, Face=0x0, #69, 19, 69, 25, 50
+LT, gary ZIMMERMAN, Face=0x0, #65, 25, 69, 38, 63
+RT, tim IRWIN, Face=0x0, #76, 25, 69, 19, 63
+RE, chris DOLEMAN, Face=0x80, #56, 38, 50, 63, 69, 25, 75,[30, 30 ]
+NT, henry THOMAS, Face=0x80, #97, 25, 38, 38, 50, 19, 38,[30, 30 ]
+LE, john RANDLE, Face=0x80, #93, 38, 44, 56, 56, 19, 69,[30, 30 ]
+ROLB, ed MCDANIEL, Face=0x80, #58, 31, 38, 44, 38, 19, 44,[30, 30 ]
+RILB, jack DEL RIO, Face=0x0, #55, 38, 50, 50, 56, 31, 56,[30, 30 ]
+LILB, carlos JENKINS, Face=0x80, #51, 31, 44, 50, 50, 31, 50,[30, 30 ]
+LOLB, ray BERRY, Face=0x0, #50, 31, 31, 44, 44, 31, 38,[30, 30 ]
+RCB, audray MCMILLIAN, Face=0x80, #26, 38, 56, 56, 44, 75, 63,[30, 30 ]
+LCB, carl LEE, Face=0x80, #39, 38, 38, 44, 44, 38, 38,[30, 30 ]
+FS, vencie GLENN, Face=0x80, #25, 38, 38, 50, 50, 56, 63,[30, 30 ]
+SS, todd SCOTT, Face=0x80, #38, 31, 38, 44, 56, 56, 75,[30, 30 ]
+K, fuad REVEIZ, Face=0x0, #7, 56, 81, 81, 31, 50, 50,[8 ]
+P, harry NEWSOME, Face=0x0, #18, 25, 81, 44, 31, 50, 50,[8 ]
+DB1, anthony PARKER, Face=0x80, #27, 31, 31, 31, 25, 19, 31
+DB2, tripp WELBORNE, Face=0x80, #32, 31, 25, 38, 31, 19, 44
+RETURN_TEAM RB3, RB4, RCB
+KR, RB4
+PR, RCB
+
+TEAM = buccaneers SimData=0x883
+QB1, steve DE BERG, Face=0x0, #17, 25, 69, 13, 13, 38, 50, 50, 56,[4, 8, 3 ]
+QB2, mark VLASIC, Face=0x0, #13, 25, 69, 13, 13, 38, 31, 38, 75,[4, 8, 3 ]
+RB1, reggie COBB, Face=0x80, #34, 50, 69, 44, 88, 69, 31,[8, 8, 8, 8 ]
+RB2, vince WORKMAN, Face=0x80, #46, 44, 69, 31, 38, 69, 50,[8, 8, 8, 8 ]
+RB3, gary ANDERSON, Face=0x80, #40, 38, 69, 31, 19, 69, 38,[8, 8, 8, 8 ]
+RB4, anthony MCDOWELL, Face=0x80, #37, 25, 69, 31, 25, 69, 31,[8, 8, 8, 8 ]
+WR1, lawrence DAWSEY, Face=0x80, #80, 31, 69, 38, 13, 69, 38,[8, 8, 8, 8 ]
+WR2, courtney HAWKINS, Face=0x80, #85, 31, 69, 38, 13, 69, 44,[8, 8, 8, 8 ]
+WR3, r. CLAIBORNE, Face=0x20, #15, 31, 69, 25, 13, 69, 38,[8, 8, 8, 8 ]
+WR4, curtis MAYFIELD, Face=0x20, #0, 31, 69, 25, 13, 69, 31,[8, 8, 8, 8 ]
+TE1, ron HALL, Face=0x0, #82, 25, 69, 31, 44, 69, 44,[8, 8, 8, 8 ]
+TE2, tyji ARMSTRONG, Face=0x80, #86, 25, 69, 19, 63, 69, 19,[8, 8, 8, 8 ]
+C, tony MAYBERRY, Face=0x80, #61, 25, 69, 25, 56
+LG, bruce REIMERS, Face=0x0, #66, 25, 69, 19, 38
+RG, charles MCRAE, Face=0x0, #70, 19, 69, 25, 44
+LT, anthony MUNOZ, Face=0x0, #78, 25, 69, 31, 69
+RT, paul GRUBER, Face=0x0, #74, 31, 69, 25, 69
+RE, keith MCCANTS, Face=0x80, #52, 25, 31, 31, 38, 19, 38,[30, 30 ]
+NT, mark WHEELER, Face=0x80, #77, 25, 31, 38, 56, 19, 63,[30, 30 ]
+LE, santana DOTSON, Face=0x80, #71, 38, 44, 56, 56, 19, 56,[30, 30 ]
+ROLB, jimmy WILLIAMS, Face=0x80, #54, 25, 31, 38, 44, 31, 56,[30, 30 ]
+RILB, calvin TIGGLE, Face=0x80, #58, 31, 38, 38, 44, 19, 38,[30, 30 ]
+LILB, hardy NICKERSON, Face=0x80, #56, 31, 50, 50, 56, 19, 56,[30, 30 ]
+LOLB, broderick THOMAS, Face=0x80, #51, 38, 50, 56, 63, 31, 69,[30, 30 ]
+RCB, martin MAYHEW, Face=0x80, #35, 38, 50, 56, 31, 44, 63,[30, 30 ]
+LCB, ricky REYNOLDS, Face=0x80, #29, 38, 50, 44, 38, 38, 50,[30, 30 ]
+FS, marty CARTER, Face=0x80, #23, 25, 31, 38, 44, 38, 56,[30, 30 ]
+SS, tony COVINGTON, Face=0x80, #25, 25, 31, 31, 25, 38, 31,[30, 30 ]
+K, eddie MURRAY, Face=0x0, #3, 56, 81, 81, 31, 63, 50,[8 ]
+P, dan STRYZINSKI, Face=0x0, #4, 25, 81, 44, 31, 50, 50,[8 ]
+DB1, milton MACK, Face=0x80, #21, 31, 25, 38, 31, 19, 44
+DB2, darryl POLLARD, Face=0x80, #31, 25, 31, 25, 38, 13, 25
+RETURN_TEAM RB3, WR2, RCB
+KR, RB3
+PR, WR2
+
+TEAM = falcons SimData=0x880
+QB1, chris MILLER, Face=0x0, #12, 25, 69, 19, 13, 69, 63, 63, 69,[4, 8, 3 ]
+QB2, bobby HEBERT, Face=0x0, #3, 25, 69, 13, 13, 50, 56, 56, 63,[4, 8, 3 ]
+RB1, eric DICKERSON, Face=0x80, #29, 38, 69, 44, 44, 75, 25,[8, 8, 8, 8 ]
+RB2, michael HAYNES, Face=0x80, #81, 31, 69, 38, 13, 69, 56,[8, 8, 8, 8 ]
+RB3, steve BROUSSARD, Face=0x80, #44, 38, 69, 38, 31, 56, 19,[8, 8, 8, 8 ]
+RB4, keith JONES, Face=0x80, #38, 25, 69, 31, 25, 56, 19,[8, 8, 8, 8 ]
+WR1, drew HILL, Face=0x80, #85, 31, 69, 31, 13, 56, 56,[8, 8, 8, 8 ]
+WR2, andre RISON, Face=0x80, #80, 31, 69, 56, 13, 56, 69,[8, 8, 8, 8 ]
+WR3, tony SMITH, Face=0x80, #28, 38, 69, 31, 31, 44, 19,[8, 8, 8, 8 ]
+WR4, tony JONES, Face=0x80, #83, 31, 69, 44, 13, 56, 38,[8, 8, 8, 8 ]
+TE1, mike PRITCHARD, Face=0x80, #35, 31, 69, 31, 13, 56, 56,[8, 8, 8, 8 ]
+TE2, jason PHILLIPS, Face=0x80, #82, 31, 69, 25, 13, 56, 38,[8, 8, 8, 8 ]
+C, jamie DUKES, Face=0x0, #64, 19, 69, 25, 44
+LG, roman FORTIN, Face=0x0, #65, 25, 69, 31, 50
+RG, mike RUETHER, Face=0x20, #55, 25, 69, 25, 56
+LT, mike KENN, Face=0x0, #78, 19, 69, 19, 69
+RT, chris HINTON, Face=0x80, #75, 25, 69, 19, 63
+RE, pierce HOLT, Face=0x0, #95, 38, 50, 56, 56, 19, 69,[30, 30 ]
+NT, tory EPPS, Face=0x80, #74, 25, 31, 31, 38, 19, 31,[30, 30 ]
+LE, moe GARDNER, Face=0x80, #67, 38, 44, 44, 56, 19, 50,[30, 30 ]
+ROLB, darion CONNER, Face=0x80, #56, 38, 44, 50, 56, 19, 56,[30, 30 ]
+RILB, jesse SOLOMON, Face=0x80, #54, 31, 31, 31, 50, 31, 56,[30, 30 ]
+LILB, jessie TUGGLE, Face=0x80, #58, 38, 44, 56, 50, 31, 75,[30, 30 ]
+LOLB, chuck SMITH, Face=0x80, #90, 38, 38, 44, 44, 19, 50,[30, 30 ]
+RCB, deion SANDERS, Face=0x80, #21, 31, 50, 75, 38, 50, 69,[30, 30 ]
+LCB, melvin JENKINS, Face=0x80, #20, 44, 38, 50, 38, 44, 50,[30, 30 ]
+FS, scott CASE, Face=0x0, #25, 38, 44, 44, 44, 25, 31,[30, 30 ]
+SS, jeff DONALDSON, Face=0x0, #42, 25, 38, 38, 31, 38, 44,[30, 30 ]
+K, norm JOHNSON, Face=0x0, #9, 56, 81, 81, 31, 69, 38,[8 ]
+P, scott FULHAGE, Face=0x0, #17, 25, 81, 44, 31, 31, 38,[8 ]
+DB1, bruce PICKENS, Face=0x80, #39, 31, 25, 31, 19, 13, 25
+DB2, vinnie CLARK, Face=0x80, #27, 31, 38, 44, 31, 25, 63
+RETURN_TEAM RB4, WR3, RCB
+KR, RCB
+PR, RCB
+
+TEAM = rams SimData=0x881
+QB1, jim EVERETT, Face=0x0, #11, 25, 69, 13, 13, 63, 56, 44, 50,[4, 8, 3 ]
+QB2, mike PAGEL, Face=0x0, #14, 25, 69, 13, 13, 38, 31, 25, 44,[4, 8, 3 ]
+RB1, jerome BETTIS, Face=0x80, #36, 38, 69, 50, 44, 56, 31,[8, 8, 8, 8 ]
+RB2, david LANG, Face=0x80, #38, 38, 69, 31, 25, 44, 25,[8, 8, 8, 8 ]
+RB3, anthony THOMPSON, Face=0x80, #32, 25, 69, 31, 31, 56, 19,[8, 8, 8, 8 ]
+RB4, tim LESTER, Face=0x80, #34, 25, 69, 31, 25, 56, 19,[8, 8, 8, 8 ]
+WR1, henry ELLARD, Face=0x80, #80, 31, 69, 31, 13, 69, 56,[8, 8, 8, 8 ]
+WR2, willie ANDERSON, Face=0x80, #83, 31, 69, 50, 13, 56, 50,[8, 8, 8, 8 ]
+WR3, todd KINCHEN, Face=0x0, #81, 31, 69, 38, 19, 56, 44,[8, 8, 8, 8 ]
+WR4, jeff CHADWICK, Face=0x0, #89, 31, 69, 25, 13, 56, 38,[8, 8, 8, 8 ]
+TE1, jim PRICE, Face=0x0, #87, 25, 69, 31, 44, 44, 44,[8, 8, 8, 8 ]
+TE2, pat CARTER, Face=0x80, #88, 25, 69, 19, 56, 56, 19,[8, 8, 8, 8 ]
+C, bern BROSTEK, Face=0x0, #61, 25, 69, 19, 56
+LG, jeff PAHUKOA, Face=0x0, #69, 31, 69, 31, 50
+RG, tom NEWBERRY, Face=0x0, #66, 31, 69, 19, 50
+LT, irv EATMAN, Face=0x80, #75, 25, 69, 19, 56
+RT, jackie SLATER, Face=0x80, #78, 25, 69, 25, 69
+RE, gerald ROBINSON, Face=0x80, #97, 25, 38, 44, 44, 19, 38,[30, 30 ]
+NT, sean GILBERT, Face=0x80, #90, 25, 38, 38, 50, 19, 38,[30, 30 ]
+LE, fred STOKES, Face=0x80, #60, 31, 38, 44, 44, 19, 50,[30, 30 ]
+ROLB, chris MARTIN, Face=0x80, #53, 38, 38, 38, 44, 19, 56,[30, 30 ]
+RILB, henry ROLLING, Face=0x80, #59, 38, 31, 38, 44, 19, 38,[30, 30 ]
+LILB, shane CONLAN, Face=0x0, #56, 31, 44, 50, 56, 31, 63,[30, 30 ]
+LOLB, roman PHIFER, Face=0x80, #58, 38, 44, 44, 50, 31, 56,[30, 30 ]
+RCB, darryl HENLEY, Face=0x80, #20, 31, 44, 44, 44, 50, 56,[30, 30 ]
+LCB, todd LYGHT, Face=0x80, #41, 25, 31, 44, 44, 44, 50,[30, 30 ]
+FS, pat TERRELL, Face=0x80, #37, 25, 31, 38, 44, 25, 31,[30, 30 ]
+SS, anthony NEWMAN, Face=0x80, #26, 38, 44, 44, 50, 50, 50,[30, 30 ]
+K, tony ZENDEJAS, Face=0x0, #10, 56, 81, 81, 31, 44, 50,[8 ]
+P, don BRACKEN, Face=0x0, #17, 25, 81, 44, 31, 31, 38,[8 ]
+DB1, steve ISRAEL, Face=0x80, #31, 31, 19, 31, 25, 31, 13
+DB2, robert BAILEY, Face=0x80, #28, 25, 31, 25, 38, 19, 25
+RETURN_TEAM RB2, WR3, RCB
+KR, RB2
+PR, WR3
+
+TEAM = saints SimData=0x882
+QB1, wade WILSON, Face=0x0, #18, 25, 69, 13, 13, 44, 56, 50, 44,[4, 8, 3 ]
+QB2, steve WALSH, Face=0x0, #4, 25, 69, 13, 13, 44, 44, 44, 38,[4, 8, 3 ]
+RB1, dalton HILLIARD, Face=0x80, #21, 38, 69, 38, 25, 44, 50,[8, 8, 8, 8 ]
+RB2, brad MUSTER, Face=0x0, #22, 44, 69, 31, 81, 63, 50,[8, 8, 8, 8 ]
+RB3, vaughn DUNBAR, Face=0x80, #32, 38, 69, 44, 25, 63, 19,[8, 8, 8, 8 ]
+RB4, fred MCAFEE, Face=0x80, #25, 38, 69, 31, 19, 81, 19,[8, 8, 8, 8 ]
+WR1, eric MARTIN, Face=0x80, #84, 31, 69, 44, 13, 63, 63,[8, 8, 8, 8 ]
+WR2, quinn EARLY, Face=0x80, #89, 31, 69, 38, 13, 63, 44,[8, 8, 8, 8 ]
+WR3, wesley CARROLL, Face=0x80, #80, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, patrick NEWMAN, Face=0x80, #86, 31, 69, 31, 13, 44, 19,[8, 8, 8, 8 ]
+TE1, hoby BRENNER, Face=0x0, #85, 25, 69, 25, 63, 63, 25,[8, 8, 8, 8 ]
+TE2, frank WAINRIGHT, Face=0x0, #87, 25, 69, 19, 44, 63, 38,[8, 8, 8, 8 ]
+C, joel HILGENBERG, Face=0x0, #61, 25, 69, 38, 63
+LG, jim DOMBROWSKI, Face=0x0, #72, 25, 69, 25, 63
+RG, derek KENNARD, Face=0x80, #60, 25, 69, 19, 63
+LT, chris PORT, Face=0x0, #70, 25, 69, 31, 50
+RT, richard COOPER, Face=0x80, #71, 31, 69, 31, 63
+RE, frank WARREN, Face=0x80, #73, 25, 38, 38, 44, 19, 38,[30, 30 ]
+NT, robert GOFF, Face=0x80, #91, 25, 38, 38, 44, 19, 50,[30, 30 ]
+LE, wayne MARTIN, Face=0x80, #93, 38, 50, 63, 63, 19, 69,[30, 30 ]
+ROLB, rickey JACKSON, Face=0x80, #57, 38, 50, 56, 63, 19, 75,[30, 30 ]
+RILB, sam MILLS, Face=0x80, #51, 50, 44, 63, 50, 31, 81,[30, 30 ]
+LILB, vaughan JOHNSON, Face=0x80, #53, 38, 44, 50, 63, 19, 63,[30, 30 ]
+LOLB, james WILLIAMS, Face=0x80, #90, 25, 31, 38, 38, 19, 50,[30, 30 ]
+RCB, toi COOK, Face=0x80, #41, 38, 50, 56, 44, 56, 63,[30, 30 ]
+LCB, vince BUCK, Face=0x80, #26, 25, 31, 44, 31, 38, 44,[30, 30 ]
+FS, gene ATKINS, Face=0x80, #28, 31, 44, 50, 56, 44, 69,[30, 30 ]
+SS, brett MAXIE, Face=0x80, #39, 31, 38, 44, 50, 38, 50,[30, 30 ]
+K, morten ANDERSEN, Face=0x0, #7, 56, 81, 81, 31, 81, 75,[8 ]
+P, tommy BARNHARDT, Face=0x0, #6, 25, 81, 44, 31, 75, 63,[8 ]
+DB1, tyrone LEGETTE, Face=0x80, #43, 25, 31, 25, 25, 25, 50
+DB2, keith TAYLOR, Face=0x80, #29, 25, 31, 25, 44, 13, 25
+RETURN_TEAM RB4, WR4, LCB
+KR, RB4
+PR, WR4
+
+TEAM = 49ers SimData=0x883
+QB1, steve YOUNG, Face=0x0, #8, 25, 69, 44, 13, 63, 81, 75, 69,[4, 8, 3 ]
+QB2, steve BONO, Face=0x0, #13, 25, 69, 13, 13, 50, 56, 56, 50,[4, 8, 3 ]
+RB1, ricky WATTERS, Face=0x80, #32, 38, 69, 56, 25, 69, 50,[8, 8, 8, 8 ]
+RB2, tom RATHMAN, Face=0x0, #44, 38, 69, 31, 88, 69, 50,[8, 8, 8, 8 ]
+RB3, amp LEE, Face=0x80, #22, 38, 69, 38, 25, 69, 25,[8, 8, 8, 8 ]
+RB4, marc LOGAN, Face=0x80, #43, 38, 69, 31, 44, 75, 19,[8, 8, 8, 8 ]
+WR1, john TAYLOR, Face=0x80, #82, 31, 69, 38, 13, 63, 63,[8, 8, 8, 8 ]
+WR2, jerry RICE, Face=0x80, #80, 31, 69, 63, 13, 63, 81,[8, 8, 8, 8 ]
+WR3, odessa TURNER, Face=0x80, #86, 31, 69, 25, 13, 63, 44,[8, 8, 8, 8 ]
+WR4, mervyn FERNANDEZ, Face=0x80, #88, 31, 69, 31, 13, 63, 50,[8, 8, 8, 8 ]
+TE1, brent JONES, Face=0x0, #84, 31, 69, 44, 56, 63, 56,[8, 8, 8, 8 ]
+TE2, jamie WILLIAMS, Face=0x80, #81, 31, 69, 25, 44, 63, 31,[8, 8, 8, 8 ]
+C, jesse SAPOLU, Face=0x80, #61, 25, 69, 38, 50
+LG, roy FOSTER, Face=0x80, #67, 25, 69, 25, 63
+RG, guy MCINTYRE, Face=0x80, #62, 25, 69, 38, 69
+LT, harris BARTON, Face=0x0, #79, 25, 69, 25, 56
+RT, steve WALLACE, Face=0x80, #74, 25, 69, 31, 50
+RE, kevin FAGAN, Face=0x0, #75, 44, 31, 38, 50, 19, 44,[30, 30 ]
+NT, dennis BROWN, Face=0x80, #96, 25, 38, 38, 44, 19, 38,[30, 30 ]
+LE, ted WASHINGTON, Face=0x80, #97, 38, 38, 44, 56, 19, 44,[30, 30 ]
+ROLB, john JOHNSON, Face=0x80, #55, 38, 38, 44, 44, 31, 44,[30, 30 ]
+RILB, keith DELONG, Face=0x0, #59, 31, 44, 44, 50, 31, 44,[30, 30 ]
+LILB, b. ROMANOWSKI, Face=0x0, #53, 38, 56, 50, 50, 19, 63,[30, 30 ]
+LOLB, michael WALTER, Face=0x0, #99, 25, 31, 38, 38, 19, 56,[30, 30 ]
+RCB, don GRIFFIN, Face=0x80, #29, 31, 44, 44, 44, 56, 38,[30, 30 ]
+LCB, eric DAVIS, Face=0x80, #25, 31, 31, 38, 38, 38, 50,[30, 30 ]
+FS, dana HALL, Face=0x80, #28, 31, 38, 38, 44, 38, 56,[30, 30 ]
+SS, tim MCDONALD, Face=0x80, #46, 44, 50, 56, 63, 44, 69,[30, 30 ]
+K, mike COFER, Face=0x0, #6, 56, 81, 81, 31, 38, 56,[8 ]
+P, klaus WILMSMEYER, Face=0x0, #10, 25, 81, 44, 31, 31, 56,[8 ]
+DB1, thane GASH, Face=0x80, #31, 25, 31, 25, 25, 38, 31
+DB2, merton HANKS, Face=0x80, #36, 31, 25, 38, 19, 38, 31
+RETURN_TEAM RB3, RB4, RCB
+KR, RB4
+PR, RCB
+
+WEEK 1
+bills at patriots
+browns at bengals
+colts at dolphins
+jets at broncos
+raiders at vikings
+steelers at 49ers
+chargers at seahawks
+bears at giants
+lions at falcons
+packers at rams
+saints at oilers
+eagles at cardinals
+buccaneers at chiefs
+redskins at cowboys
+
+WEEK 2
+browns at 49ers
+oilers at chiefs
+bengals at colts
+broncos at chargers
+dolphins at jets
+patriots at lions
+seahawks at raiders
+falcons at saints
+cowboys at bills
+packers at eagles
+rams at steelers
+vikings at bears
+giants at buccaneers
+redskins at cardinals
+
+WEEK 3
+chiefs at broncos
+raiders at browns
+patriots at seahawks
+steelers at bengals
+chargers at oilers
+saints at lions
+giants at rams
+eagles at redskins
+cardinals at cowboys
+49ers at falcons
+
+WEEK 4
+bills at dolphins
+oilers at rams
+bengals at seahawks
+colts at browns
+jets at patriots
+falcons at steelers
+bears at buccaneers
+lions at cardinals
+vikings at packers
+saints at 49ers
+
+WEEK 5
+bills at giants
+broncos at colts
+chiefs at raiders
+dolphins at redskins
+jets at eagles
+seahawks at chargers
+bears at falcons
+cowboys at packers
+rams at saints
+buccaneers at lions
+49ers at vikings
+
+WEEK 6
+bills at oilers
+browns at dolphins
+colts at cowboys
+chiefs at bengals
+raiders at jets
+steelers at chargers
+packers at broncos
+vikings at buccaneers
+eagles at bears
+cardinals at patriots
+redskins at giants
+
+WEEK 7
+bengals at browns
+broncos at raiders
+patriots at oilers
+steelers at saints
+chargers at chiefs
+falcons at rams
+cowboys at 49ers
+lions at seahawks
+giants at eagles
+cardinals at redskins
+
+WEEK 8
+browns at steelers
+oilers at bengals
+dolphins at colts
+jets at bills
+seahawks at patriots
+bears at vikings
+rams at lions
+saints at falcons
+buccaneers at packers
+49ers at cardinals
+
+WEEK 9
+bills at redskins
+broncos at seahawks
+colts at patriots
+dolphins at chiefs
+raiders at chargers
+falcons at buccaneers
+packers at bears
+vikings at lions
+giants at jets
+eagles at cowboys
+cardinals at saints
+49ers at rams
+
+WEEK 10
+browns at broncos
+oilers at seahawks
+bengals at steelers
+chiefs at packers
+jets at dolphins
+patriots at bills
+bears at raiders
+cowboys at giants
+lions at buccaneers
+vikings at chargers
+cardinals at eagles
+redskins at colts
+
+WEEK 11
+bengals at oilers
+broncos at vikings
+colts at jets
+raiders at chiefs
+steelers at bills
+chargers at bears
+seahawks at browns
+cowboys at cardinals
+rams at falcons
+saints at packers
+giants at redskins
+eagles at dolphins
+buccaneers at 49ers
+
+WEEK 12
+bills at colts
+browns at oilers
+broncos at steelers
+chiefs at bears
+dolphins at patriots
+jets at bengals
+chargers at raiders
+falcons at cowboys
+packers at lions
+rams at redskins
+eagles at giants
+buccaneers at vikings
+49ers at saints
+
+WEEK 13
+oilers at steelers
+bengals at raiders
+colts at chargers
+chiefs at bills
+patriots at jets
+seahawks at broncos
+falcons at browns
+cowboys at dolphins
+lions at bears
+packers at buccaneers
+rams at 49ers
+vikings at saints
+giants at cardinals
+redskins at eagles
+
+WEEK 14
+bills at raiders
+browns at saints
+oilers at falcons
+dolphins at giants
+jets at colts
+steelers at patriots
+chargers at broncos
+seahawks at chiefs
+bears at packers
+cowboys at eagles
+lions at vikings
+cardinals at rams
+buccaneers at redskins
+49ers at bengals
+
+WEEK 15
+oilers at browns
+broncos at chiefs
+dolphins at steelers
+raiders at seahawks
+patriots at bengals
+chargers at packers
+falcons at 49ers
+vikings at cowboys
+saints at rams
+giants at colts
+eagles at bills
+cardinals at lions
+buccaneers at bears
+redskins at jets
+
+WEEK 16
+browns at patriots
+bengals at rams
+colts at eagles
+chiefs at chargers
+dolphins at bills
+jets at cowboys
+raiders at buccaneers
+steelers at oilers
+seahawks at cardinals
+bears at broncos
+lions at 49ers
+packers at vikings
+saints at giants
+redskins at falcons
+
+WEEK 17
+bills at jets
+bengals at falcons
+broncos at buccaneers
+patriots at colts
+chargers at dolphins
+seahawks at steelers
+bears at lions
+cowboys at redskins
+packers at raiders
+rams at browns
+vikings at chiefs
+eagles at saints
+cardinals at giants
+49ers at oilers
+
+WEEK 18
+oilers at jets
+colts at bills
+chiefs at seahawks
+raiders at broncos
+patriots at dolphins
+steelers at browns
+falcons at cardinals
+lions at packers
+rams at bears
+saints at bengals
+giants at cowboys
+buccaneers at chargers
+49ers at eagles
+redskins at vikings
+
+
+
+GENESIS_FIX_SIM_BUGS

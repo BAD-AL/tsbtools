@@ -66,20 +66,35 @@ namespace TSBTool
 			return ret;
 		}
 
-		public int SimKickRet(int MS )
+		/// <summary>
+		/// Sim yards per catch (a skill player's 3rd sim value): position base (WR 4, TE 4, RB 3)
+		/// + (MS + REC) / 25. Matches the stock ROM's averages per position (see TSB_Simulation.md).
+		/// </summary>
+		public int SimYPC(string position, int MS, int REC)
 		{
-			int ret = MS / 4;
+			int positionBase = position.StartsWith("RB") ? 3 : 4;
+			int ret = (int)Math.Round(positionBase + (MS + REC) / 25.0, MidpointRounding.AwayFromZero);
 			if( ret > 15)
 				ret = 15;
 			return ret;
 		}
 
-		public int SimPuntRet(int MS )
+		/// <summary>
+		/// Sim targets (a skill player's 4th sim value): how often the player is thrown to, by depth
+		/// slot. Backups get 1, not 0 -- 0 means never thrown to.
+		/// </summary>
+		public static int SimTargets(string position)
 		{
-			int ret = MS / 4;
-			if( ret > 15)
-				ret = 15;
-			return ret;
+			switch( position )
+			{
+				case "WR1": return 9;
+				case "WR2": return 8;
+				case "TE1": return 5;
+				case "RB1": case "RB2": return 4;
+				case "WR3": case "WR4": return 2;
+				case "TE2": case "RB3": case "RB4": return 1;
+				default: return 0;
+			}
 		}
 
 		public int RbSimCatch(int REC )

@@ -1626,7 +1626,7 @@ Please verify that this player's attributes are correct.", oldPlayer);
 				MessageBox.Show("Oh oh!"+e.Message);
 			}
 			//int[] simData = InputParser.GetSimVals(playerLine);
-			int simPass, simRush, simPocket, simCatch, simPR, simKR, simKA;
+			int simPass, simRush, simPocket, simCatch, simYPC, simTargets, simKA;
 
 			switch( position )
 			{
@@ -1648,27 +1648,27 @@ Please verify that this player's attributes are correct.", oldPlayer);
 					{
 						simRush  = m_SimStuff.RbSimRush(/*MS*/attrs[2],/*HP*/attrs[3],/*BC*/attrs[4],/*RS*/attrs[0]);
 						simCatch = m_SimStuff.RbSimCatch(/*REC*/attrs[5]);
-						simKR    = m_SimStuff.SimKickRet(/*MS*/attrs[2]);
-						simPR    = m_SimStuff.SimPuntRet(/*MS*/attrs[2]);
-						newValue  = string.Format( 
+						simYPC     = m_SimStuff.SimYPC(position, /*MS*/attrs[2], /*REC*/attrs[5]);
+						simTargets = SimStuff.SimTargets(position);
+						newValue  = string.Format(
 							"{0}, {1} {2}, Face=0x{3:x}, #{4:x}, {5}, {6}, {7}, {8}, {9}, {10} ,[{11}, {12} ,{13}, {14} ]",
 							position, fName, lName, face, jerseyNumber, attrs[0], attrs[1],attrs[2],attrs[3],
-							attrs[4],attrs[5],simRush, simCatch, simPR, simKR);
+							attrs[4],attrs[5],simRush, simCatch, simYPC, simTargets);
 					}
 					break;
-				case "WR1": case "WR2": 
+				case "WR1": case "WR2":
 				case "WR3": case "WR4":
 				case "TE1": case "TE2":
 					if( attrs != null && attrs.Length > 5)
 					{
 						simRush  = m_SimStuff.RbSimRush(/*MS*/attrs[2],/*HP*/attrs[3],/*BC*/attrs[4],/*RS*/attrs[0]);
 						simCatch = m_SimStuff.RbSimCatch(/*REC*/attrs[5]);
-						simKR    = m_SimStuff.SimKickRet(/*MS*/attrs[2]);
-						simPR    = m_SimStuff.SimPuntRet(/*MS*/attrs[2]);
-						newValue  = string.Format( 
+						simYPC     = m_SimStuff.SimYPC(position, /*MS*/attrs[2], /*REC*/attrs[5]);
+						simTargets = SimStuff.SimTargets(position);
+						newValue  = string.Format(
 							"{0}, {1} {2}, Face=0x{3:x}, #{4:x}, {5}, {6}, {7}, {8}, {9}, {10} ,[{11}, {12} ,{13}, {14} ]",
 							position, fName, lName, face, jerseyNumber, attrs[0], attrs[1],attrs[2],attrs[3],
-							attrs[4],attrs[5],simRush, simCatch, simPR, simKR);
+							attrs[4],attrs[5],simRush, simCatch, simYPC, simTargets);
 					}
 					break;
 				case "P": case "K":

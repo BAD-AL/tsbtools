@@ -34,7 +34,13 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyVersion("1.2.0.0")]   // Works under Mono; DebugDialog added; 'ReplaceString' functionality; Get/Set Team name, city, abbrev.
 //[assembly: AssemblyVersion("1.3.0.0")]   // TSB2, TSB3 ROM support
 //[assembly: AssemblyVersion("1.3.0.1")]   // TSB3 bug fix (Schedule shows 2x, StaticUtils references wrong 'positionNames' for TSBIII)
-[assembly: AssemblyVersion("1.3.0.2")]     // 18-game-schedule-rom support (Aug 2026)
+//[assembly: AssemblyVersion("1.3.0.2")]     // 18-game-schedule-rom support (Aug 2026)
+
+// (10 Oct 2026) 1.4.0.0 
+// * added support for Genesis TSB1
+// * fixed up some genesis Sim stuff (after deep dive session with claude)
+// * Name length check 
+[assembly: AssemblyVersion("1.4.0.0")]     
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 
 // Microsoft .NET Framework documentation for more information on assembly signing.

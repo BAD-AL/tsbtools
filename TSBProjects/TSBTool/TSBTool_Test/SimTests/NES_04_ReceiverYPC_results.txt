@@ -1,0 +1,80 @@
+====================================================================================================
+SIM TEST: NES_04_ReceiverYPC
+ROM:      NES_04_ReceiverYPC.nes   (platform: NES)
+====================================================================================================
+
+QUESTION
+  Does a receiver's 3rd sim value (Sim yards per catch, formerly labeled "punt ret") control yards after the catch? (Open question 1)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: All RB/WR/TE Sim yards per catch = 0 / 5 / 10 / 15 by group. All teams preference 3 (70% pass).
+
+GROUPS
+  A  (Sim yards/catch 0): bills, jets, steelers, chargers, eagles, lions, 49ers
+  B  (Sim yards/catch 5): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (Sim yards/catch 10): dolphins, browns, chiefs, redskins, cowboys, vikings, saints
+  D  (Sim yards/catch 15): patriots, oilers, raiders, giants, bears, buccaneers, falcons
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - If the value is yards per catch: yards per completion rises A -> D, completions stay about the same.
+  - If it were punt returns (old label): PR yards would change instead and yds/comp would stay flat.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Comp      | Pass yds  | Yds/comp  |   PR     | PR yds
+  -------------+------+-----------+-----------+-----------+----------+----------
+  bills        | A    |  194      |  3,918    |  20.19    |    12    |  83      
+  jets         | A    |  171      |  3,949    |  23.09    |    12    |  87      
+  steelers     | A    |  159      |  3,374    |  21.22    |    15    |  124     
+  chargers     | A    |  160      |  3,207    |  20.04    |    14    |  151     
+  eagles       | A    |  145      |  3,177    |  21.91    |    14    |  135     
+  lions        | A    |  160      |  3,567    |  22.29    |    14    |  128     
+  49ers        | A    |  154      |  3,411    |  22.14    |    10    |  108     
+  -------------+------+-----------+-----------+-----------+----------+----------
+  colts        | B    |  141      |  3,217    |  22.81    |   11     |  104     
+  bengals      | B    |  147      |  3,445    |  23.43    |   14     |  134     
+  broncos      | B    |  155      |  3,580    |  23.09    |   14     |  179     
+  seahawks     | B    |  132      |  3,212    |  24.33    |   11     |  126     
+  cardinals    | B    |  157      |  3,792    |  24.15    |   13     |  180     
+  packers      | B    |  153      |  3,928    |  25.67    |   18     |  167     
+  rams         | B    |  157      |  3,525    |  22.45    |   12     |  112     
+  -------------+------+-----------+-----------+-----------+----------+----------
+  dolphins     | C    |  164      |  4,263    |  25.99    |   14     |  154     
+  browns       | C    |  161      |  4,186    |  26.00    |   16     |  217     
+  chiefs       | C    |  160      |  4,033    |  25.20    |   12     |  125     
+  redskins     | C    |  128      |  3,330    |  26.01    |   12     |  188     
+  cowboys      | C    |  176      |  4,305    |  24.46    |   11     |  102     
+  vikings      | C    |  162      |  4,119    |  25.42    |   15     |  139     
+  saints       | C    |  156      |  3,965    |  25.41    |    9     |   78     
+  -------------+------+-----------+-----------+-----------+----------+----------
+  patriots     | D    |  161      |  4,356    |  27.05    |    16    |  212     
+  oilers       | D    |  155      |  4,030    |  26.00    |    17    |  132     
+  raiders      | D    |  142      |  3,858    |  27.16    |    11    |  135     
+  giants       | D    |  143      |  4,055    |  28.35    |    13    |   88     
+  bears        | D    |  137      |  3,950    |  28.83    |    16    |  124     
+  buccaneers   | D    |  142      |  4,024    |  28.33    |    11    |   59     
+  falcons      | D    |  139      |  3,900    |  28.05    |    12    |  150     
+  -------------+------+-----------+-----------+-----------+----------+----------
+
+GROUP AVERAGES (optional)
+  A (Sim yards/catch 0): Comp 163.3, Pass yds 3514.7, PR 13.0, PR yds 116.6, Yds/comp 21.52   (7 teams; averages per team, ratios from group totals)
+  B (Sim yards/catch 5): Comp 148.9, Pass yds 3528.4, PR 13.3, PR yds 143.1, Yds/comp 23.70   (7 teams; averages per team, ratios from group totals)
+  C (Sim yards/catch 10): Comp 158.1, Pass yds 4028.7, PR 12.7, PR yds 143.3, Yds/comp 25.48   (7 teams; averages per team, ratios from group totals)
+  D (Sim yards/catch 15): Comp 145.6, Pass yds 4024.7, PR 13.7, PR yds 128.6, Yds/comp 27.65   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  
+
+CONCLUSION
+  
+
+Tested by: __cbadal_______   Date: __10/6/2026____   Emulator: ___MSEEN____

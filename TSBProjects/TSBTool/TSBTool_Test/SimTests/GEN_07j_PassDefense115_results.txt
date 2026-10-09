@@ -1,0 +1,78 @@
+====================================================================================================
+SIM TEST: GEN_07j_PassDefense115
+ROM:      GEN_07j_PassDefense115.bin   (platform: GENESIS)
+====================================================================================================
+
+QUESTION
+  GEN_07i + pass defense value - 115 on the main pass play: stock-level passing (comp% ~75, more 1000-yard receivers)?
+
+WHAT IS DIFFERENT IN THIS ROM
+  Stock sim data (the game's own values for every team). Same as GEN_07i, plus a routine at 0xDF110 so the main pass play takes 32 more off the pass defense value (115 in all).
+
+GROUPS
+  A  (GEN_07i + pass defense -115): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (GEN_07i + pass defense -115): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (GEN_07i + pass defense -115): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (GEN_07i + pass defense -115): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Completion % about 74-75 (GEN_07i 69.9, stock 74.8), pass yds near stock for non-preference-1 teams (138/game).
+  - Save an ares state (.bs1) at the Season Menu after the season: every column can be read from it.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Pts for   | Pts allowed | Rush att  | Rush yds  | Pass att  | Pass yds  | Sacks made | INTs made
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  bills        | A    |  372      |  276        |  234      |  2342     |  179      |  2157     |  30        |  8       
+  jets         | A    |  252      |  402        |  262      |  2341     |  202      |  1338     |  20        |  11      
+  steelers     | A    |  393      |  267        |  250      |  2442     |  180      |  2234     |  36        |  12      
+  chargers     | A    |  278      |  264        |  234      |  1784     |  181      |  2064     |  23        |  8       
+  eagles       | A    |  361      |  288        |  221      |  2295     |  170      |  2159     |  22        |  10      
+  lions        | A    |  381      |  295        |  178      |  1828     |  206      |  2119     |  25        |  9       
+  falcons      | A    |  353      |  479        |  190      |  1601     |  182      |  2270     |  19        |  5       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  colts        | B    |  255      |  359        |  214      |  1696     |  204      |  1904     |  17        |  6       
+  bengals      | B    |  320      |  424        |  228      |  2488     |  171      |  1965     |  23        |  5       
+  broncos      | B    |  331      |  292        |  240      |  2112     |  173      |  1672     |  21        |  6       
+  seahawks     | B    |  343      |  297        |  257      |  1948     |  191      |  2250     |  21        |  10      
+  cardinals    | B    |  305      |  371        |  240      |  1708     |  190      |  2492     |  31        |  9       
+  packers      | B    |  290      |  288        |  185      |  1469     |  234      |  2675     |  27        |  8       
+  rams         | B    |  284      |  412        |  206      |  1439     |  222      |  2632     |  27        |  9       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  dolphins     | C    |  326      |  352        |  204      |  1842     |  216      |  2306     |  34        |  5       
+  browns       | C    |  370      |  406        |  180      |  1556     |  244      |  2655     |  20        |  11      
+  chiefs       | C    |  348      |  293        |  288      |  2252     |  156      |  1820     |  20        |  8       
+  cowboys      | C    |  455      |  226        |  237      |  2704     |  164      |  2067     |  29        |  16      
+  redskins     | C    |  394      |  260        |  247      |  2263     |  188      |  2204     |  21        |  10      
+  vikings      | C    |  364      |  316        |  230      |  2088     |  186      |  1806     |  31        |  13      
+  saints       | C    |  340      |  234        |  265      |  2235     |  169      |  1942     |  35        |  13      
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  patriots     | D    |  308      |  431        |  210      |  1690     |  234      |  2904     |  22        |  5       
+  oilers       | D    |  367      |  340        |  174      |  1834     |  222      |  2626     |  35        |  7       
+  raiders      | D    |  291      |  322        |  265      |  1843     |  147      |  1742     |  28        |  4       
+  giants       | D    |  278      |  411        |  283      |  2417     |  163      |  1514     |  25        |  3       
+  bears        | D    |  366      |  333        |  223      |  1867     |  204      |  2303     |  24        |  12      
+  buccaneers   | D    |  286      |  422        |  259      |  2438     |  205      |  1624     |  20        |  6       
+  49ers        | D    |  374      |  325        |  206      |  2335     |  230      |  2343     |  33        |  6       
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+
+GROUP AVERAGES (optional)
+  A (GEN_07i + pass defense -115): Pts for 341.4, Pts allowed 324.4, Rush att 224.1, Rush yds 2090.4, Pass att 185.7, Pass yds 2048.7, Sacks made 25.0, INTs made 9.0   (7 teams; averages per team, ratios from group totals)
+  B (GEN_07i + pass defense -115): Pts for 304.0, Pts allowed 349.0, Rush att 224.3, Rush yds 1837.1, Pass att 197.9, Pass yds 2227.1, Sacks made 23.9, INTs made 7.6   (7 teams; averages per team, ratios from group totals)
+  C (GEN_07i + pass defense -115): Pts for 371.0, Pts allowed 298.1, Rush att 235.9, Rush yds 2134.3, Pass att 189.0, Pass yds 2114.3, Sacks made 27.1, INTs made 10.9   (7 teams; averages per team, ratios from group totals)
+  D (GEN_07i + pass defense -115): Pts for 324.3, Pts allowed 369.1, Rush att 231.4, Rush yds 2060.6, Pass att 200.7, Pass yds 2150.9, Sacks made 26.7, INTs made 6.1   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  All values read from the ares save state GEN_07j_PassDefense115.bs1 (TSBTool -stats), not typed from the screens.
+  
+
+CONCLUSION
+  
+
+Tested by: ____________   Date: ____________   Emulator: ____________

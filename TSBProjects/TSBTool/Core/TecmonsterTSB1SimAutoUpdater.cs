@@ -210,14 +210,14 @@ Please verify that this player's attributes are correct.", oldPlayer);
 				case "RB3": case "RB4":
 					if( attrs != null && attrs.Length > 5)
 					{
-                        simRush    = mSimStuff.RbSimRush(/*RS*/attrs[0],/*RP*/attrs[1],/*MS*/attrs[3],/*HP*/attrs[4]);
+                        simRush    = mSimStuff.RbSimRush(/*RS*/attrs[0],/*RP*/attrs[1],/*MS*/attrs[2],/*HP*/attrs[3]);
 						simCatch   = mSimStuff.SimCatch(/*REC*/attrs[5]);
 						simYPC     = mSimStuff.SimYPC(/*MS*/attrs[2], /*REC*/attrs[5] );
-						simTargets = mSimStuff.SimTargets(/*MS*/attrs[2]);
-						newValue  = string.Format( 
+						simTargets = SimStuff.SimTargets(position);
+						newValue  = string.Format(
 							"{0}, {1} {2}, Face=0x{3:x}, #{4:x}, {5}, {6}, {7}, {8}, {9}, {10} ,[{11}, {12} ,{13}, {14} ]",
 							position, fName, lName, face, jerseyNumber, attrs[0], attrs[1],attrs[2],attrs[3],
-                            attrs[4], attrs[5], simRush, simCatch, simYPC, simCatch);
+                            attrs[4], attrs[5], simRush, simCatch, simYPC, simTargets);
 					}
 					break;
 				case "WR1": case "WR2": 
@@ -228,11 +228,11 @@ Please verify that this player's attributes are correct.", oldPlayer);
                         simRush    = 0;
 						simCatch   = mSimStuff.SimCatch(/*REC*/attrs[5]);
                         simYPC = mSimStuff.SimYPC(/*MS*/attrs[2], /*REC*/attrs[5]);
-						simTargets = mSimStuff.SimTargets(/*MS*/attrs[2]);
-						newValue  = string.Format( 
+						simTargets = SimStuff.SimTargets(position);
+						newValue  = string.Format(
 							"{0}, {1} {2}, Face=0x{3:x}, #{4:x}, {5}, {6}, {7}, {8}, {9}, {10} ,[{11}, {12} ,{13}, {14} ]",
 							position, fName, lName, face, jerseyNumber, attrs[0], attrs[1],attrs[2],attrs[3],
-                            attrs[4], attrs[5], simRush, simCatch, simYPC, simCatch);
+                            attrs[4], attrs[5], simRush, simCatch, simYPC, simTargets);
 					}
 					break;
 				case "P": case "K":
@@ -445,14 +445,6 @@ Please verify that this player's attributes are correct.", oldPlayer);
         {
             int ret = (int)Math.Round((double)((((MS - 31.0) + (REC - 13.0)) / 106.0)) * 15);
             if (ret < 0) ret = 0;
-            return ret;
-        }
-
-        public int SimTargets(int MS)
-        {
-            int ret = MS / 4;
-            if (ret > 15)
-                ret = 15;
             return ret;
         }
 

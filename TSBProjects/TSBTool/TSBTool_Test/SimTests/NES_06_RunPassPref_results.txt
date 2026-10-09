@@ -1,0 +1,81 @@
+====================================================================================================
+SIM TEST: NES_06_RunPassPref
+ROM:      NES_06_RunPassPref.nes   (platform: NES)
+====================================================================================================
+
+QUESTION
+  Are the run/pass preference splits really 50/50, 60/40 run, 60/40 pass, 70/30 pass? (Documented from code; needs confirmation)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: Run/pass preference = 0 / 1 / 2 / 3 by group.
+
+GROUPS
+  A  (Preference 0): bills, jets, steelers, chargers, eagles, lions, 49ers
+  B  (Preference 1): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (Preference 2): dolphins, browns, chiefs, redskins, cowboys, vikings, saints
+  D  (Preference 3): patriots, oilers, raiders, giants, bears, buccaneers, falcons
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Expected pass share of plays: A 50%, B 40%, C 60%, D 70% (late-game situations shift these a bit).
+  - Count QB scrambles and sacks as passes when computing pass % if you can tell them apart.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Rush att  | Pass att  | Pass %    | Sacked
+  -------------+------+-----------+-----------+-----------+----------
+  bills        | A    |  220      |    123    | 35.9      |          
+  jets         | A    |  235      |    170    | 42.0      |          
+  steelers     | A    |  233      |    141    | 37.7      |          
+  chargers     | A    |  231      |    182    | 44.1      |          
+  eagles       | A    |  226      |    202    | 47.2      |          
+  lions        | A    |  235      |    188    | 44.4      |          
+  49ers        | A    |  231      |    181    | 43.9      |          
+  -------------+------+-----------+-----------+-----------+----------
+  colts        | B    |  261      |    170    | 39.4      |          
+  bengals      | B    |  268      |    154    | 36.5      |          
+  broncos      | B    |  278      |    167    | 37.5      |          
+  seahawks     | B    |  269      |    169    | 38.6      |          
+  cardinals    | B    |  261      |    153    | 37.0      |          
+  packers      | B    |  271      |    161    | 37.3      |          
+  rams         | B    |  286      |    171    | 37.4      |          
+  -------------+------+-----------+-----------+-----------+----------
+  dolphins     | C    |  185      |    221    | 54.4      |          
+  browns       | C    |  153      |    208    | 57.6      |          
+  chiefs       | C    |  187      |    188    | 50.1      |          
+  redskins     | C    |  199      |    214    | 51.8      |          
+  cowboys      | C    |  182      |    219    | 54.6      |          
+  vikings      | C    |  165      |    221    | 57.3      |          
+  saints       | C    |  180      |    239    | 57.0      |          
+  -------------+------+-----------+-----------+-----------+----------
+  patriots     | D    |  145      |    217    | 59.9      |          
+  oilers       | D    |  147      |    257    | 63.6      |          
+  raiders      | D    |  149      |    240    | 61.7      |          
+  giants       | D    |  155      |    275    | 64.0      |          
+  bears        | D    |  155      |    246    | 61.3      |          
+  buccaneers   | D    |  154      |    225    | 59.4      |          
+  falcons      | D    |  167      |    255    | 60.4      |          
+  -------------+------+-----------+-----------+-----------+----------
+
+GROUP AVERAGES (optional)
+  A (Preference 0): Rush att 230.1, Pass att 169.6, Pass % 42.4   (7 teams; averages per team, ratios from group totals)
+  B (Preference 1): Rush att 270.6, Pass att 163.6, Pass % 37.7   (7 teams; averages per team, ratios from group totals)
+  C (Preference 2): Rush att 178.7, Pass att 215.7, Pass % 54.7   (7 teams; averages per team, ratios from group totals)
+  D (Preference 3): Rush att 153.1, Pass att 245.0, Pass % 61.5   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  Number of times a team's QB is sacked is not tracked.
+  Pass % is left to be calculated by processor step.
+
+CONCLUSION
+  
+
+Tested by: __cbadal_____   Date: _10/6/2026__   Emulator: ___MSEEN_____

@@ -77,6 +77,26 @@ namespace TSBTool_Test
         }
 
         [TestMethod]
+        public void GenesisRom_SetFace_KeepsTheOtherBitsOfTheByte()
+        {
+            // 8 stock players have +2 = 0x20 (dolphins TE2 is one). Only the 0x80 skin bit belongs to
+            // the face; a dump/re-apply round trip must not clear 0x20.
+            byte[] rom = TestRoms.LoadRom(RomFileName);
+            Genesis_TSB1Tool tool = (Genesis_TSB1Tool)TecmoToolFactory.GetToolForRom(rom);
+            int loc = Loc(Genesis_TSB1Tool.GetTeamIndex("dolphins"), 11); // TE2
+            Assert.AreEqual((byte)0x20, rom[loc]);
+
+            tool.SetFace("dolphins", "TE2", tool.GetFace("dolphins", "TE2"));
+            Assert.AreEqual((byte)0x20, tool.OutputRom[loc]);
+
+            tool.SetFace("dolphins", "TE2", 0x99);
+            Assert.AreEqual((byte)0xA0, tool.OutputRom[loc]);
+
+            tool.SetFace("dolphins", "TE2", 0x10);
+            Assert.AreEqual((byte)0x20, tool.OutputRom[loc]);
+        }
+
+        [TestMethod]
         public void GenesisRom_SetFace_DoesNotAffectOtherPlayersOrOtherBytes()
         {
             byte[] rom = TestRoms.LoadRom(RomFileName);

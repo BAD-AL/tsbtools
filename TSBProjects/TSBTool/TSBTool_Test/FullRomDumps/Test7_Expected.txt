@@ -2,7 +2,7 @@
 # Editing:  Tecmo Super Bowl (nes) [CXROM_v111]
 # Key
 # TEAM:
-#  name, SimData  0x<offense><defense><offense preference>
+#  name, SimData  0x<rush defense><pass defense><offense preference>
 #  Offensive pref values 0-3. 
 #     0 = Little more rushing, 1 = Heavy Rushing,
 #     2 = little more passing, 3 = Heavy Passing.
@@ -10,7 +10,7 @@
 # -- Quarterbacks:
 # Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, PS, PC, PA, APB, [Sim rush, Sim pass, Sim Pocket].
 # -- Offensive Skill players (non-QB):
-# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, BC, REC, [Sim rush, Sim catch, Sim punt Ret, Sim kick ret].
+# Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP, BC, REC, [Sim rush, Sim catch, Sim yards per catch, Sim targets].
 # -- Offensive Linemen:
 # Position, First name Last name, FaceID, Jersey number, RS, RP, MS, HP
 # -- Defensive Players:

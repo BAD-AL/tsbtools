@@ -163,12 +163,26 @@ namespace TSBTool
 					seasonGen.MenuItems.Add( tsbSeasonGen_optionsMenuItem);
 					mainMenu1.MenuItems.Add(seasonGen);
 				}
+				MenuItem saveStatesItem = new MenuItem("&Save States");
+				MenuItem seasonStatsItem = new MenuItem("View Season &Stats (.bs1/.srm/.sav)");
+				seasonStatsItem.Click += new EventHandler(seasonStatsItem_Click);
+				saveStatesItem.MenuItems.Add(seasonStatsItem);
+				MenuItem seasonStatsCsvItem = new MenuItem("View Season Stats (.bs1/.srm/.sav -> .c&sv)");
+				seasonStatsCsvItem.Click += new EventHandler(seasonStatsCsvItem_Click);
+				saveStatesItem.MenuItems.Add(seasonStatsCsvItem);
+				menuItem1.MenuItems.Add(menuItem1.MenuItems.IndexOf(exitMenuItem), saveStatesItem);
+
 				if (File.Exists(mReadMeFile))
 				{
 					MenuItem readmeItem = new MenuItem("&View README");
 					readmeItem.Click += new EventHandler(readmeItem_Click);
 					mainAboutItem.MenuItems.Add(readmeItem);
 				}
+
+				MenuItem emulatorsItem = new MenuItem("&Favored Emulators");
+				AddLinkItem(emulatorsItem, "&Mesen2 (NES/SNES)", "https://github.com/SourMesen/Mesen2");
+				AddLinkItem(emulatorsItem, "&ares (Genesis)", "https://ares-emu.net/");
+				mainAboutItem.MenuItems.Add(emulatorsItem);
 			}
 			catch {}
 		}
@@ -202,6 +216,72 @@ namespace TSBTool
             return ret;
         }
 
+		void seasonStatsItem_Click(object sender, EventArgs e)
+		{
+			string file = GetFileName(SeasonStatsFilter, false);
+			if (file != null)
+				ShowSeasonStats(file, false);
+		}
+
+		void seasonStatsCsvItem_Click(object sender, EventArgs e)
+		{
+			string file = GetFileName(SeasonStatsFilter, false);
+			if (file != null)
+				ShowSeasonStats(file, true);
+		}
+
+		private const string SeasonStatsFilter =
+			"Season stats (*.bs1, *.srm, *.sav)|*.bs1;*.srm;*.sav|Genesis ares save states (*.bs1)|*.bs1|SNES battery saves (*.srm)|*.srm|NES battery saves (*.sav)|*.sav|All files (*.*)|*.*";
+
+		/// <summary>
+		/// Shows the season stats from an ares save state of Genesis TSB (saved at the 'Season Menu') or a
+		/// battery save of SNES (.srm) or NES (.sav) TSB. Player names come from the loaded ROM when it's the same game;
+		/// otherwise positions are shown. 'csv' shows them as CSV (one row per player) instead of the
+		/// team-by-team text.
+		/// </summary>
+		private void ShowSeasonStats(string stateFile, bool csv)
+		{
+			string error = null;
+			SeasonStats stats = null;
+			try
+			{
+				stats = SeasonStats.FromFile(File.ReadAllBytes(stateFile), out error);
+			}
+			catch (Exception ex)
+			{
+				error = ex.Message;
+			}
+			if (stats == null)
+			{
+				MessageBox.Show(this, error, "Season Stats", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				return;
+			}
+			RichTextDisplay disp = new RichTextDisplay();
+			disp.ContentBox.Font = mTextBox.Font;
+			ITecmoTool rom = tool as ITecmoTool;
+			disp.ContentBox.Text = csv ? stats.ToCsv(rom) : stats.ToText(rom);
+			disp.Text = string.Concat("Season stats from '", stateFile, "'");
+			disp.Show();
+		}
+
+		/// <summary>Adds a menu item to 'parent' that opens 'url' in the browser.</summary>
+		private static void AddLinkItem(MenuItem parent, string text, string url)
+		{
+			MenuItem item = new MenuItem(text);
+			item.Click += delegate
+			{
+				try
+				{
+					System.Diagnostics.Process.Start(url);
+				}
+				catch (Exception ex)
+				{
+					StaticUtils.ShowError(string.Format("Couldn't open '{0}': {1}", url, ex.Message));
+				}
+			};
+			parent.MenuItems.Add(item);
+		}
+
 		void readmeItem_Click(object sender, EventArgs e)
 		{
 			if (File.Exists(mReadMeFile))
@@ -233,6 +313,10 @@ namespace TSBTool
                 else if( file.EndsWith(".txt") || file.EndsWith(".csv"))
                 {
                     LoadDataFile(file);
+                }
+                else if (file.EndsWith(".bs1") || file.EndsWith(".srm") || file.EndsWith(".sav"))
+                {
+                    ShowSeasonStats(files[0], false);
                 }
             }
         }
@@ -1095,6 +1179,22 @@ CANCEL = Don't do anything, cancel current operation.
             }
 
             tool.ProcessText(textToApply);
+
+            if (genesisTool != null && genesisTool.HasSimBugs())
+            {
+                if (MessageBox.Show(this,
+@"This Genesis ROM has the game's sim bugs: run/pass preference 1 (heavy rushing)
+actually plays as heavy passing, and the team rush/pass defense digits count for little.
+The fix also rebalances the sim so scoring and passing stay at stock levels, and fixes
+the season stats losing most receiving TDs.
+
+Fix it in the ROM being saved?  (Same as adding a 'GENESIS_FIX_SIM_BUGS' line.)",
+                    "Genesis sim bugs", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    genesisTool.FixSimBugs();
+                }
+            }
+
             tool.SaveRom(saveToFilename);
 			UpdateTitle(saveToFilename);
 		}

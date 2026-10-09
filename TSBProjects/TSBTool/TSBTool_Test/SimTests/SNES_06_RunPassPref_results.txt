@@ -1,0 +1,79 @@
+====================================================================================================
+SIM TEST: SNES_06_RunPassPref
+ROM:      SNES_06_RunPassPref.smc   (platform: SNES)
+====================================================================================================
+
+QUESTION
+  Are the SNES run/pass preference splits the same as the NES? (Open question 5)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: Run/pass preference = 0 / 1 / 2 / 3 by group.
+
+GROUPS
+  A  (Preference 0): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (Preference 1): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (Preference 2): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (Preference 3): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Same as NES: pass share A 50%, B 40%, C 60%, D 70%.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Rush att  | Pass att  | Pass %
+  -------------+------+-----------+-----------+----------
+  bills        | A    |   254     |   184     | 42.0     
+  jets         | A    |   245     |   185     | 43.0     
+  steelers     | A    |   245     |   174     | 41.5     
+  chargers     | A    |   232     |   190     | 45.0     
+  eagles       | A    |   235     |   191     | 44.8     
+  lions        | A    |   185     |   218     | 54.1     
+  falcons      | A    |   224     |   216     | 49.1     
+  -------------+------+-----------+-----------+----------
+  colts        | B    |   254     |   160     | 38.6     
+  bengals      | B    |   268     |   167     | 38.4     
+  broncos      | B    |   293     |   175     | 37.4     
+  seahawks     | B    |   280     |   141     | 33.5     
+  cardinals    | B    |   257     |   163     | 38.8     
+  packers      | B    |   260     |   153     | 37.0     
+  rams         | B    |   280     |   159     | 36.2     
+  -------------+------+-----------+-----------+----------
+  dolphins     | C    |   169     |   236     | 58.3     
+  browns       | C    |   185     |   231     | 55.5     
+  chiefs       | C    |   187     |   214     | 53.4     
+  cowboys      | C    |   158     |   231     | 59.4     
+  redskins     | C    |   182     |   217     | 54.4     
+  vikings      | C    |   215     |   215     | 50.0     
+  saints       | C    |   192     |   193     | 50.1     
+  -------------+------+-----------+-----------+----------
+  patriots     | D    |   137     |   239     | 63.6     
+  oilers       | D    |   129     |   267     | 67.4     
+  raiders      | D    |   150     |   252     | 62.7     
+  giants       | D    |   145     |   241     | 62.4     
+  bears        | D    |   147     |   253     | 63.2     
+  buccaneers   | D    |   159     |   256     | 61.7     
+  49ers        | D    |   120     |   234     | 66.1     
+  -------------+------+-----------+-----------+----------
+
+GROUP AVERAGES (optional)
+  A (Preference 0): Rush att 231.4, Pass att 194.0, Pass % 45.6   (7 teams; averages per team, ratios from group totals)
+  B (Preference 1): Rush att 270.3, Pass att 159.7, Pass % 37.1   (7 teams; averages per team, ratios from group totals)
+  C (Preference 2): Rush att 184.0, Pass att 219.6, Pass % 54.4   (7 teams; averages per team, ratios from group totals)
+  D (Preference 3): Rush att 141.0, Pass att 248.9, Pass % 63.8   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  
+
+CONCLUSION
+  
+
+Tested by: ___cbadal_____   Date: __10/7/2026____   Emulator: ____MSEEN___

@@ -1,0 +1,78 @@
+====================================================================================================
+SIM TEST: GEN_07e_FixNesRunCutoffs
+ROM:      GEN_07e_FixNesRunCutoffs.bin   (platform: GENESIS)
+====================================================================================================
+
+QUESTION
+  Stock + GENESIS_FIX_SIM_BUGS + the NES run-play yardage cutoffs: how much scoring comes back?
+
+WHAT IS DIFFERENT IN THIS ROM
+  Stock sim data (the game's own values for every team). The stock ROM plus GENESIS_FIX_SIM_BUGS, plus the 4 run-play cutoffs set to the NES/SNES values (option 3).
+
+GROUPS
+  A  (stock + fix + NES run cutoffs): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (stock + fix + NES run cutoffs): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (stock + fix + NES run cutoffs): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (stock + fix + NES run cutoffs): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - More rush yards than GEN_07b; passing about the same as GEN_07b. Probably not enough on its own.
+  - Save an ares state (.bs1) at the Season Menu after the season: every column can be read from it.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Pts for   | Pts allowed | Rush att  | Rush yds  | Pass att  | Pass yds  | Sacks made | INTs made
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  bills        | A    |  323      |  197        |  251      |  2223     |  191      |  1908     |  34        |  20      
+  jets         | A    |  222      |  276        |  263      |  1914     |  201      |  1654     |  29        |  16      
+  steelers     | A    |  293      |  237        |  249      |  2113     |  178      |  1671     |  28        |  10      
+  chargers     | A    |  215      |  185        |  260      |  1677     |  176      |  1758     |  50        |  13      
+  eagles       | A    |  262      |  213        |  217      |  1537     |  200      |  1914     |  49        |  13      
+  lions        | A    |  234      |  281        |  219      |  2325     |  193      |  1144     |  41        |  13      
+  falcons      | A    |  261      |  284        |  200      |  1353     |  219      |  1930     |  47        |  16      
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  colts        | B    |  134      |  315        |  210      |  1214     |  222      |  1644     |  39        |  21      
+  bengals      | B    |  334      |  290        |  252      |  2086     |  169      |  1641     |  34        |  16      
+  broncos      | B    |  232      |  280        |  215      |  1503     |  197      |  1604     |  33        |  14      
+  seahawks     | B    |  321      |  205        |  222      |  1698     |  189      |  1715     |  41        |  15      
+  cardinals    | B    |  259      |  239        |  243      |  1563     |  185      |  1821     |  31        |  13      
+  packers      | B    |  259      |  258        |  199      |  1371     |  193      |  1854     |  41        |  15      
+  rams         | B    |  216      |  292        |  224      |  1672     |  205      |  1764     |  47        |  16      
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  dolphins     | C    |  267      |  222        |  216      |  1734     |  226      |  2105     |  49        |  15      
+  browns       | C    |  230      |  301        |  199      |  1277     |  235      |  2159     |  34        |  15      
+  chiefs       | C    |  236      |  270        |  244      |  1688     |  157      |  1618     |  34        |  10      
+  cowboys      | C    |  293      |  198        |  232      |  2027     |  204      |  2012     |  35        |  14      
+  redskins     | C    |  251      |  251        |  256      |  1749     |  196      |  1612     |  31        |  20      
+  vikings      | C    |  257      |  196        |  256      |  1993     |  198      |  1951     |  48        |  14      
+  saints       | C    |  235      |  196        |  246      |  2006     |  189      |  1486     |  43        |  11      
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+  patriots     | D    |  245      |  373        |  193      |  1219     |  215      |  1862     |  31        |  17      
+  oilers       | D    |  277      |  241        |  204      |  1635     |  214      |  2195     |  44        |  19      
+  raiders      | D    |  181      |  227        |  281      |  1947     |  167      |  1112     |  28        |  9       
+  giants       | D    |  249      |  248        |  275      |  1987     |  157      |  1311     |  39        |  15      
+  bears        | D    |  247      |  270        |  223      |  1591     |  194      |  1832     |  31        |  18      
+  buccaneers   | D    |  196      |  288        |  234      |  1712     |  208      |  1468     |  35        |  14      
+  49ers        | D    |  309      |  205        |  240      |  2150     |  205      |  1927     |  53        |  19      
+  -------------+------+-----------+-------------+-----------+-----------+-----------+-----------+------------+----------
+
+GROUP AVERAGES (optional)
+  A (stock + fix + NES run cutoffs): Pts for 258.6, Pts allowed 239.0, Rush att 237.0, Rush yds 1877.4, Pass att 194.0, Pass yds 1711.3, Sacks made 39.7, INTs made 14.4   (7 teams; averages per team, ratios from group totals)
+  B (stock + fix + NES run cutoffs): Pts for 250.7, Pts allowed 268.4, Rush att 223.6, Rush yds 1586.7, Pass att 194.3, Pass yds 1720.4, Sacks made 38.0, INTs made 15.7   (7 teams; averages per team, ratios from group totals)
+  C (stock + fix + NES run cutoffs): Pts for 252.7, Pts allowed 233.4, Rush att 235.6, Rush yds 1782.0, Pass att 200.7, Pass yds 1849.0, Sacks made 39.1, INTs made 14.1   (7 teams; averages per team, ratios from group totals)
+  D (stock + fix + NES run cutoffs): Pts for 243.4, Pts allowed 264.6, Rush att 235.7, Rush yds 1748.7, Pass att 194.3, Pass yds 1672.4, Sacks made 37.3, INTs made 15.9   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  All values read from the ares save state GEN_07e_FixNesRunCutoffs.bs1 (TSBTool -stats), not typed from the screens.
+  
+
+CONCLUSION
+  
+
+Tested by: ____________   Date: ____________   Emulator: ____________

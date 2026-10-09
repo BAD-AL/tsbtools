@@ -1,0 +1,79 @@
+====================================================================================================
+SIM TEST: GEN_05_TeamDefense
+ROM:      GEN_05_TeamDefense.bin   (platform: GENESIS)
+====================================================================================================
+
+QUESTION
+  Does Genesis TSB1 use the team SimData digits the same way as the NES? (Open question 5)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: Same as NES_05: Team SimData A = 0x00, B = 0xF0, C = 0x0F, D = 0xFF. Preference 0 for all.
+
+GROUPS
+  A  (SimData 0x00): bills, jets, steelers, chargers, eagles, lions, falcons
+  B  (SimData 0xF0): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (SimData 0x0F): dolphins, browns, chiefs, cowboys, redskins, vikings, saints
+  D  (SimData 0xFF): patriots, oilers, raiders, giants, bears, buccaneers, 49ers
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Same pattern as NES_05 if Genesis works the same way.
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Rush yds allowed | Pass yds allowed | Pts allowed | Sacks made | INTs made
+  -------------+------+------------------+------------------+-------------+------------+----------
+  bills        | A    |   2677           |    1850          |   356       |    20      |   6      
+  jets         | A    |   2508           |   1842           |   339       |    23      |   8      
+  steelers     | A    |   2505           |   2219           |   384       |    28      |   6      
+  chargers     | A    |   2738           |    2327          |   436       |    25      |   6      
+  eagles       | A    |   2838           |     1966         |     390     |    34      |   9      
+  lions        | A    |   2842           |     1968         |     391     |    16      |   6      
+  falcons      | A    |    2414          |     1634         |     318     |    26      |   10      
+  -------------+------+------------------+------------------+-------------+------------+----------
+  colts        | B    |   2409           |     2217         |     321     |    24      |   7     
+  bengals      | B    |   2477           |     1728         |     351     |    16      |   2      
+  broncos      | B    |  2057            |    2394          |     307     |    11      |   10      
+  seahawks     | B    |    2374          |   2837           |     398     |    20      |   7     
+  cardinals    | B    |   2486           |    2060          |     367     |    17      |   6      
+  packers      | B    |  2263            |     2395         |      351    |    20      |   7      
+  rams         | B    |   2226           |   2513           |      453    |    16      |   4      
+  -------------+------+------------------+------------------+-------------+------------+----------
+  dolphins     | C    | 2516             |  1950            |   342       |    20      |   9      
+  browns       | C    |  2529            |  2297            |   402       |    20      |   9      
+  chiefs       | C    |  2733            |   2209           |   398       |    25      |   9      
+  cowboys      | C    |  2388            |   1989           |    360      |    19      |   10      
+  redskins     | C    |  2436            |   1897           |    386      |    24      |   8     
+  vikings      | C    |   2766           |   2015           |    308      |    26      |   8      
+  saints       | C    |   2551           |   1942           |    398      |    27      |   4      
+  -------------+------+------------------+------------------+-------------+------------+----------
+  patriots     | D    |  2160            |    2139          |     290     |    44      |   11      
+  oilers       | D    |   2450           |    2132          |     332     |    23      |   12     
+  raiders      | D    |   2260           |    2298          |     296     |    27      |   8     
+  giants       | D    |   2234           |     1738         |     298     |    27      |   11      
+  bears        | D    |   2031           |     2113         |     374     |    10      |   5     
+  buccaneers   | D    |   2012           |      2395        |     357     |    25      |   6      
+  49ers        | D    |   2529           |      2531        |     430     |    18      |   6      
+  -------------+------+------------------+------------------+-------------+------------+----------
+
+GROUP AVERAGES (optional)
+  A (SimData 0x00): Rush yds allowed 2646.0, Pass yds allowed 1972.3, Pts allowed 373.4, Sacks made 24.6, INTs made 7.3   (7 teams; averages per team, ratios from group totals)
+  B (SimData 0xF0): Rush yds allowed 2327.4, Pass yds allowed 2306.3, Pts allowed 364.0, Sacks made 17.7, INTs made 6.1   (7 teams; averages per team, ratios from group totals)
+  C (SimData 0x0F): Rush yds allowed 2559.9, Pass yds allowed 2042.7, Pts allowed 370.6, Sacks made 23.0, INTs made 8.1   (7 teams; averages per team, ratios from group totals)
+  D (SimData 0xFF): Rush yds allowed 2239.4, Pass yds allowed 2192.3, Pts allowed 339.6, Sacks made 24.9, INTs made 8.4   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  
+
+CONCLUSION
+  
+
+Tested by: ___cbadal_____   Date: ____10/7/2026___   Emulator: ___ares_____

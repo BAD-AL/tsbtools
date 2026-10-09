@@ -1,0 +1,81 @@
+====================================================================================================
+SIM TEST: NES_01_RunOffense
+ROM:      NES_01_RunOffense.nes   (platform: NES)
+====================================================================================================
+
+QUESTION
+  How much does a ball carrier's Sim rush change rushing yards? (Open question 1: run yardage)
+
+WHAT IS DIFFERENT IN THIS ROM
+  Baseline (every team, unless changed below): QB [rush 4, pass 8, pocket 3],
+  RB/WR/TE [rush 8, catch 8, yards/catch 8, targets 8], defenders [pass rush 30, coverage 30],
+  K/P 8, team SimData 0x88, run/pass preference 0. Names and in-game ratings are stock.
+  Change: All RB/WR/TE Sim rush = 0 / 5 / 10 / 15 by group. All teams run/pass preference 1 (60% run) for more carries.
+
+GROUPS
+  A  (Sim rush 0): bills, jets, steelers, chargers, eagles, lions, 49ers
+  B  (Sim rush 5): colts, bengals, broncos, seahawks, cardinals, packers, rams
+  C  (Sim rush 10): dolphins, browns, chiefs, redskins, cowboys, vikings, saints
+  D  (Sim rush 15): patriots, oilers, raiders, giants, bears, buccaneers, falcons
+
+HOW TO RUN
+  1. Load the ROM in the emulator with fresh save data (delete any old .sav / battery file first).
+  2. Start a season and set all 28 teams to be simulated (SKP / computer, as you normally sim a season).
+  3. Simulate the full regular season (fast-forward is fine).
+  4. Record the season stats below from the team / player stats screens.
+     Short on time? Record at least 2 teams per group (8 teams) -- that is usually enough to see the pattern.
+
+WHAT TO EXPECT
+  - Yards per carry should rise steadily from group A (0) to group D (15).
+  - If yards/carry barely changes, Sim rush mostly decides WHO carries, not how far.
+  - Rush attempts should be roughly equal across groups (same preference for everyone).
+
+RESULTS  (season totals; fill in the blanks)
+  Team         | Grp  | Rush att  | Rush yds  | Yds/att   | Points for
+  -------------+------+-----------+-----------+-----------+-----------
+  bills        | A    |   239     | 1,187     |  4.97     |  316      
+  jets         | A    |   281     | 1,313     |  4.67     |  285      
+  steelers     | A    |   240     | 1,167     |  4.86     |  281      
+  chargers     | A    |   271     | 1,864     |  6.88     |  291      
+  eagles       | A    |   246     | 1,058     |  4.30     |  241      
+  lions        | A    |   241     | 1,141     |  4.73     |  308      
+  49ers        | A    |   256     | 1,122     |  4.38     |  240      
+  -------------+------+-----------+-----------+-----------+-----------
+  colts        | B    |   254     | 1,607     |  6.33     |  293      
+  bengals      | B    |   246     | 1,613     |  6.56     |  335      
+  broncos      | B    |   187     | 1,215     |  6.50     |  314      
+  seahawks     | B    |   270     | 1,837     |  6.80     |  332      
+  cardinals    | B    |   278     | 1,848     |  6.65     |  327      
+  packers      | B    |   274     | 1,823     |  6.65     |  325      
+  rams         | B    |   242     | 1,869     |  7.72     |  355      
+  -------------+------+-----------+-----------+-----------+-----------
+  dolphins     | C    |   247     |  2,183    |  8.84     |  407      
+  browns       | C    |   238     |  2,109    |  8.86     |  328      
+  chiefs       | C    |   260     |  2,543    |  9.78     |  364      
+  redskins     | C    |   271     |  2,293    |  8.46     |  420      
+  cowboys      | C    |   234     |  2,075    |  8.87     |  371      
+  vikings      | C    |   254     |  2,371    |  9.33     |  388      
+  saints       | C    |   241     |  1,891    |  7.85     |  341      
+  -------------+------+-----------+-----------+-----------+-----------
+  patriots     | D    |  246      |  2,711    |  11.02    |  406      
+  oilers       | D    |  244      |  2,467    |  10.11    |  378      
+  raiders      | D    |  235      |  2,969    |  12.63    |  459      
+  giants       | D    |  208      |  2,266    |  10.89    |  414      
+  bears        | D    |  236      |  2,465    |  10.44    |  433      
+  buccaneers   | D    |  241      |  2,671    |  11.08    |  449      
+  falcons      | D    |  239      |  2,255    |  9.44     |  347      
+  -------------+------+-----------+-----------+-----------+-----------
+
+GROUP AVERAGES (optional)
+  A (Sim rush 0): Rush att 253.4, Rush yds 1264.6, Points for 280.3, Yds/att 4.99   (7 teams; averages per team, ratios from group totals)
+  B (Sim rush 5): Rush att 250.1, Rush yds 1687.4, Points for 325.9, Yds/att 6.75   (7 teams; averages per team, ratios from group totals)
+  C (Sim rush 10): Rush att 249.3, Rush yds 2209.3, Points for 374.1, Yds/att 8.86   (7 teams; averages per team, ratios from group totals)
+  D (Sim rush 15): Rush att 235.6, Rush yds 2543.4, Points for 412.3, Yds/att 10.80   (7 teams; averages per team, ratios from group totals)
+
+NOTES / ODD THINGS SEEN
+  
+
+CONCLUSION
+  
+
+Tested by: ___cbadal____   Date: ___10/6/2026___   Emulator: _MSEEN_______

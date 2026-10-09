@@ -1,0 +1,3 @@
+GENESIS_FIX_SIM_BUGS
+TEAM = oilers SimData=0x9e3
+TEAM = 49ers SimData=0xc73

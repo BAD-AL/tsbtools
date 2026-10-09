@@ -21,7 +21,7 @@ namespace TSBTool
 		private System.Windows.Forms.Label m_Sim3Label;
 		private System.Windows.Forms.Label m_Sim2Label;
 		private System.Windows.Forms.Label m_Sim1Label;
-		private System.Windows.Forms.NumericUpDown m_SimDefenseUpDown;
+		private System.Windows.Forms.NumericUpDown m_SimPassDefenseUpDown;
 		private System.Windows.Forms.ComboBox m_OffensivePrefomComboBox;
 
 		private bool m_InitDone = false;
@@ -29,7 +29,7 @@ namespace TSBTool
 		private string m_Data = "";
 		private System.Windows.Forms.Button m_OKButton;
 		private System.Windows.Forms.Button m_CancelButton;
-		private System.Windows.Forms.NumericUpDown m_SimOffenseUpDown;
+		private System.Windows.Forms.NumericUpDown m_SimRushDefenseUpDown;
 		private System.Windows.Forms.Button m_SaveTeamButton;
 		private System.Windows.Forms.GroupBox m_RunPlaysGroupBox;
 		private System.Windows.Forms.PictureBox m_Run1PictureBox;
@@ -234,8 +234,8 @@ namespace TSBTool
 					m_OffensivePrefomComboBox.SelectedIndex = vals[1];
 			
 				byte[] simVals = GetNibbles(vals[0]);
-				m_SimOffenseUpDown.Value = simVals[0];
-				m_SimDefenseUpDown.Value = simVals[1];
+				m_SimRushDefenseUpDown.Value = simVals[0];
+				m_SimPassDefenseUpDown.Value = simVals[1];
 
 				Match ofMatch = m_OffensiveFormationRegex.Match(line);
 				Match pbMatch = m_PlaybookRegex.Match(line);
@@ -313,8 +313,8 @@ namespace TSBTool
 		private string GetCurrentValues()
 		{
 			string ret = string.Format("{0:x}{1:x}{2}",
-				(int)m_SimOffenseUpDown.Value,
-				(int)m_SimDefenseUpDown.Value,
+				(int)m_SimRushDefenseUpDown.Value,
+				(int)m_SimPassDefenseUpDown.Value,
 				m_OffensivePrefomComboBox.SelectedIndex);
 
 			return ret;
@@ -398,8 +398,8 @@ namespace TSBTool
             this.label1 = new System.Windows.Forms.Label();
             this.m_TeamsComboBox = new System.Windows.Forms.ComboBox();
             this.m_OffensivePrefomComboBox = new System.Windows.Forms.ComboBox();
-            this.m_SimDefenseUpDown = new System.Windows.Forms.NumericUpDown();
-            this.m_SimOffenseUpDown = new System.Windows.Forms.NumericUpDown();
+            this.m_SimPassDefenseUpDown = new System.Windows.Forms.NumericUpDown();
+            this.m_SimRushDefenseUpDown = new System.Windows.Forms.NumericUpDown();
             this.m_Sim3Label = new System.Windows.Forms.Label();
             this.m_Sim2Label = new System.Windows.Forms.Label();
             this.m_Sim1Label = new System.Windows.Forms.Label();
@@ -427,8 +427,8 @@ namespace TSBTool
             this.m_FormationComboBox = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.m_AutoButton = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.m_SimDefenseUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.m_SimOffenseUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.m_SimPassDefenseUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.m_SimRushDefenseUpDown)).BeginInit();
             this.m_RunPlaysGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.m_Run4UpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_Run4PictureBox)).BeginInit();
@@ -510,31 +510,31 @@ namespace TSBTool
             this.m_OffensivePrefomComboBox.TabIndex = 15;
             this.m_OffensivePrefomComboBox.SelectedIndexChanged += new System.EventHandler(this.m_OffensivePrefomComboBox_SelectedIndexChanged);
             // 
-            // m_SimDefenseUpDown
+            // m_SimPassDefenseUpDown
             // 
-            this.m_SimDefenseUpDown.Location = new System.Drawing.Point(200, 48);
-            this.m_SimDefenseUpDown.Maximum = new decimal(new int[] {
+            this.m_SimPassDefenseUpDown.Location = new System.Drawing.Point(200, 48);
+            this.m_SimPassDefenseUpDown.Maximum = new decimal(new int[] {
             15,
             0,
             0,
             0});
-            this.m_SimDefenseUpDown.Name = "m_SimDefenseUpDown";
-            this.m_SimDefenseUpDown.Size = new System.Drawing.Size(40, 20);
-            this.m_SimDefenseUpDown.TabIndex = 10;
-            this.m_SimDefenseUpDown.ValueChanged += new System.EventHandler(this.m_SimDefenseUpDown_ValueChanged);
+            this.m_SimPassDefenseUpDown.Name = "m_SimPassDefenseUpDown";
+            this.m_SimPassDefenseUpDown.Size = new System.Drawing.Size(40, 20);
+            this.m_SimPassDefenseUpDown.TabIndex = 10;
+            this.m_SimPassDefenseUpDown.ValueChanged += new System.EventHandler(this.m_SimPassDefenseUpDown_ValueChanged);
             // 
-            // m_SimOffenseUpDown
+            // m_SimRushDefenseUpDown
             // 
-            this.m_SimOffenseUpDown.Location = new System.Drawing.Point(136, 48);
-            this.m_SimOffenseUpDown.Maximum = new decimal(new int[] {
+            this.m_SimRushDefenseUpDown.Location = new System.Drawing.Point(136, 48);
+            this.m_SimRushDefenseUpDown.Maximum = new decimal(new int[] {
             15,
             0,
             0,
             0});
-            this.m_SimOffenseUpDown.Name = "m_SimOffenseUpDown";
-            this.m_SimOffenseUpDown.Size = new System.Drawing.Size(40, 20);
-            this.m_SimOffenseUpDown.TabIndex = 5;
-            this.m_SimOffenseUpDown.ValueChanged += new System.EventHandler(this.m_SimOffenseUpDown_ValueChanged);
+            this.m_SimRushDefenseUpDown.Name = "m_SimRushDefenseUpDown";
+            this.m_SimRushDefenseUpDown.Size = new System.Drawing.Size(40, 20);
+            this.m_SimRushDefenseUpDown.TabIndex = 5;
+            this.m_SimRushDefenseUpDown.ValueChanged += new System.EventHandler(this.m_SimRushDefenseUpDown_ValueChanged);
             // 
             // m_Sim3Label
             // 
@@ -939,8 +939,8 @@ namespace TSBTool
             this.Controls.Add(this.label1);
             this.Controls.Add(this.m_TeamsComboBox);
             this.Controls.Add(this.m_OffensivePrefomComboBox);
-            this.Controls.Add(this.m_SimDefenseUpDown);
-            this.Controls.Add(this.m_SimOffenseUpDown);
+            this.Controls.Add(this.m_SimPassDefenseUpDown);
+            this.Controls.Add(this.m_SimRushDefenseUpDown);
             this.Controls.Add(this.m_Sim3Label);
             this.Controls.Add(this.m_Sim2Label);
             this.Controls.Add(this.m_Sim1Label);
@@ -951,8 +951,8 @@ namespace TSBTool
             this.Name = "ModifyTeamForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Modify Team attributes";
-            ((System.ComponentModel.ISupportInitialize)(this.m_SimDefenseUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.m_SimOffenseUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.m_SimPassDefenseUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.m_SimRushDefenseUpDown)).EndInit();
             this.m_RunPlaysGroupBox.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.m_Run4UpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.m_Run4PictureBox)).EndInit();
@@ -1019,12 +1019,12 @@ namespace TSBTool
 			}
 		}
 
-		private void m_SimOffenseUpDown_ValueChanged(object sender, System.EventArgs e)
+		private void m_SimRushDefenseUpDown_ValueChanged(object sender, System.EventArgs e)
 		{
 			UpdateData();
 		}
 
-		private void m_SimDefenseUpDown_ValueChanged(object sender, System.EventArgs e)
+		private void m_SimPassDefenseUpDown_ValueChanged(object sender, System.EventArgs e)
 		{
 			UpdateData();
 		}
