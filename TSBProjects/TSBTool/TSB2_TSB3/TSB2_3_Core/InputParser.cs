@@ -195,6 +195,12 @@ namespace TSBTool2
             {
                 tool.ApplySet(line);
             }
+            else if (line == "FIX_SIM_BUGS")
+            {
+                TSB2Tool tsb2 = tool as TSB2Tool;
+                if (tsb2 != null)
+                    tsb2.FixSimBugs();
+            }
             else if ((m = seasonRegex.Match(line)) != Match.Empty)
             {
                 if (scheduleList != null && scheduleList.Count > 0)
@@ -441,7 +447,8 @@ namespace TSBTool2
 
         private void HandleSimData(string line)
         {
-            Regex simDataRegex = new Regex("SimData\\s*=\\s*0[xX]([0-9a-fA-F]{2})"); // try regx101.com , it's awesome!
+            // TSB2: 0xRP (a TSB1 text's 3rd digit, run/pass preference, is left out); TSB3: 0xRRPP (TSB3Tool)
+            Regex simDataRegex = new Regex("SimData\\s*=\\s*0[xX]([0-9a-fA-F]{4}|[0-9a-fA-F]{2})"); // try regx101.com , it's awesome!
             Match m = simDataRegex.Match(line);
             if (m != Match.Empty)
             {
@@ -541,7 +548,8 @@ namespace TSBTool2
                     {
                         SetOLPlayer(line);
                     }
-                    else if (line.IndexOf("LB") == 2 || line.IndexOf("CB") == 1 ||
+                    else if (line.IndexOf("LB") == 2 || line.StartsWith("LB") || // LB5 (GitHub issue #3)
+                        line.IndexOf("CB") == 1 ||
                         line.StartsWith("RE") || line.StartsWith("LE") ||
                         line.StartsWith("NT") || line.StartsWith("SS") ||
                         line.StartsWith("FS") || line.StartsWith("DB"))

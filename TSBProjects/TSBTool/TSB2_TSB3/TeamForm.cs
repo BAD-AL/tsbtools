@@ -23,8 +23,50 @@ namespace TSBTool2_UI
             passBoxes = new PictureBox[] {
                 P1, P2, P3, P4
             };
+            SetSimDataToolTip();
+            // team SimData is now worked out with the players': the player form's Auto Update button
+            // (TSB2: TsbSimAutoUpdater's team model; TSB3's defense bonus isn't worked out)
+            mAutoUpdateTeamSimDataButton.Visible = false;
         }
 
+
+        private ToolTip mSimToolTip;
+
+        private const string Tsb2SimDataTip =
+            "TSB2 team SimData, 0xRP: the team's defense in simulated games.\n" +
+            "R = rush defense, P = pass defense, 0-F each (higher = better).";
+        private const string Tsb3SimDataTip =
+            "TSB3 team SimData, 0xRRPP: a hidden bonus TSB3 adds to the defense its starting\n" +
+            "defenders give in simulated games (it isn't TSB2's 0xRP).\n" +
+            "RR = rush defense bonus, PP = pass defense bonus, 00-FF each, 00 = none.\n" +
+            "Tecmo's biggest, 0F rush and 14 pass, are already big boosts.";
+
+        private bool mIsTsb3 = false;
+        /// <summary>
+        /// True for TSB3: its team SimData is 0xRRPP, a rush and pass defense bonus (TSB3Tool), not TSB2's 0xRP
+        /// defense levels -- the SimData box gets TSB3's tooltip. Set before 'Data'.
+        /// </summary>
+        public bool IsTsb3
+        {
+            get { return mIsTsb3; }
+            set
+            {
+                mIsTsb3 = value;
+                SetSimDataToolTip();
+            }
+        }
+
+        private void SetSimDataToolTip()
+        {
+            if (mSimToolTip == null)
+            {
+                mSimToolTip = new ToolTip();
+                mSimToolTip.AutoPopDelay = 20000;
+            }
+            string tip = mIsTsb3 ? Tsb3SimDataTip : Tsb2SimDataTip;
+            mSimToolTip.SetToolTip(mSimDataTextBox, tip);
+            mSimToolTip.SetToolTip(label1, tip);
+        }
 
         private bool m_InitDone = false;
         private string mData = "";
@@ -95,10 +137,9 @@ namespace TSBTool2_UI
             {
                 Regex simDataRegex = new Regex("SimData\\s*=\\s*(0x[0-9A-Fa-f]+)");
                 Match simMatch = simDataRegex.Match(teamData);
-                if (simMatch != Match.Empty)
-                {
-                    mSimDataTextBox.Text = simMatch.Groups[1].ToString();
-                }
+                // a team without one (TSB3's freeAgents / allTime) gets an empty, disabled box, not the last team's
+                mSimDataTextBox.Text = simMatch != Match.Empty ? simMatch.Groups[1].ToString() : "";
+                mSimDataTextBox.Enabled = simMatch != Match.Empty;
                 Match pbMatch = InputParser.playbookRegex.Match(teamData);
                 if (pbMatch != Match.Empty)
                 {
@@ -177,10 +218,12 @@ namespace TSBTool2_UI
         /// <returns></returns>
         private string GetCurrentTeamString()
         {
-            string tmp = mSimDataTextBox.Text;
-            if (tmp.IndexOf("0x", StringComparison.InvariantCultureIgnoreCase) != 0)
+            string tmp = mSimDataTextBox.Text.Trim();
+            if (tmp.Length > 0 && tmp.IndexOf("0x", StringComparison.InvariantCultureIgnoreCase) != 0)
                 tmp = "0x" + tmp;
-            string ret = string.Format("TEAM = {0},SimData={1}", m_TeamsComboBox.SelectedItem, tmp);
+            string ret = tmp.Length > 0
+                ? string.Format("TEAM = {0},SimData={1}", m_TeamsComboBox.SelectedItem, tmp)
+                : string.Format("TEAM = {0}", m_TeamsComboBox.SelectedItem);
             if (mData.IndexOf("PLAYBOOK") > 3)
                 ret = ret + "\n" + GetCurrentPlaybook();
             if (mData.IndexOf("TEAM_ABB") >  -1)

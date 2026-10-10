@@ -62,8 +62,9 @@ namespace TSBTool
     }
 
     /// <summary>
-    /// The season stats of a TSB1 season (GenesisSeasonStats, SnesSeasonStats, NesSeasonStats: they only
-    /// differ in where the stats are read from), and their text / CSV output.
+    /// The season stats of a TSB1 season (GenesisSeasonStats, SnesSeasonStats, NesSeasonStats) or a SNES
+    /// TSB2 season (Tsb2SeasonStats): they only differ in where the stats are read from. And their text /
+    /// CSV output.
     /// </summary>
     public abstract class SeasonStats
     {
@@ -75,15 +76,25 @@ namespace TSBTool
         public List<TeamSeasonStats> Teams = new List<TeamSeasonStats>();
 
         /// <summary>
-        /// Reads the stats from a Genesis ares save state (.bs1) or a SNES (.srm) or NES (.sav) battery
-        /// save, going by the file's contents (SNES and NES battery saves are both 8 KB, so each layout
-        /// is tried and the one whose numbers balance wins). Returns null (with the reason in 'error')
-        /// when it's none of those, or has no season stats in it.
+        /// Reads the stats from a Genesis ares save state (.bs1), a SNES TSB1 (.srm) or NES (.sav) battery
+        /// save, or a SNES TSB2 battery save (.srm, 32 KB), going by the file's contents (SNES TSB1 and NES
+        /// battery saves are both 8 KB, so each layout is tried and the one whose numbers balance wins).
+        /// Returns null (with the reason in 'error') when it's none of those, or has no season stats in it.
         /// </summary>
         public static SeasonStats FromFile(byte[] data, out string error)
         {
             if (GenesisSeasonStats.IsAresState(data))
                 return GenesisSeasonStats.FromAresState(data, out error);
+            if (Tsb2SeasonStats.IsSramSize(data) || Tsb3SeasonStats.IsSramSize(data))
+            {
+                // both 32 KB: each layout is tried, the one whose numbers balance wins
+                SeasonStats ret = Tsb2SeasonStats.FromSram(data, out error);
+                if (ret == null)
+                    ret = Tsb3SeasonStats.FromSram(data, out error);
+                if (ret == null)
+                    error = "This battery save has no SNES TSB2 or TSB3 season stats in it. Play or simulate some games of a season first (the emulator writes the .srm when the game is closed).";
+                return ret;
+            }
             if (SnesSeasonStats.IsSramSize(data) || NesSeasonStats.IsSavSize(data))
             {
                 SeasonStats ret = SnesSeasonStats.FromSram(data, out error);
@@ -93,7 +104,7 @@ namespace TSBTool
                     error = "This battery save has no SNES or NES TSB season stats in it. Play or simulate some games of a season first (the emulator writes the battery save when the game is closed).";
                 return ret;
             }
-            error = "Season stats are read from a Genesis TSB ares save state (.bs1), or a SNES (.srm) or NES (.sav) TSB battery save; this file is none of those.";
+            error = "Season stats are read from a Genesis TSB ares save state (.bs1), a SNES TSB, TSB2 or TSB3 (.srm) or NES TSB (.sav) battery save; this file is none of those.";
             return null;
         }
 
@@ -104,7 +115,7 @@ namespace TSBTool
         public abstract string RomKind { get; }
 
         /// <summary>True when 'rom' is the kind of ROM the season was played on (RomKind), so it has the players' names.</summary>
-        public abstract bool IsRomForTheseStats(ITecmoTool rom);
+        public abstract bool IsRomForTheseStats(ITecmoContent rom);
 
         /// <summary>
         /// False when the players' rushing yards don't have to add up to the rush yards allowed across the
@@ -113,10 +124,10 @@ namespace TSBTool
         protected virtual bool RushYardsBalance { get { return true; } }
 
         /// <summary>The player's name ("jim KELLY") from 'rom', or null when 'rom' isn't this game's kind of ROM.</summary>
-        protected abstract string GetRomPlayerName(ITecmoTool rom, string team, string position);
+        protected abstract string GetRomPlayerName(ITecmoContent rom, string team, string position);
 
         /// <summary>'rom's "RETURN_TEAM RB3, RB4, RCB" line for 'team', or null when 'rom' isn't this game's kind of ROM.</summary>
-        protected abstract string GetRomReturnTeam(ITecmoTool rom, string team);
+        protected abstract string GetRomReturnTeam(ITecmoContent rom, string team);
 
         public TeamSeasonStats GetTeam(string team)
         {
@@ -165,7 +176,7 @@ namespace TSBTool
         /// (RETURN_TEAM), else each returner's own Position (NES returners are the RB/WR/TE themselves;
         /// Genesis/SNES slots without a ROM stay 'RET1'-'RET3').
         /// </summary>
-        private string[] GetReturnerPositions(TeamSeasonStats t, ITecmoTool rom)
+        private string[] GetReturnerPositions(TeamSeasonStats t, ITecmoContent rom)
         {
             string[] ret = GetReturnTeamPositions(t, rom);
             if (ret == null || ret.Length != t.Returners.Count)
@@ -181,7 +192,7 @@ namespace TSBTool
         /// The roster position of each return-team slot, from 'rom' (RETURN_TEAM), or null when there's
         /// no ROM (or it can't be read).
         /// </summary>
-        private string[] GetReturnTeamPositions(TeamSeasonStats t, ITecmoTool rom)
+        private string[] GetReturnTeamPositions(TeamSeasonStats t, ITecmoContent rom)
         {
             if (rom == null)
                 return null;
@@ -201,7 +212,7 @@ namespace TSBTool
         /// was played with); when it's null (or another game's ROM), players get generic names like
         /// 'QB1 Bills'.
         /// </summary>
-        public string ToText(ITecmoTool rom)
+        public string ToText(ITecmoContent rom)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(Title + "\n");
@@ -238,10 +249,13 @@ namespace TSBTool
             switch (position)
             {
                 case "RE": case "NT": case "LE":
+                case "RE2": case "NT2": case "LE2": // TSB2
                     return "DL";
                 case "ROLB": case "RILB": case "LILB": case "LOLB":
+                case "LB5": // TSB2
                     return "LB";
                 case "RCB": case "LCB": case "FS": case "SS": case "DB1": case "DB2":
+                case "DB3": // TSB2
                     return "DB";
                 case "C": case "LG": case "RG": case "LT": case "RT":
                     return "OL";
@@ -272,7 +286,7 @@ namespace TSBTool
         /// returner's own row (NES; Genesis/SNES when 'rom' says who the return-team players are);
         /// Genesis/SNES returns without a ROM get their own rows ('RET1'-'RET3', Group RET).
         /// </summary>
-        public string ToCsv(ITecmoTool rom)
+        public string ToCsv(ITecmoContent rom)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(CsvHeader + "\n");
@@ -307,7 +321,7 @@ namespace TSBTool
         }
 
         private void AppendCsvRow(StringBuilder sb, TeamSeasonStats t, PlayerSeasonStats p,
-            PlayerSeasonStats returner, ITecmoTool rom)
+            PlayerSeasonStats returner, ITecmoContent rom)
         {
             string group = GetGroup(p.Position);
             string[] pass = { "", "", "", "", "", "", "" };
@@ -371,7 +385,7 @@ namespace TSBTool
             sb.Append(string.Join(",", cells.ToArray()) + "\n");
         }
 
-        private string PlayerName(TeamSeasonStats t, PlayerSeasonStats p, ITecmoTool rom)
+        private string PlayerName(TeamSeasonStats t, PlayerSeasonStats p, ITecmoContent rom)
         {
             string name = null;
             if (rom != null)
@@ -381,7 +395,7 @@ namespace TSBTool
             return name;
         }
 
-        private void AppendTeam(StringBuilder sb, TeamSeasonStats t, ITecmoTool rom)
+        private void AppendTeam(StringBuilder sb, TeamSeasonStats t, ITecmoContent rom)
         {
             sb.Append(string.Format("\n==== {0}  ({1}-{2}-{3}, PF {4}, PA {5}) ====\n",
                 t.Team.ToUpper(), t.Wins, t.Losses, t.Ties, t.PointsFor, t.PointsAgainst));

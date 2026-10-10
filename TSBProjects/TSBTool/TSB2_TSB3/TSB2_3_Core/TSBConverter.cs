@@ -21,7 +21,10 @@ namespace TSBTool2
     /// QB1,jim KELLY,Face=0x00,#12,69,25,13,13,13,63,81,69,69,75,[38,E0,9E]
     public class TSB2Converter
     {
-        // this will remove the 'Agility' attribute
+        private static readonly Regex Tsb3TeamSimDataRegex =
+            new Regex("[,\\s]*SimData\\s*=\\s*0[xX][0-9a-fA-F]{4}(?![0-9a-fA-F])");
+
+        // this will remove the 'Agility' attribute (and TSB3's team SimData)
         public static String ConvertToTSB2FromTSB3(string input)
         {
             input = input.Replace("\r\n", "\n");
@@ -36,6 +39,12 @@ namespace TSBTool2
                 {
                     tmp = ConvertToTSB2PlayerFromTSB3(line);
                     builder.Append(tmp);
+                }
+                else if (line.StartsWith("TEAM"))
+                {
+                    // TSB3's team SimData (0xRRPP, defense bonuses) isn't TSB1/TSB2's (0xRP, the defense
+                    // levels): drop it, so the ROM keeps its own team byte
+                    builder.Append(Tsb3TeamSimDataRegex.Replace(line, ""));
                 }
                 else
                 {
@@ -633,6 +642,8 @@ namespace TSBTool2
         public static string CONVERT_MSG =
 @"Converting between TSB1, TSB2 and TSB3 data is not exact and one does not 'un-do' the other.
 When converting from TSB1 --> TSB2 a 'Auto-update' sim data operation is performed (feature taken from TSBToolSupreme).
+TSB3's team SimData is a defense bonus, not TSB1/TSB2's defense levels: converting to TSB3 gives a bonus only to
+above-average (9-F) defense digits; converting from TSB3 leaves it out (the ROM keeps its own team SimData).
 
 ";
 
@@ -641,15 +652,37 @@ When converting from TSB1 --> TSB2 a 'Auto-update' sim data operation is perform
 
     public class TSB3Converter
     {
-        public static void ReloadFormulas()
+        // a TSB1/TSB2 team line's SimData: 2 digits, rush D / pass D (TSB1 adds a run/pass preference digit)
+        private static readonly Regex Tsb2TeamSimDataRegex =
+            new Regex("^(TEAM\\s*=.*SimData\\s*=\\s*0[xX])([0-9a-fA-F])([0-9a-fA-F])[0-9a-fA-F]?(?![0-9a-fA-F])");
+
+        /// <summary>
+        /// TSB3's team SimData ("0xRRPP": rush and pass defense bonus, see TSB3Tool) for a TSB1/TSB2 team's rush D
+        /// and pass D digits. In TSB1/TSB2 the digit is the whole team defense; in TSB3 the converted defenders
+        /// give the base and the bonus comes on top, so only digits above 8 (above average) give one: 2 rush,
+        /// 3 pass per digit (F = 14 / 21, near Tecmo's biggest, 15 / 20).
+        /// </summary>
+        public static string Tsb3SimData(int rushDigit, int passDigit)
         {
-            sFormulaString = null;// force re-load of the formula file when calling 'FormulaString'
+            int rush = Math.Max(0, rushDigit - 8) * 2;
+            int pass = Math.Max(0, passDigit - 8) * 3;
+            return string.Format("0x{0:X2}{1:X2}", rush, pass);
+        }
+
+        /// <summary>A TSB1/TSB2 team line with its SimData turned into TSB3's; other lines as they are.</summary>
+        private static string ConvertTeamSimData(string line)
+        {
+            Match m = Tsb2TeamSimDataRegex.Match(line);
+            if (m == Match.Empty)
+                return line;
+            int rush = Convert.ToInt32(m.Groups[2].Value, 16);
+            int pass = Convert.ToInt32(m.Groups[3].Value, 16);
+            return m.Groups[1].Value + Tsb3SimData(rush, pass).Substring(2) + line.Substring(m.Length);
         }
 
         // basically adds the 'agility' attribute
         public static String ConvertToTSB3FromTSB2(string input)
         {
-            ReloadFormulas();
             input = input.Replace("\r\n", "\n");
             string[] lines = input.Split("\n".ToCharArray());
             StringBuilder builder = new StringBuilder(input.Length + lines.Length * 2);
@@ -665,7 +698,7 @@ When converting from TSB1 --> TSB2 a 'Auto-update' sim data operation is perform
                 }
                 else
                 {
-                    builder.Append(line);
+                    builder.Append(ConvertTeamSimData(line));
                 }
                 builder.Append("\n");
             }
@@ -709,147 +742,11 @@ When converting from TSB1 --> TSB2 a 'Auto-update' sim data operation is perform
                 sb.Append(",");
             }
             sb.Append(simString);
-            retVal = UpdateFreeAgentValue(sb.ToString().Replace(",,", ","));
+            // the free agent value (Face's last digit), which TSB3's team defense adds up (TsbSimAutoUpdater)
+            retVal = TsbSimAutoUpdater.UpdateFreeAgentValue(sb.ToString().Replace(",,", ","));
             return retVal;
         }
         
-        public static string UpdateFreeAgentValue(string input)
-        {
-            int simIndex = input.IndexOf("[");
-            string simString = "";
-            List<string> parts = null;
-            if (simIndex > -1)
-            {
-                simString = input.Substring(simIndex);
-                parts = new List<string>(input.Substring(0, simIndex - 1).Split(",".ToCharArray()));
-            }
-            else
-                parts = new List<string>(input.Split(",".ToCharArray()));
-            
-            string pos = parts[0].Trim();
-            string substitutionString ="";
-            string formula = GetFreeAgentPointFormula(pos, out substitutionString);
-            string[] sub_parts = substitutionString.Split(",".ToCharArray());
-            for (int i = 4; i < sub_parts.Length; i++) // start at 'RS'
-            {
-                formula = formula.Replace(sub_parts[i].Trim(), parts[i]);
-            }
-            double result = 0;
-            try
-            {
-                string r = TSBTool.StaticUtils.Compute(formula).ToString();
-                result = Double.Parse(r);
-            }
-            catch (Exception)
-            {
-                throw new ArgumentException(String.Format(
-                    "Error calculating FreeAgentPoints for '{0}' Tried to compute:'{1}'", input, formula));
-            }
-            byte fap = (byte)Math.Round(result);
-            if (fap < 0) fap = 0;
-            else if (fap > 0x0F) fap = 0x0F;
-
-            string face = parts[2].Trim().Substring(0, parts[2].Length - 1) + fap.ToString("X");
-            return input.Replace(parts[2], face); 
-        }
-
-        private static string GetFreeAgentPointFormula(string position, out string substitutionString)
-        {
-            string retVal = null;
-            string searchStr = "FAP_OL";
-            substitutionString = "OL,name      ,face    , JN,RS,RP,MS,HP,BB";
-            #region big switch 
-            switch (position)
-            {
-                case "QB1": case "QB2":
-                    searchStr = "FAP_QB";
-                    substitutionString = "QB,name       ,face    , JN,RS,RP,MS,HP,BB,AG,PS,PC,PA,AR,CO";
-                    break;
-                case "RB1":  case "RB2": case "RB3": case "RB4": 
-                    searchStr = "FAP_RB";
-                    substitutionString = "SKILL,name ,face    , JN,RS,RP,MS,HP,BB,AG,BC,RC";
-                    break;
-                case "WR1": case "WR2": case "WR3": case "WR4":
-                    searchStr = "FAP_WR";
-                    substitutionString = "SKILL,name ,face    , JN,RS,RP,MS,HP,BB,AG,BC,RC";
-                    break;
-                case "TE1": case "TE2":
-                    searchStr = "FAP_TE";
-                    substitutionString = "SKILL,name ,face    , JN,RS,RP,MS,HP,BB,AG,BC,RC";
-                    break; 
-                case "RE": case "NT": case "LE":
-                case "RE2": case "NT2": case "LE2":
-                    searchStr = "FAP_DL";
-                    substitutionString = "DL,name      ,face    , JN,RS,RP,MS,HP,BB,AG,PI,QU";
-                    break;
-                case "ROLB": case "RILB": case "LILB":
-                case "LOLB": case "LB5":
-                    searchStr = "FAP_LB";
-                    substitutionString = "DEF,name      ,face    , JN,RS,RP,MS,HP,BB,AG,PI,QU";
-                    break;
-                case "RCB": case "LCB": case "DB1": case "DB2":
-                    searchStr = "FAP_CB";
-                    substitutionString = "DEF,name      ,face    , JN,RS,RP,MS,HP,BB,AG,PI,QU";
-                    break;
-                case "FS": case "SS": case "DB3":
-                    searchStr = "FAP_S";
-                    substitutionString = "DEF,name      ,face    , JN,RS,RP,MS,HP,BB,AG,PI,QU";
-                    break;
-                case "K":
-                    searchStr = "FAP_K";
-                    substitutionString = "K,name         ,face    , JN,RS,RP,MS,HP,BB,AG,KP,KA,AB";
-                    break;
-                case "P":
-                    searchStr = "FAP_P";
-                    substitutionString = "P,name         ,face    , JN,RS,RP,MS,HP,BB,AG,KP,AB";
-                    break;
-            }
-            #endregion
-            string pattern = String.Format("{0}\\s*:\\s*(.*)$", searchStr);
-            Regex reg = new Regex(pattern, RegexOptions.Multiline);
-            Match m = reg.Match(FormulaString);
-            if (m != Match.Empty)
-            {
-                retVal = m.Groups[1].ToString();
-            }
-            return retVal;
-        }
-
-        private static string sFormulaString = null;
-        protected static string FormulaString
-        {
-            get
-            {
-                if (sFormulaString == null)
-                {
-#if !BRIDGE_PROJECT
-                    string fileName = "Formulas\\FAP_Formulas.txt";
-                    if (File.Exists(fileName))
-                        sFormulaString = File.ReadAllText(fileName);
-                    else
-                        sFormulaString = TSBTool.StaticUtils.GetEmbeddedTextFile("TSBTool.Formulas.FAP_Formulas.txt");
-#else
-                    sFormulaString =
-@"# Free Agent point formulas
-
-FAP_QB: (PS+PC+AR)/15
-FAP_RB: ((MS+BC+RC)-110)/4
-FAP_WR: ((RC -38 + MS - 38)/3) -2
-FAP_TE: ((RC -25 + MS - 25)/3) +1
-FAP_OL: (HP -44)/2
-FAP_DL: (MS + HP -50) / 6
-FAP_LB: (MS-31 + HP-31)/4
-FAP_CB: (MS-31 + PI-25)/5
-FAP_S: (MS-31 + PI-25 + HP-31)/7
-FAP_K: KA/6
-FAP_P: (KP-31)/6
-";
-#endif 
-                }
-                return sFormulaString;
-            }
-        }
-
         private static string GetAG(string pos, string ms, string hp)
         {
             string retval = "31";

@@ -1,0 +1,266 @@
+=====================================================================================
+                              TSB SIM DATA GUIDE
+     What the 'sim' values do when the computer simulates a game, for every game
+              TSBToolSupreme edits: NES / SNES / Genesis TSB1, SNES TSB2 and SNESTSB3
+=====================================================================================
+
+Contents
+   1. What a simulated game uses
+   2. Shares: how the game picks who gets the ball
+   3. TSB1 (NES, SNES)
+   4. Genesis TSB1
+   5. TSB2 (SNES Tecmo Super Bowl II)
+   6. TSB3 (SNES Tecmo Super Bowl III)
+   7. Auto Update Sim
+   8. Game bugs, and what TSBToolSupreme can fix
+   9. Checking your changes: season stats
+  10. More detail
+
+Everything here was found by reading the games' code and checked by simulating whole
+seasons in an emulator (Mesen2, ares). Where something is unsure, it says so.
+
+
+=== 1. WHAT A SIMULATED GAME USES ===
+
+When you play a game, or watch the computer play one, the game uses the players' RATINGS
+(RS, RP, MS, HP, ...) to decide what happens during the plays. 
+When the computer SIMULATES a game -- the season's other games, or a game
+you choose to sim -- it uses a separate set of values instead: the SIM values ('Sim attributes' on
+TSBToolSupreme's player form, the [..] at the end of each player line in TSBToolSupreme's text).
+
+So:
+  * Changing ratings does NOT change simulated results. Changing sim values does.
+  * A player's sim values should match his ratings, or he'll play like two different players.
+    'Auto Update Sim' (updated 2026, section 7) works them out from the ratings for you.
+
+There are two kinds of sim values:
+  * Ability values, 0-F (hex 0-15): how good the player is at something -- running, passing,
+    catching, kicking. Higher is better.
+  * Shares, 0-255: who gets the ball (or the credit) on a play, compared with his teammates.
+    See section 2.
+
+Team values: each game also has a team 'SimData' value for the team's defense. TSB1 and TSB2: its
+rush defense and pass defense (and in TSB1 a run/pass preference). TSB3: a rush and pass defense
+BONUS, on top of what its defenders give (section 6). There is no team offense sim value in any of
+the games: a simulated offense uses its players' sim values.
+
+
+=== 2. SHARES: HOW THE GAME PICKS WHO GETS THE BALL ===
+
+For a carry, a pass target, a sack or an interception, the game rolls a number from 0 to 255 and
+walks down the players in order, subtracting each player's share. The player the number runs out
+on gets the credit for that game stat. So:
+
+  * Each share is that player's chance out of 256. A share of 64 = about 25% of the time.
+  * A team's shares should ADD UP TO 255 -- Tecmo built the stock teams that way.
+  * If they add up to LESS, the rest goes to a fallback player (which one depends on the game).
+  * If they add up to MORE, the players early in the order use up the 256 and the ones at the end
+    get little or nothing. The values are not scaled.
+
+Example: a defense whose sack shares are RE 116, NT 30, LE 25, ... adding up to 255 gives the RE
+116/256 = 45% of the team's sacks.
+
+Sack and INT shares only decide WHICH defender gets the credit. They don't make the defense get
+more sacks or interceptions -- the team's pass defense (TSB1, TSB2) or its starting defenders
+(TSB3) do that.
+
+
+=== 3. TSB1 (NES, SNES) ===
+
+The NES game, SNES TSB1 and the 32-team NES hacks all run the same sim engine.
+
+QB (3 values)
+  Rush       0-F  Yards on QB runs and scrambles.
+  Pass       0-F  Completions, and fewer interceptions.
+  Scramble   0-F  ('Sim pocket') Chance the QB runs on a pass play. Rare: at most 3 in 256 pass
+                  plays whatever the value.
+RB / WR / TE (4 values)
+  Rush / Returns  0-F  Yards on runs -- and on kick and punt returns when he's the returner.
+  Catch           0-F  Completions when he's the target.
+  YAC             0-F  ('Sim yards per catch') Yards after the catch. (Not punt returns -- older
+                       TSBToolSupreme labels got this wrong.)
+  Target share    0-F  How often he's the target of a pass, compared with his teammates.
+Defenders: RE NT LE ROLB RILB LILB LOLB RCB LCB FS SS (2 values each)
+  Sack share  0-255   His share of the team's sacks (section 2), in that order.
+  INT share   0-255   His share of the team's interceptions, in the same order.
+                      The 11 shares should add up to 255; anything left over goes to the SS --
+                      giving every defender 1 sends about 96% of the sacks and INTs to the SS.
+K / P
+  Kicking  0-F  Field goal and extra point range and accuracy.
+  Punting  0-F  Punt distance.
+
+Team SimData = 0x<rush defense><pass defense><preference>
+  Rush defense  0-F  Stops the run (and kick/punt returns).  Higher = better defense.
+  Pass defense  0-F  Stops the pass; also more sacks and interceptions.
+  Preference    0-3  How often the team passes, 0 = 50/50, 1 = 60% run, 2 = 60% pass, 3 = 70% pass; 
+
+Player condition (bad / average / good / excellent during a season) shifts a player's ability
+values by -2 to +4 before each simulated game.
+
+
+=== 4. GENESIS TSB1 ===
+
+The same values as section 3, with these differences:
+  * Scramble: Genesis ignores this value (its scramble check uses the QB's Pass value instead).
+    Either way it's at most 3 in 256 pass plays.
+  * The stock Genesis game has three sim bugs (section 8): preference 1 plays as heavy PASSING,
+    the team rush/pass defense values barely count, and season receiving TDs are lost from the
+    stats. TSBToolSupreme's 'GENESIS_FIX_SIM_BUGS' command/option fixes all three.
+
+
+=== 5. TSB2 (SNES TECMO SUPER BOWL II) ===
+
+TSB2 has three seasons -- 1992, 1993 and 1994 (TSBToolSupreme's SEASON 1, 2 and 3) -- each with its own
+rosters, ratings and sim values. The season you start in the game decides which set is used.
+
+QB (3 values)
+  Run share        0-255  His share of the team's run plays (section 2). Keep QB2 at 0 (below).
+  Rush             0-F    Yards on QB runs and scrambles.
+  Pass / Scramble  one hex byte: 1st digit Pass 0-F (higher -> more completions, fewer INTs and sacks),
+                   2nd digit Scramble -- chance the QB runs on a pass play:
+                     0 = 20% (most)   1 = 10%   2 = 5%   3 = 3% (least)   4 = never
+                     5-F = 8% .. 33% (not used by Tecmo)
+RB / WR / TE (4 values)
+  Run share       0-255  His share of the team's run plays.
+  Rush / Returns  0-F    Higher -> more yards on runs, and on kick and punt returns when he's the returner.
+  Target share    0-255  His share of the team's pass targets.
+  YAC / Catch     one hex byte: 1st digit yards after the catch 0-F, 2nd digit catching 0-F (higher is better).
+Defenders: RE NT LE RE2 NT2 LE2 ROLB RILB LILB LOLB LB5 RCB LCB DB1 DB2 FS SS DB3 (3 values)
+  Sack share  0-255  His share of the team's sacks, in roster order.
+  INT share   0-255  His share of the team's interceptions -- in REVERSE roster order (DB3 first).
+  Tackles     0-F    How often he makes the tackle, compared with his teammates.
+K / P
+  Kicking  0-F  Field goals and extra points.     Punting  0-F  Punt distance.
+
+Team SimData = 0x<rush defense><pass defense>   (0-F each; higher = better defense)
+
+The shares (run, target, sack, INT) work as in section 2. Leftovers go to: run plays -> RB1;
+targets -> a random RB3..TE2; sacks -> a random RE..RILB; INTs -> a random NT2..RCB.
+
+Things to know
+  * NEVER give a share of FF (255) to a player. 254 is the most you should give (he'll end up with all the stats 
+    for the given 'share'). To the game FF means 'injured / not playing': the player is skipped as if he weren't there.
+  * Keep QB2's run share at 0. The game picks the ball carrier from both QBs and the RBs/WRs/TEs;
+    a run that lands on the QB who isn't playing is credited to nobody (the yards count against
+    the defense, but no player gets them). Tecmo's QB2s all have 0.
+  * Player condition does NOT affect the TSB2 sim.
+  * A kick return by a tight end isn't credited to anyone. (Tecmo never made a TE a kick returner.)
+  * TSBToolSupreme versions older than the one with this guide showed and edited SEASON 1's sim values for
+    all three seasons, and swapped the ROLB/LOLB and RILB/LILB sim values. Texts saved with those
+    versions carry those mistakes; run Auto Update Sim on them before applying.
+
+
+=== 6. TSB3 (SNES TECMO SUPER BOWL III) ===
+
+TSB3 runs TSB2's sim engine, so its player sim values mean the same as section 5 -- with these
+differences:
+
+  * Scramble (2nd digit of Pass / Scramble) goes the OTHER way round:
+        0 = 3% (least)   1 = 5%   2 = 10%   3 = 20% (most)   4 = never   5-F = 8% .. 33%
+  * Its own tables: Rush values count for less than in TSB2, Pass/Catch for a bit more.
+  * Team defense: TSB3 works out each team's rush and pass defense from its starting defenders --
+    the front 7 for rush defense (4-3 teams: RE NT LE RE2 + ROLB RILB LILB; the 3-4 teams Bills,
+    Patriots, Steelers, Packers and Panthers: RE NT LE + 4 LBs), plus RCB LCB FS SS for pass
+    defense -- and adds a hidden per-team bonus. The backups don't count.
+    Each defender counts with his FREE AGENT VALUE -- the last digit of 'Face' in the text, 0-F (an
+    overall rating Tecmo set by hand; Bruce Smith has E). Changing a defender's ratings alone doesn't
+    change it: edit Face's last digit, or run Auto Update Sim, which works it out from the ratings.
+    A test season: one team's starters set to 0 went from the best defense to the worst; another's
+    front seven set to F made it one of the best.
+  * Team SimData is that bonus, and it is NOT TSB2's team SimData:
+        Team SimData = 0x<rush defense bonus><pass defense bonus>   (00-FF each, 00 = none)
+    e.g. the stock Steelers' SimData=0x0A14 (rush 0A, pass 14). Tecmo gave a bonus to 12 teams, at
+    most 0F rush and 14 pass, and those are already big boosts: in a test season a weak defense
+    with FF/FF became one of the best, mostly against the run; the pass bonus showed most in sacks.
+    FF is safe (it just means the top defense level).
+  * Converting a TSB1 or TSB2 roster to TSB3 turns its team SimData into a bonus: only above-
+    average digits (9-F) give one, 2 rush / 3 pass per digit above 8 (F -> 0E / 15). Converting
+    from TSB3 leaves it out, so the TSB1/TSB2 ROM keeps its own team SimData. A one-byte SimData
+    (TSB2's form, or a TSB3 text from an older TSBToolSupreme) is skipped with a warning.
+  * Free agents: TSB3 places free agents on teams differently each new season. A signed free agent
+    brings his own sim values (from the free agent pool, which TSBToolSupreme edits as 'freeAgents') --
+    including his shares, which then count alongside his new team's.
+  * The free agent value (last digit of 'Face') is also what TSB3's team defense adds up (above).
+  * The FF rule, the QB2 rule and the TE kick return note from section 5 apply to TSB3 too.
+    Player condition doesn't affect the TSB3 sim either.
+
+
+=== 7. AUTO UPDATE SIM ===
+
+The player form's Auto Update button works out every player's sim values from his ratings, and
+(TSB1, Genesis and TSB2) every team's SimData -- rush and pass defense -- from its starting
+defenders. It replaces values set by hand; a team whose text is missing a starter keeps its team
+SimData. (The team forms no longer have their own Auto Update button.) Converting a TSB1 roster to
+TSB2 also works out the players' values, but keeps the roster's own team SimData.
+
+TSB1 (NES, SNES, Genesis)
+  Players: Tecmonster's community formulas, or TSBToolSupreme's original ones (it asks). Teams:
+  Tecmonster's team formula -- the league spread out from 0 to F, run/pass preference kept.
+  After editing defenders, check that the team's 11 sack shares and 11 INT shares still add up
+  to about 255.
+
+TSB2 and TSB3
+  Models fitted to Tecmo's own sim values in the stock ROMs (TSB2's three seasons, TSB3's one),
+  and checked by simulating whole seasons: a season simmed with auto-updated values comes out like
+  a stock season (completion %, yards per carry, who gets the carries, catches, sacks and INTs,
+  top tacklers, field goals, punts).
+  * Works a team at a time: each team's run, target, sack and INT shares add up to 255 (none over
+    254), and QB2 gets no run share.
+  * Starters get more than backups with the same ratings, as Tecmo did it.
+  * A team whose text doesn't have all its players keeps the shares it has (only each player's
+    own values are worked out). TSB3's free agents and all-time team keep their shares too.
+  * Tecmo set many sim values from each player's real stats that year, so no formula matches them
+    all; the model's values are usually within 1 of Tecmo's. Known limits: linebackers get a
+    little fewer interceptions than Tecmo's, and kicker/punter values are rough.
+  * Applying a TSB1 roster to a TSB2 ROM (with the automatic conversion) works the sack and INT
+    shares out with the ROM's own backups (RE2, NT2, LE2, LB5, DB3), which TSB1 doesn't have.
+    If you convert first (TSB1 -> TSB2 menu) and apply later, run Auto Update Sim afterwards.
+  * TSB2 team SimData: from the 11 starting defenders (RE NT LE, the 4 LBs, RCB LCB FS SS), each
+    scored with Tecmonster's rating mix, spread like Tecmo's (average about 7, from 0 to E).
+    Tecmo set its team values mostly from each team's real season, which ratings don't show, so
+    the worked-out values follow the defenders rather than Tecmo's own numbers.
+  * TSB3: every player's free agent value (Face's last digit), which TSB3's team defense adds up, is
+    worked out too -- a model fitted to Tecmo's own values (within 1 of Tecmo's for about 3 players
+    in 4). The skin tone (Face's first digit) is kept. The TSB2 -> TSB3 conversion does it as well.
+  * TSB3 team SimData (the defense bonus) isn't changed; set it by hand if a team's simulated
+    defense should be better or worse (section 6).
+
+
+=== 8. GAME BUGS, AND WHAT TSBToolSupreme CAN FIX ===
+
+Genesis TSB1 -- line 'GENESIS_FIX_SIM_BUGS' (or say Yes when TSBToolSupreme asks while saving)
+  * Run/pass preference 1 (heavy rushing) actually plays as heavy passing (about 72% passes).
+  * The team rush/pass defense values barely count.
+  * Season receiving TDs are lost from the season stats.
+  The fix also rebalances the sim so a stock season keeps stock scoring and passing.
+
+TSB2 and TSB3 -- line 'FIX_SIM_BUGS' (or say Yes when TSBToolSupreme asks while saving)
+  * Lost interceptions: an interception that lands on an injured defender is credited to nobody.
+    About 1 in 20 INTs in TSB2, and about 1 in 8 in TSB3, go missing from the stats. The fix
+    (5 bytes) credits every one; a simulated TSB2 season with it credited all 423 INTs thrown.
+
+Not fixed (avoid them instead)
+  * TSB2/TSB3: a run that lands on the QB who isn't playing is lost -> keep QB2's run share 0.
+  * TSB2/TSB3: a kick return by a tight end isn't credited -> use an RB, WR or DB.
+  * TSB2: on one side of each game, QB scramble yards use the other team's QB2 Rush value. Minor.
+
+
+=== 9. CHECKING YOUR CHANGES: SEASON STATS ===
+
+The best test of sim values is a simulated season. TSBToolSupreme reads the season stats out of the
+emulator's save:
+  * File -> Save States -> View Season Stats (or '-stats:<file>' on the command line; add '-csv'
+    for a spreadsheet). Load the ROM the season was played with to see player names.
+  * NES: the battery save (.sav).  SNES TSB1, TSB2, TSB3: the battery save (.srm) -- close the game
+    in the emulator first so it's written.  Genesis: an ares save state (.bs1) saved at the
+    Season Menu screen.
+
+One season has a lot of luck in it -- two seasons of the same unchanged ROM differ by a few points
+here and there. Look for big, consistent differences, not single numbers.
+
+
+=== 10. MORE DETAIL ===
+
+For the technical side (code addresses, lookup tables, the emulator test results), see these files
+in TSBToolSupreme's source: TSB_Simulation.md (TSB1), TSB2_TSB3_Simulation.md (TSB2, TSB3) and
+TsbSimModel\README.md (how Auto Update Sim's models are fitted).

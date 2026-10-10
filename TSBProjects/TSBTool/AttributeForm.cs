@@ -162,6 +162,7 @@ namespace TSBTool
 		private NumericUpDown[] m_SimAttrs   = null;
 		private System.Windows.Forms.NumericUpDown m_JerseyNumberUpDown;
 		private System.Windows.Forms.Button m_AutoUpdateButton;
+		private System.Windows.Forms.Button m_AboutSimButton;
 
 		bool m_DoneInit = false;
 		private System.Windows.Forms.Button m_SaveButton;
@@ -387,10 +388,6 @@ namespace TSBTool
 						m_A2Label.Text   = "PC";
 						m_A3Label.Text   = "ACC";
 						m_A4Label.Text   = "APB";
-						m_Sim1Label.Text = "Sim Run";
-						m_Sim2Label.Text = "Sim Pass";
-						m_Sim3Label.Text = "Sim Pocket";
-						m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = true;
 						m_Sim3UpDown.Enabled = true;
@@ -409,10 +406,6 @@ namespace TSBTool
 						m_A2Label.Text = "REC";
 						m_A3Label.Text = "";
 						m_A4Label.Text = "";
-						m_Sim1Label.Text = "Sim Rush";
-						m_Sim2Label.Text = "Sim Catch";
-						m_Sim3Label.Text = "Sim Yards per catch";
-						m_Sim4Label.Text = "Sim Targets";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = true;
 						m_Sim3UpDown.Enabled = true;
@@ -431,10 +424,6 @@ namespace TSBTool
 						m_A2Label.Text = "";
 						m_A3Label.Text = "";
 						m_A4Label.Text = "";
-						m_Sim1Label.Text = "";
-						m_Sim2Label.Text = "";
-						m_Sim3Label.Text = "";
-						m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = false;
 						m_Sim2UpDown.Enabled = false;
 						m_Sim3UpDown.Enabled = false;
@@ -449,10 +438,6 @@ namespace TSBTool
 						m_A2Label.Text = "QU";
 						m_A3Label.Text = "";
 						m_A4Label.Text = "";
-						m_Sim1Label.Text = "Sim Pass rush";
-						m_Sim2Label.Text = "Sim Coverage";
-						m_Sim3Label.Text = "";
-						m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = true;
 						m_Sim3UpDown.Enabled = false;
@@ -471,10 +456,6 @@ namespace TSBTool
 						m_A2Label.Text = "AKB";
 						m_A3Label.Text = "";
 						m_A4Label.Text = "";
-						m_Sim1Label.Text = "Sim KA";
-						m_Sim2Label.Text = "";
-						m_Sim3Label.Text = "";
-						m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = false;
 						m_Sim3UpDown.Enabled = false;
@@ -490,9 +471,86 @@ namespace TSBTool
 						break;
 				}
 				m_CurrentState = value;
+				UpdateSimLabels();
 				m_DoneInit = true;
 			}
 		}
+
+        // Names for the sim boxes, the same terms as the TSB2/TSB3 player form where the value does the same
+        // thing, and a tooltip with what each one does. From tracing the NES/SNES/Genesis sim engine and sim
+        // test seasons (TSB_Simulation.md).
+        private ToolTip mSimToolTip;
+
+        private string mGuideSection = SimGuide.Tsb1Section;
+        /// <summary>Which section of the TSB Sim Data Guide 'About SimData' opens (Genesis has its own).</summary>
+        public string GuideSection
+        {
+            get { return mGuideSection; }
+            set { mGuideSection = value; }
+        }
+
+        private void m_AboutSimButton_Click(object sender, EventArgs e)
+        {
+            SimGuide.Show(this, mGuideSection);
+        }
+
+        /// <summary>Names the sim boxes for the current position and sets their tooltips.</summary>
+        private void UpdateSimLabels()
+        {
+            string[] names = { "", "", "", "" };
+            string[] tips = { "", "", "", "" };
+            const string creditTip = " It decides who gets the credit, not how many: that's the team's pass defense. " +
+                "The 11 defenders' shares should add up to 255; the SS gets anything left over.";
+            switch (m_CurrentState)
+            {
+                case StateEnum.QB:
+                    names = new string[] { "Rush", "Pass", "Scramble", "" };
+                    tips = new string[] {
+                        "Rush: 0-F. Yards on QB runs and scrambles.",
+                        "Pass: 0-F. Completions, and fewer interceptions.",
+                        "Scramble: 0-F. Chance the QB runs on a pass play -- rare (at most 3 in 256 pass plays). Genesis ignores it.",
+                        "" };
+                    break;
+                case StateEnum.SKILL:
+                    names = new string[] { "Rush / Returns", "Catch", "YAC", "Target share" };
+                    tips = new string[] {
+                        "Rush / Returns: 0-F. Yards on runs, and on kick and punt returns when he's the returner.",
+                        "Catch: 0-F. Completions when he's the target.",
+                        "YAC: 0-F. Yards after the catch.",
+                        "Target share: 0-F. How often he's the target of a pass, compared with his teammates." };
+                    break;
+                case StateEnum.DEFENSE:
+                    names = new string[] { "Sack share", "INT share", "", "" };
+                    tips = new string[] {
+                        "Sack share: this defender's share (out of 256) of the team's sacks." + creditTip,
+                        "INT share: this defender's share (out of 256) of the team's interceptions." + creditTip,
+                        "", "" };
+                    break;
+                case StateEnum.KICKER:
+                    bool punter = m_PositionComboBox.SelectedItem != null && m_PositionComboBox.SelectedItem.ToString() == "P";
+                    names = new string[] { punter ? "Punting" : "Kicking", "", "", "" };
+                    tips = new string[] { punter ? "Punting: 0-F. Punt distance." : "Kicking: 0-F. Field goal and extra point range and accuracy.", "", "", "" };
+                    break;
+            }
+            Label[] labels = { m_Sim1Label, m_Sim2Label, m_Sim3Label, m_Sim4Label };
+            NumericUpDown[] boxes = { m_Sim1UpDown, m_Sim2UpDown, m_Sim3UpDown, m_Sim4UpDown };
+            if (mSimToolTip == null)
+            {
+                mSimToolTip = new ToolTip();
+                mSimToolTip.AutoPopDelay = 20000;
+            }
+            for (int i = 0; i < labels.Length; i++)
+            {
+                labels[i].Text = names[i];
+                mSimToolTip.SetToolTip(labels[i], tips[i]);
+                mSimToolTip.SetToolTip(boxes[i], tips[i]);
+            }
+            mSimToolTip.SetToolTip(m_AutoUpdateButton,
+                "Works out the sim data of every player on every team from his ratings (Tecmonster's formulas or\n" +
+                "TSBTool's, you choose), then every team's SimData (rush defense, pass defense) from its starting\n" +
+                "defenders with Tecmonster's team formula; the run/pass preference digit is kept.\n" +
+                "Replaces values set by hand. A team missing a starter keeps its team SimData.");
+        }
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -504,6 +562,10 @@ namespace TSBTool
 				if(components != null)
 				{
 					components.Dispose();
+				}
+				if (mSimToolTip != null)
+				{
+					mSimToolTip.Dispose();
 				}
 			}
 			base.Dispose( disposing );
@@ -562,6 +624,7 @@ namespace TSBTool
             this.m_CancelButton = new System.Windows.Forms.Button();
             this.m_JerseyNumberUpDown = new System.Windows.Forms.NumericUpDown();
             this.m_AutoUpdateButton = new System.Windows.Forms.Button();
+            this.m_AboutSimButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.m_FaceBox)).BeginInit();
             this.mSimBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.m_Sim4UpDown)).BeginInit();
@@ -1228,11 +1291,21 @@ namespace TSBTool
             this.m_AutoUpdateButton.BackColor = System.Drawing.Color.LightCoral;
             this.m_AutoUpdateButton.Location = new System.Drawing.Point(88, 216);
             this.m_AutoUpdateButton.Name = "m_AutoUpdateButton";
-            this.m_AutoUpdateButton.Size = new System.Drawing.Size(312, 24);
+            this.m_AutoUpdateButton.Size = new System.Drawing.Size(200, 24);
             this.m_AutoUpdateButton.TabIndex = 18;
-            this.m_AutoUpdateButton.Text = "&Auto Update All Player Sim Attributes";
+            this.m_AutoUpdateButton.Text = "&Auto Update Player + Team Sim";
             this.m_AutoUpdateButton.UseVisualStyleBackColor = false;
             this.m_AutoUpdateButton.Click += new System.EventHandler(this.m_AutoUpdateButton_Click);
+            // 
+            // m_AboutSimButton
+            // 
+            this.m_AboutSimButton.Location = new System.Drawing.Point(292, 216);
+            this.m_AboutSimButton.Name = "m_AboutSimButton";
+            this.m_AboutSimButton.Size = new System.Drawing.Size(106, 24);
+            this.m_AboutSimButton.TabIndex = 19;
+            this.m_AboutSimButton.Text = "About SimData";
+            this.m_AboutSimButton.UseVisualStyleBackColor = true;
+            this.m_AboutSimButton.Click += new System.EventHandler(this.m_AboutSimButton_Click);
             // 
             // AttributeForm
             // 
@@ -1240,6 +1313,7 @@ namespace TSBTool
             this.CancelButton = this.m_CancelButton;
             this.ClientSize = new System.Drawing.Size(400, 274);
             this.Controls.Add(this.m_AutoUpdateButton);
+            this.Controls.Add(this.m_AboutSimButton);
             this.Controls.Add(this.m_JerseyNumberUpDown);
             this.Controls.Add(this.m_CancelButton);
             this.Controls.Add(this.m_PrevPlayerButton);
@@ -1542,12 +1616,12 @@ Please verify that this player's attributes are correct.", oldPlayer);
 		private void m_AutoUpdateButton_Click(object sender, System.EventArgs e)
 		{
 			//MessageBox.Show("This Feature not yet implemented.");
-			if( MessageBox.Show(this, 
-                "Are you sure you want to Auto Update ALL Player Sim data for ALL teams?",
+			if( MessageBox.Show(this,
+                "Are you sure you want to Auto Update ALL Player and Team Sim data for ALL teams?",
 				"Are you Sure?", MessageBoxButtons.YesNo) == DialogResult.Yes )
 			{
 				this.Enabled = false;
-                if (MessageBox.Show("Use Tecmonster's formulas?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show("Use Tecmonster's formulas for the players?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     m_Data = TecmonsterTSB1SimAutoUpdater.AutoUpdatePlayerSimData(m_Data);
                 }
@@ -1555,6 +1629,8 @@ Please verify that this player's attributes are correct.", oldPlayer);
                 {
                     AutoUpdatePlayerSim();
                 }
+                // team SimData (rush D, pass D): Tecmonster's team formula (the team form's old button)
+                m_Data = new TecmonsterTeamSim().AutoUpdateSeasonSimData(1, m_Data);
 				MessageBox.Show(this, "Done.");
 				this.Enabled = true;
 				SetCurrentPlayer();

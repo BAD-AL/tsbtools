@@ -169,7 +169,7 @@ namespace TSBTool
 
 		/// <summary>
 		/// -stats: prints the season stats from an ares save state of Genesis TSB (.bs1) or a battery save
-		/// of SNES (.srm) or NES (.sav) TSB. The ROM is optional; it only supplies the player names.
+		/// of SNES TSB1/TSB2/TSB3 (.srm) or NES (.sav) TSB. The ROM is optional; it only supplies the player names.
 		/// </summary>
 		private static void PrintSeasonStats(string stateFile, string romFile)
 		{
@@ -185,10 +185,10 @@ namespace TSBTool
 				Console.Error.WriteLine("ERROR! " + error);
 				return;
 			}
-			ITecmoTool rom = null;
+			ITecmoContent rom = null;
 			if (romFile != null)
 			{
-				rom = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom(romFile)) as ITecmoTool;
+				rom = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom(romFile));
 				if (!stats.IsRomForTheseStats(rom))
 				{
 					Console.Error.WriteLine("'{0}' isn't a {1} TSB ROM; players are shown by position.", romFile, stats.RomKind);
@@ -229,12 +229,13 @@ The following are the available options.
 -out:filename	Save modified rom to <filename>.
 -get:filename   Use <filename> as a 'GetBytes' file (get rom locations specified in file, print to stdout)
 -colorsdebug:team   (SNES TSB1 only) Print every known uniform/helmet-color location for <team> with a console color swatch. Omit ':team' for all teams.
--stats:file      (Genesis/SNES/NES TSB1 only) Print the season stats from a Genesis ares emulator save state
-                 (.bs1) saved at the 'Season Menu' screen, or a SNES (.srm) or NES (.sav) battery save. Give the
+-stats:file      (Genesis/SNES/NES TSB1, SNES TSB2/TSB3) Print the season stats from a Genesis ares emulator save state
+                 (.bs1) saved at the 'Season Menu' screen, or a SNES TSB1/TSB2/TSB3 (.srm) or NES (.sav) battery save. Give the
                  ROM too (the one the season was played with) to show player names.
 -csv             With -stats: print the stats as CSV instead (one row per player, for spreadsheets):
                  TSBToolSupreme Genesis_TSB.md -stats:MySeason.bs1 -csv > MySeason.csv
                  TSBToolSupreme TSB1.smc -stats:TSB1.srm -csv > MySeason.csv
+                 TSBToolSupreme TSB2.smc -stats:TSB2.srm -csv > MySeason.csv
                  TSBToolSupreme TSPRBOWL.nes -stats:TSPRBOWL.sav -csv > MySeason.csv
 -noAutoFit  (Genesis/NES/SNES TSB1 only) Don't auto-trim unspecified players' names to fit the roster before applying. On by default (safe); this only reports what would be needed instead of doing it.
 ",MainClass.version)

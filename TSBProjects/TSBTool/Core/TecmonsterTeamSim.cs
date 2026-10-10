@@ -130,7 +130,9 @@ namespace TSBTool
             string seasonChunk = GetSeasonText(season);
             foreach (string team in teams)
             {
-                retVal.Add(GetTeamRatings(seasonChunk, team));
+                TeamRatings ratings = GetTeamRatings(seasonChunk, team);
+                if (ratings != null) // a team missing a player the formula reads keeps its value
+                    retVal.Add(ratings);
             }
             return retVal;
         }
@@ -175,6 +177,9 @@ namespace TSBTool
             int[] lcb = GetPlayerInts(textData, team, "LCB");
             int[] fs = GetPlayerInts(textData, team, "FS");
             int[] ss = GetPlayerInts(textData, team, "SS");
+            foreach (int[] p in new int[][] { qb1, rb1, rb2, wr1, wr2, te1, center, lg, rg, lt, rt, re, nt, le, rolb, rilb, lilb, lolb, rcb, lcb, fs, ss })
+                if (p == null)
+                    return null;
 
             #region calculations
             retVal.team = team;
@@ -232,9 +237,13 @@ namespace TSBTool
                 if (teamIndex == -1)
                     return null;
                 int playerIndex = -1;
+                // only within this team's lines (a team without the position mustn't get the next team's)
+                int nextTeam = seasonChunk.IndexOf("TEAM", teamIndex + m.Length);
+                while (nextTeam > -1 && !Regex.IsMatch(seasonChunk.Substring(nextTeam), "^TEAM\\s*="))
+                    nextTeam = seasonChunk.IndexOf("TEAM", nextTeam + 4);
                 Regex endLineRegex = new Regex(string.Format("\n\\s*{0}\\s*,", position));
                 Match eol = endLineRegex.Match(seasonChunk, teamIndex);
-                if (eol != Match.Empty)
+                if (eol != Match.Empty && (nextTeam < 0 || eol.Index < nextTeam))
                     playerIndex = eol.Index;
                 playerIndex++;
 

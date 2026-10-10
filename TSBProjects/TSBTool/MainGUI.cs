@@ -133,7 +133,7 @@ namespace TSBTool
 # NES (32 Team, 16 game schedule CXROM expanded)
 # NES (32 Team, 17 game schedule [CXROM, SBlueman, COA Elway] expanded) https://tecmobowl.org/forums/topic/75764-tsb-2027-base-standard-project-announcement/ 
 # SNES TSB1 (28 Team)
-# Genesis TSB1 (28 team) *new/experiential
+# Genesis TSB1 (28 team) *new
 # SNES TSB2 (28 Team)
 # SNES TSB3 (30 Team)
 ";
@@ -171,6 +171,10 @@ namespace TSBTool
 				seasonStatsCsvItem.Click += new EventHandler(seasonStatsCsvItem_Click);
 				saveStatesItem.MenuItems.Add(seasonStatsCsvItem);
 				menuItem1.MenuItems.Add(menuItem1.MenuItems.IndexOf(exitMenuItem), saveStatesItem);
+
+				MenuItem simGuideItem = new MenuItem("TSB &Sim Data Guide");
+				simGuideItem.Click += delegate { SimGuide.Show(this, null); };
+				mainAboutItem.MenuItems.Add(simGuideItem);
 
 				if (File.Exists(mReadMeFile))
 				{
@@ -231,11 +235,11 @@ namespace TSBTool
 		}
 
 		private const string SeasonStatsFilter =
-			"Season stats (*.bs1, *.srm, *.sav)|*.bs1;*.srm;*.sav|Genesis ares save states (*.bs1)|*.bs1|SNES battery saves (*.srm)|*.srm|NES battery saves (*.sav)|*.sav|All files (*.*)|*.*";
+			"Season stats (*.bs1, *.srm, *.sav)|*.bs1;*.srm;*.sav|Genesis ares save states (*.bs1)|*.bs1|SNES TSB/TSB2/TSB3 battery saves (*.srm)|*.srm|NES battery saves (*.sav)|*.sav|All files (*.*)|*.*";
 
 		/// <summary>
 		/// Shows the season stats from an ares save state of Genesis TSB (saved at the 'Season Menu') or a
-		/// battery save of SNES (.srm) or NES (.sav) TSB. Player names come from the loaded ROM when it's the same game;
+		/// battery save of SNES TSB1/TSB2/TSB3 (.srm) or NES (.sav) TSB. Player names come from the loaded ROM when it's the same game;
 		/// otherwise positions are shown. 'csv' shows them as CSV (one row per player) instead of the
 		/// team-by-team text.
 		/// </summary>
@@ -258,7 +262,7 @@ namespace TSBTool
 			}
 			RichTextDisplay disp = new RichTextDisplay();
 			disp.ContentBox.Font = mTextBox.Font;
-			ITecmoTool rom = tool as ITecmoTool;
+			ITecmoContent rom = tool;
 			disp.ContentBox.Text = csv ? stats.ToCsv(rom) : stats.ToText(rom);
 			disp.Text = string.Concat("Season stats from '", stateFile, "'");
 			disp.Show();
@@ -1107,6 +1111,7 @@ namespace TSBTool
             TSBContentType text_type = StaticUtils.GetContentType(mTextBox.Text);
             TSBContentType rom_type = GetType(tool.RomVersion);
             string textToApply = mTextBox.Text;
+            bool convertedFromTsb1 = false;
 
             if (text_type != rom_type && text_type != TSBContentType.Unknown)
             {
@@ -1124,6 +1129,7 @@ CANCEL = Don't do anything, cancel current operation.
                 {
                     textToApply = TSBTool2.TecmoConverter.Convert(text_type, rom_type, textToApply);
                     SetText(textToApply);
+                    convertedFromTsb1 = text_type == TSBContentType.TSB1;
                 }
                 else if ( res == DialogResult.Cancel)
                 {
@@ -1180,6 +1186,15 @@ CANCEL = Don't do anything, cancel current operation.
 
             tool.ProcessText(textToApply);
 
+            // A TSB1 roster converted to TSB2 has no RE2/NT2/LE2/LB5/DB3 lines, so the text's sack and INT
+            // shares couldn't be worked out; now that it's in the ROM, do them with the ROM's whole rosters.
+            TSBTool2.TSB2Tool tsb2Tool = tool as TSBTool2.TSB2Tool;
+            if (convertedFromTsb1 && rom_type == TSBContentType.TSB2 && tsb2Tool != null)
+            {
+                foreach (int season in TSBTool2.TsbSimAutoUpdater.SeasonsIn(textToApply))
+                    TSBTool2.TsbSimAutoUpdater.UpdateRomSimData(tsb2Tool, season);
+            }
+
             if (genesisTool != null && genesisTool.HasSimBugs())
             {
                 if (MessageBox.Show(this,
@@ -1192,6 +1207,19 @@ Fix it in the ROM being saved?  (Same as adding a 'GENESIS_FIX_SIM_BUGS' line.)"
                     "Genesis sim bugs", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     genesisTool.FixSimBugs();
+                }
+            }
+
+            if (tsb2Tool != null && tsb2Tool.HasSimBugs())
+            {
+                if (MessageBox.Show(this,
+@"This ROM has the game's lost-INT bug: an interception that lands on an injured
+defender is credited to nobody (about 1 in 20 INTs go missing from the stats).
+
+Fix it in the ROM being saved?  (Same as adding a 'FIX_SIM_BUGS' line.)",
+                    "Sim bug", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    tsb2Tool.FixSimBugs();
                 }
             }
 
@@ -1371,7 +1399,7 @@ Fix it in the ROM being saved?  (Same as adding a 'GENESIS_FIX_SIM_BUGS' line.)"
 			}
 		}
 		public static string aboutMsg= string.Format(
-@"{0}
+@"Version = {0}; Runtime = {1}
 Double click on a player to bring up the new player editing GUI with that player selected.
 Double click on a 'TEAM' to bring up a team editing GUI with the selected team.
 Double click on a 'NFC' or 'AFC' line to bring up the Pro Bowl editor GUI.
@@ -1397,7 +1425,7 @@ User takes full responsibility for anything that happens as a result of usung th
 Do not Break copyright laws.
 
 This Program is not endorsed or related to the Tecmo video game company.
-",MainClass.version);
+", MainClass.version, Environment.Version);
 
 		private void aboutMenuItem_Click(object sender, System.EventArgs e)
 		{
@@ -1690,6 +1718,7 @@ This Program is not endorsed or related to the Tecmo video game company.
             else if (type == TSBContentType.TSB2 || type == TSBContentType.TSB3)
             {
                 TSBTool2_UI.TeamForm form = new TSBTool2_UI.TeamForm();
+                form.IsTsb3 = type == TSBContentType.TSB3; // its SimData is a defense bonus (0xRRPP)
                 form.Data = mTextBox.Text;
                 form.CurrentTeam = team;
 
@@ -1778,6 +1807,7 @@ This Program is not endorsed or related to the Tecmo video game company.
             else if( type == TSBContentType.TSB1)
             {
                 AttributeForm form = new AttributeForm();
+                form.GuideSection = tool is Genesis_TSB1Tool ? SimGuide.GenesisSection : SimGuide.Tsb1Section;
                 form.Data = mTextBox.Text;
                 form.CurrentTeam = team;
                 form.CurrentPosition = position;

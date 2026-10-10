@@ -17,6 +17,8 @@
             {
                 components.Dispose();
             }
+            if (disposing && mSimToolTip != null)
+                mSimToolTip.Dispose();
             base.Dispose(disposing);
         }
 

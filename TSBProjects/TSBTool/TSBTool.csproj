@@ -234,6 +234,12 @@
     <Compile Include="Core\NesSeasonStats.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Core\Tsb2SeasonStats.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Core\Tsb3SeasonStats.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Core\Genesis_ScheduleHelper.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -272,6 +278,7 @@
       <DependentUpon>TeamForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TSB2_TSB3\TSB2_3_Core\TSB2Tool.cs" />
+    <Compile Include="TSB2_TSB3\TSB2_3_Core\TsbSimAutoUpdater.cs" />
     <Compile Include="TSB2_TSB3\TSB2_3_Core\TSB3Tool.cs" />
     <Compile Include="TSB2_TSB3\TSB2_3_Core\TSBConverter.cs" />
     <Compile Include="TSB2_TSB3\TSB2_3_Core\TSBXSimAutoUpdater.cs" />
@@ -296,13 +303,8 @@
     <Compile Include="WeekScheduler.Designer.cs">
       <DependentUpon>WeekScheduler.cs</DependentUpon>
     </Compile>
+    <Compile Include="SimGuide.cs" />
     <Compile Include="WinFormsMessageGiver.cs" />
-    <EmbeddedResource Include="Formulas\FAP_Formulas.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Formulas\SIM_Formulas.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
     <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_000.png" />
     <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_001.png" />
     <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_002.png" />
@@ -321,7 +323,7 @@
     <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_015.png" />
     <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_Side.png" />
     <Content Include="ROM_HACK_INFO.txt" />
-    <EmbeddedResource Include="TSB2_TSB3\SimData.txt" />
+    <EmbeddedResource Include="TSBTool_Sim_Guide.txt" />
     <Content Include="TSBTool_README.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

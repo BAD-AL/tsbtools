@@ -89,6 +89,11 @@ namespace TSBTool_Test
             return GetFixturePath("real-schedules", fileName);
         }
 
+        public static string LoadTsb2SimModelText(string fileName)
+        {
+            return File.ReadAllText(GetFixturePath("TSB2SimModel", fileName));
+        }
+
         public static string LoadFullRomDumpText(string fileName)
         {
             return File.ReadAllText(GetFullRomDumpPath(fileName));

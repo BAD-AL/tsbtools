@@ -113,7 +113,7 @@ namespace TSBTool
 
         public override string RomKind { get { return m32Team ? "32-team NES" : "NES"; } }
 
-        public override bool IsRomForTheseStats(ITecmoTool rom)
+        public override bool IsRomForTheseStats(ITecmoContent rom)
         {
             return m32Team ? rom is CXRomTSBTool : rom is TecmoTool && !(rom is CXRomTSBTool);
         }
@@ -121,13 +121,13 @@ namespace TSBTool
         // NES players' rushing yards and the teams' rush yards allowed end up a few yards apart.
         protected override bool RushYardsBalance { get { return false; } }
 
-        protected override string GetRomPlayerName(ITecmoTool rom, string team, string position)
+        protected override string GetRomPlayerName(ITecmoContent rom, string team, string position)
         {
             return IsRomForTheseStats(rom) ? ((TecmoTool)rom).GetName(team, position) : null;
         }
 
         // Returns are per player on NES (no return-team slots).
-        protected override string GetRomReturnTeam(ITecmoTool rom, string team)
+        protected override string GetRomReturnTeam(ITecmoContent rom, string team)
         {
             return null;
         }

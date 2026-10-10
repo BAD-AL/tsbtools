@@ -73,6 +73,16 @@
     <Compile Include="GenesisSeasonStatsTests.cs" />
     <Compile Include="SnesSeasonStatsTests.cs" />
     <Compile Include="NesSeasonStatsTests.cs" />
+    <Compile Include="Tsb2SeasonStatsTests.cs" />
+    <Compile Include="Tsb3SeasonStatsTests.cs" />
+    <Compile Include="TsbSimAutoUpdaterTests.cs" />
+    <Compile Include="TsbTeamSimDataTests.cs" />
+    <Compile Include="TecmonsterTeamSimTests.cs" />
+    <Compile Include="Tsb3FreeAgentValueTests.cs" />
+    <Compile Include="Tsb2Lb5InputTests.cs" />
+    <Compile Include="Tsb3TeamLineTests.cs" />
+    <Compile Include="Tsb2SimBugFixTests.cs" />
+    <Compile Include="SimGuideTests.cs" />
     <Compile Include="SimFormulaTests.cs" />
     <Compile Include="GenesisFullDumpTests.cs" />
     <Compile Include="GenesisYearTests.cs" />
@@ -86,6 +96,7 @@
     <Compile Include="ReplaceStringCommandTests.cs" />
     <Compile Include="TeamStringsCommandTests.cs" />
     <Compile Include="Tsb2RoundTripTests.cs" />
+    <Compile Include="Tsb2SimDataSeasonTests.cs" />
     <Compile Include="Tsb3RoundTripTests.cs" />
     <Compile Include="UniformColorsCommandTests.cs" />
   </ItemGroup>
@@ -131,6 +142,30 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ROMs\SNES\SaveRam\SNES_06_RunPassPref.srm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\SNES\SaveRam\TSB2_1994_Season.srm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\SNES\SaveRam\TSB2_1994_StockRun2.srm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ROMs\SNES\SaveRam\TSB3_Season.srm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TSB2SimModel\tsb2_stock_rosters.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TSB2SimModel\tsb2_stock_rosters_autoupdated.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TSB2SimModel\tsb2_stock_team_simdata.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TSB2SimModel\tsb3_stock_rosters.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TSB2SimModel\tsb3_stock_rosters_autoupdated.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ROMs\NES\SaveRam\TSPRBOWL.sav">

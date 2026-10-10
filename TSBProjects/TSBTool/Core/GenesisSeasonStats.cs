@@ -74,18 +74,18 @@ namespace TSBTool
 
         public override string RomKind { get { return "Genesis"; } }
 
-        public override bool IsRomForTheseStats(ITecmoTool rom)
+        public override bool IsRomForTheseStats(ITecmoContent rom)
         {
             return rom is Genesis_TSB1Tool;
         }
 
-        protected override string GetRomPlayerName(ITecmoTool rom, string team, string position)
+        protected override string GetRomPlayerName(ITecmoContent rom, string team, string position)
         {
             Genesis_TSB1Tool genesis = rom as Genesis_TSB1Tool;
             return genesis == null ? null : genesis.GetDisplayName(team, position);
         }
 
-        protected override string GetRomReturnTeam(ITecmoTool rom, string team)
+        protected override string GetRomReturnTeam(ITecmoContent rom, string team)
         {
             Genesis_TSB1Tool genesis = rom as Genesis_TSB1Tool;
             return genesis == null ? null : genesis.GetReturnTeam(team);

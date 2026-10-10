@@ -598,8 +598,12 @@ namespace TSBTool2
             int i = teams.IndexOf(team);
             builder.Append("TEAM = ");
             builder.Append(team);
-            builder.Append(",");
-            builder.Append(GetTeamSimData(season, team));
+            string simData = GetTeamSimData(season, team);
+            if (simData != null)
+            {
+                builder.Append(",");
+                builder.Append(simData);
+            }
             builder.Append("\n");
             if (ShowPlaybooks)
             {
@@ -677,7 +681,10 @@ namespace TSBTool2
                 case 2: ptr_location += team_sim_start_season_2; break;
                 case 3: ptr_location += team_sim_start_season_3; break;
             }
-            int location = 0x1e0000 + (OutputRom[ptr_location + 1] << 8) + OutputRom[ptr_location];
+            // LoROM: each season's pointers point into the table's own bank
+            // (season 1 -> 0x1E0000 + ptr, season 2 -> 0x1E8000 + ptr, season 3 -> 0x1F0000 + ptr).
+            int bankBase = (ptr_location & ~0x7FFF) - 0x8000;
+            int location = bankBase + (OutputRom[ptr_location + 1] << 8) + OutputRom[ptr_location];
             switch (position)
             {
                 case "QB1": break;
@@ -701,10 +708,11 @@ namespace TSBTool2
                 case "NT2": location += 58; break;
                 case "LE2": location += 61; break;
 
-                case "LOLB": location += 64; break;
-                case "LILB": location += 67; break;
-                case "RILB": location += 70; break;
-                case "ROLB": location += 73; break;
+                // roster order, like the names and attributes (ROLB/LOLB, RILB/LILB were swapped before)
+                case "ROLB": location += 64; break;
+                case "RILB": location += 67; break;
+                case "LILB": location += 70; break;
+                case "LOLB": location += 73; break;
                 case "LB5":  location += 76; break;
                 case "RCB":  location += 79; break;
                 case "LCB":  location += 82; break;
@@ -774,7 +782,58 @@ namespace TSBTool2
         }
 
 
-        public string GetTeamSimData(int season, string team)
+        // FIX_SIM_BUGS: the game's INT-credit loop ($84:E0C4) walks the defenders down; when it lands on an
+        // absent (injured) one it steps up instead and jumps into the sack loop ($84:E0F9 inx / dey /
+        // jmp $DFFA), so the INT is credited to nobody (about 1 in 20 INTs). The fix steps down and goes on
+        // with the INT loop's own next-defender step ($E0D1 dey / bne), which falls into its random pick
+        // when no defender is left: dex / nop / jmp $E0D1. Checked with a simmed season (all INTs credited,
+        // the rest of the season normal): TSBTool_Test\SimTests\TSB2_study\TSB2_G1_IntFix_results.txt.
+        protected virtual int IntFixLocation { get { return 0x260F9; } }
+        protected virtual byte[] IntFixStock { get { return new byte[] { 0xE8, 0x88, 0x4C, 0xFA, 0xDF }; } }
+        protected virtual byte[] IntFixFixed { get { return new byte[] { 0xCA, 0xEA, 0x4C, 0xD1, 0xE0 }; } }
+
+        private bool RomBytesMatch(int location, byte[] expected)
+        {
+            for (int i = 0; i < expected.Length; i++)
+                if (OutputRom[location + i] != expected[i])
+                    return false;
+            return true;
+        }
+
+        /// <summary>True when the ROM still has the game's original (unfixed) INT-credit code.</summary>
+        public bool HasSimBugs()
+        {
+            return RomBytesMatch(IntFixLocation, IntFixStock);
+        }
+
+        /// <summary>
+        /// Applies the INT-credit fix (FIX_SIM_BUGS line, or the GUI prompt). Returns true when the ROM ends up
+        /// fixed (including when it already was); false (with an error) when the code there isn't the
+        /// game's -- nothing is written then.
+        /// </summary>
+        public bool FixSimBugs()
+        {
+            if (RomBytesMatch(IntFixLocation, IntFixFixed))
+            {
+                Console.WriteLine("FIX_SIM_BUGS: the sim fix is already present in this ROM.");
+                return true;
+            }
+            if (!RomBytesMatch(IntFixLocation, IntFixStock))
+            {
+                TSBTool.StaticUtils.AddError(string.Format(
+                    "ERROR! FIX_SIM_BUGS: the code at 0x{0:X} isn't the original game code (another patch?). The fix wasn't applied.",
+                    IntFixLocation));
+                return false;
+            }
+            byte[] fix = IntFixFixed;
+            Array.Copy(fix, 0, OutputRom, IntFixLocation, fix.Length);
+            return true;
+        }
+
+        /// <summary>
+        /// The team line's 'SimData=0x..' (null: the team has none). TSB2: the team byte, rush D / pass D digits.
+        /// </summary>
+        public virtual string GetTeamSimData(int season, string team)
         {
             TSBTool.StaticUtils.CheckTSB2Args(season, team);
             int location = GetSimLocation(season, team, "K") + 1;
@@ -782,9 +841,38 @@ namespace TSBTool2
             return retVal;
         }
 
-        public void SetTeamSimData(int season, string team, string data)
+        /// <summary>Set by ProcessText: a team SimData in the wrong game's form has been warned about.</summary>
+        protected bool mWarnedTeamSimDataForm = false;
+
+        /// <summary>Adds 'warning' once per ProcessText (a whole season of team lines would repeat it).</summary>
+        protected void WarnTeamSimDataForm(string warning)
+        {
+            if (!mWarnedTeamSimDataForm)
+                TSBTool.StaticUtils.AddError(warning);
+            mWarnedTeamSimDataForm = true;
+        }
+
+        /// <summary>'data' without a leading "0x".</summary>
+        protected static string TeamSimDataDigits(string data)
+        {
+            return data.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? data.Substring(2) : data;
+        }
+
+        /// <summary>
+        /// Sets the team SimData; 'data' is its hex digits ("D8" or "0xD8"). TSB2's is one byte; a 4-digit value is TSB3's
+        /// (TSB3Tool), which means something else, so it's skipped with a warning.
+        /// </summary>
+        public virtual void SetTeamSimData(int season, string team, string data)
         {
             TSBTool.StaticUtils.CheckTSB2Args(season, team);
+            data = TeamSimDataDigits(data);
+            if (data.Length > 2)
+            {
+                WarnTeamSimDataForm(string.Format(
+                    "Warning: 'SimData=0x{0}' is TSB3's team SimData (a defense bonus), not TSB2's (0xRP: rush D, pass D); TSB2 team SimData like it was skipped.",
+                    data));
+                return;
+            }
             byte[] theBytes = TSBTool.StaticUtils.GetHexBytes(data);
             int location = GetSimLocation(season, team, "K") + 1;
             SetByte(location, theBytes[0]);
@@ -952,6 +1040,8 @@ namespace TSBTool2
 # Editing: Tecmo Super Bowl II (snes) [{0}]
 # Key 
 # 'SET' commands are supported
+# Add a line 'FIX_SIM_BUGS' to fix the game's lost-INT bug (an INT that lands on an injured defender
+#   is credited to nobody, about 1 in 20 INTs).
 # Double click on a team name (or playbook) to bring up the edit Team GUI.
 # Double click on a player to bring up the edit player GUI (Click 'Sim Data'
 #   button to find out more on Sim Data).
@@ -1058,6 +1148,7 @@ namespace TSBTool2
 
         public void ProcessText(string text)
         {
+            mWarnedTeamSimDataForm = false;
             InputParser parser = new InputParser(this);
             parser.ProcessText(text);
         }

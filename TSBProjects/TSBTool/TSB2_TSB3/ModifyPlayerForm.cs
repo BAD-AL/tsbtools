@@ -107,6 +107,7 @@ namespace TSBTool2
             set
             {
                 mRomVersion = value;
+                UpdateSimLabels();
                 if (value == TSBTool.TSBContentType.TSB2 || value == TSBTool.TSBContentType.TSB1)
                 {
                     m_AgilityLabel.Visible = false;
@@ -417,10 +418,6 @@ namespace TSBTool2
 						m_A3Label.Text   = "ACC";
 						m_A4Label.Text   = "APB";
                         m_CoolnessLabel.Text = "COOL";
-                        //m_Sim1Label.Text = "Sim Run";
-                        //m_Sim2Label.Text = "Sim Pass";
-                        //m_Sim3Label.Text = "Sim Pocket";
-                        //m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = true;
 						m_Sim3UpDown.Enabled = true;
@@ -441,10 +438,6 @@ namespace TSBTool2
 						m_A3Label.Text = "";
 						m_A4Label.Text = "";
                         m_CoolnessLabel.Text = "";
-                        //m_Sim1Label.Text = "Sim Rush";
-                        //m_Sim2Label.Text = "Sim Catch";
-                        //m_Sim3Label.Text = "Sim Punt Ret";
-                        //m_Sim4Label.Text = "Sim Kick Ret";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = true;
 						m_Sim3UpDown.Enabled = true;
@@ -465,10 +458,6 @@ namespace TSBTool2
 						m_A3Label.Text = "";
 						m_A4Label.Text = "";
                         m_CoolnessLabel.Text = "";
-                        //m_Sim1Label.Text = "";
-                        //m_Sim2Label.Text = "";
-                        //m_Sim3Label.Text = "";
-                        //m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = false;
 						m_Sim2UpDown.Enabled = false;
 						m_Sim3UpDown.Enabled = false;
@@ -485,10 +474,6 @@ namespace TSBTool2
 						m_A3Label.Text = "";
 						m_A4Label.Text = "";
                         m_CoolnessLabel.Text = "";
-                        //m_Sim1Label.Text = "Sim Pass rush";
-                        //m_Sim2Label.Text = "Sim Coverage";
-                        //m_Sim3Label.Text = "";
-                        //m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = true;
 						m_Sim3UpDown.Enabled = true;
@@ -509,10 +494,6 @@ namespace TSBTool2
 						m_A3Label.Text = "AB";
 						m_A4Label.Text = "";
                         m_CoolnessLabel.Text = "";
-                        //m_Sim1Label.Text = "Sim KA";
-                        //m_Sim2Label.Text = "";
-                        //m_Sim3Label.Text = "";
-                        //m_Sim4Label.Text = "";
 						m_Sim1UpDown.Enabled = true;
 						m_Sim2UpDown.Enabled = false;
 						m_Sim3UpDown.Enabled = false;
@@ -532,10 +513,6 @@ namespace TSBTool2
                         m_A2Label.Text = "AB";
                         m_A3Label.Text = "";
                         m_A4Label.Text = "";
-                        //m_Sim1Label.Text = "Sim P";
-                        //m_Sim2Label.Text = "";
-                        //m_Sim3Label.Text = "";
-                        //m_Sim4Label.Text = "";
                         m_CoolnessLabel.Text = "";
                         m_Sim1UpDown.Enabled = true;
                         m_Sim2UpDown.Enabled = false;
@@ -553,9 +530,119 @@ namespace TSBTool2
                         break;
 				}
 				m_CurrentState = value;
+				UpdateSimLabels();
 				m_DoneInit = true;
 			}
 		}
+
+        // Short names for the sim boxes (they're 56 x 32) and a tooltip with what each one does, per position.
+        // What the bytes do is from tracing the games' sim engine (TSBTool_Sim_Guide.txt; TSBTool_Test\SimTests\
+        // TSB2_study\TSB2_Sim_Engine.txt). TSB3 runs the same engine with its own tables -- its scramble digit
+        // goes the other way. TSB1 keeps 'Sim 1' .. 'Sim 4'.
+        private ToolTip mSimToolTip;
+
+        private const string ShareTip =
+            " (out of 255). The team's shares should add up to 255. Never use FF (255): to the game it means 'injured'.";
+
+        /// <summary>Names the sim boxes for the current position and sets their tooltips.</summary>
+        private void UpdateSimLabels()
+        {
+            string[] names = { "Sim 1", "Sim 2", "Sim 3", "Sim 4" };
+            string[] tips = { "", "", "", "" };
+            bool tsb3 = mRomVersion == TSBTool.TSBContentType.TSB3;
+            if (mRomVersion == TSBTool.TSBContentType.TSB2 || tsb3)
+            {
+                string scramble = tsb3
+                    ? "2nd digit: scramble chance on pass plays, 0 = least (3%), 1 = 5%, 2 = 10%, 3 = most (20%)."
+                    : "2nd digit: scramble chance on pass plays, 0 = most (20%), 1 = 10%, 2 = 5%, 3 = least (3%), 4 = never.";
+                switch (m_CurrentState)
+                {
+                    case StateEnum.QB:
+                        names = new string[] { "Run share", "Rush", "Pass / Scramble", "" };
+                        tips = new string[] {
+                            "Run share: this QB's chance of getting a run play" + ShareTip +
+                                " Keep QB2 at 0: a run that lands on the QB who isn't playing is credited to nobody.",
+                            "Rush: 0-F. Yards on QB runs and scrambles.",
+                            "Pass / Scramble: one hex byte. 1st digit: passing 0-F (completions, fewer INTs and sacks). " + scramble,
+                            "" };
+                        break;
+                    case StateEnum.SKILL:
+                        names = new string[] { "Run share", "Rush / Returns", "Target share", "YAC / Catch" };
+                        tips = new string[] {
+                            "Run share: this player's chance of getting a run play" + ShareTip +
+                                " The QB1 and the RBs/WRs/TEs share the 255.",
+                            "Rush / Returns: 0-F. Yards on runs, and on kick and punt returns when he's the returner.",
+                            "Target share: this player's chance of being the target of a pass" + ShareTip,
+                            "YAC / Catch: one hex byte. 1st digit: yards after the catch 0-F. 2nd digit: catching 0-F." };
+                        break;
+                    case StateEnum.DEFENSE:
+                        names = new string[] { "Sack share", "INT share", "Tackles", "" };
+                        tips = new string[] {
+                            "Sack share: this defender's chance of getting the credit for a sack" + ShareTip,
+                            "INT share: this defender's chance of getting the credit for an interception" + ShareTip,
+                            "Tackles: 0-F. How often he makes the tackle, compared with his teammates.",
+                            "" };
+                        break;
+                    case StateEnum.KICKER:
+                        names = new string[] { "Kicking", "", "", "" };
+                        tips = new string[] { "Kicking: 0-F. Field goal and extra point range and accuracy.", "", "", "" };
+                        break;
+                    case StateEnum.PUNTER:
+                        names = new string[] { "Punting", "", "", "" };
+                        tips = new string[] { "Punting: 0-F. Punt distance.", "", "", "" };
+                        break;
+                    default:
+                        names = new string[] { "", "", "", "" };
+                        break;
+                }
+            }
+            Label[] labels = { m_Sim1Label, m_Sim2Label, m_Sim3Label, m_Sim4Label };
+            NumericUpDown[] boxes = { m_Sim1UpDown, m_Sim2UpDown, m_Sim3UpDown, m_Sim4UpDown };
+            if (mSimToolTip == null)
+            {
+                mSimToolTip = new ToolTip();
+                mSimToolTip.AutoPopDelay = 20000;
+            }
+            for (int i = 0; i < labels.Length; i++)
+            {
+                labels[i].Text = names[i];
+                mSimToolTip.SetToolTip(labels[i], tips[i]);
+                mSimToolTip.SetToolTip(boxes[i], tips[i]);
+            }
+            UpdateAutoUpdateButton();
+        }
+
+        // The Auto Update button does the players' sim data and, except in TSB3, the teams' SimData too (the team
+        // forms don't have their own button any more).
+        private void UpdateAutoUpdateButton()
+        {
+            string tip;
+            if (mRomVersion == TSBTool.TSBContentType.TSB3)
+            {
+                m_AutoUpdateButton.Text = "&Auto Update All Player Sim Data";
+                tip = "Works out the sim data of every player on every team from his ratings (a model fitted to Tecmo's own\n" +
+                      "values); each team's shares add up to 255. Replaces values set by hand.\n" +
+                      "TSB3's team SimData (the defense bonus) isn't changed: set it on the team form if a team's\n" +
+                      "simulated defense should be better or worse.";
+            }
+            else if (mRomVersion == TSBTool.TSBContentType.TSB2)
+            {
+                m_AutoUpdateButton.Text = "&Auto Update All Player + Team Sim Data";
+                tip = "Works out the sim data of every player on every team (every season in the text) from his ratings\n" +
+                      "(a model fitted to Tecmo's own values; each team's shares add up to 255), and every team's SimData\n" +
+                      "(rush defense, pass defense) from its 11 starting defenders. Tecmo set its team values mostly from\n" +
+                      "each team's real season, so the worked-out ones follow the defenders, not Tecmo's numbers.\n" +
+                      "Replaces values set by hand. A team missing a starter keeps its team SimData.";
+            }
+            else
+            {
+                m_AutoUpdateButton.Text = "&Auto Update All Player + Team Sim Data";
+                tip = "Works out the sim data of every player on every team from his ratings (Tecmonster's formulas), then\n" +
+                      "every team's SimData (rush defense, pass defense) with Tecmonster's team formula.\n" +
+                      "Replaces values set by hand. A team missing a starter keeps its team SimData.";
+            }
+            mSimToolTip.SetToolTip(m_AutoUpdateButton, tip);
+        }
 
 		/// <summary>
 		/// Clean up any resources being used.
@@ -567,6 +654,10 @@ namespace TSBTool2
 				if(components != null)
 				{
 					components.Dispose();
+				}
+				if (mSimToolTip != null)
+				{
+					mSimToolTip.Dispose();
 				}
 			}
 			base.Dispose( disposing );
@@ -1807,8 +1898,10 @@ Please verify that this player's attributes are correct.", oldPlayer);
 
 		private void m_AutoUpdateButton_Click(object sender, System.EventArgs e)
 		{
-			if( MessageBox.Show(this, 
-                "Are you sure you want to Auto Update ALL Player Sim data for ALL teams?",
+			if( MessageBox.Show(this,
+                mRomVersion == TSBTool.TSBContentType.TSB3
+                    ? "Are you sure you want to Auto Update ALL Player Sim data for ALL teams?"
+                    : "Are you sure you want to Auto Update ALL Player and Team Sim data for ALL teams?",
 				"Are you Sure?", MessageBoxButtons.YesNo) == DialogResult.Yes )
 			{
 				this.Enabled = false;
@@ -1828,10 +1921,12 @@ Please verify that this player's attributes are correct.", oldPlayer);
             if (mRomVersion == TSBTool.TSBContentType.TSB1)
             {
                 stuff = TSBTool.TecmonsterTSB1SimAutoUpdater.AutoUpdatePlayerSimData(this.m_Data);
+                stuff = new TSBTool.TecmonsterTeamSim().AutoUpdateSeasonSimData(1, stuff);
             }
             else
             {
-                stuff = TSBXSimAutoUpdater.AutoUpdatePlayerSimData(this.m_Data, mRomVersion);
+                // players, and TSB2's team SimData (TSB3's team SimData, a defense bonus, isn't changed)
+                stuff = TSBXSimAutoUpdater.AutoUpdateSimData(this.m_Data, mRomVersion);
             }
             m_Data = stuff;
 		}
@@ -1854,12 +1949,13 @@ Please verify that this player's attributes are correct.", oldPlayer);
             m_FirstNameTextBox.Text = m_FirstNameTextBox.Text.ToLower();
         }
 
+        // the TSB Sim Data Guide, at this game's section
         private void mAboutButton_Click(object sender, EventArgs e)
         {
-            StreamReader reader = new StreamReader(
-                this.GetType().Assembly.GetManifestResourceStream("TSBTool.TSB2_TSB3.SimData.txt"));
-            string content = reader.ReadToEnd();
-            TSBTool.RichTextDisplay.ShowText("Sim Info", content, SystemIcons.Question, true, false);
+            string section = mRomVersion == TSBTool.TSBContentType.TSB3 ? TSBTool.SimGuide.Tsb3Section
+                : mRomVersion == TSBTool.TSBContentType.TSB2 ? TSBTool.SimGuide.Tsb2Section
+                : TSBTool.SimGuide.Tsb1Section;
+            TSBTool.SimGuide.Show(this, section);
         }
 	}
 }

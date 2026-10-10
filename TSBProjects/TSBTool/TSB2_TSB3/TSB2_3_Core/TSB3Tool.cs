@@ -71,6 +71,12 @@ namespace TSBTool2
 # TSBIII Hacking documentation: https://tecmobowl.org/forums/topic/53029-tecmo-super-bowl-iii-hackingresource-documentation/
 # Key 
 # 'SET' commands are supported
+# Add a line 'FIX_SIM_BUGS' to fix the game's lost-INT bug (an INT that lands on an injured defender
+#   is credited to nobody, about 1 in 20 INTs).
+# Team 'SimData=0xRRPP' is TSB3's own, not TSB2's 0xRP (the team's rush D / pass D levels): TSB3 works
+#   team defense out from the starting defenders and adds a hidden per-team bonus, rush (RR) then pass
+#   (PP), 00-FF each, 00 = none (Tecmo's biggest, 0F rush and 14 pass, are already big boosts).
+#   See About -> TSB Sim Data Guide.
 # Double click on a team name (or playbook) to bring up the edit Team GUI.
 # Double click on a player to bring up the edit player GUI (Click 'Sim Data'
 #   button to find out more on Sim Data).
@@ -384,5 +390,57 @@ namespace TSBTool2
         }
 
         public override TSBTool.ROM_TYPE RomVersion { get { return TSBTool.ROM_TYPE.SNES_TSB3; } }
+
+        // TSB3's sim doesn't read the team byte TSB2's SimData is (TSBTool_Test\SimTests\TSB3_study\
+        // TSB3_Checks_results.txt). Its loader ($84:D729) works team defense out from the starting defenders
+        // -- rush: the front seven, pass: those plus the 4 DBs -- adds a per-team bonus (capped at 255) and
+        // turns the total into a defense level. TSB3's team SimData is those two bonuses, 'SimData=0xRRPP'
+        // (rush, pass; stock 00-0F / 00-14). Checked with a simmed season (255 = the top level, no trouble):
+        // TSBTool_Test\SimTests\TSB3_study\TSB3_DefBonus_results.txt.
+        private const int RushDefenseBonusTable = 0x26A43; // $84:EA43, one byte per team (TSBTool order)
+        private const int PassDefenseBonusTable = 0x26A67; // $84:EA67
+        private const int TeamsWithDefenseBonus = 30;       // not freeAgents / allTime
+
+        public override string GetTeamSimData(int season, string team)
+        {
+            TSBTool.StaticUtils.CheckTSB2Args(season, team);
+            int i = teams.IndexOf(team);
+            if (i >= TeamsWithDefenseBonus)
+                return null;
+            return "SimData=0x" + OutputRom[RushDefenseBonusTable + i].ToString("X2") +
+                OutputRom[PassDefenseBonusTable + i].ToString("X2");
+        }
+
+        /// <summary>
+        /// Sets the team's defense bonuses; 'data' is 4 hex digits, rush then pass ("0A14"). A one-byte value
+        /// (TSB2's form, or older TSBTool's TSB3 texts) is skipped with a warning: TSB3's sim doesn't use it.
+        /// </summary>
+        public override void SetTeamSimData(int season, string team, string data)
+        {
+            TSBTool.StaticUtils.CheckTSB2Args(season, team);
+            int i = teams.IndexOf(team);
+            data = TeamSimDataDigits(data);
+            if (data.Length != 4)
+            {
+                WarnTeamSimDataForm(string.Format(
+                    "Warning: TSB3's team SimData is 0xRRPP (rush defense bonus, pass defense bonus); 'SimData=0x{0}' is TSB2's form, which TSB3's sim doesn't use. TSB3 team SimData like it was skipped.",
+                    data));
+                return;
+            }
+            if (i >= TeamsWithDefenseBonus)
+            {
+                TSBTool.StaticUtils.AddError(string.Format("Warning: {0} has no team SimData in TSB3; 'SimData=0x{1}' was skipped.", team, data));
+                return;
+            }
+            byte[] bonus = TSBTool.StaticUtils.GetHexBytes(data);
+            SetByte(RushDefenseBonusTable + i, bonus[0]);
+            SetByte(PassDefenseBonusTable + i, bonus[1]);
+        }
+
+        // FIX_SIM_BUGS: the same INT-credit bug as TSB2 (TSB2Tool), its code 0x141 bytes later:
+        // $84:E23A inx / dey / jmp $E13B -> dex / nop / jmp $E212 (the INT loop's dey / bne).
+        protected override int IntFixLocation { get { return 0x2623A; } }
+        protected override byte[] IntFixStock { get { return new byte[] { 0xE8, 0x88, 0x4C, 0x3B, 0xE1 }; } }
+        protected override byte[] IntFixFixed { get { return new byte[] { 0xCA, 0xEA, 0x4C, 0x12, 0xE2 }; } }
     }
 }

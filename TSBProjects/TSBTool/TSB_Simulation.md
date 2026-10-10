@@ -4,6 +4,9 @@ This document describes what the sim engine in Tecmo Super Bowl (TSB1) actually 
 simulates a game, what each sim value TSBTool edits really does, and the bugs found in the Genesis
 version (which TSBTool can fix with `GENESIS_FIX_SIM_BUGS`).
 
+TSB2 and TSB3 are covered in `TSB2_TSB3_Simulation.md`; the plain-language guide for users is
+`TSBTool_Sim_Guide.txt` (in the program: About -> TSB Sim Data Guide).
+
 Everything marked **confirmed** was read directly from the game code and/or checked with simulated
 seasons in an emulator. The NES code was disassembled from the stock `TSPRBOWL.nes`, starting from the
 addresses in the CXROM hack source (`CXROM_CODE\...\tsb2007\TSB 2007-32.asm`); the SNES (65816) and

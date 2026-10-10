@@ -1,0 +1,135 @@
+{
+ "digits": {
+  "QB pass": {
+   "positions": ["QB1", "QB2"],
+   "ratings": ["PS", "PC", "PA", "AR", "CO"],
+   "groups": [],
+   "group_key": "group",
+   "coef": [0.3547, 0.428, 0.411, 0.2634, 0.0908, -6.1681],
+   "stretch": 1.119,
+   "center": 5.1845
+  },
+  "QB rush": {
+   "positions": ["QB1", "QB2"],
+   "ratings": ["MS", "HP", "BB"],
+   "groups": [],
+   "group_key": "group",
+   "coef": [0.7437, -0.5742, 0.1063, 0.4214],
+   "stretch": 1.2684,
+   "center": 1.3333
+  },
+  "QB scramble": {
+   "positions": ["QB1", "QB2"],
+   "ratings": ["MS", "BB", "HP"],
+   "groups": [],
+   "group_key": "group",
+   "coef": [-0.4069, -0.1134, -0.0077, 3.4514],
+   "stretch": 1.2514,
+   "center": 2.1548
+  },
+  "rush": {
+   "positions": ["RB1", "RB2", "RB3", "RB4", "WR1", "WR2", "WR3", "WR4", "TE1", "TE2"],
+   "ratings": ["MS", "HP", "BB", "BC", "RP"],
+   "groups": ["RB1", "RB2", "RB3", "RB4", "TE1", "TE2", "WR1", "WR2", "WR3", "WR4"],
+   "group_key": "slot",
+   "coef": [0.2759, 0.1343, -0.0167, -0.0574, 0.1747, 4.1671, 1.5752, 1.6768, 1.2887, -0.5709, 0.0448, 0.4592, 0.1885, 0.5683, 0.2982],
+   "stretch": 1.0,
+   "center": 3.5036
+  },
+  "YAC": {
+   "positions": ["RB1", "RB2", "RB3", "RB4", "WR1", "WR2", "WR3", "WR4", "TE1", "TE2"],
+   "ratings": ["MS", "HP", "BB", "RC", "RP"],
+   "groups": ["RB1", "RB2", "RB3", "RB4", "TE1", "TE2", "WR1", "WR2", "WR3", "WR4"],
+   "group_key": "slot",
+   "coef": [0.1806, -0.0264, 0.0682, 0.2981, -0.0094, 0.5235, 1.7465, 1.416, 1.7736, 2.8182, 2.7871, 4.2426, 4.4284, 3.2901, 3.7575],
+   "stretch": 1.0,
+   "center": 5.6833
+  },
+  "catch": {
+   "positions": ["RB1", "RB2", "RB3", "RB4", "WR1", "WR2", "WR3", "WR4", "TE1", "TE2"],
+   "ratings": ["RC", "BB", "MS", "RP"],
+   "groups": ["RB1", "RB2", "RB3", "RB4", "TE1", "TE2", "WR1", "WR2", "WR3", "WR4"],
+   "group_key": "slot",
+   "coef": [0.554, 0.0284, 0.1415, 0.1505, -0.0312, 0.8584, 0.3753, -0.1943, 1.4808, 1.0225, 1.688, 1.7545, 0.59, -0.2357],
+   "stretch": 1.0,
+   "center": 5.8702
+  },
+  "tackle": {
+   "positions": ["RE", "NT", "LE", "RE2", "NT2", "LE2", "ROLB", "RILB", "LILB", "LOLB", "LB5", "RCB", "LCB", "DB1", "DB2", "FS", "SS", "DB3"],
+   "ratings": ["RS", "RP", "MS", "HP", "QU", "PI"],
+   "groups": ["DB1", "DB2", "DB3", "FS", "LB5", "LCB", "LE", "LE2", "LILB", "LOLB", "NT", "NT2", "RCB", "RE", "RE2", "RILB", "ROLB", "SS"],
+   "group_key": "slot",
+   "coef": [0.0987, 0.2032, 0.1466, 0.2793, 0.0318, 0.0464, -1.9137, -2.2404, -2.8575, -0.9944, -2.9889, -0.6253, -1.6452, -3.0612, -0.0546, -1.4447, -1.66, -3.3584, -0.7352, -1.9021, -2.2054, 0.9239, -0.4901, -1.119],
+   "stretch": 1.3847,
+   "center": 3.3598
+  },
+  "K": {
+   "positions": ["K"],
+   "ratings": ["KP", "KA", "AB"],
+   "groups": [],
+   "group_key": "group",
+   "coef": [0.0967, 0.26, 0.5241, -0.516],
+   "stretch": 1.5842,
+   "center": 7.131
+  },
+  "P": {
+   "positions": ["P"],
+   "ratings": ["KP", "AB"],
+   "groups": [],
+   "group_key": "group",
+   "coef": [0.5383, 0.1318, 1.3449],
+   "stretch": 1.874,
+   "center": 6.5238
+  }
+ },
+ "shares": {
+  "carry": {
+   "positions": ["QB1", "RB1", "RB2", "RB3", "RB4", "WR1", "WR2", "WR3", "WR4", "TE1", "TE2"],
+   "ratings": ["MS", "HP", "BB"],
+   "coef": [0.0933, 0.0925, 0.0136, 1.775, 3.4476, 2.2749, 2.407, 1.4136, -0.2877, -0.4287, -0.1629, -0.5316, -1.2165, -1.0077],
+   "spread": 0.8638,
+   "group_factors": {"QB": 0.8841, "WR": 0.7694, "TE": 1.5029},
+   "groups": {"QB": ["QB1"], "RB": ["RB1", "RB2", "RB3", "RB4"], "WR": ["WR1", "WR2", "WR3", "WR4"], "TE": ["TE1", "TE2"]}
+  },
+  "target": {
+   "positions": ["RB1", "RB2", "RB3", "RB4", "WR1", "WR2", "WR3", "WR4", "TE1", "TE2"],
+   "ratings": ["MS", "BB", "RC", "HP"],
+   "coef": [0.0308, -0.0032, 0.2161, -0.0011, 1.668, 1.6644, 1.2387, 0.2454, 1.7732, 1.8376, 0.8957, 0.4449, 1.7668, 0.7971],
+   "spread": 0.8061,
+   "group_factors": {"RB": 1.0045, "TE": 0.9165},
+   "groups": {"RB": ["RB1", "RB2", "RB3", "RB4"], "WR": ["WR1", "WR2", "WR3", "WR4"], "TE": ["TE1", "TE2"]}
+  },
+  "sack": {
+   "positions": ["RE", "NT", "LE", "RE2", "NT2", "LE2", "ROLB", "RILB", "LILB", "LOLB", "LB5", "RCB", "LCB", "DB1", "DB2", "FS", "SS", "DB3"],
+   "ratings": ["HP", "QU", "MS", "PI"],
+   "coef": [0.1438, 0.0409, 0.1442, -0.0839, 0.9501, 0.8343, 0.7731, 0.8518, 0.0856, -0.1636, 0.1869, -0.6553, -0.0607, -0.1826, -1.0332, -0.658, -0.864, -0.5494, -0.6052, -1.216, -1.1573, -0.9687],
+   "spread": 1.0319,
+   "group_factors": {"LB": 1.3305, "DB": 1.4231},
+   "groups": {"DL": ["RE", "NT", "LE", "RE2", "NT2", "LE2"], "LB": ["ROLB", "RILB", "LILB", "LOLB", "LB5"], "DB": ["RCB", "LCB", "DB1", "DB2", "FS", "SS", "DB3"]}
+  },
+  "int": {
+   "positions": ["RE", "NT", "LE", "RE2", "NT2", "LE2", "ROLB", "RILB", "LILB", "LOLB", "LB5", "RCB", "LCB", "DB1", "DB2", "FS", "SS", "DB3"],
+   "ratings": ["PI", "BB", "MS", "HP"],
+   "coef": [0.2375, 0.1463, 0.0499, 0.0645, -1.5286, -1.7282, -1.5334, -1.6769, -1.7026, -1.4499, -0.8501, -0.4529, -0.9778, -1.3668, -1.4614, -0.0757, -0.0769, -0.4549, -1.0214, -0.3323, -0.1019, -1.0683],
+   "spread": 0.7473,
+   "group_factors": {"DL": 0.5282, "LB": 1.0786},
+   "groups": {"DL": ["RE", "NT", "LE", "RE2", "NT2", "LE2"], "LB": ["ROLB", "RILB", "LILB", "LOLB", "LB5"], "DB": ["RCB", "LCB", "DB1", "DB2", "FS", "SS", "DB3"]}
+  }
+ },
+ "team_defense": {
+  "rush D": {
+   "groups": {"DL": ["RE", "NT", "LE"], "LB": ["ROLB", "RILB", "LILB", "LOLB"], "DB": ["RCB", "LCB", "FS", "SS"]},
+   "mix": {"DL": {"RS": 0.05, "RP": 0.05, "MS": 0.05, "HP": 0.85}, "LB": {"RS": 0.25, "RP": 0.25, "MS": 0.1, "HP": 0.4}, "DB": {"RS": 0.25, "RP": 0.25, "MS": 0.1, "HP": 0.4}},
+   "coef": [0.5427, 0.8871, 2.6899, -19.9446],
+   "stretch": 1.8221,
+   "center": 6.9643
+  },
+  "pass D": {
+   "groups": {"DL": ["RE", "NT", "LE"], "LB": ["ROLB", "RILB", "LILB", "LOLB"], "DB": ["RCB", "LCB", "FS", "SS"]},
+   "mix": {"DL": {"RS": 0.05, "RP": 0.05, "MS": 0.05, "HP": 0.75, "PI": 0.05, "QU": 0.05}, "LB": {"RS": 0.15, "RP": 0.15, "MS": 0.1, "PI": 0.3, "QU": 0.3}, "DB": {"RS": 0.15, "RP": 0.15, "MS": 0.1, "PI": 0.3, "QU": 0.3}},
+   "coef": [0.7615, 0.7615, 0.7615, -9.5274],
+   "stretch": 3.2189,
+   "center": 6.7381
+  }
+ }
+}

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8C4B2E61-3F0A-4D2B-9C71-5E2A7B1D9F40}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TsbSimModel</RootNamespace>
+    <AssemblyName>TsbSimModel</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <!-- TSBToolSupreme.exe is x86 -->
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="Rosters.cs" />
+    <Compile Include="Engine.cs" />
+    <Compile Include="LeastSquares.cs" />
+    <Compile Include="NelderMead.cs" />
+    <Compile Include="Model.cs" />
+    <Compile Include="ModelFile.cs" />
+    <Compile Include="Fitter.cs" />
+    <Compile Include="ConstantsWriter.cs" />
+    <Compile Include="ExpectedWriter.cs" />
+    <Compile Include="Analysis.cs" />
+    <Compile Include="FreeAgentValue.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TSBTool.csproj">
+      <Project>{693F0C71-8F57-413E-9F43-48B2677DB6E0}</Project>
+      <Name>TSBTool</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

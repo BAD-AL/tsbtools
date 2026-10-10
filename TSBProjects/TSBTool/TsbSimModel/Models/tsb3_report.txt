@@ -1,0 +1,66 @@
+TSB3 Auto Update Sim model: 30 team-seasons; every number below is on a fold of 10 teams the model was NOT tuned on.
+
+SHARES  'differs' = share of plays going to a different player than with Tecmo's bytes, per team
+                first fit   calibrated
+  carry            15.8%       15.1%
+  target           16.0%       14.1%
+  sack             23.2%       23.3%
+  int              22.3%       21.2%
+
+LEAGUE SHAPE (all teams, no dice): chance a carry/target/sack/INT goes to each group
+                        Tecmo   first fit   calibrated
+  carry QB %              3.8        3.2         3.7
+  carry RB %             94.1       95.5        94.6
+  carry WR %              2.1        1.2         1.5
+  carry TE %              0.0        0.0         0.2
+  carry top player %     53.8       59.5        54.8
+  target RB %            29.5       26.9        28.5
+  target WR %            55.2       56.5        55.7
+  target TE %            15.4       16.6        15.7
+  target top player %    26.8       32.1        27.3
+  sack DL %              66.0       66.9        67.6
+  sack LB %              30.7       30.6        30.1
+  sack DB %               3.3        2.5         2.4
+  sack top player %      25.8       24.3        24.0
+  int DL %                1.9        0.4         0.1
+  int LB %               16.2        7.6        14.2
+  int DB %               81.9       92.0        85.7
+  int top player %       24.7       28.1        24.1
+
+VALUES (0-15), held out: exact / within 1 / spread (Tecmo's spread in the last column)
+                   by group, plain       by slot, plain        (by slot,) stretched | Tecmo
+  QB pass       16.7  73.3 2.72                           25.0  73.3 2.92*   | 3.04
+  QB rush       63.3  88.3 1.37                           61.7  86.7 1.62*   | 1.64
+  QB scramble   66.7  96.7 0.69                           71.7  95.0 0.85*   | 0.80
+  rush          27.7  69.7 1.97      34.3  77.7 2.11      29.0  77.7 2.56*   | 2.49
+  YAC           27.7  62.7 2.04*     26.3  62.7 2.15      24.3  57.7 2.76    | 2.70
+  catch         31.3  70.3 2.02*     26.3  70.3 2.06      23.0  67.7 2.47    | 2.44
+  tackle        20.2  62.4 1.65      30.6  73.3 1.91      31.3  71.5 2.40*   | 2.28
+  K             23.3  63.3 3.04                           33.3  63.3 3.32*   | 3.23
+  P              3.3  16.7 2.68                           16.7  30.0 3.72*   | 3.30
+  (* = used. 'by slot' = a constant per roster slot (RB1, RB2 .. / RE, RE2 ..) instead of per group)
+
+  ball carrier's average rush value:          Tecmo 163.5   model 165.6
+  top tackler's share of the tackle weights:  Tecmo 14.3%  model 14.4%
+
+  carry    spread 0.87  group factors QB 0.88, WR 0.76, TE 0.86
+  target   spread 0.77  group factors RB 0.90, TE 0.87
+  sack     spread 1.07  group factors LB 1.13, DB 1.11
+  int      spread 0.87  group factors DL 0.00, LB 1.47
+
+FREE AGENT VALUE (Face's last digit; TSB3's team defense adds it up), 1184 players, held out by thirds of teams:
+  least squares on rating steps (no negative weight) per position group; the ratings: all of the line's, or the
+  old FAP formula's -- whichever is closer held out. 'exact' / 'w1' = within 1 / 'off' = average distance.
+  group  players   all ratings: exact  w1   off  | old formula's: exact  w1   off   | used
+  QB        64                   20%  59%  1.33  |                22%  69%  1.28   | old formula's
+  RB       128                   25%  65%  1.23  |                14%  51%  1.89   | all
+  WR       128                   34%  74%  1.01  |                30%  69%  1.15   | all
+  TE        64                   31%  64%  1.20  |                20%  64%  1.50   | all
+  OL       160                   36%  78%  0.97  |                33%  81%  0.97   | all
+  DL       192                   23%  71%  1.19  |                27%  67%  1.21   | all
+  LB       160                   33%  78%  0.98  |                25%  72%  1.27   | all
+  CB       128                   30%  72%  1.07  |                21%  56%  1.41   | all
+  S         96                   26%  68%  1.23  |                23%  63%  1.42   | all
+  K         32                   41%  75%  0.84  |                19%  81%  1.09   | all
+  P         32                   41%  75%  0.94  |                25%  66%  1.22   | all
+  all     1184   held out: exact 30%, within 1 72%, off 1.10

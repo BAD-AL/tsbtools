@@ -66,18 +66,18 @@ namespace TSBTool
 
         public override string RomKind { get { return "SNES"; } }
 
-        public override bool IsRomForTheseStats(ITecmoTool rom)
+        public override bool IsRomForTheseStats(ITecmoContent rom)
         {
             return rom is SNES_TecmoTool;
         }
 
-        protected override string GetRomPlayerName(ITecmoTool rom, string team, string position)
+        protected override string GetRomPlayerName(ITecmoContent rom, string team, string position)
         {
             SNES_TecmoTool snes = rom as SNES_TecmoTool;
             return snes == null ? null : snes.GetName(team, position);
         }
 
-        protected override string GetRomReturnTeam(ITecmoTool rom, string team)
+        protected override string GetRomReturnTeam(ITecmoContent rom, string team)
         {
             SNES_TecmoTool snes = rom as SNES_TecmoTool;
             return snes == null ? null : snes.GetReturnTeam(team);

@@ -136,6 +136,8 @@ namespace TSBTool
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+			// team SimData is now worked out with the players': the player form's Auto Update button
+			m_AutoButton.Visible = false;
 			m_PlaybookRegex    = new Regex("PLAYBOOK (R[1-8]{4})\\s*,\\s*(P[1-8]{4})");
 			m_OffensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
 			m_Boxes = new PictureBox[8];
