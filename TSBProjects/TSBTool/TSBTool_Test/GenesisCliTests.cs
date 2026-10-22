@@ -38,14 +38,12 @@ namespace TSBTool_Test
         [TestMethod]
         public void GenesisRom_CliApplyThenDump_StabilizesToAFixedPoint()
         {
-            // A *single* apply-then-redump of the stock ROM's own dump is NOT guaranteed to be
-            // byte-identical: SetFace can only ever write 0x00 or 0x80 (matching SNES_TecmoTool.SetFace
-            // exactly), but 8 of 896 players' stock +2 byte is a third value (0x20) that predates this
-            // tool and isn't representable through the Face= text field. That's a real, inherent
-            // limitation inherited from SNES's own design, not a bug -- see Genesis_TSB1_ROM_Findings.md.
-            // What SHOULD be idempotent is re-applying a dump that's ALREADY in the tool's own
-            // representable form: apply once (collapsing any 0x20s), dump, apply that same dump again,
-            // dump again -- those last two dumps must match exactly.
+            // Dump the stock ROM, apply that dump, dump again: the two dumps match except for the 4 stock
+            // players with a multi-word last name ("al DEL GRECO" comes back "al del GRECO" -- the text
+            // format's "first LAST" rule, kept on purpose). Every Face= value survives, including the
+            // 8 stock players whose +2 byte has the unexplained 0x20 bit: SetFace changes only the 0x80
+            // skin bit (it used to write 0x00/0x80 and clear the 0x20). Applying the second dump again
+            // gives an identical third dump.
             RunInScratchDir(scratchDir =>
             {
                 string localRomName = "genesis.md";
@@ -65,6 +63,7 @@ namespace TSBTool_Test
                 MainClass.TestString = "";
                 MainClass.RunMain(new[] { firstOutput });
                 string secondDump = MainClass.TestString;
+                AssertSameExceptLastNameCase(Normalize(firstDump), Normalize(secondDump), 4);
 
                 File.WriteAllText(Path.Combine(scratchDir, inputFile), secondDump);
                 string secondOutput = "output2.md";
@@ -246,6 +245,35 @@ namespace TSBTool_Test
         private static string Normalize(string text)
         {
             return text.Replace("\r\n", "\n").Trim();
+        }
+
+        /// <summary>
+        /// 'actual' has the same lines as 'expected', except exactly 'caseOnly' lines that differ only in letter case
+        /// (a multi-word last name's first word comes back lowercase); every Face= value is the same.
+        /// </summary>
+        private static void AssertSameExceptLastNameCase(string expected, string actual, int caseOnly)
+        {
+            string[] expectedLines = expected.Split('\n');
+            string[] actualLines = actual.Split('\n');
+            Assert.AreEqual(expectedLines.Length, actualLines.Length, "line count");
+            int differing = 0;
+            for (int i = 0; i < expectedLines.Length; i++)
+            {
+                string e = expectedLines[i], a = actualLines[i];
+                Assert.AreEqual(FaceOf(e), FaceOf(a), "Face at line " + i + ": " + e);
+                if (e == a)
+                    continue;
+                if (!string.Equals(e, a, StringComparison.OrdinalIgnoreCase))
+                    Assert.Fail("Line {0} differs by more than letter case:\nExpected: {1}\nActual:   {2}", i, e, a);
+                differing++;
+            }
+            Assert.AreEqual(caseOnly, differing, "lines differing only in letter case (multi-word last names)");
+        }
+
+        private static string FaceOf(string line)
+        {
+            int at = line.IndexOf("Face=");
+            return at < 0 ? null : line.Substring(at, line.IndexOf(',', at) - at);
         }
 
         private static void AssertLinesEqual(string expected, string actual)

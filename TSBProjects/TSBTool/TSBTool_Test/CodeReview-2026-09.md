@@ -15,16 +15,16 @@
 
 | ID | Sev | Finding | Status |
 |---|---|---|---|
-| H1 | High | Command-line mode prints "Error: Message" instead of the actual error text | Reproduced (R11) |
+| H1 | High | Command-line mode prints "Error: Message" instead of the actual error text | **Fixed** (by the author) |
 | H2 | High | A misspelled `TEAM =` line applies the following roster to the *previous* team | Reproduced (R4) |
-| H3 | High | NES player names can grow past the name area into the Bills' attribute table | Reproduced (R8) |
+| H3 | High | NES player names can grow past the name area into the Bills' attribute table | **Fixed** — NES/CXROM 2026-10-03, SNES 2026-10-10 (`InsertPlayer` rejects a name that doesn't fit) |
 | H4 | High | `JUICE(ALL, n)` skips week 1 and writes past the end of the NES juice table | Reproduced (R1) |
 | H5 | High | `JUICE(week, 0)` crashes and aborts the rest of the file | Reproduced (R2) |
 | H6 | High | Invalid attribute values (e.g. 55) are silently stored as 6 — no error | Reproduced (R3) |
 | H7 | High | TSB2/TSB3: one malformed player line aborts the rest of the file | Reproduced (R7) |
-| H8 | High | TSB2/TSB3: `LB5` player lines are silently ignored | Reproduced (R6) |
-| H9 | High | Saving over a larger existing file leaves the old file's trailing bytes | Reproduced (R10) |
-| M1 | Med | Team sim data `0x0F` exports as `SimData=0xf` and doesn't re-import | Reproduced (R5) |
+| H8 | High | TSB2/TSB3: `LB5` player lines are silently ignored | **Fixed** 2026-10-09 (GitHub #3) |
+| H9 | High | Saving over a larger existing file leaves the old file's trailing bytes | **Fixed** (by the author: `FileMode.Create`) |
+| M1 | Med | Team sim data `0x0F` exports as `SimData=0xf` and doesn't re-import | **Fixed** 2026-09-29 |
 | M2 | Med | Pro Bowl line with a bad position/team writes outside the Pro Bowl table | Reproduced (R9) |
 | M3 | Med | Sim values over 15 spill into the neighboring value's nibble | Confirmed by reading |
 | M4 | Med | Growing a team/player string has no free-space check (NES, SNES, TSB2/TSB3, Genesis team strings) | Confirmed by reading |

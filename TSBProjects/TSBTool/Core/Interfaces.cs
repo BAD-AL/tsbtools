@@ -234,7 +234,7 @@ namespace TSBTool
 
         public void ShowMessageBox(string title, string message)
         {
-            Console.WriteLine("Message");
+            Console.WriteLine(message);
         }
 
         public void ShowError(string title, string message)

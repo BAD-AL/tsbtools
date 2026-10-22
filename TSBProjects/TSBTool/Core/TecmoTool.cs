@@ -292,7 +292,7 @@ Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 				try
 				{
 					long len = outputRom.Length;
-					FileStream s1 = new FileStream(filename, FileMode.OpenOrCreate);
+					FileStream s1 = new FileStream(filename, FileMode.Create);
 					s1.Write (outputRom,0,(int)len);
 					s1.Close();
 				}

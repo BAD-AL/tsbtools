@@ -115,7 +115,10 @@ namespace TSBTool
                 dataFile = null; // if the romFile is null, we'll read from stdin.
 
             if (romFile == null)
+            {
+                Console.Error.WriteLine("No valid rom file passed as an argument.");
                 return;
+            }
             if (getFileName != null && File.Exists(getFileName))
             {
                 ITecmoContent tool = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom( romFile));
@@ -359,8 +362,7 @@ The following are the available options.
 				if( (arg.EndsWith(".nes")|| arg.EndsWith(".smc") || arg.EndsWith(".md") || arg.EndsWith(".bin")) && ! arg.StartsWith("-out:"))
 					return args[i].ToString();
 			}
-			Console.Error.WriteLine("No valid rom file passed as an argument.");
-			return null;
+			return null; // RunMain says so when it needs one (not for the GUI, -stats: or -help)
 		}
 
 		private static string GetInputFileName(ArrayList args)
@@ -372,8 +374,7 @@ The following are the available options.
 				if(!arg.EndsWith(".nes")&& !arg.EndsWith(".smc") && !arg.EndsWith(".md") && !arg.EndsWith(".bin") )
 					return args[i].ToString();
 			}
-			Console.Error.WriteLine("No valid input file passed as an argument.");
-			return null;
+			return null; // optional: without one, the ROM is printed
 		}
 
 		private static void PrintStuff(string filename)

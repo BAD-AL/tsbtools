@@ -260,7 +260,7 @@ Do you want to continue?", ROM_LENGTH);
 				try
 				{
 					long len = outputRom.Length;
-					FileStream s1 = new FileStream(filename, FileMode.OpenOrCreate);
+					FileStream s1 = new FileStream(filename, FileMode.Create);
 					s1.Write (outputRom,0,(int)len);
 					s1.Close();
 				}
@@ -425,6 +425,23 @@ Do you want to continue?", ROM_LENGTH);
 				string oldName = GetName(team,position);
 				byte[] bytes = new byte[1+fname.Length+lname.Length];
 				int change = bytes.Length - oldName.Length;
+
+				// A longer name shifts everything after it; if the name area doesn't have room, that
+				// shift runs past the area's end (nameNumberSegmentEnd). Reject the write instead, as
+				// TecmoTool (NES/CXROM) and Genesis_TSB1Tool InsertPlayer do. PlayerNames.PlanFit
+				// shortens names before an apply, but -noAutoFit and direct ProcessText calls skip it.
+				if (change > 0)
+				{
+					int freeBytes = GetNameAreaFreeBytes();
+					if (change > freeBytes)
+					{
+						StaticUtils.AddError(string.Format(
+							"ERROR! InsertPlayer: setting {0}'s {1} to '{2} {3}' would overflow the player name area by {4} byte(s) -- write rejected (the old name is kept). Shorten this (or another) player's name to fit.",
+							team, position, fname, lname, change - freeBytes));
+						return;
+					}
+				}
+
 				int i=0;
 				bytes[0] = number;
 				for(i=1; i < fname.Length+1; i++)
@@ -436,6 +453,23 @@ Do you want to continue?", ROM_LENGTH);
 				UpdatePlayerData(team,position,bytes, change);
 				AdjustDataPointers(pos, change, lastPointer);
 			}
+		}
+
+		/// <summary>
+		/// How many more bytes the name area can take, measured as TecmoTool.GetNameAreaFreeBytes does:
+		/// the data's end found the way ShiftDataAfter finds it -- scanning back from nameNumberSegmentEnd
+		/// over 0xFF padding -- or the sentinel pointer after the last player (lastPointer), whichever is
+		/// later. ShiftDataDown also copies the 0xFF byte just past the data, so the data's exclusive end
+		/// may grow only up to nameNumberSegmentEnd itself.
+		/// </summary>
+		private int GetNameAreaFreeBytes()
+		{
+			int scannedEnd = nameNumberSegmentEnd;
+			while (scannedEnd > playerNumberNameDataStart && outputRom[scannedEnd] == 0xff)
+				scannedEnd--;
+			scannedEnd++;
+			int sentinelEnd = (outputRom[lastPointer] | (outputRom[lastPointer + 1] << 8)) + dataPositionOffset;
+			return nameNumberSegmentEnd - Math.Max(scannedEnd, sentinelEnd);
 		}
 
 		private void AdjustDataPointers(int pos, int change, int lastPointerLocation)

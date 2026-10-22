@@ -519,7 +519,7 @@ namespace TSBTool
                 try
                 {
                     long len = outputRom.Length;
-                    FileStream s1 = new FileStream(filename, FileMode.OpenOrCreate);
+                    FileStream s1 = new FileStream(filename, FileMode.Create);
                     s1.Write(outputRom, 0, (int)len);
                     s1.Close();
                 }

@@ -5,9 +5,11 @@ using System.Text.RegularExpressions;
 
 namespace TSBTool
 {
-    // Generic, per-platform roster name-table capacity checker for NES and SNES, whose own InsertPlayer
-    // (unlike Genesis_TSB1Tool's, see Genesis_TSB1Tool.InsertPlayer) has no overflow protection at all --
-    // a write that doesn't fit just shifts blindly into whatever table comes next. Deliberately built as
+    // Generic, per-platform roster name-table capacity checker for NES and SNES. Their InsertPlayer used to
+    // have no overflow protection at all -- a write that doesn't fit shifted blindly into whatever table
+    // comes next; since 2026-10 (NES/CXROM 10-03, SNES 10-10) it rejects such a write, as
+    // Genesis_TSB1Tool.InsertPlayer does. This planner still runs first so names get shortened to fit
+    // instead of rejected (the old name kept). Deliberately built as
     // new code operating only through each tool's existing public ITecmoTool surface
     // (GetTeamPlayers/InsertPlayer/ProcessText), duplicating just the two fixed addresses that bound
     // each platform's name pool, rather than modifying TecmoTool.cs/SNES_TecmoTool.cs at all.
@@ -423,9 +425,9 @@ namespace TSBTool
         //
         // Uses the same "max cumulative net growth over any prefix, in file order" technique as
         // Genesis_TSB1Tool.ResolveRosterFit to compute NeededSlack, since a real apply goes through
-        // ProcessText's own top-to-bottom InsertPlayer calls and NES/SNES's InsertPlayer has no
-        // per-call bounds check at all -- checking only the *total* would miss an intermediate overflow
-        // that a later shrink in the file can't retroactively rescue.
+        // ProcessText's own top-to-bottom InsertPlayer calls, and NES/SNES's InsertPlayer rejects any
+        // write that doesn't fit at that moment -- checking only the *total* would miss an intermediate
+        // overflow (a rejected name) that a later shrink in the file can't retroactively rescue.
         public static PlayerNamesFitReport ResolveFit(ITecmoTool tool, PlayerNamesConfig config, string rosterText, bool autoApply)
         {
             PlayerNamesFitReport report = new PlayerNamesFitReport();

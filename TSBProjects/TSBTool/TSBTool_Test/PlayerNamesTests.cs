@@ -163,30 +163,36 @@ namespace TSBTool_Test
         }
 
         [TestMethod]
-        public void VerifyRomSafety_ReturnsFalse_WhenAnUnprotectedOverflowCorruptsThePastBoundaryBytes()
+        public void VerifyRomSafety_ReturnsFalse_WhenThePastBoundaryBytesChange()
         {
-            // SNES_TecmoTool.InsertPlayer caps any single name at 17 characters (auto-abbreviating
-            // anything longer), so one oversized name can never overflow on its own -- real-world risk
-            // only shows up from many individual (legally-capped) writes whose *cumulative* growth
-            // exceeds the ~1552 bytes of real stock slack, since InsertPlayer's own shift has no bounds
-            // check at all once the write is legal-sized. Deliberately bypass ResolveFit and directly
-            // call the tool's own public InsertPlayer for every position on every team (except the
-            // last team, "49ers" -- its last entry, DB2, is a special-cased sentinel-less slot whose
-            // own GetName depends on a well-formed pointer table, so once earlier teams' overflow has
-            // already corrupted things, touching it throws rather than cleanly demonstrating the
-            // silent-corruption case this test is after) with a name at the 17-char cap, to prove
-            // VerifyRomSafety's anchor-byte check actually catches the real corruption this causes.
+            // VerifyRomSafety's anchor-byte check must catch any write past the name area's capacity
+            // boundary. (This used to be shown with real cumulative-growth corruption through
+            // SNES_TecmoTool.InsertPlayer; since 2026-10-10 InsertPlayer rejects a write that doesn't fit
+            // -- see the next test and SnesNameOverflowTests -- so the corruption is simulated directly.)
+            byte[] rom = TestRoms.LoadRom("TSB1.smc");
+            bool safe = PlayerNames.VerifyRomSafety(rom, PlayerNamesConfig.Snes,
+                t => t.OutputRom[0x17b7f0 + 4] ^= 0xFF,
+                16);
+            Assert.IsFalse(safe, "A changed byte past the capacity boundary should be caught.");
+        }
+
+        [TestMethod]
+        public void VerifyRomSafety_ReturnsTrue_WhenCumulativeGrowthIsRejectedByInsertPlayer()
+        {
+            // Every player on every team pushed to the 17-char cap needs far more than the ~1552 bytes of
+            // stock slack; SNES_TecmoTool.InsertPlayer now rejects each write that doesn't fit (old name
+            // kept, error reported), so nothing past the boundary changes -- and the last team's DB2,
+            // which used to throw once earlier writes had overflowed, is handled too.
             byte[] rom = TestRoms.LoadRom("TSB1.smc");
             bool safe = PlayerNames.VerifyRomSafety(rom, PlayerNamesConfig.Snes,
                 t =>
                 {
-                    string[] teams = PlayerNamesConfig.Snes.Teams;
-                    for (int i = 0; i < teams.Length - 1; i++)
+                    foreach (string team in PlayerNamesConfig.Snes.Teams)
                         foreach (string pos in PlayerNamesConfig.Snes.Positions)
-                            t.InsertPlayer(teams[i], pos, "aaaaaaaaaa", "BBBBBBB", 12);
+                            t.InsertPlayer(team, pos, "aaaaaaaaaa", "BBBBBBB", 12);
                 },
                 16);
-            Assert.IsFalse(safe, "Pushing every player to the 17-char cap should overflow ~1552 bytes of real slack and corrupt bytes at the capacity boundary.");
+            Assert.IsTrue(safe, "InsertPlayer should keep every write inside the name area.");
         }
     }
 }

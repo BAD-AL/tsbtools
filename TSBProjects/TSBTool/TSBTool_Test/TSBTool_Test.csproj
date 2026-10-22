@@ -79,6 +79,8 @@
     <Compile Include="TsbTeamSimDataTests.cs" />
     <Compile Include="TecmonsterTeamSimTests.cs" />
     <Compile Include="Tsb3FreeAgentValueTests.cs" />
+    <Compile Include="CliMessageTests.cs" />
+    <Compile Include="SnesNameOverflowTests.cs" />
     <Compile Include="Tsb2Lb5InputTests.cs" />
     <Compile Include="Tsb3TeamLineTests.cs" />
     <Compile Include="Tsb2SimBugFixTests.cs" />
