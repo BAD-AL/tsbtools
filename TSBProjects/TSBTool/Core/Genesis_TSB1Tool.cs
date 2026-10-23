@@ -1997,6 +1997,12 @@ namespace TSBTool
         {
             if (GetPositionIndex(pos0) > -1 && GetPositionIndex(pos1) > -1 && GetPositionIndex(pos2) > -1)
             {
+                string returnTeamError = SNES_TecmoTool.ReturnTeamError(team, pos0, pos1, pos2);
+                if (returnTeamError != null)
+                {
+                    StaticUtils.AddError(returnTeamError);
+                    return;
+                }
                 InsertGuyOnReturnTeam(pos0, team, 0);
                 InsertGuyOnReturnTeam(pos1, team, 1);
                 InsertGuyOnReturnTeam(pos2, team, 2);
@@ -2006,6 +2012,18 @@ namespace TSBTool
                 StaticUtils.AddError(string.Format(
                     "ERROR! Invalid position on RETURN_TEAM {0} {1} {2}", pos0, pos1, pos2));
             }
+        }
+
+        // Same return-team pattern as SNES, see SNES_TecmoTool.FixBrokenReturnTeams.
+        public void FixBrokenReturnTeams()
+        {
+            SNES_TecmoTool.FixBrokenReturnTeams(teams, GetReturnTeam, GetKickReturner, GetPuntReturner,
+                delegate(string team, string[] r, string kr, string pr)
+                {
+                    SetReturnTeam(team, r[0], r[1], r[2]);
+                    SetKickReturner(team, kr);
+                    SetPuntReturner(team, pr);
+                });
         }
 
         public string GetReturnTeam(string team)
@@ -2036,7 +2054,9 @@ namespace TSBTool
             int index = IsGuyOnReturnTeam(position, team);
             if (index < 0)
             {
-                index = 1;
+                index = SNES_TecmoTool.ReturnerSlot(team, "PR", position, 1);
+                if (index < 0)
+                    return;
                 InsertGuyOnReturnTeam(position, team, index);
             }
             int loc = krPrSelectorStart + GetTeamIndex(team);
@@ -2055,7 +2075,9 @@ namespace TSBTool
             int index = IsGuyOnReturnTeam(position, team);
             if (index < 0)
             {
-                index = 0;
+                index = SNES_TecmoTool.ReturnerSlot(team, "KR", position, 0);
+                if (index < 0)
+                    return;
                 InsertGuyOnReturnTeam(position, team, index);
             }
             int loc = krPrSelectorStart + GetTeamIndex(team);

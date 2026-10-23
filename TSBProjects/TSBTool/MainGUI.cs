@@ -128,6 +128,7 @@ namespace TSBTool
             this.Text = "TSBTool Supreme v" + MainClass.version;
             //statusBar1.BackColor = Color.AliceBlue;
             String newMessage = "# new version (2026) " + this.Text + @"
+# GitHub: https://github.com/BAD-AL/tsbtools
 # Edits Tecmo Super Bowl versions:
 # NES (28 Team)
 # NES (32 Team, 16 game schedule CXROM expanded)

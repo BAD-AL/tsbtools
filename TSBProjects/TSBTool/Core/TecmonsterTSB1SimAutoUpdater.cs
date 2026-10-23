@@ -118,6 +118,22 @@ Please verify that this player's attributes are correct.", oldPlayer);
 			}
 		}
 
+        /// <summary>
+        /// Updates only the defenders' sim data (sack and INT shares) of every team that has a full
+        /// defense in 'input'; the offense is left alone. Used by both Auto Update paths.
+        /// </summary>
+        public static string AutoUpdateDefenseSimData(string input)
+        {
+            TecmonsterTSB1SimAutoUpdater tmp = new TecmonsterTSB1SimAutoUpdater();
+            tmp.Data = input;
+            foreach (string team in tmp.mTeams)
+            {
+                tmp.UpdateTeamSimPassDefense(team);
+                tmp.UpdateTeamSimPassRush(team);
+            }
+            return tmp.Data;
+        }
+
         public static string AutoUpdatePlayerSimData(string input)
         {
             TecmonsterTSB1SimAutoUpdater tmp = new TecmonsterTSB1SimAutoUpdater();
@@ -285,21 +301,21 @@ Please verify that this player's attributes are correct.", oldPlayer);
             int[] fsAttrs = InputParser.GetInts(fs, false);
             int[] ssAttrs = InputParser.GetInts(ss, false);
 			
-			int[] passDef = mSimStuff.GetSimPassDefense(
+			int[] passDef = SimStuff.GetSimPassDefense(
 				rolbAttrs[4], rilbAttrs[4], lilbAttrs[4], lolbAttrs[4],
 				rcbAttrs[4],  lcbAttrs[4],  fsAttrs[4],   ssAttrs[4]);
 
-			ReplacePlayer(team, re,   ReplaceSimAttr(re,   2,0));
-			ReplacePlayer(team, nt ,  ReplaceSimAttr(nt,   2,0));
-			ReplacePlayer(team, le ,  ReplaceSimAttr(le,   2,0));
-			ReplacePlayer(team, rolb, ReplaceSimAttr(rolb, 2, passDef[0]));
-			ReplacePlayer(team, rilb, ReplaceSimAttr(rilb, 2, passDef[1]));
-			ReplacePlayer(team, lilb, ReplaceSimAttr(lilb, 2, passDef[2]));
-			ReplacePlayer(team, lolb, ReplaceSimAttr(lolb, 2, passDef[3]));
-			ReplacePlayer(team, rcb,  ReplaceSimAttr(rcb,  2, passDef[4]));
-			ReplacePlayer(team, lcb,  ReplaceSimAttr(lcb,  2, passDef[5]));
-			ReplacePlayer(team, fs,   ReplaceSimAttr(fs,   2, passDef[6]));
-			ReplacePlayer(team, ss,   ReplaceSimAttr(ss,   2, passDef[7]));
+			ReplacePlayer(team, re,   ReplaceSimAttr(re,   2, passDef[0]));
+			ReplacePlayer(team, nt ,  ReplaceSimAttr(nt,   2, passDef[1]));
+			ReplacePlayer(team, le ,  ReplaceSimAttr(le,   2, passDef[2]));
+			ReplacePlayer(team, rolb, ReplaceSimAttr(rolb, 2, passDef[3]));
+			ReplacePlayer(team, rilb, ReplaceSimAttr(rilb, 2, passDef[4]));
+			ReplacePlayer(team, lilb, ReplaceSimAttr(lilb, 2, passDef[5]));
+			ReplacePlayer(team, lolb, ReplaceSimAttr(lolb, 2, passDef[6]));
+			ReplacePlayer(team, rcb,  ReplaceSimAttr(rcb,  2, passDef[7]));
+			ReplacePlayer(team, lcb,  ReplaceSimAttr(lcb,  2, passDef[8]));
+			ReplacePlayer(team, fs,   ReplaceSimAttr(fs,   2, passDef[9]));
+			ReplacePlayer(team, ss,   ReplaceSimAttr(ss,   2, passDef[10]));
 
             int overallSimPassDef = 0;
             if (reAttrs[2] > 49) overallSimPassDef++; if (reAttrs[4] > 49) overallSimPassDef++;
@@ -348,10 +364,10 @@ Please verify that this player's attributes are correct.", oldPlayer);
             int[] fsAttrs = InputParser.GetInts(fs, false);
             int[] ssAttrs = InputParser.GetInts(ss, false);
 			
-			int[] rushDef = mSimStuff.GetSimPassRush(
+			int[] rushDef = SimStuff.GetSimPassRush(
 				reAttrs[2]+reAttrs[3], ntAttrs[2]+ntAttrs[3],
 				leAttrs[2]+leAttrs[3],
-				rolbAttrs[2]+rolbAttrs[3], rilbAttrs[2]+rilbAttrs[3], 
+				rolbAttrs[2]+rolbAttrs[3], rilbAttrs[2]+rilbAttrs[3],
 				lilbAttrs[2]+lilbAttrs[3], lolbAttrs[2]+lolbAttrs[3] );
 
 			ReplacePlayer(team, re,   ReplaceSimAttr(re,   1, rushDef[0]));
@@ -361,10 +377,10 @@ Please verify that this player's attributes are correct.", oldPlayer);
 			ReplacePlayer(team, rilb, ReplaceSimAttr(rilb, 1, rushDef[4]));
 			ReplacePlayer(team, lilb, ReplaceSimAttr(lilb, 1, rushDef[5]));
 			ReplacePlayer(team, lolb, ReplaceSimAttr(lolb, 1, rushDef[6]));
-			ReplacePlayer(team, rcb,  ReplaceSimAttr(rcb,  1, 0));
-			ReplacePlayer(team, lcb,  ReplaceSimAttr(lcb,  1, 0));
-			ReplacePlayer(team, fs,   ReplaceSimAttr(fs,   1, 0));
-			ReplacePlayer(team, ss,   ReplaceSimAttr(ss,   1, rushDef[7]));
+			ReplacePlayer(team, rcb,  ReplaceSimAttr(rcb,  1, rushDef[7]));
+			ReplacePlayer(team, lcb,  ReplaceSimAttr(lcb,  1, rushDef[8]));
+			ReplacePlayer(team, fs,   ReplaceSimAttr(fs,   1, rushDef[9]));
+			ReplacePlayer(team, ss,   ReplaceSimAttr(ss,   1, rushDef[10]));
 		}
 
 		Regex m_SimRegex = null;
@@ -402,8 +418,6 @@ Please verify that this player's attributes are correct.", oldPlayer);
     /// </summary>
     public class TecmonsterSimStuff
     {
-        public const int FRONT_7_SIM_POINT_POOL = 200;
-        public const int FRONT_7_MIN_SIM_PASS_RUSH = 13;
 
         public TecmonsterSimStuff()
         {
@@ -465,93 +479,6 @@ Please verify that this player's attributes are correct.", oldPlayer);
         public int PKSimKick(int KA, int AKB)
         {
             int ret = (int)Math.Round((double)((KA - 38.0) / 43) * 15);
-            return ret;
-        }
-
-
-        public int[] GetSimPassDefense(
-            int rolbInts, int rilbInts, int lilbInts, int lolbInts,
-            int rcbInts, int lcbInts, int fsInts, int ssInts)
-        {
-            double totalInts = rolbInts + rilbInts + lilbInts + lolbInts + rcbInts + lcbInts + fsInts + ssInts;
-            double totalSimPoints = 254;
-            int rolbPoints, rilbPoints, lilbPoints, lolbPoints, rcbPoints, lcbPoints, fsPoints, ssPoints;
-
-            rolbPoints = (int)((rolbInts / totalInts) * totalSimPoints);
-            rilbPoints = (int)((rilbInts / totalInts) * totalSimPoints);
-            //lilbPoints = (int)((lilbInts / totalInts )* totalSimPoints);
-            lolbPoints = (int)((lolbInts / totalInts) * totalSimPoints);
-            rcbPoints = (int)((rcbInts / totalInts) * totalSimPoints);
-            lcbPoints = (int)((lcbInts / totalInts) * totalSimPoints);
-            fsPoints = (int)((fsInts / totalInts) * totalSimPoints);
-            ssPoints = (int)((ssInts / totalInts) * totalSimPoints);
-
-            lilbPoints = 1 + (int)(totalSimPoints
-                -
-                (rcbPoints + lcbPoints + fsPoints + rolbPoints + ssPoints +
-                rilbPoints + lolbPoints));
-
-            int[] ret = new int[8];
-            ret[0] = rolbPoints;
-            ret[1] = rilbPoints;
-            ret[2] = lilbPoints;
-            ret[3] = lolbPoints;
-            ret[4] = rcbPoints;
-            ret[5] = lcbPoints;
-            ret[6] = fsPoints;
-            ret[7] = ssPoints;
-
-            return ret;
-        }
-
-        public int[] GetSimPassRush(
-            double reSacks, double ntSacks, double leSacks, double rolbSacks,
-            double rilbSacks, double lilbSacks, double lolbSacks)
-        {
-            double totalSacks = reSacks + ntSacks + leSacks + rolbSacks + rilbSacks + lilbSacks + lolbSacks;
-
-            int totalSimPoints = FRONT_7_SIM_POINT_POOL;
-            int minPr = FRONT_7_MIN_SIM_PASS_RUSH;
-
-            int rePoints, ntPoints, lePoints, rolbPoints, rilbPoints, lilbPoints, lolbPoints, ssPoints;
-            int dbPoints = 0;
-            int cbPoints = 0;
-            int front7Points = 0;
-
-            if (totalSacks == 0)
-            {
-                rePoints = ntPoints = lePoints = rolbPoints = rilbPoints = lilbPoints = lolbPoints = ssPoints = 31;
-                rePoints += 4;
-            }
-            else
-            {
-                rePoints = Math.Max((int)((reSacks / totalSacks) * totalSimPoints), minPr);
-                lePoints = Math.Max((int)((leSacks / totalSacks) * totalSimPoints), minPr);
-                ntPoints = Math.Max((int)((ntSacks / totalSacks) * totalSimPoints), minPr);
-                rolbPoints = Math.Max((int)((rolbSacks / totalSacks) * totalSimPoints), minPr);
-                rilbPoints = Math.Max((int)((rilbSacks / totalSacks) * totalSimPoints), minPr);
-                lilbPoints = Math.Max((int)((lilbSacks / totalSacks) * totalSimPoints), minPr);
-                lolbPoints = Math.Max((int)((lolbSacks / totalSacks) * totalSimPoints), minPr);
-
-                front7Points = rePoints + lePoints + ntPoints + rolbPoints +
-                    rilbPoints + lilbPoints + lolbPoints;
-
-                dbPoints = (int)(255 - front7Points);
-
-                cbPoints = dbPoints / 4;
-                ssPoints = (int)(255 - ((3 * cbPoints) + front7Points));
-            }
-            int[] ret = new int[8];
-
-            ret[0] = rePoints;
-            ret[1] = ntPoints;
-            ret[2] = lePoints;
-            ret[3] = rolbPoints;
-            ret[4] = rilbPoints;
-            ret[5] = lilbPoints;
-            ret[6] = lolbPoints;
-            ret[7] = ssPoints;
-
             return ret;
         }
     }

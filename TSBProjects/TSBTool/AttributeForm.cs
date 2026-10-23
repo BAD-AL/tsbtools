@@ -1646,6 +1646,8 @@ Please verify that this player's attributes are correct.", oldPlayer);
 			{
 				AutoUpdatePlayers( team );
 			}
+			// sack and INT shares: one implementation for both Auto Update paths
+			m_Data = TecmonsterTSB1SimAutoUpdater.AutoUpdateDefenseSimData(m_Data);
 		}
 
 		/// <summary>
@@ -1668,8 +1670,6 @@ Please verify that this player's attributes are correct.", oldPlayer);
 				}
 				AutoUpdatePlayerSimData(team, "P");
 				AutoUpdatePlayerSimData(team, "K");
-				UpdateTeamSimPassDefense(team);
-				UpdateTeamSimPassRush(team);
 			}
 		}
 
@@ -1762,109 +1762,6 @@ Please verify that this player's attributes are correct.", oldPlayer);
 			{
 				ReplacePlayer(team, oldValue, newValue);
 			}
-		}
-
-		private void UpdateTeamSimPassDefense(string team)
-		{
-			string re   = GetPlayerString(team, "RE");
-			string le   = GetPlayerString(team, "LE");
-			string nt   = GetPlayerString(team, "NT");
-			string lolb = GetPlayerString(team, "LOLB");
-			string lilb = GetPlayerString(team, "LILB");
-			string rilb = GetPlayerString(team, "RILB");
-			string rolb = GetPlayerString(team, "ROLB");
-			string rcb  = GetPlayerString(team, "RCB");
-			string lcb  = GetPlayerString(team, "LCB");
-			string fs   = GetPlayerString(team, "FS");
-			string ss   = GetPlayerString(team, "SS");
-
-			if( re == null   || le == null   || nt == null   || 
-				lolb == null || lilb == null || rilb == null || rolb == null ||
-				rcb == null  || lcb == null || fs == null || ss == null )
-			{
-				// we need the entire defense in order to update this.
-				return;
-			}
-			int[] reAttrs   = InputParser.GetInts(re);
-			int[] leAttrs   = InputParser.GetInts(le);
-			int[] ntAttrs   = InputParser.GetInts(nt);
-			int[] lolbAttrs = InputParser.GetInts(lolb);
-			int[] lilbAttrs = InputParser.GetInts(lilb);
-			int[] rilbAttrs = InputParser.GetInts(rilb);
-			int[] rolbAttrs = InputParser.GetInts(rolb);
-			int[] rcbAttrs  = InputParser.GetInts(rcb);
-			int[] lcbAttrs  = InputParser.GetInts(lcb);
-			int[] fsAttrs   = InputParser.GetInts(fs);
-			int[] ssAttrs   = InputParser.GetInts(ss);
-			
-			int[] passDef = m_SimStuff.GetSimPassDefense(
-				rolbAttrs[4], rilbAttrs[4], lilbAttrs[4], lolbAttrs[4],
-				rcbAttrs[4],  lcbAttrs[4],  fsAttrs[4],   ssAttrs[4]);
-
-			ReplacePlayer(team, re,   ReplaceSimAttr(re,   2,0));
-			ReplacePlayer(team, nt ,  ReplaceSimAttr(nt,   2,0));
-			ReplacePlayer(team, le ,  ReplaceSimAttr(le,   2,0));
-			ReplacePlayer(team, rolb, ReplaceSimAttr(rolb, 2, passDef[0]));
-			ReplacePlayer(team, rilb, ReplaceSimAttr(rilb, 2, passDef[1]));
-			ReplacePlayer(team, lilb, ReplaceSimAttr(lilb, 2, passDef[2]));
-			ReplacePlayer(team, lolb, ReplaceSimAttr(lolb, 2, passDef[3]));
-			ReplacePlayer(team, rcb,  ReplaceSimAttr(rcb,  2, passDef[4]));
-			ReplacePlayer(team, lcb,  ReplaceSimAttr(lcb,  2, passDef[5]));
-			ReplacePlayer(team, fs,   ReplaceSimAttr(fs,   2, passDef[6]));
-			ReplacePlayer(team, ss,   ReplaceSimAttr(ss,   2, passDef[7]));
-		}
-		
-		private void UpdateTeamSimPassRush(string team)
-		{
-			string re   = GetPlayerString(team, "RE");
-			string le   = GetPlayerString(team, "LE");
-			string nt   = GetPlayerString(team, "NT");
-			string lolb = GetPlayerString(team, "LOLB");
-			string lilb = GetPlayerString(team, "LILB");
-			string rilb = GetPlayerString(team, "RILB");
-			string rolb = GetPlayerString(team, "ROLB");
-			string rcb  = GetPlayerString(team, "RCB");
-			string lcb  = GetPlayerString(team, "LCB");
-			string fs   = GetPlayerString(team, "FS");
-			string ss   = GetPlayerString(team, "SS");
-
-			if( re == null   || le == null   || nt == null   || 
-				lolb == null || lilb == null || rilb == null || rolb == null ||
-				rcb == null  || lcb == null || fs == null || ss == null )
-			{
-				// we need the entire defense in order to update this.
-				return;
-			}
-			int[] reAttrs   = InputParser.GetInts(re);
-			int[] leAttrs   = InputParser.GetInts(le);
-			int[] ntAttrs   = InputParser.GetInts(nt);
-			int[] lolbAttrs = InputParser.GetInts(lolb);
-			int[] lilbAttrs = InputParser.GetInts(lilb);
-			int[] rilbAttrs = InputParser.GetInts(rilb);
-			int[] rolbAttrs = InputParser.GetInts(rolb);
-			int[] rcbAttrs  = InputParser.GetInts(rcb);
-			int[] lcbAttrs  = InputParser.GetInts(lcb);
-			int[] fsAttrs   = InputParser.GetInts(fs);
-			int[] ssAttrs   = InputParser.GetInts(ss);
-			
-			int[] rushDef = m_SimStuff.GetSimPassRush(
-				reAttrs[2]+reAttrs[3], ntAttrs[2]+ntAttrs[3],
-				leAttrs[2]+leAttrs[3],
-				rolbAttrs[2]+rolbAttrs[3], rilbAttrs[2]+rilbAttrs[3], 
-				lilbAttrs[2]+lilbAttrs[3], lolbAttrs[2]+lolbAttrs[3] );
-
-			ReplacePlayer(team, re,   ReplaceSimAttr(re,   1, rushDef[0]));
-			ReplacePlayer(team, nt ,  ReplaceSimAttr(nt,   1, rushDef[1]));
-			ReplacePlayer(team, le ,  ReplaceSimAttr(le,   1, rushDef[2]));
-			ReplacePlayer(team, rolb, ReplaceSimAttr(rolb, 1, rushDef[3]));
-			ReplacePlayer(team, rilb, ReplaceSimAttr(rilb, 1, rushDef[4]));
-			ReplacePlayer(team, lilb, ReplaceSimAttr(lilb, 1, rushDef[5]));
-			ReplacePlayer(team, lolb, ReplaceSimAttr(lolb, 1, rushDef[6]));
-			ReplacePlayer(team, rcb,  ReplaceSimAttr(rcb,  1, 0));
-			ReplacePlayer(team, lcb,  ReplaceSimAttr(lcb,  1, 0));
-			ReplacePlayer(team, fs,   ReplaceSimAttr(fs,   1, 0));
-			ReplacePlayer(team, ss,   ReplaceSimAttr(ss,   1, rushDef[7]));
-
 		}
 
 		Regex m_SimRegex = null;

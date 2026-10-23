@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -2258,10 +2259,16 @@ Do you want to continue?", ROM_LENGTH);
 		/// <param name="pos2"></param>
 		public void SetReturnTeam(string team, string pos0, string pos1, string pos2)
 		{
-			if( Index(positionNames, pos0) > -1 && 
-				Index(positionNames,pos1)  > -1 && 
+			if( Index(positionNames, pos0) > -1 &&
+				Index(positionNames,pos1)  > -1 &&
 				Index(positionNames, pos2) > -1    )
 			{
+				string returnTeamError = ReturnTeamError(team, pos0, pos1, pos2);
+				if( returnTeamError != null )
+				{
+					StaticUtils.AddError(returnTeamError);
+					return;
+				}
 				InsertGuyOnReturnTeam(pos0, team, 0);
 				InsertGuyOnReturnTeam(pos1, team, 1);
 				InsertGuyOnReturnTeam(pos2, team, 2);
@@ -2271,6 +2278,158 @@ Do you want to continue?", ROM_LENGTH);
 				StaticUtils.AddError(string.Format(
 					"ERROR! Invalid position on RETURN_TEAM {0} {1} {2}",pos0,pos1,pos2));
 			}
+		}
+
+		/// <summary>
+		/// Every stock return team (SNES and Genesis) is RB/WR/TE, RB/WR/TE, starting DB, and the game depends on it:
+		/// - The 3rd player is treated as a DB: in a simulated SNES season a WR3 there took the RB2's carries,
+		///   a WR4 the WR1's catches, and the player screen showed the WR with DB stats.
+		/// - All defenders on the return team share one injury flag; when every returner is out the SNES game
+		///   hangs ($82:EF41 BRA to itself), as it did with DB1, DB2, RCB.
+		/// - DB1 in the 3rd slot returns every kickoff, DB2 every punt, whatever KR/PR say (SNES sim, 112 of
+		///   112 teams over four seasons).
+		/// Returns the error for any other shape, else null.
+		/// </summary>
+		public static string ReturnTeamError(string team, string pos0, string pos1, string pos2)
+		{
+			if( IsReturnSkillPlayer(pos0) && IsReturnSkillPlayer(pos1) && IsReturnDefensiveBack(pos2) )
+				return null;
+			return string.Format(
+				"ERROR! RETURN_TEAM for {0} ({1}, {2}, {3}): the 1st and 2nd players must be a RB, WR or TE and the 3rd " +
+				"a RCB, LCB, FS or SS. The game treats the 3rd player as a defensive back, gives DB1/DB2 there every " +
+				"kickoff/punt, and can freeze when the return team has fewer than 2 offensive players. " +
+				"Return team not changed.", team, pos0, pos1, pos2);
+		}
+
+		/// <summary>
+		/// The return-team slot a KR/PR who is not on the return team takes: 'offenseSlot' for a RB/WR/TE,
+		/// 2 for a starting DB. Anyone else would break the pattern: adds the error and returns -1.
+		/// </summary>
+		public static int ReturnerSlot(string team, string returner, string position, int offenseSlot)
+		{
+			if( IsReturnSkillPlayer(position) )
+				return offenseSlot;
+			if( IsReturnDefensiveBack(position) )
+				return 2;
+			StaticUtils.AddError(string.Format(
+				"ERROR! {0} for {1}: {2} is not on the return team and can't be added to it (the 1st and 2nd players " +
+				"must be a RB, WR or TE, the 3rd a RCB, LCB, FS or SS). {0} not changed.", returner, team, position));
+			return -1;
+		}
+
+		/// <summary>
+		/// Reshapes a return team that breaks the pattern (see ReturnTeamError), keeping what it can:
+		/// - the RB/WR/TE already there (the returners first) keep their slot; WR3, WR4, RB2, RB3 fill the gaps;
+		/// - a starting DB already there (the returner first) goes to slot 3, else RCB;
+		/// - a KR/PR who is off the team now: a defender's job goes to the slot-3 DB, anyone else's to the
+		///   other returner (or slot 1).
+		/// Returns null when the return team is already fine.
+		/// </summary>
+		public static string[] FixReturnTeam(string[] returnTeam, string kr, string pr, out string newKr, out string newPr)
+		{
+			newKr = kr; newPr = pr;
+			if( ReturnTeamError("", returnTeam[0], returnTeam[1], returnTeam[2]) == null )
+				return null;
+
+			string db = "RCB";
+			foreach( string p in new string[] { kr, pr, returnTeam[2], returnTeam[0], returnTeam[1] } )
+			{
+				if( IsReturnDefensiveBack(p) ) { db = p; break; }
+			}
+			List<string> offense = new List<string>();
+			foreach( string p in new string[] { kr, pr, returnTeam[0], returnTeam[1], returnTeam[2], "WR3", "WR4", "RB2", "RB3" } )
+			{
+				if( offense.Count < 2 && IsReturnSkillPlayer(p) && !offense.Contains(p) )
+					offense.Add(p);
+			}
+			string[] ret = new string[] { null, null, db };
+			foreach( string p in offense ) // a player already in slot 1 or 2 keeps it
+			{
+				int slot = Array.IndexOf(returnTeam, p);
+				if( slot == 0 || slot == 1 ) ret[slot] = p;
+			}
+			foreach( string p in offense )
+			{
+				if( Array.IndexOf(ret, p) < 0 ) ret[ret[0] == null ? 0 : 1] = p;
+			}
+
+			bool krStays = Array.IndexOf(ret, kr) > -1, prStays = Array.IndexOf(ret, pr) > -1;
+			if( !krStays ) newKr = IsDefender(kr) ? db : (prStays && pr != db ? pr : ret[0]);
+			if( !prStays ) newPr = IsDefender(pr) ? db : (krStays && kr != db ? kr : ret[0]);
+			return ret;
+		}
+
+		/// <summary>
+		/// Load-time check for SNES and Genesis TSB1 (see TecmoToolFactory): fixes every return team that breaks
+		/// the pattern and adds one warning listing what changed (the ROM file changes only when it's saved).
+		/// </summary>
+		public delegate string TeamGetter(string team);
+		public delegate void ReturnTeamSetter(string team, string[] returnTeam, string kr, string pr);
+
+		public static void FixBrokenReturnTeams(IEnumerable<string> teams, TeamGetter getReturnTeam,
+			TeamGetter getKr, TeamGetter getPr, ReturnTeamSetter set)
+		{
+			StringBuilder sb = new StringBuilder();
+			int count = 0;
+			foreach( string team in teams )
+			{
+				string line = getReturnTeam(team);
+				if( line == null )
+					continue;
+				string[] returnTeam = line.Replace("RETURN_TEAM", "").Replace(" ", "").Split(',');
+				string kr = getKr(team), pr = getPr(team), newKr, newPr;
+				string[] fixedTeam = FixReturnTeam(returnTeam, kr, pr, out newKr, out newPr);
+				if( fixedTeam == null )
+					continue;
+				set(team, fixedTeam, newKr, newPr);
+				count++;
+				sb.Append(string.Format("\n  {0}: RETURN_TEAM {1} (KR {2}, PR {3}) -> RETURN_TEAM {4} (KR {5}, PR {6})",
+					team, string.Join(", ", returnTeam), kr, pr, string.Join(", ", fixedTeam), newKr, newPr));
+			}
+			if( count > 0 )
+			{
+				StaticUtils.AddError(string.Format(
+					"Warning! RETURN_TEAM auto-fixed for {0} team(s). The game needs a RB, WR or TE in the 1st and 2nd " +
+					"slots and a RCB, LCB, FS or SS in the 3rd; other return teams can freeze the game or give DB1/DB2 " +
+					"every return. Save the ROM to keep the fix:{1}", count, sb));
+			}
+		}
+
+		public void FixBrokenReturnTeams()
+		{
+			FixBrokenReturnTeams(teams, GetReturnTeam, GetKickReturner, GetPuntReturner,
+				delegate(string team, string[] r, string kr, string pr)
+				{
+					SetReturnTeam(team, r[0], r[1], r[2]);
+					SetKickReturner(team, kr);
+					SetPuntReturner(team, pr);
+				});
+		}
+
+		private static bool IsReturnSkillPlayer(string position)
+		{
+			return position.StartsWith("RB") || position.StartsWith("WR") || position.StartsWith("TE");
+		}
+
+		private static bool IsReturnDefensiveBack(string position)
+		{
+			switch( position )
+			{
+				case "RCB": case "LCB": case "FS": case "SS":
+					return true;
+			}
+			return false;
+		}
+
+		private static bool IsDefender(string position)
+		{
+			switch( position )
+			{
+				case "RE": case "NT": case "LE": case "ROLB": case "RILB": case "LILB": case "LOLB":
+				case "RCB": case "LCB": case "FS": case "SS": case "DB1": case "DB2":
+					return true;
+			}
+			return false;
 		}
 
 		/// <summary>
@@ -2334,7 +2493,9 @@ Do you want to continue?", ROM_LENGTH);
 			int index = IsGuyOnReturnTeam(position, team);
 			if( index < 0 )
 			{
-				index = 1;
+				index = ReturnerSlot(team, "PR", position, 1);
+				if( index < 0 )
+					return;
 				InsertGuyOnReturnTeam(position, team, index);
 			}
 			
@@ -2369,7 +2530,9 @@ Do you want to continue?", ROM_LENGTH);
 			int index = IsGuyOnReturnTeam(position, team);
 			if( index < 0 )
 			{
-				index = 0;
+				index = ReturnerSlot(team, "KR", position, 0);
+				if( index < 0 )
+					return;
 				InsertGuyOnReturnTeam(position, team, index);
 			}
 			int teamIndex = Index(teams, team);

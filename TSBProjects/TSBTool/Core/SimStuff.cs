@@ -7,8 +7,6 @@ namespace TSBTool
 	/// </summary>
 	public class SimStuff
 	{
-		public const int FRONT_7_SIM_POINT_POOL    = 200;
-		public const int FRONT_7_MIN_SIM_PASS_RUSH = 13;
 
 		public SimStuff()
 		{
@@ -144,119 +142,80 @@ namespace TSBTool
 		}
 
 
+		// Who gets credit for a sack or an INT (TSB_Simulation.md, Step 5): the game rolls 0-255 and
+		// subtracts the shares of RE, NT, LE, ROLB, RILB, LILB, LOLB, RCB, LCB, FS in turn; whatever is left
+		// goes to the SS. So the first 10 shares should add up to nearly 256, or the SS gets the rest (the
+		// old pool of 200 gave him ~23% of all sacks). Weights fitted to Tecmo's stock SNES/NES shares.
+		private const int PassRushPool = 246; // front 7 (stock teams: 230-255)
+		private const int SmallShare   = 2;   // CB/FS sacks and DL INTs, as in the stock ROMs
+		private static readonly double[] PassRushPositionWeights = { 1.0, 0.9, 1.0, 0.9, 0.3, 0.3, 0.9 };     // RE NT LE ROLB RILB LILB LOLB
+		private static readonly double[] CoveragePositionWeights = { 0.5, 0.5, 0.5, 0.5, 0.8, 0.8, 1.0, 0.8 }; // ROLB RILB LILB LOLB RCB LCB FS SS
+
 		/// <summary>
-		/// Use PI 
+		/// Sim pass rush (sack share) for RE, NT, LE, ROLB, RILB, LILB, LOLB, RCB, LCB, FS, SS, from each
+		/// front-7 player's MS + HP: position weight * (MS + HP)^3 shares 246, the CBs and FS get 2, and the
+		/// SS value is what's left of 256 (his real share).
 		/// </summary>
-		/// <param name="rolbInts"></param>
-		/// <param name="rilbInts"></param>
-		/// <param name="lilbInts"></param>
-		/// <param name="lolbInts"></param>
-		/// <param name="rcbInts"></param>
-		/// <param name="lcbInts"></param>
-		/// <param name="fsInts"></param>
-		/// <param name="ssInts"></param>
-		/// <returns></returns>
-		public int[] GetSimPassDefense(
-			int rolbInts, int rilbInts, int lilbInts, int lolbInts,
-			int rcbInts,  int lcbInts,  int fsInts,   int ssInts   )
+		public static int[] GetSimPassRush(int re, int nt, int le, int rolb, int rilb, int lilb, int lolb)
 		{
-			double totalInts = rolbInts + rilbInts + lilbInts + lolbInts + rcbInts + lcbInts + fsInts +ssInts;
-			double totalSimPoints = 254; 
-			int rolbPoints, rilbPoints, lilbPoints, lolbPoints, rcbPoints, lcbPoints, fsPoints, ssPoints;
-
-			rolbPoints   = (int)((rolbInts / totalInts )* totalSimPoints);
-			rilbPoints   = (int)((rilbInts / totalInts )* totalSimPoints);
-			//lilbPoints = (int)((lilbInts / totalInts )* totalSimPoints);
-			lolbPoints   = (int)((lolbInts / totalInts )* totalSimPoints);
-			rcbPoints    = (int)((rcbInts  / totalInts )* totalSimPoints);
-			lcbPoints    = (int)((lcbInts  / totalInts )* totalSimPoints);
-			fsPoints     = (int)((fsInts   / totalInts )* totalSimPoints);
-			ssPoints     = (int)((ssInts   / totalInts )* totalSimPoints);
-
-			lilbPoints = 1 + (int)(totalSimPoints 
-				- 
-				(rcbPoints + lcbPoints + fsPoints + rolbPoints + ssPoints +
-				rilbPoints +  lolbPoints));
-
-			int [] ret = new int[8];
-			ret[0] = rolbPoints;
-			ret[1] = rilbPoints;
-			ret[2] = lilbPoints;
-			ret[3] = lolbPoints;
-			ret[4] = rcbPoints;
-			ret[5] = lcbPoints;
-			ret[6] = fsPoints;
-			ret[7] = ssPoints;
-			
+			int[] front7 = Share(new int[] { re, nt, le, rolb, rilb, lilb, lolb }, PassRushPositionWeights, 3, PassRushPool);
+			int[] ret = new int[11];
+			int sum = 0;
+			for (int i = 0; i < 7; i++)
+			{
+				ret[i] = front7[i];
+				sum += front7[i];
+			}
+			for (int i = 7; i < 10; i++)
+			{
+				ret[i] = SmallShare;
+				sum += SmallShare;
+			}
+			ret[10] = Math.Max(0, 256 - sum);
 			return ret;
 		}
 
-
 		/// <summary>
-		/// use HP instead of sacks
+		/// Sim coverage (INT share) for RE, NT, LE, ROLB, RILB, LILB, LOLB, RCB, LCB, FS, SS, from the PI of
+		/// the 4 LBs and 4 DBs: the DL get 2, position weight * PI^2 shares the rest, and the SS value is
+		/// what's left of 256 (his real share).
 		/// </summary>
-		/// <param name="reSacks"></param>
-		/// <param name="ntSacks"></param>
-		/// <param name="leSacks"></param>
-		/// <param name="rolbSacks"></param>
-		/// <param name="rilbSacks"></param>
-		/// <param name="lilbSacks"></param>
-		/// <param name="lolbSacks"></param>
-		/// <param name="playerData"></param>
-		/// <returns></returns>
- 
-		public int[] GetSimPassRush( 
-			double reSacks,   double ntSacks,   double leSacks,  double rolbSacks,
-			double rilbSacks, double lilbSacks, double lolbSacks )
+		public static int[] GetSimPassDefense(int rolb, int rilb, int lilb, int lolb, int rcb, int lcb, int fs, int ss)
 		{
-			double totalSacks = reSacks + ntSacks + leSacks + rolbSacks + rilbSacks + lilbSacks + lolbSacks;
-			
-			int totalSimPoints = FRONT_7_SIM_POINT_POOL;
-			int minPr          = FRONT_7_MIN_SIM_PASS_RUSH;
-
-			int rePoints, ntPoints, lePoints, rolbPoints, rilbPoints, lilbPoints, lolbPoints, ssPoints;
-			int dbPoints = 0;
-			int cbPoints = 0;
-			int front7Points = 0;
-
-			if( totalSacks == 0 )
+			int[] shares = Share(new int[] { rolb, rilb, lilb, lolb, rcb, lcb, fs, ss }, CoveragePositionWeights, 2, 256 - 3 * SmallShare);
+			int[] ret = new int[11];
+			int sum = 0;
+			for (int i = 0; i < 3; i++)
 			{
-				rePoints= ntPoints= lePoints= rolbPoints= rilbPoints= lilbPoints= lolbPoints= ssPoints=31;
-				rePoints += 4;
+				ret[i] = SmallShare;
+				sum += SmallShare;
 			}
-			else
+			for (int i = 0; i < 7; i++)
 			{
-				rePoints   = Math.Max( (int)((reSacks   / totalSacks )* totalSimPoints), minPr);
-				lePoints   = Math.Max( (int)((leSacks   / totalSacks )* totalSimPoints), minPr);
-				ntPoints   = Math.Max( (int)((ntSacks   / totalSacks )* totalSimPoints), minPr);
-				rolbPoints = Math.Max( (int)((rolbSacks / totalSacks )* totalSimPoints), minPr);
-				rilbPoints = Math.Max( (int)((rilbSacks / totalSacks )* totalSimPoints), minPr);
-				lilbPoints = Math.Max( (int)((lilbSacks / totalSacks )* totalSimPoints), minPr);
-				lolbPoints = Math.Max( (int)((lolbSacks / totalSacks )* totalSimPoints), minPr);
-
-				front7Points = rePoints + lePoints + ntPoints + rolbPoints + 
-					rilbPoints + lilbPoints + lolbPoints;
-
-				dbPoints = (int)(255 - front7Points);
-				
-				cbPoints = dbPoints / 4 ;
-				ssPoints = (int) (255 - ((3*cbPoints) + front7Points)  );
+				ret[3 + i] = shares[i];
+				sum += shares[i];
 			}
-			int[] ret = new int[8];
-			
-			ret[0] = rePoints;
-			ret[1] = ntPoints;
-			ret[2] = lePoints;
-			ret[3] = rolbPoints;
-			ret[4] = rilbPoints;
-			ret[5] = lilbPoints;
-			ret[6] = lolbPoints;
-			ret[7] = ssPoints;
-
+			ret[10] = Math.Max(0, 256 - sum);
 			return ret;
 		}
 
-		public int GetSimOffense(int QB1SimPass, 
+		/// <summary>pool * weight * rating^power / (sum over the group), rounded down, at least 1.</summary>
+		private static int[] Share(int[] ratings, double[] positionWeights, int power, int pool)
+		{
+			double[] weights = new double[ratings.Length];
+			double total = 0;
+			for (int i = 0; i < ratings.Length; i++)
+			{
+				weights[i] = positionWeights[i] * Math.Pow(Math.Max(ratings[i], 1), power);
+				total += weights[i];
+			}
+			int[] ret = new int[ratings.Length];
+			for (int i = 0; i < ratings.Length; i++)
+				ret[i] = Math.Max(1, (int)(pool * weights[i] / total));
+			return ret;
+		}
+
+		public int GetSimOffense(int QB1SimPass,
 			int RB1SimRush,  int RB2SimRush, 
 			int WR1SimCatch, int WR2SimCatch )
 		{

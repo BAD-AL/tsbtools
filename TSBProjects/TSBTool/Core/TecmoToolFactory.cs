@@ -69,7 +69,9 @@ namespace TSBTool
 				    "bears",   "lions",  "packers",  "vikings",   "buccaneers",
 				    "falcons", "rams",   "saints",   "49ers"
 				  };
-				tool = new SNES_TecmoTool(rom);
+				SNES_TecmoTool snesTool = new SNES_TecmoTool(rom);
+				snesTool.FixBrokenReturnTeams();
+				tool = snesTool;
 			}
             else if (type == ROM_TYPE.SNES_TSB2)
             {
@@ -93,7 +95,9 @@ namespace TSBTool
                     "bears",   "lions",  "packers",  "vikings",   "buccaneers",
                     "falcons", "rams",   "saints",   "49ers"
                   };
-                tool = new Genesis_TSB1Tool(rom);
+                Genesis_TSB1Tool genesisTool = new Genesis_TSB1Tool(rom);
+                genesisTool.FixBrokenReturnTeams();
+                tool = genesisTool;
             }
             else
             {

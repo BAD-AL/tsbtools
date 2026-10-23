@@ -89,6 +89,22 @@ K / P
   Kicking  0-F  Field goal and extra point range and accuracy.
   Punting  0-F  Punt distance.
 
+RETURN_TEAM (SNES and Genesis): the 1st and 2nd players must be a RB, WR or TE and the 3rd a RCB,
+  LCB, FS or SS, as in every stock team. A DB returner goes in the 3rd slot.
+  - The game treats the 3rd player as a defensive back: a WR there takes a starter's place in
+    simulated games (a WR3 the RB2's, a WR4 the WR1's) and shows DB stats on the player screen.
+  - DB1 in the 3rd slot returns every kickoff and DB2 every punt in simulated games, whatever
+    KR and PR say.
+  - All defenders on the return team share one injury flag. If every returner is out the SNES
+    game freezes, which happened with DB1, DB2, RCB.
+  A RETURN_TEAM line that breaks this is an error and the return team is left unchanged. A KR or
+  PR who is not on the return team joins it in the matching slot (RB/WR/TE in the 1st or 2nd, a
+  starting DB in the 3rd); anyone else is an error.
+  When a ROM is loaded, a return team that already breaks the pattern is fixed and listed in a
+  warning: the RB/WR/TE already there keep their slots (WR3, WR4, RB2, RB3 fill gaps), a starting
+  DB already there takes the 3rd slot (else RCB), and a DB1/DB2 or other defender who returned
+  kicks or punts hands that job to the 3rd-slot DB. Save the ROM to keep the fix.
+
 Team SimData = 0x<rush defense><pass defense><preference>
   Rush defense  0-F  Stops the run (and kick/punt returns).  Higher = better defense.
   Pass defense  0-F  Stops the pass; also more sacks and interceptions.
@@ -196,8 +212,11 @@ TSB2 also works out the players' values, but keeps the roster's own team SimData
 TSB1 (NES, SNES, Genesis)
   Players: Tecmonster's community formulas, or TSBToolSupreme's original ones (it asks). Teams:
   Tecmonster's team formula -- the league spread out from 0 to F, run/pass preference kept.
-  After editing defenders, check that the team's 11 sack shares and 11 INT shares still add up
-  to about 255.
+  Sack and INT shares (both choices): worked out a team at a time, fitted to Tecmo's stock shares.
+  Sacks go to the front 7 by MS + HP (ends and outside linebackers most, a star pass rusher stands
+  out); INTs mostly to the DBs by PI. Each team's shares add up to 256, so the SS only gets his own
+  share. After editing defenders by hand, check that the team's 11 sack shares and 11 INT shares
+  still add up to about 255.
 
 TSB2 and TSB3
   Models fitted to Tecmo's own sim values in the stock ROMs (TSB2's three seasons, TSB3's one),

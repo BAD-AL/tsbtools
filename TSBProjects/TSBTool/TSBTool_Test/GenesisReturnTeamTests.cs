@@ -65,12 +65,12 @@ namespace TSBTool_Test
             Genesis_TSB1Tool tool = (Genesis_TSB1Tool)TecmoToolFactory.GetToolForRom(rom);
             tool.SetReturnTeam("bills", "WR3", "RB1", "LCB");
 
-            // FS isn't on the return team yet -- SetPuntReturner should insert it (matching SNES's
-            // convention: a punt-returner insert lands at index 1).
+            // FS isn't on the return team yet -- SetPuntReturner should insert it. A starting DB lands in
+            // slot 3 (index 2) so the return team keeps the stock pattern (see ReturnTeamSlot3Tests).
             tool.SetPuntReturner("bills", "FS");
 
             Assert.AreEqual("FS", tool.GetPuntReturner("bills"));
-            Assert.AreEqual("RETURN_TEAM WR3, FS, LCB", tool.GetReturnTeam("bills"));
+            Assert.AreEqual("RETURN_TEAM WR3, RB1, FS", tool.GetReturnTeam("bills"));
         }
 
         [TestMethod]
