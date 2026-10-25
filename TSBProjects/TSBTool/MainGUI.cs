@@ -1790,6 +1790,7 @@ This Program is not endorsed or related to the Tecmo video game company.
             {
                 TSBTool2.ModifyPlayerForm form = new TSBTool2.ModifyPlayerForm();
                 form.RomVersion = type;
+                form.PhotoTool = tool as TSBTool2.TSB3Tool;
                 
                 form.Data = mTextBox.Text;
                 form.CurrentTeam = team;

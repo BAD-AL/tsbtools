@@ -49,3 +49,9 @@ Rebuilding
   powershell -ExecutionPolicy Bypass -File Generate-SimTests.ps1 -Exe <path to TSBToolSupreme.exe>
   The script writes the TSBTool input text it used to inputs\, applies it to the stock ROMs in
   ..\ROMs, keeps only the sim ranges, and checks every sim value and every other byte.
+
+Headless season runs (Mesen2, SNES)
+  Whole seasons can be simmed with no window or keyboard: ..\MesenRunner (season.sh, batch.sh,
+  README.txt there). A portable Mesen2 goes in EMU\ here (git-ignored). Used in October 2026 for the
+  SNES TSB1 return-team / sack-INT checks (TSB1_SNES_Study) and TSB2 / TSB3 stock vs Auto Update Sim
+  (TSB2_study, TSB3_study).

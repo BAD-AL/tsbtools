@@ -2177,8 +2177,41 @@ Do you want to continue?", ROM_LENGTH);
 			if(face < 0x53)
 				skin =0x00;
 
-			SetCutSceneRace(teamIndex, positionOffset, face);
+			SetCutSceneRace(teamIndex, positionOffset, skin); // the same skin as in game (not the face number)
 			outputRom[loc] = (byte)skin;//(byte)face;
+		}
+
+		/// <summary>
+		/// Load-time check (see TecmoToolFactory): rebuilds every team's cutscene skin bits from the in-game skin
+		/// bit and adds one warning if any changed. Older TSBTool versions set the cutscene bit dark for every
+		/// face but 0, so NES-style faces (0x01-0x52, light in game) showed dark in cutscenes.
+		/// </summary>
+		public void FixCutsceneSkin()
+		{
+			List<string> fixedTeams = new List<string>();
+			for( int teamIndex = 0; teamIndex < teams.Length; teamIndex++ )
+			{
+				int start = mRaceCutsceneStartPos + teamIndex*4;
+				byte[] before = new byte[4];
+				Array.Copy(outputRom, start, before, 0, 4);
+				for( int positionIndex = 0; positionIndex < positionNames.Length; positionIndex++ )
+					SetCutSceneRace(teamIndex, positionIndex, GetFace(teams[teamIndex], positionNames[positionIndex]) & 0x80);
+				for( int i = 0; i < 4; i++ )
+				{
+					if( outputRom[start + i] != before[i] )
+					{
+						fixedTeams.Add(teams[teamIndex]);
+						break;
+					}
+				}
+			}
+			if( fixedTeams.Count > 0 )
+			{
+				StaticUtils.AddError(string.Format(
+					"Warning! Player skin tone in cutscenes auto-fixed for {0} team(s) to match the skin tone in game " +
+					"(older TSBTool versions made faces 0x01-0x52 dark in cutscenes). Save the ROM to keep the fix:\n  {1}",
+					fixedTeams.Count, string.Join(", ", fixedTeams.ToArray())));
+			}
 		}
 
 		private const int mRaceCutsceneStartPos = 0x17EF;

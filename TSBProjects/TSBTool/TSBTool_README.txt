@@ -1,5 +1,23 @@
 TSBToolSupreme README
 ======================================================================================================
+TSBToolSupreme (next version, not released yet)
+1. Simulation for TSB2, TSB3 (checked with whole seasons simmed in Mesen2)
+	- Auto Update Sim fitted to Tecmo's own values; works out TSB2 team SimData and TSB3's two
+	  team defense bonuses too. The team forms' old Auto Update buttons are hidden: the player
+	  edit form's Auto Update does the players and the team.
+	- Optional sim bug fix for TSB2, TSB3 (lost interceptions etc.), offered when applying to a ROM.
+	- Season stats (-stats:, View Season Stats) for TSB2, TSB3 saves.
+	- Updated sim labels and tool tips (TSB1, TSB2, TSB3). 'Sim_Formulas.txt' removed.
+2. Sim Guide (TSBTool_Sim_Guide.txt; About menu, player edit form): what every sim value does.
+3. TSB1 Auto Update: sack and INT shares refit. The old shares sent about 23% of the sacks to the SS.
+4. TSB1 RETURN_TEAM (SNES, Genesis): must be RB/WR/TE, RB/WR/TE, then RCB/LCB/FS/SS, as in every
+   stock team. Other return teams can freeze the SNES game or hand every kickoff/punt to DB1/DB2.
+	- A RETURN_TEAM line that breaks this is an error (the return team is kept).
+	- A ROM whose return teams already break it is fixed on load, with a warning listing the changes.
+5. SNES TSB1 cutscene skin tone: Face 0x01-0x52 (light in game) made the player dark in cutscenes.
+	- Fixed; a ROM saved with the old bug is fixed on load, with a warning listing the teams.
+6. Code review fixes (command line shows errors, SNES name length guard, ...).
+======================================================================================================
 TSBToolSupreme Version 1.4.0.0 (10 Oct 2026)
 1. Support for Genesis TSB1 (+ bug fixes for Simulation, stat saving)
 2. View Stats from Save state (.sram, .sav, .bs1 [ares genesis])
@@ -478,6 +496,23 @@ cmd> TSBToolSupreme TSB.nes -stats:TSB.sav -csv > MySeason.csv
 In the GUI the same menu items read .sav files too, or drop the .sav file on the window.
 The NES game keeps kick/punt returns per RB/WR/TE, so they're always shown under that player. A
 season yards total that went below 0 is kept as 0 by the game. (Safeties aren't kept either.)
+
+TSB3 player photos:
+SNES TSB3 shows a photo for 84 players during the game (not in the Team Data menus); everyone else gets
+a silhouette. To save the photos as PNG files (24x32, the game's 16 grays):
+cmd> TSBToolSupreme TSB3.smc -photosOut:TSB3_photos
+The files are named by photo number in hex, 0x00.png - 0x54.png (0x54 is the silhouette), and the
+player each photo belongs to is printed ('0x00.png  bills QB1 jim KELLY').
+A photo belongs to a roster slot (team and position), not a name: a player moved to another slot
+doesn't take his photo with him.
+To put photos back in (a new ROM; the photos without a file in the folder stay as they are):
+cmd> TSBToolSupreme TSB3.smc -photosIn:TSB3_photos -out:TSB3_new.smc
+A file named 0x00 - 0x54 (.png, .jpg, .bmp or .gif) replaces that photo. A 24x32 image is taken as it
+is, each pixel the nearest of the game's grays, so an exported photo edited in a paint program keeps
+every pixel you drew. Any other image, like a headshot, is converted: cropped to 3:4 (centered; a tall
+image keeps its top), scaled down to 24x32 and stretched over the game's grays. Each file's line says
+what was done ('written', 'converted from 128x128', 'unchanged'); bad names and unreadable images are
+reported and skipped.
 
 Pipes and re-direction
 This program was created with pipes and re-direction in mind. If you wanted to pipe the output 

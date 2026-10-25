@@ -65,6 +65,7 @@ namespace TSBTool2
 		private System.Windows.Forms.PictureBox m_FaceBox;
 		private System.Windows.Forms.Label m_FaceLabel;
 		private System.Windows.Forms.ComboBox m_TeamsComboBox;
+		private System.Windows.Forms.Button m_PhotosButton;
 		private System.Windows.Forms.Button m_NextPlayerButton;
 		private System.Windows.Forms.TextBox m_FirstNameTextBox;
 		private System.Windows.Forms.TextBox m_LastNameTextBox;
@@ -107,6 +108,7 @@ namespace TSBTool2
             set
             {
                 mRomVersion = value;
+                UpdatePhotosButton();
                 UpdateSimLabels();
                 if (value == TSBTool.TSBContentType.TSB2 || value == TSBTool.TSBContentType.TSB1)
                 {
@@ -125,6 +127,45 @@ namespace TSBTool2
                     m_NextPicture.Visible = true;
                     m_PrevPicture.Visible = true;
                 }
+            }
+        }
+
+        private TSB3Tool mPhotoTool;
+
+        /// <summary>
+        /// The loaded TSB3 ROM, for the Photos button (null: no TSB3 ROM loaded, the button is disabled).
+        /// </summary>
+        public TSB3Tool PhotoTool
+        {
+            get { return mPhotoTool; }
+            set
+            {
+                mPhotoTool = value;
+                UpdatePhotosButton();
+            }
+        }
+
+        private void UpdatePhotosButton()
+        {
+            m_PhotosButton.Visible = mRomVersion == TSBTool.TSBContentType.TSB3;
+            m_PhotosButton.Enabled = mPhotoTool != null;
+        }
+
+        /// <summary>The player photos ('By photo'), with names from the roster text.</summary>
+        private void m_PhotosButton_Click(object sender, EventArgs e)
+        {
+            if (mPhotoTool == null)
+                return;
+            PlayerNameLookup names = delegate(string team, string position)
+            {
+                string line = GetPlayerString(team, position);
+                return line == null ? null : (InputParser.GetFirstName(line) + " " + InputParser.GetLastName(line)).Trim();
+            };
+            using (TSB3PhotosForm form = new TSB3PhotosForm(mPhotoTool.OutputRom, names))
+            {
+                if (m_TeamsComboBox.SelectedItem != null && m_PositionComboBox.SelectedItem != null)
+                    form.SelectPlayer(m_TeamsComboBox.SelectedItem.ToString(), m_PositionComboBox.SelectedItem.ToString());
+                form.ShowDialog(this);
             }
         }
 
@@ -673,6 +714,7 @@ namespace TSBTool2
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModifyPlayerForm));
             this.label1 = new System.Windows.Forms.Label();
             this.m_TeamsComboBox = new System.Windows.Forms.ComboBox();
+            this.m_PhotosButton = new System.Windows.Forms.Button();
             this.m_PositionComboBox = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.m_FaceBox = new System.Windows.Forms.PictureBox();
@@ -827,6 +869,17 @@ namespace TSBTool2
             this.m_PositionComboBox.Size = new System.Drawing.Size(104, 21);
             this.m_PositionComboBox.TabIndex = 1;
             this.m_PositionComboBox.SelectedIndexChanged += new System.EventHandler(this.m_PositionComboBox_SelectedIndexChanged);
+            // 
+            // m_PhotosButton
+            // 
+            this.m_PhotosButton.Location = new System.Drawing.Point(176, 3);
+            this.m_PhotosButton.Name = "m_PhotosButton";
+            this.m_PhotosButton.Size = new System.Drawing.Size(75, 23);
+            this.m_PhotosButton.TabIndex = 1;
+            this.m_PhotosButton.Text = "P&hotos...";
+            this.m_PhotosButton.UseVisualStyleBackColor = true;
+            this.m_PhotosButton.Visible = false;
+            this.m_PhotosButton.Click += new System.EventHandler(this.m_PhotosButton_Click);
             // 
             // label2
             // 
@@ -1565,6 +1618,7 @@ namespace TSBTool2
             this.Controls.Add(this.m_FaceBox);
             this.Controls.Add(this.m_PositionComboBox);
             this.Controls.Add(this.m_TeamsComboBox);
+            this.Controls.Add(this.m_PhotosButton);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximumSize = new System.Drawing.Size(800, 600);
             this.MinimumSize = new System.Drawing.Size(416, 312);

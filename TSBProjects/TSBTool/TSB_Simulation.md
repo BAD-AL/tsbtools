@@ -248,6 +248,40 @@ and the defending team's **pass defense** digit adds sacks and INTs (NES_05).
   **kicking team's rush defense** (high digit) — `$9A55` and `$9C1F`. So the high digit also acts
   as kick coverage.
 
+### Return teams (SNES and Genesis)
+
+NES picks the kick and punt returner straight from the RB/WR/TE. SNES and Genesis TSB1 have a
+3-player **return team** per team, and the KR and PR are picked from it:
+
+| | SNES (file offset) | Genesis |
+|---|---|---|
+| Return team (3 roster positions) | `0x170CB0 + team × 4` (4th byte always `0x80`) | `0x4BDC + team × 3` |
+| KR / PR (index 0–2 into the return team) | `0x170C90 + team`, high nibble KR, low nibble PR | `0x4BC0 + team`, same |
+
+Every stock team has the same shape: slots 1 and 2 are a RB, WR or TE, slot 3 is a starting DB (RCB,
+LCB, FS or SS). The game counts on that shape (the code reading slot 3 isn't traced; this is what the
+simmed seasons showed, October 2026):
+
+* **Slot 3 is treated as a defender.** A WR in slot 3 took a starter's place in simulated games all
+  season (a WR3 took RB2's carries, a WR4 WR1's catches), and his player screen showed DB stats.
+* **DB1 in slot 3 returns every kickoff, DB2 every punt**, whatever the KR/PR nibbles say. The rule
+  fit 112 of 112 team seasons across the stock, 2026 and test ROMs. Stock never puts DB1/DB2 there.
+* **All defenders on the return team share one injury flag.** SNES return setup (`$82:EE93`) marks a
+  slot unavailable from the offense player's injury bit (`$53,X` bit 7) or, for a defender, entry 12
+  of the 2-bit table at `$0544`. If the KR/PR slot is out it searches the 3 slots (`$82:EF33`); when
+  none is free it branches to itself at **`$82:EF41` forever — the game freezes**. A test ROM with
+  return team DB1, DB2, RCB froze in 2 of 2 seasons when its DB returner got hurt (week 5). Genesis
+  wasn't checked.
+* The SNES save keeps its own copy of each team's return setup (team block `+0xD6` KR/PR nibbles,
+  `+0xD7` the slot-3 player, the block's last 3 bytes the return team), so start a new season after
+  changing it in the ROM. The game writes DB1/DB2 into the `+0xD7` copy while the DB returner is hurt.
+
+TSBTool enforces the stock shape (SNES and Genesis, `SNES_TecmoTool.ReturnTeamError`): a
+`RETURN_TEAM` line with anything else in a slot is an error and the return team is left unchanged; a
+KR/PR who isn't on the return team joins it in the matching slot. A ROM whose return teams already
+break the shape is fixed when it's loaded (`FixBrokenReturnTeams`, one warning lists every change;
+the 2026 ROM had all 28 teams fixed). See the Sim Guide's RETURN_TEAM section.
+
 ---
 
 ## Emulator test results
@@ -270,6 +304,24 @@ a full season simulated. Full sheets in `TSBTool_Test\SimTests\`.
 | SNES_06 | run/pass preference | about the same as NES |
 
 The game doesn't track how many times a team was sacked.
+
+### SNES whole seasons (October 2026)
+
+Simmed headless in Mesen2 (`TSBTool_Test\MesenRunner`; saves and stats in
+`TSBTool_Test\SimTests\TSB1_SNES_Study`). Five seasons per ROM, different button timing each.
+
+| ROM | What it checked | Result |
+|---|---|---|
+| 2026 rosters, old Auto Update | the season that started this | SS got 23% of the league's sacks (led 17 of 28 teams): the old sack shares gave the front 7 only 200 of 256 and the CBs/FS 0, so the rest fell through to the SS; LBs got 37% of INTs (stock about 18%) |
+| 2026 + new shares, return teams reshaped (DefFix, DefFix2) | the share refit; return teams | SS 3% of sacks; starters back in their roles. DefFix froze twice (all-defender return teams, above); DefFix2 found the DB1/DB2 rule |
+| 2026 + load auto-fix + new shares (DefFix3) | the final fix | 13 seasons, no freeze; returns by the set KR/PR on 28 of 28 teams |
+| DefFix3 vs unmodified 2026 ROM, 5 seasons each | league shape | all 448 games each, no freeze; SS sacks 3.0 vs 1.4%, ILB sacks 8.5 vs 11.1%, LB INTs 14.3 vs 18.0%, FS+SS INTs 49.8 vs 38.1% (CBs 33 vs 41%); returns by the set KR/PR 98.7 vs 99.2%; points 380 vs 376 a team |
+| stock SNES + new shares only, 5 seasons | is the lean from the formula? | yes: ILB sacks 8.8 vs 11.1%, LB INTs 14.3 vs 18.0%. Kept on purpose — real DBs get more INTs than LBs |
+
+TSBTool's Auto Update sack/INT shares (`SimStuff.GetSimPassRush` / `GetSimPassDefense`, one team at a
+time): sacks by weight × (MS + HP)³ over a pool of 246 (RE/LE 1.0, NT/OLB 0.9, ILB 0.3, CB/FS 2 points
+each); INTs by weight × PI² (LB 0.5, CB 0.8, FS 1.0, SS 0.8, DL 2 points each); the SS gets 256 minus the
+first ten, so the shares always add up.
 
 ---
 

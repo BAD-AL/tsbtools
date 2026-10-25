@@ -279,6 +279,13 @@
     </Compile>
     <Compile Include="TSB2_TSB3\TSB2_3_Core\TSB2Tool.cs" />
     <Compile Include="TSB2_TSB3\TSB2_3_Core\TsbSimAutoUpdater.cs" />
+    <Compile Include="TSB2_TSB3\TSB2_3_Core\TSB3Photos.cs" />
+    <Compile Include="TSB2_TSB3\TSB3PhotosForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TSB2_TSB3\TSB3PhotoEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="TSB2_TSB3\TSB2_3_Core\TSB3Tool.cs" />
     <Compile Include="TSB2_TSB3\TSB2_3_Core\TSBConverter.cs" />
     <Compile Include="TSB2_TSB3\TSB2_3_Core\TSBXSimAutoUpdater.cs" />

@@ -36,6 +36,8 @@ namespace TSBTool
 		private static string colorsDebugTeam = null;
 		private static string statsFileName = null;
 		private static bool statsCsv = false;
+		private static string photosOutDir = null;
+		private static string photosInDir = null;
 
         public static bool OnWindows { get; set; }
 		/// <summary>
@@ -64,6 +66,8 @@ namespace TSBTool
             colorsDebugTeam = null;
             statsFileName = null;
             statsCsv = false;
+            photosOutDir = null;
+            photosInDir = null;
             //Junk(stuff);
             ArrayList args = GetArgs(stuff);
             ArrayList options = GetOptions(stuff);
@@ -71,8 +75,7 @@ namespace TSBTool
             if (romFile != null && romFile.ToLower().EndsWith(".smc"))
             {
                 outFileName = "output.smc";
-            }
-            else if (romFile != null && (romFile.ToLower().EndsWith(".md") || romFile.ToLower().EndsWith(".bin")))
+            }            else if (romFile != null && (romFile.ToLower().EndsWith(".md") || romFile.ToLower().EndsWith(".bin")))
             {
                 outFileName = "output.md";
             }
@@ -117,6 +120,16 @@ namespace TSBTool
             if (romFile == null)
             {
                 Console.Error.WriteLine("No valid rom file passed as an argument.");
+                return;
+            }
+            if (photosOutDir != null)
+            {
+                ExportPhotos(romFile, photosOutDir);
+                return;
+            }
+            if (photosInDir != null)
+            {
+                ImportPhotos(romFile, photosInDir);
                 return;
             }
             if (getFileName != null && File.Exists(getFileName))
@@ -201,6 +214,50 @@ namespace TSBTool
 			Console.Write(statsCsv ? stats.ToCsv(rom) : stats.ToText(rom));
 		}
 
+		/// <summary>
+		/// -photosOut: writes TSB3's player photos to a folder (0x00.png - 0x54.png) and prints who has each.
+		/// </summary>
+		private static void ExportPhotos(string romFile, string folder)
+		{
+			TSBTool2.TSB3Tool tool = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom(romFile)) as TSBTool2.TSB3Tool;
+			if (tool == null)
+			{
+				Console.Error.WriteLine("ERROR! '{0}' isn't a TSB3 ROM; only SNES TSB3 has player photos.", romFile);
+				return;
+			}
+			TestString = TSBTool2.TSB3Photos.ExportPhotos(tool, folder);
+			Console.Write(TestString);
+			Console.WriteLine("Wrote {0} photos to '{1}'.", TSBTool2.TSB3Photos.PhotoCount, folder);
+		}
+
+		/// <summary>
+		/// -photosIn: replaces TSB3's player photos that have a file in the folder and saves the ROM to -out.
+		/// </summary>
+		private static void ImportPhotos(string romFile, string folder)
+		{
+			TSBTool2.TSB3Tool tool = TecmoToolFactory.GetToolForRom(StaticUtils.ReadRom(romFile)) as TSBTool2.TSB3Tool;
+			if (tool == null)
+			{
+				Console.Error.WriteLine("ERROR! '{0}' isn't a TSB3 ROM; only SNES TSB3 has player photos.", romFile);
+				return;
+			}
+			if (!Directory.Exists(folder))
+			{
+				Console.Error.WriteLine("ERROR! Photo folder '{0}' not found.", folder);
+				return;
+			}
+			int changed;
+			TestString = TSBTool2.TSB3Photos.ImportPhotos(tool, folder, out changed);
+			Console.Write(TestString);
+			if (changed == 0)
+			{
+				Console.WriteLine("No photo changed; nothing saved.");
+				return;
+			}
+			tool.SaveRom(outFileName);
+			Console.WriteLine("Wrote {0} photo{1} to '{2}'.", changed, changed == 1 ? "" : "s", outFileName);
+		}
+
 		public static void PrintHelp()
 		{
 		//   -j             -n     -f     -a         -s   
@@ -240,6 +297,14 @@ The following are the available options.
                  TSBToolSupreme TSB1.smc -stats:TSB1.srm -csv > MySeason.csv
                  TSBToolSupreme TSB2.smc -stats:TSB2.srm -csv > MySeason.csv
                  TSBToolSupreme TSPRBOWL.nes -stats:TSPRBOWL.sav -csv > MySeason.csv
+-photosOut:folder  (SNES TSB3 only) Write the player photos to <folder> as 0x00.png - 0x54.png (photo number in hex;
+                 24x32, the game's 16 grays) and print the player each one belongs to. 0x54 is the silhouette shown
+                 for every player without a photo.
+                 TSBToolSupreme TSB3.smc -photosOut:TSB3_photos
+-photosIn:folder   (SNES TSB3 only) Replace the player photos that have a file in <folder> (0x00 - 0x54, .png .jpg .bmp
+                 or .gif) and save the ROM to -out. A 24x32 image is taken as it is (each pixel the nearest of the game's
+                 grays); any other image (a headshot) is cropped to 3:4, scaled down and turned into the game's grays.
+                 TSBToolSupreme TSB3.smc -photosIn:TSB3_photos -out:TSB3_new.smc
 -noAutoFit  (Genesis/NES/SNES TSB1 only) Don't auto-trim unspecified players' names to fit the roster before applying. On by default (safe); this only reports what would be needed instead of doing it.
 ",MainClass.version)
 				);
@@ -294,6 +359,20 @@ The following are the available options.
 					string path = options[i].ToString().Substring("-stats:".Length);
 					if (path.Length > 0)
 						statsFileName = path;
+				}
+				else if( option.StartsWith("-photosout:") || option.StartsWith("/photosout:"))
+				{
+					// keep the path's case and any ':' in it (C:\...)
+					string path = options[i].ToString().Substring("-photosOut:".Length);
+					if (path.Length > 0)
+						photosOutDir = path;
+				}
+				else if( option.StartsWith("-photosin:") || option.StartsWith("/photosin:"))
+				{
+					// keep the path's case and any ':' in it (C:\...)
+					string path = options[i].ToString().Substring("-photosIn:".Length);
+					if (path.Length > 0)
+						photosInDir = path;
 				}
 				else if( option.StartsWith("-colorsdebug") || option.StartsWith("/colorsdebug"))
 				{
