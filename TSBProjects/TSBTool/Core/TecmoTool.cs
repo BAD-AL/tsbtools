@@ -975,6 +975,21 @@ Do you want to continue?", "<file>", len, TecmoToolFactory.ORIG_NES_TSB1_LEN, Te
 			return nameAreaEnd - Math.Max(scannedEnd, sentinelEnd);
 		}
 
+		/// <summary>
+		/// Earlier versions (before oct 2026) of TSBTool left the old tail of a shortened last name (falcons P; CXROM
+		/// panthers P) behind it. GetNameAreaFreeBytes counts those bytes as data but the roster name check
+		/// doesn't, so the check could plan a roster that InsertPlayer then rejected by a byte or two.
+		/// Names are found only through the pointers, so everything from the end pointer to nameAreaEnd is padding.
+		/// </summary>
+		public void ClearNameAreaLeftovers()
+		{
+			int dataEnd = (outputRom[lastPlayerNamePointer] | (outputRom[lastPlayerNamePointer + 1] << 8)) + dataPositionOffset;
+			if (dataEnd <= GetDataPosition(teams[0], positionNames[0]) || dataEnd > nameAreaEnd)
+				return; // a broken pointer; leave the ROM alone
+			for (int i = dataEnd; i < nameAreaEnd; i++)
+				outputRom[i] = 0xff;
+		}
+
 		protected virtual void ShiftDataAfter(string team, string position, int shiftAmount)
 		{
 			if( !IsValidTeam(team) || !IsValidPosition( position ))

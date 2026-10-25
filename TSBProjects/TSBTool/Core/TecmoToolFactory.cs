@@ -58,6 +58,7 @@ namespace TSBTool
                     if (test == null)
                         tool = new CXRomTSBTool(rom, ROM_TYPE.CXROM_v105);
                 }
+                ((TecmoTool)tool).ClearNameAreaLeftovers();
 			}
 			else if( type == ROM_TYPE.SNES_TSB1 )
 			{
@@ -110,7 +111,9 @@ namespace TSBTool
 				    "bears",   "lions",  "packers",  "vikings",   "buccaneers",
 				    "49ers",   "rams",   "saints",   "falcons"
 				};
-                tool = new TecmoTool(rom);
+                TecmoTool nesTool = new TecmoTool(rom);
+                nesTool.ClearNameAreaLeftovers();
+                tool = nesTool;
             }
 			return tool;
 		}

@@ -64,6 +64,11 @@ namespace TSBTool_Test
             return GetFixturePath("ConversionTest", fileName);
         }
 
+        public static string GetPlayTestPath(string fileName)
+        {
+            return GetFixturePath("PlayTest", fileName);
+        }
+
         public static string GetRomPath(string fileName)
         {
             return GetFixturePath("ROMs", fileName);

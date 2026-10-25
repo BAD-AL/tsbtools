@@ -73,13 +73,14 @@ namespace TSBTool_Test
         private static void VerifySetChangesExactlyOneByte(string romFileName)
         {
             byte[] romBytes = TestRoms.LoadRom(romFileName);
-            byte[] originalBytes = (byte[])romBytes.Clone();
-
-            byte originalValue = originalBytes[TestLocation];
-            byte targetValue = (byte)(originalValue ^ 0xFF); // guaranteed different from originalValue
 
             ITecmoContent tool = TecmoToolFactory.GetToolForRom(romBytes);
             Assert.IsNotNull(tool, "Failed to detect ROM type for " + romFileName);
+            // Taken after loading: loading may repair a ROM (e.g. NES name-area leftovers), and only SET's own change is tested here.
+            byte[] originalBytes = (byte[])tool.OutputRom.Clone();
+
+            byte originalValue = originalBytes[TestLocation];
+            byte targetValue = (byte)(originalValue ^ 0xFF); // guaranteed different from originalValue
 
             string setCommand = string.Format("SET(0x{0:x}, 0x{1:x2})", TestLocation, targetValue);
             tool.ProcessText(setCommand);

@@ -25,7 +25,7 @@ namespace TSBTool_Test
     public class ReplaceStringCommandTests
     {
         private const int MarkerLocation = 0x2000;
-        private const int SecondMarkerLocation = 0x3000;
+        private const int SecondMarkerLocation = 0x4000; // past the NES name area (ends 0x300F), whose padding loading clears
 
         private static void PlantAsciiString(byte[] rom, int location, string text)
         {
