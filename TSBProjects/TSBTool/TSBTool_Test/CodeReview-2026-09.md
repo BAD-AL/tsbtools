@@ -16,7 +16,7 @@
 | ID | Sev | Finding | Status |
 |---|---|---|---|
 | H1 | High | Command-line mode prints "Error: Message" instead of the actual error text | **Fixed** (by the author) |
-| H2 | High | A misspelled `TEAM =` line applies the following roster to the *previous* team | Reproduced (R4) |
+| H2 | High | A misspelled `TEAM =` line applies the following roster to the *previous* team | **Fixed** 2026-10-25 (TSB1 + TSB2/TSB3 parsers skip the unknown team's lines to the next TEAM/WEEK line and report the count) |
 | H3 | High | NES player names can grow past the name area into the Bills' attribute table | **Fixed** — NES/CXROM 2026-10-03, SNES 2026-10-10 (`InsertPlayer` rejects a name that doesn't fit) |
 | H4 | High | `JUICE(ALL, n)` skips week 1 and writes past the end of the NES juice table | Reproduced (R1) |
 | H5 | High | `JUICE(week, 0)` crashes and aborts the rest of the file | Reproduced (R2) |

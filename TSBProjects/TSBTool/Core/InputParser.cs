@@ -16,7 +16,10 @@ namespace TSBTool
 		private ITecmoTool tool;
 		private const int scheduleState = 0;
 		private const int rosterState   = 1;
+		private const int skipTeamState = 3; // after a TEAM line naming a team the ROM doesn't have, until the next TEAM/WEEK line
 		private int currentState = 2;
+		private string skippedTeam;
+		private int skippedLines;
 		public bool showSimError= false;
 
         private static Regex numberRegex = new Regex("(#[0-9]{1,2})");
@@ -80,6 +83,7 @@ namespace TSBTool
 					ProcessLine(lines[i]);
 					//Console.WriteLine(i);
 				}
+				EndSkippedTeam();
 				ApplySchedule();
 				StaticUtils.ShowErrors(); // roster + schedule problems together, in one box
 			}
@@ -123,6 +127,7 @@ namespace TSBTool
 					ProcessLine(line);
 					//Console.WriteLine("Line "+lineNumber);
 				}
+				EndSkippedTeam();
 				ApplySchedule();
 				StaticUtils.ShowErrors();
 			}
@@ -194,6 +199,11 @@ namespace TSBTool
                 Genesis_TSB1Tool genesisTool = tool as Genesis_TSB1Tool;
                 if (genesisTool != null)
                     genesisTool.FixSimBugs();
+            }
+            else if (currentState == skipTeamState &&
+                (playbookRegex.IsMatch(line) || teamStringsRegex.IsMatch(line) || line.StartsWith("COLORS")))
+            {
+                skippedLines++; // the unknown team's own line: not for the previous team
             }
             else if ((m = playbookRegex.Match(line)) != Match.Empty)
 			{
@@ -305,6 +315,7 @@ namespace TSBTool
             else if (teamRegex.Match(line) != Match.Empty)//line.StartsWith("TEAM") )
             {
                 //Console.WriteLine("'{0}' ", line);
+                EndSkippedTeam();
                 currentState = rosterState;
                 string team = GetTeam(line);
                 bool ret = SetCurrentTeam(team);
@@ -312,6 +323,10 @@ namespace TSBTool
                 {
                     StaticUtils.AddError(string.Format("ERROR with line '{0}'.", line));
                     StaticUtils.AddError(string.Format("Team input must be in the form 'TEAM = team SimData=0x1F'"));
+                    // currentTeam is still the previous team: skip this team's lines, don't overwrite that one.
+                    currentState = skipTeamState;
+                    skippedTeam = team;
+                    skippedLines = 0;
                     return;
                 }
                 int[] simData = GetSimData(line);
@@ -337,6 +352,7 @@ namespace TSBTool
             }
             else if (weekRegex.Match(line) != Match.Empty)  //line.StartsWith("WEEK"))
             {
+                EndSkippedTeam();
                 currentState = scheduleState;
                 if (scheduleList == null)
                     scheduleList = new List<string>(300);
@@ -367,6 +383,10 @@ namespace TSBTool
             {
                 if (scheduleList != null)
                     scheduleList.Add(line);
+            }
+            else if (currentState == skipTeamState)
+            {
+                skippedLines++;
             }
             else if (currentState == rosterState)
             {
@@ -463,6 +483,16 @@ namespace TSBTool
 				StaticUtils.AddError(string.Format("Week '{0}' is invalid.",week_str));
 			}
 			return ret;
+		}
+
+		// Reports the lines skipped after an unknown TEAM line (they used to land on the previous team).
+		private void EndSkippedTeam()
+		{
+			if (skippedTeam == null)
+				return;
+			if (skippedLines > 0)
+				StaticUtils.AddError(string.Format("ERROR! Team '{0}' is not in this ROM: its {1} line(s) were skipped.", skippedTeam, skippedLines));
+			skippedTeam = null;
 		}
 
 		private bool SetCurrentTeam(string team)

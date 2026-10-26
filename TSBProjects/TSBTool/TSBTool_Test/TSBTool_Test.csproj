@@ -88,6 +88,7 @@
     <Compile Include="NameAreaLeftoverTests.cs" />
     <Compile Include="Tsb2Tsb3NameGuardTests.cs" />
     <Compile Include="Tsb2Tsb3PlayerNamesTests.cs" />
+    <Compile Include="UnknownTeamLineTests.cs" />
     <Compile Include="Tsb1DefenseSimTests.cs" />
     <Compile Include="Tsb2Lb5InputTests.cs" />
     <Compile Include="Tsb3TeamLineTests.cs" />
