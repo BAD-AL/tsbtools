@@ -526,8 +526,8 @@ The following are the available options.
                     content = report.ApplySuggestions(content); // the shortenings the report listed
             }
 
-            // Same problem class as Genesis, but for NES/SNES TSB1 and CXROM (MainGUI.ApplyToRom does the
-            // same, with one confirm dialog). One report covering every name area (CXROM has two) plus
+            // Same problem class as Genesis, but for NES/SNES TSB1, CXROM and SNES TSB2/TSB3 (MainGUI.ApplyToRom does
+            // the same, with one confirm dialog). One report covering every name area (CXROM has two, TSB2 one per season) plus
             // names over the length limit. PlayerNames.VerifyRomSafety is deliberately NOT run here: it
             // false-positives on any legitimate non-roster edit sharing the name pool's boundary, e.g.
             // formations/abilities/sim data from a full-featured apply. ResolveFit's own arithmetic plus

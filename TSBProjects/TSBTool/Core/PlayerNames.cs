@@ -5,14 +5,14 @@ using System.Text.RegularExpressions;
 
 namespace TSBTool
 {
-    // Generic, per-platform roster name-table capacity checker for NES and SNES. Their InsertPlayer used to
-    // have no overflow protection at all -- a write that doesn't fit shifted blindly into whatever table
-    // comes next; since 2026-10 (NES/CXROM 10-03, SNES 10-10) it rejects such a write, as
-    // Genesis_TSB1Tool.InsertPlayer does. This planner still runs first so names get shortened to fit
+    // Generic, per-platform roster name-table capacity checker for NES, SNES TSB1 and SNES TSB2/TSB3. Their
+    // InsertPlayer used to have no overflow protection at all -- a write that doesn't fit shifted blindly into
+    // whatever table comes next; since 2026-10 (NES/CXROM 10-03, SNES 10-10, TSB2/TSB3 10-25) it rejects such a
+    // write, as Genesis_TSB1Tool.InsertPlayer does. This planner still runs first so names get shortened to fit
     // instead of rejected (the old name kept). Deliberately built as
-    // new code operating only through each tool's existing public ITecmoTool surface
-    // (GetTeamPlayers/InsertPlayer/ProcessText), duplicating just the two fixed addresses that bound
-    // each platform's name pool, rather than modifying TecmoTool.cs/SNES_TecmoTool.cs at all.
+    // new code operating only through each tool's existing public surface
+    // (GetTeamPlayers/InsertPlayer/ProcessText; TSB2/TSB3 per season), duplicating just the two fixed addresses
+    // that bound each TSB1 platform's name pool, rather than modifying TecmoTool.cs/SNES_TecmoTool.cs at all.
     public class PlayerNamesConfig
     {
         public readonly string PlatformName;
@@ -32,9 +32,20 @@ namespace TSBTool
         public readonly int MaxNameLength;
         public readonly int LnameTruncateThreshold;
 
+        // TSB2/TSB3: the season whose name table this area is (only that SEASON block of the text counts).
+        // 0 for TSB1, which has one roster and no SEASON lines.
+        public readonly int Season;
+
         public PlayerNamesConfig(string platformName, string[] teams, string[] positions, int poolStartAddress, int capacityBoundaryAddress,
             int maxNameLength, int lnameTruncateThreshold)
+            : this(platformName, teams, positions, poolStartAddress, capacityBoundaryAddress, maxNameLength, lnameTruncateThreshold, 0)
         {
+        }
+
+        public PlayerNamesConfig(string platformName, string[] teams, string[] positions, int poolStartAddress, int capacityBoundaryAddress,
+            int maxNameLength, int lnameTruncateThreshold, int season)
+        {
+            Season = season;
             PlatformName = platformName;
             Teams = teams;
             Positions = positions;
@@ -104,6 +115,8 @@ namespace TSBTool
 
     public class PlayerNamesFitReport
     {
+        // The area's PlayerNamesConfig.Season: ApplySuggestions renames only inside that SEASON block.
+        public int Season;
         public bool Fits;
         public int NeededSlack;
         public int AvailableSlack;
@@ -214,12 +227,11 @@ namespace TSBTool
         // The areas are independent, so this matches the dry run the report was built from.
         public string Apply(ITecmoContent tool, string rosterText)
         {
-            ITecmoTool nesOrSnesTool = tool as ITecmoTool;
             for (int i = 0; i < Reports.Count; i++)
             {
                 if (!Reports[i].NeedsAttention)
                     continue;
-                PlayerNamesFitReport report = PlayerNames.ResolveFit(nesOrSnesTool, Configs[i], rosterText, true);
+                PlayerNamesFitReport report = PlayerNames.ResolveFitFor(tool, Configs[i], rosterText, true);
                 rosterText = PlayerNames.ApplySuggestions(rosterText, report);
             }
             return rosterText;
@@ -230,10 +242,9 @@ namespace TSBTool
     {
         // Single source of truth for "which ROM families get this check" -- shared by MainGUI and
         // MainClass so they can't drift out of sync on which ROM_TYPEs are NES-like vs SNES-like.
-        // Deliberately limited to NES/SNES TSB1 (and NES's CXRom variants, which extend TecmoTool and
-        // share its exact roster layout) -- TSB2/TSB3/Genesis are excluded, matching the user's explicit
-        // "NES and SNES are vital, TSB2/TSB3 less so" priority, and Genesis already has its own
-        // Genesis_TSB1Tool.ResolveRosterFit for this exact problem.
+        // NES/SNES TSB1 (and NES's CXRom variants, which extend TecmoTool and share its exact roster
+        // layout) here; SNES TSB2/TSB3 through PlanFit (BuildTsb2Configs, one area per season table).
+        // Genesis has its own Genesis_TSB1Tool.ResolveRosterFit for this exact problem.
         public static PlayerNamesConfig ResolveConfigFor(ITecmoTool tool)
         {
             List<PlayerNamesConfig> configs = ResolveConfigsFor(tool);
@@ -267,19 +278,94 @@ namespace TSBTool
 
         // Dry run of every name area's check for tool + rosterText, as one plan: one report to show
         // (MainGUI's single dialog, MainClass's single printout) and one Apply. Empty plan for ROM
-        // types without a check (Genesis has its own ResolveRosterFit; TSB2/TSB3 have none).
+        // types without a check (Genesis has its own ResolveRosterFit).
         public static RosterNamePlan PlanFit(ITecmoContent tool, string rosterText)
         {
             RosterNamePlan plan = new RosterNamePlan();
-            ITecmoTool nesOrSnesTool = tool as ITecmoTool;
-            if (nesOrSnesTool == null)
-                return plan;
-            foreach (PlayerNamesConfig config in ResolveConfigsFor(nesOrSnesTool))
+            foreach (PlayerNamesConfig config in ConfigsFor(tool))
             {
                 plan.Configs.Add(config);
-                plan.Reports.Add(ResolveFit(nesOrSnesTool, config, rosterText, false));
+                plan.Reports.Add(ResolveFitFor(tool, config, rosterText, false));
             }
             return plan;
+        }
+
+        private static List<PlayerNamesConfig> ConfigsFor(ITecmoContent tool)
+        {
+            TSBTool2.TSB2Tool tsb2 = tool as TSBTool2.TSB2Tool;
+            if (tsb2 != null)
+                return BuildTsb2Configs(tsb2);
+            ITecmoTool nesOrSnesTool = tool as ITecmoTool;
+            return nesOrSnesTool != null ? ResolveConfigsFor(nesOrSnesTool) : new List<PlayerNamesConfig>();
+        }
+
+        // SNES TSB2 keeps a name table per season (3), TSB3 one; each is its own area, bounded by the tool
+        // (TSB2Tool.GetNameTableArea: its first name to the end of NAME_TABLE_SIZE). TSB3's list includes its
+        // freeAgents and allTime "teams". No length cap: TSB2/TSB3's InsertPlayerName has none.
+        private static List<PlayerNamesConfig> BuildTsb2Configs(TSBTool2.TSB2Tool tool)
+        {
+            bool tsb3 = tool.RomVersion == ROM_TYPE.SNES_TSB3;
+            List<PlayerNamesConfig> configs = new List<PlayerNamesConfig>();
+            for (int season = 1; season <= (tsb3 ? 1 : 3); season++)
+            {
+                int start, end;
+                tool.GetNameTableArea(season, out start, out end);
+                configs.Add(new PlayerNamesConfig(tsb3 ? "TSB3" : "TSB2 season " + season,
+                    TSBTool2.TSB2Tool.teams.ToArray(), TSBTool2.TSB2Tool.positionNames.ToArray(), start, end,
+                    int.MaxValue, int.MaxValue, season));
+            }
+            return configs;
+        }
+
+        // What the planner needs from a tool for one name area: each team's roster dump, a name write, and
+        // the name parsing its real apply uses (TSB1's InputParser or TSB2/TSB3's, which also knows LB5).
+        // TSB1 tools through ITecmoTool; TSB2/TSB3 through one season's table.
+        private abstract class NameArea
+        {
+            public abstract string GetTeamPlayers(string team);
+            public abstract void InsertPlayer(string team, string position, string fname, string lname, byte jersey);
+            public abstract string GetFirstName(string line);
+            public abstract string GetLastName(string line);
+        }
+
+        private class Tsb1NameArea : NameArea
+        {
+            private readonly ITecmoTool tool;
+            public Tsb1NameArea(ITecmoTool tool) { this.tool = tool; }
+            public override string GetTeamPlayers(string team) { return tool.GetTeamPlayers(team); }
+            public override void InsertPlayer(string team, string position, string fname, string lname, byte jersey)
+            {
+                tool.InsertPlayer(team, position, fname, lname, jersey);
+            }
+            public override string GetFirstName(string line) { return InputParser.GetFirstName(line); }
+            public override string GetLastName(string line) { return InputParser.GetLastName(line); }
+        }
+
+        private class Tsb2NameArea : NameArea
+        {
+            private readonly TSBTool2.TSB2Tool tool;
+            private readonly int season;
+            public Tsb2NameArea(TSBTool2.TSB2Tool tool, int season) { this.tool = tool; this.season = season; }
+            public override string GetTeamPlayers(string team) { return tool.GetTeamPlayers(season, team); }
+            public override void InsertPlayer(string team, string position, string fname, string lname, byte jersey)
+            {
+                tool.InsertPlayerName(season, team, position, fname, lname, jersey);
+            }
+            public override string GetFirstName(string line) { return TSBTool2.InputParser.GetFirstName(line); }
+            public override string GetLastName(string line) { return TSBTool2.InputParser.GetLastName(line); }
+        }
+
+        private static NameArea AreaFor(ITecmoContent tool, PlayerNamesConfig config)
+        {
+            TSBTool2.TSB2Tool tsb2 = tool as TSBTool2.TSB2Tool;
+            if (tsb2 != null)
+                return new Tsb2NameArea(tsb2, config.Season);
+            return new Tsb1NameArea((ITecmoTool)tool);
+        }
+
+        internal static PlayerNamesFitReport ResolveFitFor(ITecmoContent tool, PlayerNamesConfig config, string rosterText, bool autoApply)
+        {
+            return ResolveFit(AreaFor(tool, config), config, rosterText, autoApply);
         }
 
         // Built from the ROM itself rather than as fixed statics: the team list comes from the
@@ -306,14 +392,26 @@ namespace TSBTool
             return configs;
         }
 
-        private static readonly Regex teamLineRegex = new Regex("TEAM\\s*=\\s*([0-9a-z]+)");
-        private static readonly Regex posLineRegex = new Regex("^([A-Z]+[1-4]?)\\s*,\\s*([a-zA-Z \\.\\-]+),");
+        private static readonly Regex teamLineRegex = new Regex("TEAM\\s*=\\s*([0-9a-zA-Z]+)"); // TSB3 has 'freeAgents'
+        private static readonly Regex seasonLineRegex = new Regex("^\\s*SEASON\\s+([1-3])"); // as TSB2/TSB3's InputParser
+
+        // A TSB2/TSB3 area (areaSeason > 0) only takes its own SEASON block; TSB1 (0) takes everything.
+        private static bool InSeason(int areaSeason, int textSeason)
+        {
+            return areaSeason == 0 || areaSeason == textSeason;
+        }
+        private static readonly Regex posLineRegex = new Regex("^([A-Z]+[1-5]?)\\s*,\\s*([a-zA-Z \\.\\-]+),");
         private static readonly Regex jerseyRegex = new Regex("#([0-9a-fA-F]{1,2})");
 
         // Reads every current player for every team in config.Teams via the already-public
         // ITecmoTool.GetTeamPlayers dump (the same text ProcessText/InputParser round-trips), reusing
         // InputParser's own GetFirstName/GetLastName so this can't drift out of sync with a real apply.
         public static List<PlayerNameEntry> ExtractCurrentRoster(ITecmoTool tool, PlayerNamesConfig config)
+        {
+            return ExtractCurrentRoster(new Tsb1NameArea(tool), config);
+        }
+
+        private static List<PlayerNameEntry> ExtractCurrentRoster(NameArea tool, PlayerNamesConfig config)
         {
             List<PlayerNameEntry> result = new List<PlayerNameEntry>();
             foreach (string team in config.Teams)
@@ -332,8 +430,8 @@ namespace TSBTool
                     if (Array.IndexOf(config.Positions, pos) < 0)
                         continue;
 
-                    string fname = InputParser.GetFirstName(line);
-                    string lname = InputParser.GetLastName(line);
+                    string fname = tool.GetFirstName(line);
+                    string lname = tool.GetLastName(line);
                     if (string.IsNullOrEmpty(fname) || string.IsNullOrEmpty(lname))
                         continue;
 
@@ -366,23 +464,30 @@ namespace TSBTool
         // name matters here, current length comes from ExtractCurrentRoster separately. Each parsed name
         // is immediately clamped to config's own platform cap (see PlayerNamesConfig.MaxNameLength) so
         // every entry already reflects what InsertPlayer will really write, not the raw text.
-        private static List<OverlayEntry> ParseOverlayText(string rosterText, PlayerNamesConfig config)
+        private static List<OverlayEntry> ParseOverlayText(NameArea tool, string rosterText, PlayerNamesConfig config)
         {
             List<OverlayEntry> entries = new List<OverlayEntry>();
             if (rosterText == null)
                 return entries;
 
             string currentTeam = null;
+            int currentSeason = 1;
             foreach (string rawLine in rosterText.Replace("\r\n", "\n").Split('\n'))
             {
                 string line = rawLine.Trim();
+                Match seasonMatch = seasonLineRegex.Match(line);
+                if (seasonMatch.Success)
+                {
+                    currentSeason = int.Parse(seasonMatch.Groups[1].Value);
+                    continue;
+                }
                 Match teamMatch = teamLineRegex.Match(line);
                 if (teamMatch.Success)
                 {
                     currentTeam = teamMatch.Groups[1].ToString();
                     continue;
                 }
-                if (currentTeam == null)
+                if (currentTeam == null || !InSeason(config.Season, currentSeason))
                     continue;
 
                 Match posMatch = posLineRegex.Match(line);
@@ -390,8 +495,8 @@ namespace TSBTool
                     continue;
                 string pos = posMatch.Groups[1].ToString();
 
-                string fname = InputParser.GetFirstName(line);
-                string lname = InputParser.GetLastName(line);
+                string fname = tool.GetFirstName(line);
+                string lname = tool.GetLastName(line);
                 if (string.IsNullOrEmpty(fname) || string.IsNullOrEmpty(lname))
                     continue;
                 string rawName = fname + " " + lname;
@@ -430,10 +535,16 @@ namespace TSBTool
         // overflow (a rejected name) that a later shrink in the file can't retroactively rescue.
         public static PlayerNamesFitReport ResolveFit(ITecmoTool tool, PlayerNamesConfig config, string rosterText, bool autoApply)
         {
+            return ResolveFit(new Tsb1NameArea(tool), config, rosterText, autoApply);
+        }
+
+        private static PlayerNamesFitReport ResolveFit(NameArea tool, PlayerNamesConfig config, string rosterText, bool autoApply)
+        {
             PlayerNamesFitReport report = new PlayerNamesFitReport();
+            report.Season = config.Season;
 
             List<PlayerNameEntry> current = ExtractCurrentRoster(tool, config);
-            List<OverlayEntry> overlay = ParseOverlayText(rosterText, config);
+            List<OverlayEntry> overlay = ParseOverlayText(tool, rosterText, config);
 
             Dictionary<string, PlayerNameEntry> currentByKey = new Dictionary<string, PlayerNameEntry>();
             int currentTotal = 0;
@@ -568,7 +679,7 @@ namespace TSBTool
             return report;
         }
 
-        private static readonly Regex playerLineNameRegex = new Regex("^(\\s*[A-Z]+[1-4]?\\s*,\\s*)([^,]+)(,.*)$");
+        private static readonly Regex playerLineNameRegex = new Regex("^(\\s*[A-Z]+[1-5]?\\s*,\\s*)([^,]+)(,.*)$");
 
         // Rewrites the roster text so each of report.Suggestions' and report.LengthCapped's players is
         // given its shortened name -- what the report tells the user will happen. Matches players the same
@@ -586,28 +697,41 @@ namespace TSBTool
                 suggested[s.Team + "|" + s.Position] = s.SuggestedName;
             foreach (PlayerNamesSuggestion s in report.Suggestions)
                 suggested[s.Team + "|" + s.Position] = s.SuggestedName;
-            return RenamePlayersInText(rosterText, suggested);
+            return RenamePlayersInText(rosterText, suggested, report.Season);
         }
 
         // Gives each "team|POSITION" player in namesByTeamPos its new name in rosterText; every other
         // line is left exactly as it was. Shared with Genesis_TSB1Tool.RosterFitReport.ApplySuggestions.
         public static string RenamePlayersInText(string rosterText, Dictionary<string, string> namesByTeamPos)
         {
+            return RenamePlayersInText(rosterText, namesByTeamPos, 0);
+        }
+
+        // season > 0 (TSB2/TSB3): only players inside that SEASON block (text before any SEASON line is season 1).
+        public static string RenamePlayersInText(string rosterText, Dictionary<string, string> namesByTeamPos, int season)
+        {
             if (rosterText == null || namesByTeamPos.Count == 0)
                 return rosterText;
             Dictionary<string, string> suggested = namesByTeamPos;
             string[] lines = rosterText.Split('\n');
             string currentTeam = null;
+            int currentSeason = 1;
             for (int i = 0; i < lines.Length; i++)
             {
                 string trimmed = lines[i].Trim();
+                Match seasonMatch = seasonLineRegex.Match(trimmed);
+                if (seasonMatch.Success)
+                {
+                    currentSeason = int.Parse(seasonMatch.Groups[1].Value);
+                    continue;
+                }
                 Match teamMatch = teamLineRegex.Match(trimmed);
                 if (teamMatch.Success)
                 {
                     currentTeam = teamMatch.Groups[1].ToString();
                     continue;
                 }
-                if (currentTeam == null)
+                if (currentTeam == null || !InSeason(season, currentSeason))
                     continue;
                 Match posMatch = posLineRegex.Match(trimmed);
                 if (!posMatch.Success)

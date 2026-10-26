@@ -64,6 +64,11 @@ namespace TSBTool_Test
             return GetFixturePath("ConversionTest", fileName);
         }
 
+        public static string GetGeneratedInputPath(string fileName)
+        {
+            return GetFixturePath("GeneratedInput", fileName);
+        }
+
         public static string GetPlayTestPath(string fileName)
         {
             return GetFixturePath("PlayTest", fileName);

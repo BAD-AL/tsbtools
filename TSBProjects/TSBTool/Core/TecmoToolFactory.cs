@@ -73,6 +73,7 @@ namespace TSBTool
 				SNES_TecmoTool snesTool = new SNES_TecmoTool(rom);
 				snesTool.FixBrokenReturnTeams();
 				snesTool.FixCutsceneSkin();
+				snesTool.ClearNameAreaLeftovers();
 				tool = snesTool;
 			}
             else if (type == ROM_TYPE.SNES_TSB2)

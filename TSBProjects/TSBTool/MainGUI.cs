@@ -1166,8 +1166,8 @@ CANCEL = Don't do anything, cancel current operation.
                 }
             }
 
-            // Same check for NES/SNES TSB1 and CXROM (PlayerNames), matching MainClass: ONE report
-            // covering every name area (CXROM has two) plus names over the length limit, confirmed once
+            // Same check for NES/SNES TSB1, CXROM and SNES TSB2/TSB3 (PlayerNames), matching MainClass: ONE report
+            // covering every name area (CXROM has two, TSB2 one per season) plus names over the length limit, confirmed once
             // before anything is written -- Cancel leaves the ROM untouched. The shortened names go
             // into the text being applied (so InsertPlayer has nothing left to warn about); the editor
             // text is unchanged.

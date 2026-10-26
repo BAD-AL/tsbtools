@@ -473,6 +473,21 @@ Do you want to continue?", ROM_LENGTH);
 			return nameNumberSegmentEnd - Math.Max(scannedEnd, sentinelEnd);
 		}
 
+		/// <summary>
+		/// Same as TecmoTool.ClearNameAreaLeftovers: bytes left after the last name (49ers DB2), e.g. by
+		/// another editor, count as data for GetNameAreaFreeBytes but not for the roster name check, so a
+		/// roster the check fitted could be rejected by a byte or two. Names are found only through the
+		/// pointers, so everything from the end pointer to nameNumberSegmentEnd is padding.
+		/// </summary>
+		public void ClearNameAreaLeftovers()
+		{
+			int dataEnd = (outputRom[lastPointer] | (outputRom[lastPointer + 1] << 8)) + dataPositionOffset;
+			if (dataEnd <= playerNumberNameDataStart || dataEnd > nameNumberSegmentEnd)
+				return; // a broken pointer; leave the ROM alone
+			for (int i = dataEnd; i < nameNumberSegmentEnd; i++)
+				outputRom[i] = 0xff;
+		}
+
 		private void AdjustDataPointers(int pos, int change, int lastPointerLocation)
 		{
 			byte low, hi;

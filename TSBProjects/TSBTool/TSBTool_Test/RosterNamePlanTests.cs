@@ -16,7 +16,7 @@ namespace TSBTool_Test
     /// and RosterNamePlan.Apply writes the shortened names into the text being applied, so InsertPlayer
     /// never sees an over-length name and never warns. One test per ROM type: the families with a
     /// name check (NES, CXROM x3, SNES) get one plan and no length warnings after; Genesis (its own
-    /// check), TSB2 and TSB3 get no plan.
+    /// check) gets no plan. TSB2/TSB3 (no length cap): Tsb2Tsb3PlayerNamesTests.
     /// </summary>
     [TestClass]
     public class RosterNamePlanTests
@@ -89,15 +89,26 @@ namespace TSBTool_Test
             }
         }
 
-        // Genesis has its own check (Genesis_TSB1Tool.ResolveRosterFit); TSB2/TSB3 have none.
+        // Genesis has its own check (Genesis_TSB1Tool.ResolveRosterFit), so no PlayerNames areas.
         [TestMethod]
-        public void PlanFit_GenesisTsb2Tsb3_NoPlan()
+        public void PlanFit_Genesis_NoPlan()
         {
-            foreach (string romName in new[] { "Genesis/Tecmo Super Bowl (USA) (October 1993).bin", "TSB2_U.smc", "TSB3.smc" })
+            ITecmoContent tool = TecmoToolFactory.GetToolForRom(TestRoms.LoadRom("Genesis/Tecmo Super Bowl (USA) (October 1993).bin"));
+            RosterNamePlan plan = PlayerNames.PlanFit(tool, "TEAM = bills\nQB1, anthony RICHARDSONXXXX, #12,\n");
+            Assert.AreEqual(0, plan.Configs.Count);
+            Assert.IsFalse(plan.NeedsAttention);
+        }
+
+        // TSB2/TSB3 get the check (Tsb2Tsb3PlayerNamesTests) but no length cap: a long name that fits needs nothing.
+        [TestMethod]
+        public void PlanFit_Tsb2Tsb3_LongNameThatFits_NoAttention()
+        {
+            foreach (string romName in new[] { "TSB2_U.smc", "TSB3.smc" })
             {
                 ITecmoContent tool = TecmoToolFactory.GetToolForRom(TestRoms.LoadRom(romName));
-                RosterNamePlan plan = PlayerNames.PlanFit(tool, "TEAM = bills\nQB1, anthony RICHARDSONXXXX, #12,\n");
-                Assert.IsFalse(plan.NeedsAttention, romName);
+                RosterNamePlan plan = PlayerNames.PlanFit(tool, "TEAM = bills\nQB1, anthony RICHARDSONXXXX, Face=0x00, #12,\n");
+                Assert.IsTrue(plan.Configs.Count > 0, romName);
+                Assert.IsFalse(plan.NeedsAttention, romName + ":\n" + plan);
             }
         }
 

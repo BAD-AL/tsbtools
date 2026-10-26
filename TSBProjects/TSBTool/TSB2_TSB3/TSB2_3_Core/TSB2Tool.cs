@@ -556,8 +556,30 @@ namespace TSBTool2
 
         public void InsertPlayerName(int season, string currentTeam, string position, string fname, string lname, byte jerseyNumber)
         {
-            int first_ptr = tsb2_name_string_table_1_first_ptr;
-            int offset = tsb2_name_string_table_1_offset;
+            int first_ptr, offset;
+            GetNameTable(season, out first_ptr, out offset);
+            int playerIndex = GetPlayerIndex(currentTeam, position);
+            string insertThis = (char)jerseyNumber + fname.ToLower() + lname.ToUpper();
+            int stringsInTable = teams.Count * positionNames.Count;
+
+            // A longer name shifts every name after it; past the table's end that pushes the last names out
+            // of it (and toward the player attributes). Reject the write instead, like TSB1's InsertPlayer.
+            int change = insertThis.Length - TSBTool.StaticUtils.GetStringTableString(OutputRom, playerIndex, first_ptr, offset).Length;
+            int freeBytes = GetNameTableFreeBytes(season);
+            if (change > freeBytes)
+            {
+                TSBTool.StaticUtils.AddError(string.Format(
+                    "ERROR! InsertPlayerName: setting season {0} {1}'s {2} to '{3} {4}' would overflow the player name table by {5} byte(s) -- write rejected (the old name is kept). Shorten this (or another) player's name to fit.",
+                    season, currentTeam, position, fname, lname, change - freeBytes));
+                return;
+            }
+            TSBTool.StaticUtils.SetStringTableString(OutputRom, playerIndex, insertThis, first_ptr, offset, stringsInTable, NAME_TABLE_SIZE);
+        }
+
+        private void GetNameTable(int season, out int first_ptr, out int offset)
+        {
+            first_ptr = tsb2_name_string_table_1_first_ptr;
+            offset = tsb2_name_string_table_1_offset;
             switch (season)
             {
                 case 2:
@@ -569,10 +591,31 @@ namespace TSBTool2
                     offset = tsb2_name_string_table_3_offset;
                     break;
             }
-            int playerIndex = GetPlayerIndex(currentTeam, position);
-            string insertThis = (char)jerseyNumber + fname.ToLower() + lname.ToUpper();
-            int stringsInTable = teams.Count * positionNames.Count;
-            TSBTool.StaticUtils.SetStringTableString(OutputRom, playerIndex, insertThis, first_ptr, offset, stringsInTable, NAME_TABLE_SIZE);
+        }
+
+        /// <summary>
+        /// How many more bytes a season's name table can take: from the end of its data (the pointer after
+        /// the last name -- not a scan, the 00 padding can hold leftover letters) to NAME_TABLE_SIZE.
+        /// </summary>
+        public int GetNameTableFreeBytes(int season)
+        {
+            int first_ptr, offset;
+            GetNameTable(season, out first_ptr, out offset);
+            int endPointer = first_ptr + 2 * teams.Count * positionNames.Count;
+            int dataEnd = ((OutputRom[endPointer + 1] << 8) | OutputRom[endPointer]) + offset;
+            return first_ptr + NAME_TABLE_SIZE - dataEnd;
+        }
+
+        /// <summary>
+        /// A season's name area for the roster name check (PlayerNames): where its first name starts and
+        /// where the table ends (exclusive).
+        /// </summary>
+        public void GetNameTableArea(int season, out int start, out int end)
+        {
+            int first_ptr, offset;
+            GetNameTable(season, out first_ptr, out offset);
+            start = ((OutputRom[first_ptr + 1] << 8) | OutputRom[first_ptr]) + offset;
+            end = first_ptr + NAME_TABLE_SIZE;
         }
 
         public string GetTeams(int season)
