@@ -1068,9 +1068,37 @@ namespace TSBTool2
             return retVal;
         }
 
+        // Every on-screen "1994" (season 3, the newest): season menu, two clear-data prompts, the compact
+        // "1992 1993 1994" list, the title's (C) line and the NFL legal line. Like Genesis_TSB1Tool.SetYear this
+        // is a blanket replace: 1992/1993 are left alone, so the season menu reads "2026 / 1993 / 1992".
+        protected virtual int[] YearTextLocations
+        {
+            get { return new int[] { 0x170EC5, 0x170F07, 0x171699, 0x17175F, 0x173B34, 0x1BE229 }; }
+        }
+
+        public string GetYear()
+        {
+            int location = YearTextLocations[0];
+            string ret = "";
+            for (int i = location; i < location + 4; i++)
+                ret += (char)OutputRom[i];
+            return ret;
+        }
+
         public void SetYear(string year)
         {
-            //TODO ???
+            if (year == null || year.Length != 4)
+            {
+                TSBTool.StaticUtils.AddError(string.Format("ERROR! SetYear: '{0}' is not a valid year.", year));
+                return;
+            }
+            foreach (int location in YearTextLocations)
+            {
+                OutputRom[location] = (byte)year[0];
+                OutputRom[location + 1] = (byte)year[1];
+                OutputRom[location + 2] = (byte)year[2];
+                OutputRom[location + 3] = (byte)year[3];
+            }
         }
 
 

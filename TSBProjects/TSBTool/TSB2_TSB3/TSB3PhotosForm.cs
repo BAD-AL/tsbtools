@@ -55,6 +55,7 @@ namespace TSBTool2
 
         private void BuildUI()
         {
+            InitializeComponent();
             Text = "TSB3 Player Photos";
             StartPosition = FormStartPosition.CenterParent;
             ClientSize = new Size(940, 640);
@@ -398,6 +399,20 @@ namespace TSBTool2
                 int at = TSB3Photos.GetPhotoLocation(mWork, photo);
                 Array.Copy(mWork, at, mRom, at, TSB3Photos.PhotoBytes);
             }
+        }
+
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TSB3PhotosForm));
+            this.SuspendLayout();
+            // 
+            // TSB3PhotosForm
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "TSB3PhotosForm";
+            this.ResumeLayout(false);
+
         }
     }
 

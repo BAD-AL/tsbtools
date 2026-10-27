@@ -36,11 +36,22 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyVersion("1.3.0.1")]   // TSB3 bug fix (Schedule shows 2x, StaticUtils references wrong 'positionNames' for TSBIII)
 //[assembly: AssemblyVersion("1.3.0.2")]     // 18-game-schedule-rom support (Aug 2026)
 
-// (10 Oct 2026) 1.4.0.0 
+// (25 Oct 2026) 1.4.0.0 
 // * added support for Genesis TSB1
 // * fixed up some genesis Sim stuff (after deep dive session with claude)
+// * Schedule transform: fit a 32-team schedule to 28-team ROMs (and the reverse)
 // * Name length check 
+// * Simulation algorithm update
+// * View season stats from save files (.srm SNES, .sav NES, .bs1 Genesis)
+// * SNES TSB1 cutscene skin color fix (+ repair on load)
+// * Added Photo editor for TSB3
+// * Fix: TSB2/TSB3 LB5 lines ignored;
 [assembly: AssemblyVersion("1.4.0.0")]     
+
+
+
+
+
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 
 // Microsoft .NET Framework documentation for more information on assembly signing.

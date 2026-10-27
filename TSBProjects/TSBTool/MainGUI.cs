@@ -132,7 +132,8 @@ namespace TSBTool
 # Edits Tecmo Super Bowl versions:
 # NES (28 Team)
 # NES (32 Team, 16 game schedule CXROM expanded)
-# NES (32 Team, 17 game schedule [CXROM, SBlueman, COA Elway] expanded) https://tecmobowl.org/forums/topic/75764-tsb-2027-base-standard-project-announcement/ 
+# NES (32 Team, 17 game schedule [CXROM, SBlueman, COA Elway] expanded)
+#  https://tecmobowl.org/forums/topic/75764-tsb-2027-base-standard-project-announcement/ 
 # SNES TSB1 (28 Team)
 # Genesis TSB1 (28 team) *new
 # SNES TSB2 (28 Team)

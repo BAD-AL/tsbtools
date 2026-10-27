@@ -330,6 +330,14 @@
     <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_015.png" />
     <EmbeddedResource Include="TSB2_TSB3\Playbook\TSB2_PB_Side.png" />
     <Content Include="ROM_HACK_INFO.txt" />
+    <EmbeddedResource Include="TSB2_TSB3\TSB3PhotoEditorForm.resx">
+      <DependentUpon>TSB3PhotoEditorForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TSB2_TSB3\TSB3PhotosForm.resx">
+      <DependentUpon>TSB3PhotosForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="TSBTool_Sim_Guide.txt" />
     <Content Include="TSBTool_README.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

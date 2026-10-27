@@ -41,6 +41,14 @@ namespace TSBTool2
                 "49ers", "saints", "falcons", "rams", "panthers",  
             };
 
+        // Every on-screen "1995": the title's (C) line, three NFL legal lines, the stadium-facts screen and two
+        // credits lines. (TSB3's season menu shows no year; its leftover TSB2 "1992 1993 1994" strings and the
+        // "NAK1989" developer string are left alone.)
+        protected override int[] YearTextLocations
+        {
+            get { return new int[] { 0x173934, 0x1BCBCD, 0x1BCC15, 0x1BD0B0, 0x1BD6A5, 0x1BE46F, 0x1BF782 }; }
+        }
+
         /// <summary>
         /// Overrides for setting up locations
         /// </summary>

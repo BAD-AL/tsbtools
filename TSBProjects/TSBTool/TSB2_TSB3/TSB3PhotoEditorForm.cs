@@ -58,6 +58,7 @@ namespace TSBTool2
 
         private void BuildUI()
         {
+            InitializeComponent();
             StartPosition = FormStartPosition.CenterParent;
             ClientSize = new Size(760, 520);
             FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -398,6 +399,20 @@ namespace TSBTool2
                 mImage = null;
             }
             base.Dispose(disposing);
+        }
+
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TSB3PhotoEditorForm));
+            this.SuspendLayout();
+            // 
+            // TSB3PhotoEditorForm
+            // 
+            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "TSB3PhotoEditorForm";
+            this.ResumeLayout(false);
+
         }
     }
 

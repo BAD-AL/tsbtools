@@ -1,30 +1,22 @@
 TSBToolSupreme README
 ======================================================================================================
-TSBToolSupreme (next version, not released yet)
-1. Simulation for TSB2, TSB3 (checked with whole seasons simmed in Mesen2)
-	- Auto Update Sim fitted to Tecmo's own values; works out TSB2 team SimData and TSB3's two
-	  team defense bonuses too. The team forms' old Auto Update buttons are hidden: the player
-	  edit form's Auto Update does the players and the team.
-	- Optional sim bug fix for TSB2, TSB3 (lost interceptions etc.), offered when applying to a ROM.
-	- Season stats (-stats:, View Season Stats) for TSB2, TSB3 saves.
-	- Updated sim labels and tool tips (TSB1, TSB2, TSB3). 'Sim_Formulas.txt' removed.
-2. Sim Guide (TSBTool_Sim_Guide.txt; About menu, player edit form): what every sim value does.
-3. TSB1 Auto Update: sack and INT shares refit. The old shares sent about 23% of the sacks to the SS.
-4. TSB1 RETURN_TEAM (SNES, Genesis): must be RB/WR/TE, RB/WR/TE, then RCB/LCB/FS/SS, as in every
-   stock team. Other return teams can freeze the SNES game or hand every kickoff/punt to DB1/DB2.
-	- A RETURN_TEAM line that breaks this is an error (the return team is kept).
-	- A ROM whose return teams already break it is fixed on load, with a warning listing the changes.
-5. SNES TSB1 cutscene skin tone: Face 0x01-0x52 (light in game) made the player dark in cutscenes.
-	- Fixed; a ROM saved with the old bug is fixed on load, with a warning listing the teams.
-6. Code review fixes (command line shows errors, SNES name length guard, ...).
-======================================================================================================
-TSBToolSupreme Version 1.4.0.0 (10 Oct 2026)
+TSBToolSupreme Version 1.4.0.0 (26 Oct 2026)
 1. Support for Genesis TSB1 (+ bug fixes for Simulation, stat saving)
 2. View Stats from Save state (.sram, .sav, .bs1 [ares genesis])
 	Tested with emulators:
 	- https://github.com/SourMesen/Mesen2 ( NES/SNES )
 	- https://ares-emu.net/ ( Genesis )
 3. Name length checking, prompting, fixing
+4. Simulation for TSB2, TSB3 (checked with whole seasons simmed in Mesen2)
+	- Auto Update Sim fitted to Tecmo's own values; works out TSB2 team SimData and TSB3's two
+	  team defense bonuses too. 
+	- Optional sim bug fix for TSB2, TSB3 (lost interceptions etc.), offered when applying to a ROM.
+	- View Season stats.
+	- 'Sim_Formulas.txt' removed.
+5. Sim Guide (TSBTool_Sim_Guide.txt; About menu, player edit form): what every sim value does.
+6. TSB1 Auto Update: sack and INT shares refit. The old shares sent about 23% of the sacks to the SS.
+7. SNES TSB1 cutscene skin tone: Face 0x01-0x52 (light in game) made the player dark in cutscenes.
+	- Fixed; a ROM saved with the old bug is fixed on load, with a warning listing the teams.
 ======================================================================================================
 TSBToolSupreme Version 1.3.0.2 (18 Aug 2026)
 1. Support for 'new' 18-game NES ROM (Coach Elway, sblueman)
