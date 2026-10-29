@@ -479,6 +479,7 @@ Please verify that this player's attributes are correct.", oldPlayer);
         public int PKSimKick(int KA, int AKB)
         {
             int ret = (int)Math.Round((double)((KA - 38.0) / 43) * 15);
+            if (ret < 0) ret = 0;   // a negative value is written as 14/15 (the byte wraps) and makes a weak kicker elite
             return ret;
         }
     }

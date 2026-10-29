@@ -56,6 +56,29 @@ namespace TSBTool_Test
             Assert.AreEqual(9, SimValues(result, "WR1")[3]);
         }
 
+        private static int KickValue(string text, string position)
+        {
+            Match line = new Regex("\n" + position + ",[^\n]*\\[\\s*(-?[0-9]+)").Match(text);
+            Assert.IsTrue(line.Success, position + " line not found");
+            return int.Parse(line.Groups[1].Value);
+        }
+
+        [TestMethod]
+        public void Tecmonster_KickSim_NeverGoesNegative()
+        {
+            // KA 31 gives (31 - 38) / 43 * 15 = -2.4: a negative sim value would be written as 14 (the byte wraps)
+            // and turn a weak punter into one of the best. KA 44 (a normal value) stays 2.
+            string input =
+                "TEAM = bills SimData=0x88\n" +
+                "K, tyler BASS, Face=0x0, #16, 56, 81, 81, 31, 44, 31 ,[6 ]\n" +
+                "P, tommy DOMAN, Face=0x0, #39, 25, 81, 44, 31, 31, 25 ,[3 ]\n";
+
+            string result = TecmonsterTSB1SimAutoUpdater.AutoUpdatePlayerSimData(input);
+
+            Assert.AreEqual(2, KickValue(result, "K"));
+            Assert.AreEqual(0, KickValue(result, "P"));
+        }
+
         [TestMethod]
         public void Tecmonster_RbSimRush_UsesMsAndHp()
         {
