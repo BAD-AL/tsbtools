@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en" data-style="modern">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TSB Helmet Editor</title>
+  <link rel="icon" type="image/png" href="Logo.png">
+  <!-- Fonts for the styles (Anton for the team look, Press Start 2P for NES); both fall back offline. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f3ef; --panel: #ffffff; --ink: #1d1d1f; --muted: #6b6b70;
+      --line: #dddcd6; --accent: #1f5fbf; --accent-ink: #ffffff; --sel: #e6eefb;
+      --copied: #e8f5e9; --copied-line: #2e7d32; --warn: #a15c00; --err: #b3261e; --ok: #2e7d32;
+      --canvas: #000;
+    }
+    /* Light or dark is chosen by the page (Auto follows the OS) and set as data-mode on <html>. */
+    :root { color-scheme: light; }
+    :root[data-mode="dark"] {
+      color-scheme: dark;
+      --bg: #161618; --panel: #1f1f22; --ink: #ececee; --muted: #9a9aa2; --line: #34343a;
+      --accent: #7aa7ff; --accent-ink: #0d1b33; --sel: #26324a; --copied: #1e3323; --copied-line: #6fcf7a;
+      --warn: #f0b35a; --err: #ff8a80; --ok: #6fcf7a;
+    }
+    :root[data-style="nes"] { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink);
+           font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    header { display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+             padding: 12px 20px; border-bottom: 1px solid var(--line); background: var(--panel);
+             position: sticky; top: 0; z-index: 2; }
+    h1 { font-size: 17px; margin: 0 auto 0 0; }
+    button { font: inherit; border-radius: 6px; padding: 6px 13px; cursor: pointer;
+             border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+    button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+    button:disabled { opacity: .45; cursor: default; }
+    #hint { padding: 10px 20px 0; color: var(--muted); }
+    main { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 12px 20px 20px; }
+    @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+    .pane { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-width: 0; }
+    .pane.over { outline: 3px dashed var(--accent); outline-offset: -6px; }
+    .pane-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .pane-head h2 { font-size: 13px; letter-spacing: .06em; margin: 0; color: var(--muted); }
+    .rominfo { color: var(--muted); font-size: 13px; flex: 1 1 100%; overflow-wrap: anywhere; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+    .team { border: 1px solid var(--line); border-radius: 7px; padding: 5px; text-align: center;
+            cursor: pointer; position: relative; background: var(--panel); }
+    .team:hover { border-color: var(--accent); }
+    .team.copied { background: var(--copied); border-color: var(--copied-line); border-width: 2px; padding: 4px; }
+    .team.pending { background: var(--sel); border-color: var(--accent); border-width: 2px; padding: 4px; }
+    .team canvas { width: 100%; image-rendering: pixelated; background: var(--canvas); border-radius: 3px; display: block; }
+    .team div { font-size: 12px; margin-top: 3px; text-transform: capitalize; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .team .dot { position: absolute; top: 3px; right: 5px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+    .sub { font-size: 13px; letter-spacing: .06em; margin: 18px 0 8px; color: var(--muted); }
+    .grid.small { grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
+    #smallEd { margin: 0 20px 20px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+    #smallEd h3 { margin: 0 0 10px; font-size: 15px; text-transform: capitalize; }
+    #seCanvas { max-width: 100%; image-rendering: pixelated; background: var(--canvas); border-radius: 6px;
+                display: block; cursor: crosshair; touch-action: none; }
+    .sechips { display: inline-flex; gap: 2px; vertical-align: middle; }
+    .sechips i { width: 10px; height: 14px; border: 1px solid rgba(0,0,0,.35); display: inline-block; }
+    .tools button.group { padding: 4px 8px; }
+
+    /* ---- theme choices (the colors come from the theme style below) ---- */
+    .themebar { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+    .themebar label { display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 12px; }
+    select { font: inherit; padding: 5px 8px; border: 1px solid var(--line); background: var(--panel);
+             color: var(--ink); border-radius: 6px; max-width: 220px; }
+    #teamChips { display: inline-flex; gap: 2px; }
+    #teamChips i { width: 12px; height: 18px; border: 1px solid rgba(128,128,128,.6); display: inline-block; }
+    :root[data-style="modern"] header { box-shadow: 0 3px 0 var(--stripe, transparent); }
+
+    /* ---- Modern + a team: the "sports game menu" look (thick outlines, tinted panels,
+       title bars, chunky buttons, a stadium sky). The colors come from the theme style. ---- */
+    body { background: var(--bg); }
+    /* the team skin's sky: a fixed full-screen layer behind everything */
+    :root[data-skin="team"] body::after { content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none; background: var(--page); }
+    :root[data-skin="team"] { --display: Anton, Impact, "Arial Narrow", sans-serif; }
+    :root[data-skin="team"] body::before {
+      content: ""; position: fixed; left: 0; top: 130px; width: 200px; height: 430px; z-index: -1; pointer-events: none;
+      background-image: radial-gradient(circle, var(--dots) 1.7px, transparent 2.3px); background-size: 9px 9px;
+      -webkit-mask-image: linear-gradient(135deg, #000, transparent 80%); mask-image: linear-gradient(135deg, #000, transparent 80%); }
+    :root[data-skin="team"] header { background: var(--panel-head); color: #fff; border-bottom: 3px solid var(--edge);
+      box-shadow: 0 4px 0 var(--accent); }
+    :root[data-skin="team"] h1 { font-family: var(--display); font-size: 24px; font-weight: 400; letter-spacing: .5px;
+      text-transform: uppercase; color: #fff; text-shadow: 0 2px 0 var(--edge); }
+    :root[data-skin="team"] .themebar label { color: #e6ebf3; }
+    :root[data-skin="team"] select { background: var(--field); color: var(--ink); border: 2px solid var(--edge); border-radius: 8px; }
+    :root[data-skin="team"] #hint { color: var(--page-ink); font-weight: 600; }
+    :root[data-skin="team"] .pane, :root[data-skin="team"] #preview, :root[data-skin="team"] #colorEd,
+    :root[data-skin="team"] #logoEd, :root[data-skin="team"] #smallEd {
+      background: var(--panel); border: 3px solid var(--edge); border-radius: 12px; box-shadow: 0 4px 0 var(--edge); }
+    :root[data-skin="team"] #preview, :root[data-skin="team"] #colorEd,
+    :root[data-skin="team"] #logoEd, :root[data-skin="team"] #smallEd { overflow: hidden; }
+    :root[data-skin="team"] #preview h3, :root[data-skin="team"] #colorEd h3,
+    :root[data-skin="team"] #logoEd h3, :root[data-skin="team"] #smallEd h3 {
+      margin: -14px -16px 14px; padding: 6px 16px; background: var(--panel-head); color: #fff;
+      font-family: var(--display); font-weight: 400; font-size: 19px; letter-spacing: .5px; text-transform: uppercase; }
+    :root[data-skin="team"] .pane-head h2 { background: var(--accent); color: var(--accent-ink); border: 2px solid var(--edge);
+      border-radius: 6px; padding: 1px 10px; font-family: var(--display); font-weight: 400; font-size: 15px; letter-spacing: .5px; }
+    :root[data-skin="team"] .sub { color: var(--headline); font-family: var(--display); font-weight: 400; font-size: 17px;
+      letter-spacing: .5px; text-transform: uppercase; }
+    :root[data-skin="team"] .sub .muted { font-family: system-ui, "Segoe UI", sans-serif; text-transform: none; letter-spacing: 0; font-size: 12px; }
+    :root[data-skin="team"] button { font-family: var(--display); font-weight: 400; font-size: 15px; letter-spacing: .4px;
+      text-transform: uppercase; background: var(--panel-hi); color: var(--ink); border: 2px solid var(--edge);
+      border-radius: 8px; padding: 5px 12px 4px; box-shadow: 0 4px 0 var(--edge); transition: transform .06s, box-shadow .06s; }
+    :root[data-skin="team"] button:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--edge); }
+    :root[data-skin="team"] button.primary, :root[data-skin="team"] .tools button.on {
+      background: var(--accent); color: var(--accent-ink); }
+    :root[data-skin="team"] button:disabled { opacity: .5; box-shadow: 0 1px 0 var(--edge); transform: translateY(3px); }
+    :root[data-skin="team"] .sw, :root[data-skin="team"] .nespal button, :root[data-skin="team"] .ctx button {
+      font-family: system-ui, "Segoe UI", sans-serif; text-transform: none; letter-spacing: 0; box-shadow: none; transform: none; }
+    :root[data-skin="team"] .sw { font: 11px ui-monospace, Consolas, monospace; border: 2px solid var(--edge); border-radius: 6px; padding: 0; }
+    :root[data-skin="team"] .nespal button { border: 1px solid var(--edge); border-radius: 3px; padding: 0; }
+    :root[data-skin="team"] .ctx button { font-size: 13px; border: 0; background: transparent; padding: 7px 10px; }
+    :root[data-skin="team"] .ctx { background: var(--panel-hi); border: 3px solid var(--edge); border-radius: 10px; box-shadow: 0 4px 0 var(--edge); }
+    :root[data-skin="team"] .team { background: var(--panel-hi); border: 2px solid var(--edge); border-radius: 8px; box-shadow: 0 3px 0 var(--edge); }
+    :root[data-skin="team"] .team:hover { border-color: var(--edge); box-shadow: 0 3px 0 var(--edge), 0 0 0 3px var(--accent); }
+    :root[data-skin="team"] .team.copied, :root[data-skin="team"] .team.pending { border-color: var(--edge); box-shadow: 0 3px 0 var(--edge), 0 0 0 3px var(--accent); }
+    :root[data-skin="team"] .team div { font-family: var(--display); font-weight: 400; letter-spacing: .4px; font-size: 13px; text-transform: uppercase; }
+    :root[data-skin="team"] .team canvas, :root[data-skin="team"] .pv canvas,
+    :root[data-skin="team"] #leCanvas, :root[data-skin="team"] #seCanvas { border: 2px solid var(--edge); }
+    :root[data-skin="team"] details.help { background: var(--panel-hi); border: 2px solid var(--edge); border-radius: 10px; }
+    :root[data-skin="team"] details.help summary { font-family: var(--display); font-weight: 400; letter-spacing: .4px; text-transform: uppercase; }
+
+    /* ---- NES style: chunky pixel borders, bevelled buttons, the game's pixel font ---- */
+    :root[data-style="nes"] { --pixel: "Press Start 2P", ui-monospace, "Cascadia Mono", Consolas, monospace; }
+    :root[data-style="nes"] body { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 13px; }
+    :root[data-style="nes"] * { border-radius: 0 !important; }
+    :root[data-style="nes"] h1, :root[data-style="nes"] .pane-head h2, :root[data-style="nes"] .sub,
+    :root[data-style="nes"] h3, :root[data-style="nes"] button, :root[data-style="nes"] summary,
+    :root[data-style="nes"] .team div { font-family: var(--pixel); text-transform: uppercase; letter-spacing: .02em; }
+    :root[data-style="nes"] h1 { font-size: 15px; color: var(--accent); text-shadow: 2px 2px 0 rgba(0,0,0,.6); }
+    :root[data-style="nes"] .pane-head h2, :root[data-style="nes"] .sub { font-size: 10px; color: var(--accent); }
+    :root[data-style="nes"] h3 { font-size: 12px; }
+    :root[data-style="nes"] summary { font-size: 10px; }
+    :root[data-style="nes"] header { border-bottom: 4px solid var(--accent); box-shadow: none; }
+    :root[data-style="nes"] .pane, :root[data-style="nes"] #preview, :root[data-style="nes"] #colorEd,
+    :root[data-style="nes"] #logoEd, :root[data-style="nes"] #smallEd {
+      border: 3px solid var(--line); box-shadow: 4px 4px 0 rgba(0,0,0,.45); }
+    :root[data-style="nes"] button {
+      font-size: 10px; padding: 8px 12px; border: 2px solid var(--ink);
+      box-shadow: inset -3px -3px 0 rgba(0,0,0,.45), inset 3px 3px 0 rgba(255,255,255,.18); }
+    :root[data-style="nes"] button:active:not(:disabled) {
+      box-shadow: inset 3px 3px 0 rgba(0,0,0,.45); transform: translate(1px, 1px); }
+    :root[data-style="nes"] button:disabled { border-color: var(--line); }
+    :root[data-style="nes"] .team { border: 2px solid var(--line); }
+    :root[data-style="nes"] .team:hover { border-color: var(--accent); }
+    :root[data-style="nes"] .team:hover::after {
+      content: "\25B6"; position: absolute; top: 2px; left: 4px; color: var(--accent); font-size: 12px;
+      text-shadow: 1px 1px 0 #000; }
+    :root[data-style="nes"] .team div { font-size: 8px; margin-top: 5px; }
+    :root[data-style="nes"] .team canvas, :root[data-style="nes"] .pv canvas,
+    :root[data-style="nes"] #leCanvas, :root[data-style="nes"] #seCanvas { border: 2px solid var(--line); }
+    :root[data-style="nes"] .ctx { border: 2px solid var(--ink); box-shadow: 4px 4px 0 rgba(0,0,0,.5); }
+    :root[data-style="nes"] details.help { border: 2px solid var(--line); }
+    :root[data-style="nes"] select { border: 2px solid var(--ink); font-size: 12px; }
+    :root[data-style="nes"] .sw.sel { outline-style: solid; }
+    :root[data-style="nes"] .sub .muted, :root[data-style="nes"] .sub span {
+      font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; text-transform: none; font-size: 11px;
+      letter-spacing: 0; color: var(--muted); }
+    /* ---- tips, the ? button and the help dialog ---- */
+    .pane-tip { color: var(--muted); font-size: 12px; margin: -2px 0 10px; }
+    .pane-tip::before { content: "\25B8  "; }
+    button.round { width: 34px; height: 34px; padding: 0; border-radius: 50%; font-weight: 700; font-size: 17px; line-height: 1; }
+    dialog#helpDlg { width: min(780px, 94vw); max-height: 88vh; padding: 0; border: 1px solid var(--line); border-radius: 12px;
+      background: var(--panel); color: var(--ink); box-shadow: 0 12px 48px rgba(0,0,0,.45); overflow: hidden; }
+    dialog#helpDlg[open] { display: flex; flex-direction: column; }
+    dialog#helpDlg::backdrop { background: rgba(0,0,0,.6); }
+    .dlg-head { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+    .dlg-head h2 { margin: 0 auto 0 0; font-size: 18px; }
+    .dlg-body { padding: 4px 22px 18px; overflow: auto; }
+    .dlg-body h3 { margin: 18px 0 6px; font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: .05em; }
+    .dlg-body ul { margin: 0; padding-left: 20px; }
+    .dlg-body li { margin-bottom: 6px; }
+    .dlg-body p { margin: 6px 0; }
+    .dlg-body kbd { font: 12px ui-monospace, Consolas, monospace; padding: 1px 5px; border: 1px solid var(--line); border-radius: 4px; }
+    :root[data-skin="team"] .dlg-body h3 { color: var(--headline); font-family: var(--display); font-weight: 400; font-size: 17px; letter-spacing: .5px; }
+    :root[data-skin="team"] dialog#helpDlg { border: 3px solid var(--edge); border-radius: 12px; box-shadow: 0 4px 0 var(--edge), 0 12px 48px rgba(0,0,0,.45); }
+    :root[data-skin="team"] .dlg-head { background: var(--panel-head); border-bottom: 3px solid var(--edge); color: #fff; }
+    :root[data-skin="team"] .dlg-head h2 { font-family: var(--display); font-weight: 400; font-size: 22px; letter-spacing: .5px; text-transform: uppercase; }
+    :root[data-skin="team"] button.round { border-radius: 50%; padding: 0; }
+    :root[data-style="nes"] dialog#helpDlg { border: 3px solid var(--ink); box-shadow: 6px 6px 0 rgba(0,0,0,.6); }
+    :root[data-style="nes"] .dlg-head { border-bottom: 3px solid var(--line); }
+    :root[data-style="nes"] .dlg-head h2, :root[data-style="nes"] .dlg-body h3 { font-family: var(--pixel); text-transform: uppercase; font-weight: 400; }
+    :root[data-style="nes"] .dlg-head h2 { font-size: 13px; color: var(--accent); }
+    :root[data-style="nes"] .dlg-body h3 { font-size: 10px; }
+    :root[data-style="nes"] button.round { border-radius: 0 !important; }
+    .empty { color: var(--muted); padding: 30px 0; text-align: center; grid-column: 1 / -1; }
+    #preview, #colorEd { margin: 0 20px 20px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+    #preview h3, #colorEd h3 { margin: 0 0 10px; font-size: 15px; text-transform: capitalize; }
+    .pv { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+    .pv figure { margin: 0; text-align: center; color: var(--muted); font-size: 12px; }
+    .pv canvas { width: 180px; image-rendering: pixelated; background: var(--canvas); border-radius: 6px; display: block; margin-bottom: 4px; }
+    .arrow { font-size: 26px; color: var(--muted); align-self: center; }
+    .side { flex: 1 1 260px; min-width: 0; }
+    .opts { display: flex; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
+    ul.notes { margin: 6px 0 12px; padding-left: 18px; }
+    ul.notes li.err { color: var(--err); }
+    ul.notes li.warn { color: var(--warn); }
+    ul.notes li.ok { color: var(--ok); }
+    .actions { display: flex; gap: 8px; }
+    .ctx { position: fixed; z-index: 10; min-width: 200px; padding: 4px; background: var(--panel);
+           border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.18); }
+    .ctx button { display: block; width: 100%; text-align: left; border: 0; border-radius: 5px;
+                  padding: 7px 10px; background: transparent; text-transform: none; }
+    .ctx button:not(:disabled):hover { background: var(--sel); }
+    .ctx button[hidden] { display: none; }
+    .ctx hr { border: 0; border-top: 1px solid var(--line); margin: 4px 2px; }
+    .ctx hr[hidden] { display: none; }
+    .swgroup { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 6px; }
+    .swgroup > span { width: 72px; color: var(--muted); font-size: 12px; }
+    .sw { width: 46px; height: 32px; padding: 0; border: 1px solid rgba(0,0,0,.3); border-radius: 5px;
+          font: 11px ui-monospace, Consolas, monospace; }
+    .sw.sel { outline: 3px solid var(--accent); outline-offset: 2px; }
+    .nespal { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 3px; max-width: 440px; margin: 12px 0; }
+    .nespal button { aspect-ratio: 1; padding: 0; border: 1px solid rgba(0,0,0,.3); border-radius: 3px; min-width: 0; }
+    .nespal button.sel { outline: 3px solid var(--ink); outline-offset: 1px; }
+    .nespal button:disabled { opacity: .2; }
+    .muted { color: var(--muted); font-size: 12px; }
+    #logoEd { margin: 0 20px 20px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+    #logoEd h3 { margin: 0 0 10px; font-size: 15px; text-transform: capitalize; }
+    .le { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-start; }
+    #leCanvas { width: min(432px, 100%); aspect-ratio: 1; image-rendering: pixelated; background: var(--canvas);
+                border-radius: 6px; display: block; cursor: crosshair; touch-action: none; }
+    .tools { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .tools button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+    .sw.clear { background: repeating-conic-gradient(#bbb 0 25%, #fff 0 50%) 50% / 12px 12px; color: #000; }
+    .actions.wrap { flex-wrap: wrap; margin-bottom: 8px; }
+    details.help { max-width: 520px; margin-bottom: 12px; padding: 8px 12px; border: 1px solid var(--line);
+                   border-radius: 8px; font-size: 13px; line-height: 1.45; }
+    details.help summary { cursor: pointer; font-weight: 600; }
+    details.help p, details.help ol, details.help ul { margin: 8px 0; }
+    details.help ol, details.help ul { padding-left: 20px; }
+    details.help li { margin-bottom: 4px; }
+  </style>
+  <style id="themeStyle"></style>
+  <script>
+    // Apply the saved look before the page paints (main.dart.js saves it): light/dark
+    // (Auto follows the OS), style, and team colors.
+    var root = document.documentElement, mode = null;
+    try { mode = localStorage.getItem('tsb.mode'); } catch (e) {}
+    root.setAttribute('data-mode', mode === 'dark' || (mode !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light');
+    try {
+      var st = localStorage.getItem('tsb.style');
+      if (st === 'nes' || st === 'modern') root.setAttribute('data-style', st);
+      if (localStorage.getItem('tsb.skin') === 'team') root.setAttribute('data-skin', 'team');
+      var css = localStorage.getItem('tsb.css');
+      if (css) document.getElementById('themeStyle').textContent = css;
+    } catch (e) {}
+  </script>
+  <script defer src="main.dart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>TSB Helmet Editor</h1>
+    <div class="themebar">
+      <label>Style
+        <select id="styleSel">
+          <option value="modern">Modern</option>
+          <option value="nes">NES</option>
+        </select>
+      </label>
+      <label>Team colors
+        <select id="teamSel"></select>
+        <span id="teamChips"></span>
+      </label>
+      <label>Mode
+        <select id="modeSel">
+          <option value="auto">Auto</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+    </div>
+    <button id="helpBtn" class="round" title="What can this tool do? (press ?)" aria-label="Help">?</button>
+    <button id="undo" disabled>Undo</button>
+    <button id="save" class="primary" disabled>Save target ROM as…</button>
+  </header>
+  <div id="hint">Open a source and a target ROM. Right-click a helmet → Copy helmet, then right-click a target helmet → Paste helmet here. Right-click a target helmet → Edit colors… or Edit logo… to change it. The small helmets work the same way: right-click → Copy / Paste / Edit small helmet….</div>
+  <div class="ctx" id="ctx" hidden>
+    <button id="ctxCopy">Copy helmet</button>
+    <button id="ctxPaste">Paste helmet here</button>
+    <hr id="ctxSep">
+    <button id="ctxColors">Edit colors…</button>
+    <button id="ctxLogo">Edit logo…</button>
+  </div>
+  <div class="ctx" id="ctxS" hidden>
+    <button id="ctxSCopy">Copy small helmet</button>
+    <button id="ctxSPaste">Paste small helmet here</button>
+    <hr id="ctxSSep">
+    <button id="ctxSEdit">Edit small helmet…</button>
+  </div>
+  <main>
+    <section class="pane" id="srcPane">
+      <div class="pane-head">
+        <h2>SOURCE</h2>
+        <button id="srcOpen">Open ROM…</button>
+        <button id="srcFromTarget" disabled>Use target ROM</button>
+        <button id="srcLogos" disabled title="Every team's logo as a PNG, in one zip">Export all logos (PNG)</button>
+        <input type="file" id="srcFile" accept=".nes" hidden>
+        <div class="rominfo" id="srcInfo">No ROM loaded. You can also drop a .nes file here.</div>
+      </div>
+      <div class="pane-tip">Right-click a helmet for options.</div>
+      <div class="grid" id="srcGrid"></div>
+      <h2 class="sub">SMALL HELMETS <span class="muted">(team-select grid; click to copy or paste, right-click to edit)</span></h2>
+      <div class="grid small" id="srcSmall"></div>
+    </section>
+    <section class="pane" id="dstPane">
+      <div class="pane-head">
+        <h2>TARGET</h2>
+        <button id="dstOpen">Open ROM…</button>
+        <button id="dstLogos" disabled title="Every team's logo as a PNG, in one zip (includes applied edits)">Export all logos (PNG)</button>
+        <input type="file" id="dstFile" accept=".nes" hidden>
+        <div class="rominfo" id="dstInfo">No ROM loaded. You can also drop a .nes file here.</div>
+      </div>
+      <div class="pane-tip">Right-click a helmet for options.</div>
+      <div class="grid" id="dstGrid"></div>
+      <h2 class="sub">SMALL HELMETS <span class="muted">(team-select grid; click to copy or paste, right-click to edit)</span></h2>
+      <div class="grid small" id="dstSmall"></div>
+    </section>
+  </main>
+  <section id="preview" hidden>
+    <h3 id="pvTitle"></h3>
+    <div class="pv">
+      <figure><canvas id="pvBefore" width="72" height="72"></canvas>before</figure>
+      <div class="arrow">→</div>
+      <figure><canvas id="pvAfter" width="72" height="72"></canvas>after</figure>
+      <div class="side">
+        <div class="opts">
+          <label><input type="checkbox" id="optLogo" checked> Logo</label>
+          <label><input type="checkbox" id="optColors" checked> Colors</label>
+          <label><input type="checkbox" id="optShell" checked> Shell</label>
+        </div>
+        <ul class="notes" id="pvNotes"></ul>
+        <div class="actions">
+          <button id="pvCancel">Cancel</button>
+          <button id="pvApply" class="primary">Apply paste</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="colorEd" class="panel" hidden>
+    <h3 id="ceTitle"></h3>
+    <div class="pv">
+      <figure><canvas id="ceBefore" width="72" height="72"></canvas>before</figure>
+      <div class="arrow">→</div>
+      <figure><canvas id="ceAfter" width="72" height="72"></canvas>after</figure>
+      <div class="side">
+        <div id="ceSwatches"></div>
+        <div class="muted" id="ceHelp">Pick a swatch, then a color below.</div>
+        <div class="nespal" id="cePalette"></div>
+        <div class="actions">
+          <button id="ceReset">Reset</button>
+          <button id="ceCancel">Cancel</button>
+          <button id="ceApply" class="primary">Apply colors</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="logoEd" hidden>
+    <h3 id="leTitle"></h3>
+    <div class="le">
+      <canvas id="leCanvas" width="432" height="432"></canvas>
+      <div class="side">
+        <details class="help">
+          <summary>How this works</summary>
+          <p>You're editing only the <b>logo</b> drawn on the big helmet. The shell and facemask
+            show faintly as a guide and aren't changed here. Nothing touches the ROM until you click <b>Apply logo</b>.</p>
+          <ol>
+            <li><b>Draw.</b> Pick one of the 3 logo colors below, then draw on the helmet.
+              <b>Change color…</b> changes what that color looks like. Only this team uses these colors.
+              <b>Pencil</b> draws pixels (right-click erases), <b>Fill</b> fills an area, and
+              <b>Pick</b> picks up a color from the logo. Ctrl+Z undoes.</li>
+            <li><b>Move pieces</b> (optional). With <b>Move</b>, drag a yellow box: the sprite and the
+              pixels in it move together and come to the front. Click a box, then use the arrow keys to
+              nudge it 1 pixel, or Shift+arrow for 8.</li>
+            <li><b>Watch the fit check</b> under the buttons. Green "Fits" means the ROM can hold the
+              logo. Red means it can't yet, and says why.</li>
+            <li><b>Apply logo</b> puts it in the target ROM. Then use <b>Save target ROM as…</b>
+              at the top. The main <b>Undo</b> takes it back.</li>
+          </ol>
+          <p><b>Why a logo might not fit.</b> The NES draws the logo from 8×8 tiles called sprites,
+            shown as yellow boxes. A helmet has room for about 20 of them, and only 8 can sit side by
+            side on one row. Boxes stay where they are. Pixels you draw outside every box get a new box.
+            To fit, keep the logo compact and avoid wide rows. Moving boxes so they line up or overlap less
+            can also help, and <b>Auto-arrange sprites</b> lets the editor choose the boxes again. The original 28-team ROM also has little spare tile space, so
+            changing pixels inside existing boxes fits better than adding new ones.</p>
+          <p><b>Using another paint program.</b> <b>Export PNG</b> saves a 72×84 picture with a transparent
+            background: the logo on top, and a strip below with blocks for colors 1, 2 and 3. Edit it, keeping the
+            size and position, then <b>Import PNG…</b>.</p>
+          <ul>
+            <li>Use the eyedropper on the strip to draw in the exact logo colors. Each pixel snaps to the closest
+              strip color, so draw with hard edges and no smoothing.</li>
+            <li>To change a logo color, repaint its block and the pixels that use it. The editor switches to the
+              closest NES color.</li>
+            <li>Without the strip, e.g. a 72×72 picture, the editor's current colors are used. If the picture has no
+              transparency, its corner color counts as background.</li>
+          </ul>
+        </details>
+        <div class="tools">
+          <button id="tPencil" class="on" title="Draw (P). Right-click erases.">Pencil</button>
+          <button id="tFill" title="Fill an area (F)">Fill</button>
+          <button id="tPick" title="Pick a color from the logo (I)">Pick</button>
+          <button id="tMove" title="Drag a sprite and its pixels (M). Arrow keys nudge it; Shift+arrow moves 8.">Move</button>
+        </div>
+        <div class="swgroup" id="leColors"></div>
+        <div class="actions"><button id="lePalBtn">Change color…</button></div>
+        <div class="nespal" id="lePalette" hidden></div>
+        <div class="opts">
+          <label><input type="checkbox" id="leGuide" checked> Show shell &amp; facemask</label>
+          <label><input type="checkbox" id="leBoxes" checked> Show sprites</label>
+        </div>
+        <div class="muted" id="leStats"></div>
+        <ul class="notes" id="leNotes"></ul>
+        <div class="actions wrap">
+          <button id="leUndo" title="Ctrl+Z">Undo</button>
+          <button id="leClear">Clear</button>
+          <button id="leRevert">Revert</button>
+          <button id="leArrange" title="Let the editor choose where the sprites go">Auto-arrange sprites</button>
+          <button id="leExport">Export PNG</button>
+          <button id="leImport">Import PNG…</button>
+          <input type="file" id="leFile" accept="image/*" hidden>
+        </div>
+        <div class="actions">
+          <button id="leCancel">Cancel</button>
+          <button id="leApply" class="primary">Apply logo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section id="smallEd" hidden>
+    <h3 id="seTitle"></h3>
+    <div class="le">
+      <canvas id="seCanvas" width="320" height="320"></canvas>
+      <div class="side">
+        <details class="help">
+          <summary>How this works</summary>
+          <p>This edits the small helmet on the team-select grid by changing the pixels of the graphics tiles it is drawn from.
+            Nothing touches the ROM until you click <b>Apply</b>.</p>
+          <ol>
+            <li><b>Pick a layer.</b> <b>Background</b> is the helmet's 16×16 shell and logo, made of four tiles.
+              <b>Overlay</b> is the extra sprites some teams draw on top (a logo, or the shell's body color).
+              Hatched or dimmed areas have no tile there and can't be drawn on.</li>
+            <li><b>Draw.</b> Pick a color 1-3 (<i>none</i> is clear). <b>Pencil</b> draws (right-click erases),
+              <b>Fill</b> fills an area, <b>Pick</b> picks up a color. Ctrl+Z undoes.
+              <b>Palette group</b> chooses which of the screen's four color sets this helmet uses.
+              The colors in each set are shared by every helmet.</li>
+            <li><b>Watch the warning.</b> Many teams draw the same tiles (ears, facemask, plain shell pieces).
+              If the edit touches one, the other teams that use it change too, and the notes say which.</li>
+            <li><b>Apply</b> puts the edit in the target ROM. Then use <b>Save target ROM as…</b> at the top.
+              The main <b>Undo</b> takes it back.</li>
+          </ol>
+          <p><b>Using another paint program.</b> <b>Export PNG</b> saves a 24×36 picture: the background layer on top,
+            then the overlay layer, with a transparent backdrop and this helmet's own colors. Edit it keeping the size and
+            position (a scaled-up copy also works), then <b>Import PNG…</b>. Each pixel snaps to the closest of the layer's three
+            colors, so draw with hard edges and no smoothing.</p>
+        </details>
+        <div class="tools" id="seLayers">
+          <button id="sLayerBg" class="on" title="The 16×16 shell and logo">Background</button>
+          <button id="sLayerOv" title="Overlay sprites drawn on top">Overlay</button>
+        </div>
+        <div class="tools">
+          <button id="sPencil" class="on" title="Draw (P). Right-click erases.">Pencil</button>
+          <button id="sFill" title="Fill an area (F)">Fill</button>
+          <button id="sPick" title="Pick a color (I)">Pick</button>
+        </div>
+        <div class="swgroup" id="seColors"></div>
+        <div class="swgroup" id="sePalGroups"></div>
+        <div class="opts">
+          <label><input type="checkbox" id="seGuide" checked> Show the other layer faintly</label>
+          <label><input type="checkbox" id="seGrid" checked> Show tile boundaries</label>
+        </div>
+        <ul class="notes" id="seNotes"></ul>
+        <div class="pv">
+          <figure><canvas id="seBefore" width="24" height="18"></canvas>before</figure>
+          <div class="arrow">→</div>
+          <figure><canvas id="seAfter" width="24" height="18"></canvas>after</figure>
+        </div>
+        <div class="actions wrap">
+          <button id="seUndo" title="Ctrl+Z">Undo</button>
+          <button id="seRevert">Revert</button>
+          <button id="seExport">Export PNG</button>
+          <button id="seImport">Import PNG…</button>
+          <input type="file" id="seFile" accept="image/*" hidden>
+        </div>
+        <div class="actions">
+          <button id="seCancel">Cancel</button>
+          <button id="seApply" class="primary">Apply</button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <dialog id="helpDlg" aria-labelledby="helpTitle">
+    <div class="dlg-head">
+      <h2 id="helpTitle">TSB Helmet Editor</h2>
+      <button id="helpClose">Close</button>
+    </div>
+    <div class="dlg-body">
+      <p>Copy, paste and edit the helmets in NES <b>Tecmo Super Bowl</b> ROMs: the original 28-team game and the 32-team version.</p>
+
+      <h3>Getting started</h3>
+      <ul>
+        <li><b>Open two ROMs.</b> <b>Source</b> is where you copy helmets from; <b>Target</b> is the ROM you change.
+          Click <b>Open ROM…</b>, or drop a .nes file anywhere on the page (it goes to the first empty pane; drop it on a pane to replace that one).</li>
+        <li><b>Right-click any helmet</b> for its options. Clicking a source helmet copies it; clicking a target helmet pastes the copy there.</li>
+        <li><b>Save.</b> Edits happen in memory. <b>Save target ROM as…</b> downloads the edited ROM and never touches your original file.
+          <b>Undo</b> steps back through the changes you applied. Helmets with a dot have been changed.
+          <b>Use target ROM</b> copies the edited target into Source, so you can copy between versions of your work.</li>
+        <li><b>Your ROMs stay on your computer.</b> They are read in the browser and never uploaded.</li>
+      </ul>
+
+      <h3>Large helmets (the team data screen)</h3>
+      <ul>
+        <li><b>Copy / paste.</b> A preview shows before and after. Choose what to bring over: the logo, the colors, the shell.
+          It tells you if the ROM can't hold the logo, or if other teams share it.</li>
+        <li><b>Edit colors…</b> changes the team's helmet colors. Only that team uses them.</li>
+        <li><b>Edit logo…</b> is a pixel editor for the logo: pencil, fill, pick, move the sprites, a live fit check, and PNG export / import to work in another paint program.</li>
+        <li><b>Export all logos (PNG)</b> saves every team's logo in one zip.</li>
+      </ul>
+
+      <h3>Small helmets (the team-select grid)</h3>
+      <ul>
+        <li><b>Copy / paste / Edit small helmet…</b> work the same way from the right-click menu.</li>
+        <li>The editor changes the graphics tiles directly, in two layers: <b>Background</b> (the 16×16 shell and logo) and <b>Overlay</b> (extra sprites some teams draw on top).
+          You can also pick the helmet's palette group and export / import a PNG.</li>
+        <li><b>Shared tiles.</b> Many teams draw the same tiles (ears, facemask, plain shell pieces). If your edit touches one, the notes list the other teams that change with it.</li>
+      </ul>
+
+      <h3>The look</h3>
+      <ul>
+        <li><b>Style</b>: Modern, or NES (chunky pixel borders and the game's font).
+          <b>Team colors</b>: pick any of the 32 teams to color the whole page.
+          <b>Mode</b>: Light, Dark, or Auto (follows your computer). NES is always dark. Your choices are remembered.</li>
+      </ul>
+
+      <h3>Tips</h3>
+      <ul>
+        <li>In the editors, <kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes, and <kbd>P</kbd> <kbd>F</kbd> <kbd>I</kbd> pick Pencil, Fill and Pick.</li>
+        <li>Press <kbd>?</kbd> any time to open this help.</li>
+      </ul>
+    </div>
+  </dialog>
+</body>
+</html>

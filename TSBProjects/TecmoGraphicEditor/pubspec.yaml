@@ -1,0 +1,12 @@
+name: tecmo_graphic_editor
+description: Browser-based graphics viewer/editor for NES Tecmo Super Bowl ROMs.
+publish_to: none
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  web: ^1.1.0
+
+dev_dependencies:
+  test: ^1.25.0
