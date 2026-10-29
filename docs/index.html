@@ -1,53 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Links</title>
-    <style>
-        body {
-            background-color: #121212;
-            color: #FFFFFF;
-            font-family: Arial, sans-serif;
-        }
-        a {
-            color: #1E90FF;
-            text-decoration: none;
-            font-size: 18px;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        .result {
-            display: inline-block;
-            background-color: #2E2E2E;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            max-width: 100%;
-        }
-        .summary {
-            color: #CCCCCC;
-            font-size: 14px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSB Tools</title>
+<meta name="description" content="Tools for Tecmo Super Bowl: a helmet editor, TSBTool in Godot and JavaScript, and the Tecmobowl.org forum.">
+<meta name="theme-color" content="#071733">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22 shape-rendering=%22crispEdges%22 aria-hidden=%22true%22%3E%3Cpath fill=%22%232a1205%22 d=%22M4 0h8v1h-8zM2 1h2v1h-2zM12 1h2v1h-2zM1 2h1v1h-1zM14 2h1v1h-1zM0 3h1v1h-1zM15 3h1v1h-1zM0 4h1v1h-1zM15 4h1v1h-1zM0 5h1v1h-1zM15 5h1v1h-1zM1 6h1v1h-1zM14 6h1v1h-1zM2 7h2v1h-2zM12 7h2v1h-2zM4 8h8v1h-8z%22/%3E%3Cpath fill=%22%23a5683a%22 d=%22M4 1h8v1h-8zM2 2h2v1h-2zM5 2h6v1h-6zM12 2h2v1h-2zM1 3h3v1h-3zM5 3h6v1h-6zM12 3h3v1h-3zM1 4h3v1h-3zM5 4h1v1h-1zM10 4h1v1h-1zM12 4h3v1h-3zM1 5h3v1h-3zM5 5h6v1h-6zM12 5h3v1h-3zM3 6h1v1h-1zM5 6h6v1h-6zM12 6h1v1h-1z%22/%3E%3Cpath fill=%22%23ffffff%22 d=%22M4 2h1v1h-1zM11 2h1v1h-1zM4 3h1v1h-1zM11 3h1v1h-1zM4 4h1v1h-1zM6 4h4v1h-4zM11 4h1v1h-1zM4 5h1v1h-1zM11 5h1v1h-1zM4 6h1v1h-1zM11 6h1v1h-1z%22/%3E%3Cpath fill=%22%236b3c19%22 d=%22M2 6h1v1h-1zM13 6h1v1h-1zM4 7h8v1h-8z%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Pixel font for the headings; it falls back to a monospace font offline. -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #050b16;
+    --sky-top: #071733;
+    --sky-mid: #0d2a55;
+    --card-a: #11397f;
+    --card-b: #0a2457;
+    --text: #e8eef9;
+    --muted: #b4c1da;
+    --gold: #ffd23f;
+    --gold-ink: #2a1c00;
+    --red: #e63946;
+    --pixel: "Press Start 2P", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; min-height: 100vh; color: var(--text); background: var(--sky-top);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* ---- the stadium: floodlit night sky, and turf with yard lines along the bottom ---- */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background:
+      radial-gradient(circle at 6% -4%, rgba(255, 253, 230, .30), transparent 28%),
+      radial-gradient(circle at 94% -4%, rgba(255, 253, 230, .30), transparent 28%),
+      linear-gradient(to bottom, var(--sky-top) 0%, var(--sky-mid) 62%, #123c26 100%);
+  }
+  body::after {
+    content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 38vh; z-index: -1; pointer-events: none;
+    background:
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, .10) 0 3px, transparent 3px 96px),
+      linear-gradient(to bottom, rgba(27, 90, 53, 0), #1b5a35 55%, #134a2b);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 40%);
+    mask-image: linear-gradient(to bottom, transparent, #000 40%);
+  }
+
+  /* ---- hero ---- */
+  .hero { text-align: center; padding: clamp(36px, 7vw, 72px) 20px clamp(20px, 4vw, 36px); }
+  .football { width: clamp(72px, 12vw, 104px); height: auto; display: block; margin: 0 auto 6px; image-rendering: pixelated; }
+  .kicker { font-family: var(--pixel); font-size: clamp(9px, 1.6vw, 12px); color: var(--gold); letter-spacing: .12em; margin: 10px 0 14px; }
+  h1 {
+    font-family: var(--pixel); font-weight: 400; margin: 0; line-height: 1.15;
+    font-size: clamp(30px, 8.5vw, 72px); color: #fff; letter-spacing: .02em;
+    text-shadow: 3px 3px 0 var(--red), 6px 6px 0 var(--ink), 0 0 28px rgba(255, 210, 63, .25);
+  }
+  h1 .gold { color: var(--gold); }
+  .tagline { margin: 22px auto 0; max-width: 34em; font-size: clamp(16px, 2.4vw, 19px); color: #dbe5f6; text-shadow: 0 1px 0 rgba(5, 11, 22, .6); }
+  .press { margin: 28px 0 0; font-family: var(--pixel); font-size: 11px; color: var(--gold); letter-spacing: .1em; }
+
+  /* ---- cards ---- */
+  main { max-width: 1120px; margin: 0 auto; padding: 8px 20px 40px; }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 30px 28px; }
+  .card {
+    grid-column: span 2; position: relative; display: flex; flex-direction: column; gap: 14px;
+    padding: 16px; border: 3px solid var(--ink); border-radius: 16px;
+    background: linear-gradient(160deg, var(--card-a), var(--card-b));
+    box-shadow: 0 6px 0 var(--ink), inset 0 2px 0 rgba(255, 255, 255, .12);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover { transform: translateY(-5px); box-shadow: 0 11px 0 var(--ink), 0 0 0 3px var(--gold), 0 18px 40px rgba(0, 0, 0, .45), inset 0 2px 0 rgba(255, 255, 255, .12); }
+  .card:active { transform: translateY(1px); box-shadow: 0 3px 0 var(--ink), 0 0 0 3px var(--gold), inset 0 2px 0 rgba(255, 255, 255, .12); }
+
+  /* the whole card is the link */
+  .card h2 a { color: inherit; text-decoration: none; }
+  .card h2 a::after { content: ""; position: absolute; inset: 0; z-index: 2; border-radius: 14px; }
+  .card h2 a:focus-visible { outline: none; }
+  .card h2 a:focus-visible::after { outline: 4px solid var(--gold); outline-offset: 4px; }
+
+  .screen {
+    position: relative; height: 230px; border: 3px solid var(--ink); border-radius: 10px; overflow: hidden;
+    background: #000; display: grid; place-items: center;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .08);
+  }
+  .screen::after { /* faint CRT scanlines and a vignette */
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background:
+      repeating-linear-gradient(to bottom, rgba(0, 0, 0, .16) 0 1px, transparent 1px 3px),
+      radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .35));
+  }
+  .screen img { display: block; max-width: 100%; transition: transform .35s ease; }
+  .card:hover .screen img { transform: scale(1.04); }
+
+  .badge {
+    position: absolute; top: 24px; right: 24px; z-index: 1; font-family: var(--pixel); font-size: 10px;
+    padding: 6px 8px 5px; background: var(--red); color: #fff; border: 2px solid var(--ink); border-radius: 6px;
+    box-shadow: 0 3px 0 var(--ink); transform: rotate(3deg);
+  }
+
+  .body { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .tags li {
+    font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--gold);
+    padding: 2px 8px; border: 1px solid rgba(255, 210, 63, .5); border-radius: 999px; background: rgba(0, 0, 0, .18);
+  }
+  .card h2 { margin: 0; font-family: var(--pixel); font-weight: 400; font-size: clamp(12px, 1.3vw, 14px); line-height: 1.6; color: #fff; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .cta {
+    align-self: flex-start; margin-top: auto; font-family: var(--pixel); font-size: 11px; letter-spacing: .06em;
+    color: var(--gold-ink); background: var(--gold); padding: 10px 14px 9px; border: 3px solid var(--ink); border-radius: 8px;
+    box-shadow: 0 4px 0 var(--ink); transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .card:hover .cta { transform: translateY(-1px); box-shadow: 0 5px 0 var(--ink); }
+  .cta .arrow { display: inline-block; transition: transform .15s ease; }
+  .card:hover .cta .arrow { transform: translateX(4px); }
+
+  /* the featured card: screenshot on the left, text on the right */
+  .card.featured { grid-column: 1 / -1; display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; padding: 20px; align-items: stretch; }
+  .card.featured .screen { height: auto; min-height: 280px; }
+  .card.featured .screen img { width: 100%; height: 100%; object-fit: cover; object-position: left top; }
+  .card.featured .body { justify-content: center; gap: 14px; }
+  .card.featured h2 { font-size: clamp(15px, 2.2vw, 22px); }
+  .card.featured p { font-size: 17px; }
+  .card.featured .cta { font-size: 13px; padding: 13px 18px 12px; }
+
+  /* the Godot screenshot is a tall phone-style window */
+  .phone { height: 200px; width: auto; border: 4px solid #0b1220; border-radius: 14px; background: #0b1220; overflow: hidden;
+           box-shadow: 0 0 0 2px rgba(255, 255, 255, .15), 0 8px 18px rgba(0, 0, 0, .5); }
+  .phone img { height: 100%; width: auto; max-width: none; border-radius: 9px; }
+  .screen.godot { background: radial-gradient(circle at 50% 40%, #16418f, #08142e 75%); }
+
+  /* the forum logo sits on a light plate so its red text stays readable */
+  .screen.forum { background: linear-gradient(135deg, #1a3f86, #0a1f4d); }
+  .plate { background: #f4f7fc; border: 3px solid var(--ink); border-radius: 12px; padding: 18px 22px; box-shadow: 0 5px 0 var(--ink); transform: rotate(-1.5deg); }
+  .plate img { width: min(260px, 100%); height: auto; }
+
+  .screen.code { background: radial-gradient(circle at 50% 45%, #14367a, #07122b 75%); }
+  .code-icon { width: min(210px, 70%); height: auto; color: var(--gold); filter: drop-shadow(0 4px 0 var(--ink)); }
+
+  /* ---- footer ---- */
+  footer { text-align: center; padding: 8px 20px 56px; color: var(--muted); font-size: 14px; }
+  footer strong { color: var(--gold); font-family: var(--pixel); font-weight: 400; font-size: 10px; letter-spacing: .1em; display: block; margin-bottom: 8px; }
+  footer a { color: #fff; }
+
+  /* ---- smaller screens ---- */
+  @media (max-width: 900px) {
+    .card { grid-column: span 3; }
+    .card:last-child { grid-column: 1 / -1; }
+    .card.featured { grid-template-columns: 1fr; }
+    .card.featured .screen { min-height: 220px; }
+  }
+  @media (max-width: 600px) {
+    .cards { grid-template-columns: 1fr; gap: 24px; }
+    .card, .card:last-child, .card.featured { grid-column: auto; }
+    .screen { height: 210px; }
+    .card.featured .screen { height: auto; min-height: 180px; }
+    .badge { top: 22px; right: 22px; }
+  }
+
+  /* ---- a little life (off for people who ask for less motion) ---- */
+  @media (prefers-reduced-motion: no-preference) {
+    .card { animation: rise .6s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i) * 110ms + 150ms); }
+    .hero > * { animation: rise .7s cubic-bezier(.2, .8, .2, 1) both; }
+    .hero > :nth-child(2) { animation-delay: .08s; } .hero > :nth-child(3) { animation-delay: .16s; }
+    .hero > :nth-child(4) { animation-delay: .24s; } .hero > :nth-child(5) { animation-delay: .32s; }
+    .football { animation: bounce 1.4s cubic-bezier(.3, 0, .4, 1) infinite, rise .7s both; transform-origin: 50% 80%; }
+    .press { animation: blink 1.1s steps(2, jump-none) infinite, rise .7s .32s both; }
+    h1 .gold { animation: glow 3.2s ease-in-out infinite; }
+    body::before { animation: lights 6s ease-in-out infinite alternate; }
+    @keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    @keyframes bounce { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-14px) rotate(6deg); } }
+    @keyframes blink { 50% { opacity: .25; } }
+    @keyframes glow { 50% { text-shadow: 3px 3px 0 var(--red), 6px 6px 0 var(--ink), 0 0 26px rgba(255, 210, 63, .8); } }
+    @keyframes lights { to { filter: brightness(1.18); } }
+  }
+</style>
 </head>
-<h2>Accessible Web Pages</h2>
 <body>
-    <div class="result">
-        <a href="TSBTool_Godot_3/TSBTool_Godot3.html">TSBTool Godot 3, HTML5 GDScript, C#</a>
-        <div class="summary">Godot 3 application with GDScript, JavaScript, C#  HTML5 integration.</div>
-    </div>
-    <br>
-		
-    <div class="result">
-        <a href="TSBTool_Javascript_conversion/TSBTool.html">TSBTool Bridge JavaScript</a>
-        <div class="summary">Simple 'Bridge.NET' (C# to JavaScript converter) integration of TSBTool <br>functionality.</div>
-    </div>
-	
-    <div class="result">
-        <a href="HelmetEditor/index.html">NES TSB helmet editor (beta)</a>
-        <div class="summary">Copy/Paste and edit large and small helmets for original and 32-team ROMs </div>
-    </div>
+
+<header class="hero">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 9" shape-rendering="crispEdges" class="football" aria-hidden="true"><path fill="#2a1205" d="M4 0h8v1h-8zM2 1h2v1h-2zM12 1h2v1h-2zM1 2h1v1h-1zM14 2h1v1h-1zM0 3h1v1h-1zM15 3h1v1h-1zM0 4h1v1h-1zM15 4h1v1h-1zM0 5h1v1h-1zM15 5h1v1h-1zM1 6h1v1h-1zM14 6h1v1h-1zM2 7h2v1h-2zM12 7h2v1h-2zM4 8h8v1h-8z"/><path fill="#a5683a" d="M4 1h8v1h-8zM2 2h2v1h-2zM5 2h6v1h-6zM12 2h2v1h-2zM1 3h3v1h-3zM5 3h6v1h-6zM12 3h3v1h-3zM1 4h3v1h-3zM5 4h1v1h-1zM10 4h1v1h-1zM12 4h3v1h-3zM1 5h3v1h-3zM5 5h6v1h-6zM12 5h3v1h-3zM3 6h1v1h-1zM5 6h6v1h-6zM12 6h1v1h-1z"/><path fill="#ffffff" d="M4 2h1v1h-1zM11 2h1v1h-1zM4 3h1v1h-1zM11 3h1v1h-1zM4 4h1v1h-1zM6 4h4v1h-4zM11 4h1v1h-1zM4 5h1v1h-1zM11 5h1v1h-1zM4 6h1v1h-1zM11 6h1v1h-1z"/><path fill="#6b3c19" d="M2 6h1v1h-1zM13 6h1v1h-1zM4 7h8v1h-8z"/></svg>
+  <p class="kicker">TECMO SUPER BOWL</p>
+  <h1><span class="gold">TSB</span> TOOLS</h1>
+  <p class="tagline">Tools for Tecmo Super Bowl: edit helmets, build seasons, and swap notes with the community.</p>
+  <p class="press" aria-hidden="true">&#9660; SELECT A TOOL &#9660;</p>
+</header>
+
+<main>
+  <ul class="cards">
+
+    <li class="card featured" style="--i:0">
+      <span class="badge">BETA</span>
+      <div class="screen">
+        <img src="HelmetEditor.png" width="1019" height="771"
+             alt="The helmet editor's logo editor with a pixel-art Buffalo Bills helmet, drawing tools and a color palette.">
+      </div>
+      <div class="body">
+        <ul class="tags"><li>Browser app</li><li>28 &amp; 32-team ROMs</li></ul>
+        <h2><a href="HelmetEditor/index.html">NES TSB helmet editor</a></h2>
+        <p>Copy/Paste and edit large and small helmets for original and 32-team ROMs</p>
+        <span class="cta">OPEN <span class="arrow">&#9654;</span></span>
+      </div>
+    </li>
+
+    <li class="card" style="--i:1">
+      <div class="screen forum">
+        <div class="plate"><img src="TecmoBowl.org.logo.png" width="274" height="95" alt="Tecmobowl.org"></div>
+      </div>
+      <div class="body">
+        <ul class="tags"><li>Community</li></ul>
+        <h2><a href="https://tecmobowl.org/forums/topic/11106-tsb-editor-tsbtool-supreme-season-generator/" target="_blank" rel="noopener noreferrer">Tecmobowl.org Forum</a></h2>
+        <p>Thread for TSBToolSupreme (need to make an account to post).</p>
+        <span class="cta">VISIT <span class="arrow">&#8599;</span></span>
+      </div>
+    </li>
+
+    <li class="card" style="--i:2">
+      <div class="screen godot">
+        <div class="phone"><img src="TSBTool_GototVersion.jpeg" width="379" height="600" loading="lazy"
+             alt="TSBTool in Godot: team and position pickers, first and last name fields, jersey number and rating drop-downs."></div>
+      </div>
+      <div class="body">
+        <ul class="tags"><li>Godot 3</li><li>HTML5</li></ul>
+        <h2><a href="TSBTool_Godot_3/TSBTool_Godot3.html">TSBTool Godot 3, HTML5 GDScript, C#</a></h2>
+        <p>Godot 3 application with GDScript, JavaScript, C# HTML5 integration.</p>
+        <span class="cta">OPEN <span class="arrow">&#9654;</span></span>
+      </div>
+    </li>
+
+    <li class="card" style="--i:3">
+      <div class="screen code">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 7" shape-rendering="crispEdges" class="code-icon" aria-hidden="true"><path fill="currentColor" d="M4 0h2v1h-2zM11 0h2v1h-2zM14 0h2v1h-2zM3 1h2v1h-2zM10 1h2v1h-2zM15 1h2v1h-2zM2 2h2v1h-2zM10 2h2v1h-2zM16 2h2v1h-2zM1 3h2v1h-2zM9 3h2v1h-2zM17 3h2v1h-2zM2 4h2v1h-2zM9 4h2v1h-2zM16 4h2v1h-2zM3 5h2v1h-2zM8 5h2v1h-2zM15 5h2v1h-2zM4 6h2v1h-2zM8 6h2v1h-2zM14 6h2v1h-2z"/></svg>
+      </div>
+      <div class="body">
+        <ul class="tags"><li>JavaScript</li><li>Bridge.NET</li></ul>
+        <h2><a href="TSBTool_Javascript_conversion/TSBTool.html">TSBTool Bridge JavaScript</a></h2>
+        <p>Simple 'Bridge.NET' (C# to JavaScript converter) integration of TSBTool functionality.</p>
+        <span class="cta">OPEN <span class="arrow">&#9654;</span></span>
+      </div>
+    </li>
+
+  </ul>
+</main>
+
+<footer>
+  <strong>THANKS FOR PLAYING</strong>
+  Made for Tecmo Super Bowl fans and hackers.
+  Questions or ideas? Visit the <a href="https://tecmobowl.org/forums/topic/11106-tsb-editor-tsbtool-supreme-season-generator/" target="_blank" rel="noopener noreferrer">forum thread</a>.
+</footer>
+
 </body>
 </html>
