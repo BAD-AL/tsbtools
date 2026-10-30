@@ -38,6 +38,8 @@ namespace TSBTool
         private static Regex awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{28}|[0-9a-fA-F]{6})");
         private static Regex divChampRegex = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
         private static Regex confChampRegex = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
+        private static Regex inGameRegex = new Regex("InGame\\s*=\\s*0x([0-9a-fA-F]{24})");
+        private static Regex inGameAwayRegex = new Regex("InGameAway\\s*=\\s*0x([0-9a-fA-F]{24})");
         private static Regex uniformUsageRegex = new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
         private static Regex replaceStringRegex = new Regex("ReplaceString\\(\\s*\"([A-Za-z0-9 .]+)\"\\s*,\\s*\"([A-Za-z .]+)\"\\s*(,\\s*([0-9]+))*\\s*\\)");
         private static Regex teamStringsRegex = new Regex("TEAM_ABB=([0-9A-Z. ]+),TEAM_CITY=([0-9A-Za-z .]+),TEAM_NAME=([0-9A-Z .]+)");
@@ -296,6 +298,12 @@ namespace TSBTool
                     tmp = away.Groups[1].Value;
                     tool.SetAwayUniform(currentTeam, tmp);
                 }
+                Match inGame = inGameRegex.Match(line);
+                if (inGame != Match.Empty && tool is Genesis_TSB1Tool)
+                    ((Genesis_TSB1Tool)tool).SetInGameUniform(currentTeam, inGame.Groups[1].Value);
+                Match inGameAway = inGameAwayRegex.Match(line);
+                if (inGameAway != Match.Empty && tool is Genesis_TSB1Tool)
+                    ((Genesis_TSB1Tool)tool).SetAwayInGameUniform(currentTeam, inGameAway.Groups[1].Value);
                 if (confChamp != Match.Empty)
                 {
                     tmp = confChamp.Groups[1].Value;

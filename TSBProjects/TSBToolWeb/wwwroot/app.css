@@ -478,3 +478,18 @@ body.wide .bar > div { max-width: none; }
 .phbox.over, .pcard.over { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent); }
 .phsrc canvas { touch-action: none; cursor: grab; } .phsrc canvas:active { cursor: grabbing; }
 .sheetfoot { flex: none; margin-top: 0; padding-top: 12px; }
+
+/* color picker: hue strip, saturation/brightness square, palette grid */
+.pickhead { display: flex; align-items: center; gap: 12px; }
+.pickhead .bigsw { flex: 1; margin: 12px 0 6px; height: 56px; }
+.pickcv { display: block; width: 100%; border-radius: var(--radius-sm); margin-top: 8px; touch-action: none; cursor: crosshair; }
+.pickcv#usv { height: 150px; }
+.pickcv.hue { height: 26px; }
+.theme-retro .pickcv { border-radius: 0; border: 3px solid #fff; }
+.pk { margin-top: 12px; text-transform: uppercase; letter-spacing: .08em; }
+.pal .prow, .prow { display: grid; grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); gap: 6px; margin-top: 6px; }
+.psw { width: 100%; aspect-ratio: 1; min-height: 34px; padding: 0; border: 2px solid #0006; border-radius: 6px; }
+.theme-retro .psw { border: 2px solid #fff; border-radius: 0; }
+.psw.on { outline: 3px solid var(--accent); outline-offset: 1px; }
+.fine { margin-top: 20px; margin-bottom: 8px; width: 100%; }
+.pickhead + .pickcv { margin-top: 4px; }

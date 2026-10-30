@@ -385,16 +385,19 @@ function teamUniformTab(d) {
     return state.uniError ? '<div class="muted">The uniform pictures could not be loaded.</div>' : '<div class="status">Loading pictures...</div>';
   }
   paintPlan = [];
-  const sel = state.usel === 1 ? 1 : 0, selKey = sel ? 'Uniform2' : 'Uniform1';
+  const single = kind === 'genesis' && U.get(c.parts, 'InGame') !== undefined;     // Genesis: one coin-toss uniform (written to both skin blocks)
+  const sel = !single && state.usel === 1 ? 1 : 0, selKey = sel ? 'Uniform2' : 'Uniform1';
   const sprite = i => {
     const hex = U.get(c.parts, i ? 'Uniform2' : 'Uniform1') || '', id = `uc-${i}`;
     if (kind === 'nes') {
       paintPlan.push({ id, image: i ? 'nes_away' : 'nes_home', set: 'nes', scale: 3, groups: [
         ['mPantsColorPositions', U.nesRgb(U.nesSlotHex(hex, 0))], ['mSkinData', U.nesRgb(U.nesSlotHex(hex, 1))], ['mJerseyColorPositions', U.nesRgb(U.nesSlotHex(hex, 2))]] });
+    } else if (kind === 'genesis') {
+      paintPlan.push({ id, image: 'coin', set: 'coin', scale: 3, groups: U.coinGroups(hex, false) });
     } else {
       paintPlan.push({ id, image: i ? 'snes_away' : 'snes_home', set: 'snes', scale: 2, groups: U.FREE_SLOTS.map(s => [s.id, U.freeRgb(kind, U.slotHex(hex, s.id))]) });
     }
-    return `<button class="unibtn ${i === sel ? 'on' : ''}" data-act="usel:${i}" aria-label="Edit uniform ${i + 1}"><span class="k">Uniform ${i + 1}</span><canvas id="${id}" role="img" aria-label="Uniform ${i + 1} preview"></canvas></button>`;
+    return `<button class="unibtn ${i === sel ? 'on' : ''}" data-act="usel:${i}" aria-label="Edit uniform ${i + 1}"><span class="k">${single ? 'Coin toss' : 'Uniform ' + (i + 1)}</span><canvas id="${id}" role="img" aria-label="Uniform ${i + 1} preview"></canvas></button>`;
   };
   const hex = U.get(c.parts, selKey) || '';
   let chips;
@@ -421,8 +424,33 @@ function teamUniformTab(d) {
   }
   const usage = U.get(c.parts, 'UniformUsage') === undefined ? '' :
     `<button class="btn ghost" data-act="uusage">Uniform usage: who wears Uniform 2&hellip;</button>`;
-  return `<div class="unirow">${sprite(0)}${sprite(1)}</div>
-    <div class="muted">Editing uniform ${sel + 1}. Tap a color to change it.</div>${chips}${usage}${champ}`;
+  const ig = kind === 'genesis' ? U.get(c.parts, 'InGame') : undefined;
+  const awayHex = kind === 'genesis' ? U.get(c.parts, 'InGameAway') : undefined;
+  const inGame = ig === undefined ? '' : genesisInGame(c, ig, 'home') + (awayHex !== undefined ? genesisInGame(c, awayHex, 'away')
+    : '<div class="muted" style="margin-top:18px">This team has no separate away uniform in the game: it always wears the home uniform.</div>');
+  const coinHead = ig === undefined ? '' : `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em;margin-top:18px">Coin toss screen</div>
+    <div class="muted">These colors are only used on the coin toss picture; the game field uses the colors above. Every player of the team gets the same colors.</div>`;
+  const shared = kind === 'genesis' && (state.team === 'patriots' || state.team === 'seahawks')
+    ? '<div class="status" role="note">The Patriots and Seahawks share one home uniform in this game: changing it here changes both teams.</div>' : '';
+  return `${shared}${inGame}${coinHead}<div class="unirow">${sprite(0)}${single ? '' : sprite(1)}</div>
+    <div class="muted">${single ? 'Tap a color to change it.' : `Editing uniform ${sel + 1}. Tap a color to change it.`}</div>${chips}${usage}${champ}`;
+}
+
+/** Genesis: the colors the game field uses (helmet, jersey, pants, two shades each), shown on the SNES player picture. kind: 'home' or 'away'. */
+function genesisInGame(c, hex, kind) {
+  const away = kind === 'away', key = away ? 'InGameAway' : 'InGame', id = away ? 'uc-away' : 'uc-ig';
+  const rgb = sid => U.freeRgb('genesis', U.slotHex(hex, sid)), avg = (a, b) => a.map((v, i) => Math.round((v + b[i]) / 2));
+  paintPlan.push({ id, image: away ? 'snes_away' : 'snes_home', set: 'snes', scale: 3, groups: [
+    ['HelmetD', rgb('iHelmetD')], ['HelmetM', rgb('iHelmetL')], ['JerseyM', rgb('iJerseyD')], ['JerseyL', rgb('iJerseyL')],
+    ['PantsD', rgb('iPantsD')], ['PantsM', avg(rgb('iPantsD'), rgb('iPantsL'))], ['PantsL', rgb('iPantsL')]] });
+  const chips = ['Jersey', 'Pants', 'Helmet'].map(g => `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em">${g} colors</div><div class="chips2">${
+    U.INGAME_SLOTS.filter(s => s.group === g).map(s => { const h = U.slotHex(hex, s.id); return uniChip(`ucolor:${key}:${s.id}`, s.label, U.freeRgb('genesis', h), h); }).join('')}</div>`).join('');
+  const intro = away
+    ? 'The light uniform the game puts this team in against some opponents (which opponents is set elsewhere in the game and cannot be edited yet). Tap a color to change it.'
+    : 'What the game field shows. Every player of this team wears these, light-skin and dark-skin alike. Tap a color to change it.';
+  return `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em;${away ? 'margin-top:18px' : ''}">${away ? 'Away uniform (light)' : 'Home uniform (dark)'}</div>
+    <div class="unirow"><div class="unibtn on" style="cursor:default"><canvas id="${id}" role="img" aria-label="${away ? 'Away' : 'Home'} uniform preview"></canvas></div></div>
+    <div class="muted">${intro}</div>${chips}`;
 }
 
 /** Draws the queued uniform pictures (called after every render). */
@@ -443,6 +471,7 @@ function uniSetColor(d, key, slot, value) {          // value: 4-hex (free) or 2
     next = hex.slice(0, slot * 2) + value + hex.slice(slot * 2 + 2);
   } else next = U.withSlot(hex, slot, value);
   U.set(parts, key, next);
+  if (d.colors.kind === 'genesis' && key === 'Uniform1' && U.get(parts, 'InGame') !== undefined) U.set(parts, 'Uniform2', next);   // one coin-toss uniform for both skin blocks
 }
 
 function uniLabel(d, p) {
@@ -451,6 +480,7 @@ function uniLabel(d, p) {
     if (names[p.key]) return `Uniform ${p.key === 'Uniform1' ? 1 : 2} ${names[p.key][p.slot]}`;
     return `${p.key === 'DivChamp' ? 'Division' : 'Conference'} champ ${U.CHAMP[p.key].slots[p.slot][0]}`;
   }
+  if (p.key === 'InGame' || p.key === 'InGameAway') { const s = U.slotInfo(p.slot); return `${p.key === 'InGame' ? 'Home' : 'Away'} ${s.group} ${s.label}`; }
   const s = U.FREE_SLOTS.find(x => x.id === p.slot);
   return `Uniform ${p.key === 'Uniform1' ? 1 : 2} ${s.group} ${s.label}`;
 }
@@ -479,13 +509,21 @@ function uniPickerSheet(d) {
       <button class="btn icon-btn" data-act="ulev:${ch}:-1" aria-label="${name} down">&minus;</button>
       <input type="range" data-lev="${ch}" min="0" max="${max}" step="1" value="${L[ch]}" aria-label="${name}">
       <button class="btn icon-btn" data-act="ulev:${ch}:1" aria-label="${name} up">+</button><span class="val sm" id="lv-${ch}">${L[ch]}</span></div>`;
+  const cur = U.freeFromLevels(kind, L);
+  const cell = (l, label) => { const c = U.freeRgb(kind, U.freeFromLevels(kind, l)); return `<button class="psw ${U.freeFromLevels(kind, l) === cur ? 'on' : ''}" style="background:${U.css(c)}" data-act="ulv:${l.r},${l.g},${l.b}" aria-label="${label}"></button>`; };
+  const mine = [...new Set((state.tedit.colors.parts || []).filter(x => /^(Uniform1|Uniform2|InGame|InGameAway)$/.test(x.key)).flatMap(x => (x.hex.match(/.{4}/g) || [])))];
+  const palette = U.paletteLevels(kind).map(r => `<div class="prow">${r.map(l => cell(l, 'Palette color')).join('')}</div>`).join('');
   return `<div class="scrim pop fit" data-act="uclose"><div class="sheet pop fit" role="dialog" aria-label="Pick a color" data-stop="1">
       <div class="topbar"><h2>${esc(title)}</h2><button class="btn icon-btn" data-act="uclose" aria-label="Close">&times;</button></div>
-      <div class="bigsw" id="ubig" style="background:${U.css(rgb)}"></div>
-      <div class="muted" id="uhex" style="text-align:center">${U.freeFromLevels(kind, L)}</div>
-      ${row('r', 'Red')}${row('g', 'Green')}${row('b', 'Blue')}
+      <div class="pickhead"><div class="bigsw" id="ubig" style="background:${U.css(rgb)}"></div><div class="muted" id="uhex">${cur}</div></div>
+      <canvas id="usv" class="pickcv" width="240" height="150" role="img" aria-label="Saturation and brightness"></canvas>
+      <canvas id="uhue" class="pickcv hue" width="240" height="26" role="img" aria-label="Hue"></canvas>
+      <div class="muted pk">Game colors</div><div class="pal">${palette}</div>
+      <div class="muted pk">Colors already on this team</div><div class="prow">${mine.map(h => cell(U.freeToLevels(kind, h), 'Team color ' + h)).join('')}</div>
+      <button class="btn ghost fine" data-act="ufine" aria-expanded="${!!p.fine}">${p.fine ? 'Hide' : 'Fine tune'} red / green / blue</button>
+      ${p.fine ? row('r', 'Red') + row('g', 'Green') + row('b', 'Blue') : ''}
       <label class="btn ghost nat">Pick any color<input type="color" id="unative" value="${rgbToHex(rgb)}"></label>
-      <div class="bar2"><button class="btn ghost" data-act="uclose">Cancel</button><button class="btn primary" data-act="uok">OK</button></div>
+      <div class="bar2 sheetfoot"><button class="btn ghost" data-act="uclose">Cancel</button><button class="btn primary" data-act="uok">OK</button></div>
     </div></div>`;
 }
 
@@ -1162,6 +1200,7 @@ function render() {
   if (dz) { dz.addEventListener('dragover', ev => ev.preventDefault()); dz.addEventListener('drop', ev => { ev.preventDefault(); const f = ev.dataTransfer.files[0]; if (f) photoLoadFile(f); }); }
   applyAccent();
   paintUniforms();
+  paintPicker();
   centerWeekChip();
   placePopup();
   const cur = $('.facegrid .on');
@@ -1270,11 +1309,60 @@ function find(dir) {
 
 function refreshFreePicker() {
   const p = state.upick, kind = state.tedit.colors.kind;
-  const rgb = U.freeRgb(kind, U.freeFromLevels(kind, p.levels));
+  const hex = U.freeFromLevels(kind, p.levels), rgb = U.freeRgb(kind, hex);
   $('#ubig').style.background = U.css(rgb);
-  $('#uhex').textContent = U.freeFromLevels(kind, p.levels);
-  for (const ch of ['r', 'g', 'b']) $('#lv-' + ch).textContent = p.levels[ch];
+  $('#uhex').textContent = hex;
+  for (const ch of ['r', 'g', 'b']) {
+    const out = $('#lv-' + ch), sl = document.querySelector(`[data-lev="${ch}"]`);
+    if (out) out.textContent = p.levels[ch];
+    if (sl) sl.value = p.levels[ch];
+  }
+  document.querySelectorAll('.psw').forEach(b => b.classList.toggle('on', b.dataset.act === `ulv:${p.levels.r},${p.levels.g},${p.levels.b}`));
+  paintPicker();
 }
+
+/** Draws the saturation/brightness square (at the picker's hue) and the hue strip, with their markers. */
+function paintPicker() {
+  const p = state.upick, sv = document.getElementById('usv'), hu = document.getElementById('uhue');
+  if (!p || !p.levels || !sv || !hu) return;
+  const kind = state.tedit.colors.kind, hsv = U.rgbToHsv(U.freeRgb(kind, U.freeFromLevels(kind, p.levels)));
+  if (p.h === undefined || (!pickDrag && hsv.s > 0.08)) p.h = hsv.h;
+  const g = sv.getContext('2d'), W = sv.width, H = sv.height;
+  const base = g.createLinearGradient(0, 0, W, 0);
+  base.addColorStop(0, '#fff'); base.addColorStop(1, `rgb(${U.hsvToRgb({ h: p.h, s: 1, v: 1 })})`);
+  g.fillStyle = base; g.fillRect(0, 0, W, H);
+  const shade = g.createLinearGradient(0, 0, 0, H);
+  shade.addColorStop(0, 'rgba(0,0,0,0)'); shade.addColorStop(1, '#000');
+  g.fillStyle = shade; g.fillRect(0, 0, W, H);
+  const mark = (x, y) => { g.lineWidth = 3; g.strokeStyle = '#000'; g.beginPath(); g.arc(x, y, 8, 0, 7); g.stroke(); g.lineWidth = 2; g.strokeStyle = '#fff'; g.beginPath(); g.arc(x, y, 8, 0, 7); g.stroke(); };
+  mark(hsv.s * W, (1 - hsv.v) * H);
+  const h = hu.getContext('2d'), w2 = hu.width, hg = h.createLinearGradient(0, 0, w2, 0);
+  for (let i = 0; i <= 12; i++) hg.addColorStop(i / 12, `rgb(${U.hsvToRgb({ h: i * 30, s: 1, v: 1 })})`);
+  h.fillStyle = hg; h.fillRect(0, 0, w2, hu.height);
+  const hx = p.h / 360 * w2;
+  h.fillStyle = '#000'; h.fillRect(hx - 3, 0, 6, hu.height); h.fillStyle = '#fff'; h.fillRect(hx - 1.5, 0, 3, hu.height);
+}
+let pickDrag = null;
+function pickAt(e) {
+  const p = state.upick, cv = pickDrag.cv, r = cv.getBoundingClientRect(), kind = state.tedit.colors.kind;
+  const fx = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), fy = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+  if (cv.id === 'uhue') p.h = Math.min(359.9, fx * 360);
+  const cur = U.rgbToHsv(U.freeRgb(kind, U.freeFromLevels(kind, p.levels)));
+  const hsv = cv.id === 'uhue' ? { h: p.h, s: Math.max(cur.s, 0.01), v: Math.max(cur.v, 0.01) } : { h: p.h, s: fx, v: 1 - fy };
+  p.levels = U.freeLevelsFromRgb(kind, U.hsvToRgb(hsv));
+  refreshFreePicker();
+}
+document.addEventListener('pointerdown', e => {
+  const cv = e.target.id === 'usv' || e.target.id === 'uhue' ? e.target : null;
+  if (!cv || !state.upick || !state.upick.levels) return;
+  pickDrag = { id: e.pointerId, cv };
+  try { cv.setPointerCapture(e.pointerId); } catch { /* not a live pointer */ }
+  pickAt(e); e.preventDefault();
+});
+document.addEventListener('pointermove', e => { if (pickDrag && e.pointerId === pickDrag.id) pickAt(e); });
+const pickEnd = e => { if (pickDrag && e.pointerId === pickDrag.id) pickDrag = null; };
+document.addEventListener('pointerup', pickEnd);
+document.addEventListener('pointercancel', pickEnd);
 
 // ---------- events ----------
 function teamStep(d) {
@@ -1364,6 +1452,8 @@ document.addEventListener('click', e => {
     }
     case 'ulev': { const [ch, dl] = arg.split(':'), p = state.upick, mx = U.LEVELS[state.tedit.colors.kind]; p.levels[ch] = clamp(p.levels[ch] + Number(dl), 0, mx); render(); break; }
     case 'uok': { const p = state.upick, d = state.tedit; uniSetColor(d, p.key, p.slot, U.freeFromLevels(d.colors.kind, p.levels)); state.upick = null; render(); break; }
+    case 'ulv': { const [r, g, b] = arg.split(',').map(Number); state.upick.levels = { r, g, b }; state.upick.h = undefined; render(); break; }
+    case 'ufine': state.upick.fine = !state.upick.fine; render(); break;
     case 'upal': { const p = state.upick; uniSetColor(state.tedit, p.key, p.slot, arg); state.upick = null; render(); break; }
     case 'uclose': state.upick = null; state.usage = null; render(); break;
     case 'uusage': { const orig = U.get(state.tedit.colors.parts, 'UniformUsage'); state.usage = { original: orig, ids: U.usageTeamIds(teamIds()) }; state.usage.bits = U.usageBits(orig, state.usage.ids.length); render(); break; }

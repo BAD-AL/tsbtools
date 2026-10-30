@@ -222,6 +222,10 @@ namespace TSBTool
             {
                 StringBuilder colorsLine = new StringBuilder("COLORS ");
                 colorsLine.Append(GetGameUniform(team));
+                colorsLine.Append(", " + GetInGameUniform(team));
+                string awayUniform = GetAwayInGameUniform(team);
+                if (!string.IsNullOrEmpty(awayUniform))
+                    colorsLine.Append(", " + awayUniform);
                 string uniformUsage = GetUniformUsage(team);
                 if (!string.IsNullOrEmpty(uniformUsage))
                     colorsLine.Append(", " + uniformUsage);
@@ -2231,6 +2235,10 @@ namespace TSBTool
             return builder.ToString();
         }
 
+        // NOTE: Uniform1/Uniform2 below are the COIN-TOSS screen palette only (a 3-step jersey/pants ramp), and the
+        // two blocks are the light-skin and dark-skin variants, not home/away. The in-game uniform is
+        // GetInGameUniform/SetInGameUniform further down.
+        //
         // Uniform colors: a 16-color (32-byte) block per team at uniformColorStart + teamIndex *
         // uniformTeamStride, with a second, structurally identical block uniformAwayOffset further in.
         // Confirmed against two real screenshots (Bills: red helmet/blue jersey/white pants; Jets:
@@ -2257,6 +2265,16 @@ namespace TSBTool
         // accepts a 28-hex-digit Uniform1/Uniform2 value, shared unmodified with SNES). Jersey's
         // darkest shade (index 0) is deliberately excluded, mirroring SNES's own reasoning -- no direct
         // evidence yet either way for Genesis, kept consistent rather than guessed at.
+        // The uniform tables (coin toss and in-game home) have no entry of their own for the Patriots:
+        // the game reads entry 13 (the Seahawks') for them -- confirmed in an emulator, both teams show the
+        // same silver/blue look; entry 3 is not read by any team. So edits to either team change both.
+        // (The away table is a separate, shorter table and is not affected.)
+        private static int GetUniformTeamIndex(string team)
+        {
+            int index = GetTeamIndex(team);
+            return index == 3 ? 13 : index;
+        }
+
         private const int uniformColorStart = 0x58974;
         private const int uniformTeamStride = 0x40;
         private const int uniformAwayOffset = 0x20;
@@ -2301,7 +2319,7 @@ namespace TSBTool
 
         public void SetHomeUniform(string team, string colorString)
         {
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetUniformTeamIndex(team);
             if (teamIndex < 0)
             {
                 StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetHomeUniform: team {0} is invalid.", team));
@@ -2317,7 +2335,7 @@ namespace TSBTool
 
         public void SetAwayUniform(string team, string colorString)
         {
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetUniformTeamIndex(team);
             if (teamIndex < 0)
             {
                 StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetAwayUniform: team {0} is invalid.", team));
@@ -2333,7 +2351,7 @@ namespace TSBTool
 
         public string GetHomeUniform(string team)
         {
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetUniformTeamIndex(team);
             if (teamIndex < 0)
                 return string.Empty;
             return string.Format("Uniform1=0x{0}", ReadUniformBlock(uniformColorStart + teamIndex * uniformTeamStride));
@@ -2341,7 +2359,7 @@ namespace TSBTool
 
         public string GetAwayUniform(string team)
         {
-            int teamIndex = GetTeamIndex(team);
+            int teamIndex = GetUniformTeamIndex(team);
             if (teamIndex < 0)
                 return string.Empty;
             return string.Format("Uniform2=0x{0}", ReadUniformBlock(uniformColorStart + teamIndex * uniformTeamStride + uniformAwayOffset));
@@ -2350,6 +2368,95 @@ namespace TSBTool
         public string GetGameUniform(string team)
         {
             return string.Format("{0}, {1}", GetHomeUniform(team), GetAwayUniform(team));
+        }
+
+        // The colors the game field actually uses (the Uniform1/Uniform2 blocks above only paint the coin-toss
+        // screen; confirmed by test ROMs viewed in an emulator). Table at inGameColorStart + team * 0x40: two 0x20
+        // blocks (light-skin players, dark-skin players) that hold the same uniform colors and differ only in the
+        // skin words. Words: [0-1] helmet dark,light  [2-3] jersey dark,light  [4-5] pants dark,light. There is one
+        // palette per team (no home/away). Wire format: 24 hex digits in that order.
+        private const int inGameColorStart = 0x57D6C;
+        private const int inGameSkinBlockOffset = 0x20;
+
+        public void SetInGameUniform(string team, string colorString)
+        {
+            int teamIndex = GetUniformTeamIndex(team);
+            if (teamIndex < 0)
+            {
+                StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetInGameUniform: team {0} is invalid.", team));
+                return;
+            }
+            if (colorString == null || colorString.Length != 24)
+            {
+                StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetInGameUniform: expected 24 hex digits (helmet dark/light, jersey dark/light, pants dark/light), got '{0}'.", colorString));
+                return;
+            }
+            int baseLoc = inGameColorStart + teamIndex * uniformTeamStride;
+            for (int block = 0; block < 2; block++)
+                for (int i = 0; i < 6; i++)
+                    WriteUniformColor(baseLoc + block * inGameSkinBlockOffset + i * 2, colorString.Substring(i * 4, 4));
+        }
+
+        public string GetInGameUniform(string team)
+        {
+            int teamIndex = GetUniformTeamIndex(team);
+            if (teamIndex < 0)
+                return string.Empty;
+            int baseLoc = inGameColorStart + teamIndex * uniformTeamStride;
+            StringBuilder sb = new StringBuilder("InGame=0x", 33);
+            for (int i = 0; i < 6; i++)
+                sb.Append(ReadUniformColor(baseLoc + i * 2));
+            return sb.ToString();
+        }
+
+        // Away (light) in-game uniforms: a second table at awayColorStart, 0x40 per entry with the same layout as the home
+        // table above (two 0x20 skin blocks, words helmet/jersey/pants dark+light). It only has 19 entries -- it ends where the
+        // coin-toss table starts -- so only the teams listed in awayEntryTeams have an away look; the others never wear a
+        // separate one. Entry order was read off emulator games (nine entries seen directly: bills, jets, chargers, seahawks,
+        // cowboys, bears, lions, packers, rams; the rest matched by helmet colors). Which opponents make a team wear its away
+        // look is a separate matchup table that has not been found for Genesis (the SNES one is at 0x1752).
+        private const int awayColorStart = 0x5846C;
+        private static readonly string[] awayEntryTeams =
+        {
+            "bills", "dolphins", "jets", "bengals", "steelers", "chiefs", "raiders", "chargers", "seahawks", "cowboys",
+            "redskins", "eagles", "cardinals", "bears", "lions", "packers", "49ers", "rams", "saints"
+        };
+
+        public bool HasAwayInGameUniform(string team)
+        {
+            return Array.IndexOf(awayEntryTeams, team) >= 0;
+        }
+
+        public void SetAwayInGameUniform(string team, string colorString)
+        {
+            int entry = Array.IndexOf(awayEntryTeams, team);
+            if (entry < 0)
+            {
+                if (GetTeamIndex(team) < 0)
+                    StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetAwayInGameUniform: team {0} is invalid.", team));
+                return;                         // a valid team without an away entry: nothing to write
+            }
+            if (colorString == null || colorString.Length != 24)
+            {
+                StaticUtils.AddError(string.Format("ERROR! Genesis_TSB1Tool.SetAwayInGameUniform: expected 24 hex digits (helmet dark/light, jersey dark/light, pants dark/light), got '{0}'.", colorString));
+                return;
+            }
+            int baseLoc = awayColorStart + entry * uniformTeamStride;
+            for (int block = 0; block < 2; block++)
+                for (int i = 0; i < 6; i++)
+                    WriteUniformColor(baseLoc + block * inGameSkinBlockOffset + i * 2, colorString.Substring(i * 4, 4));
+        }
+
+        public string GetAwayInGameUniform(string team)
+        {
+            int entry = Array.IndexOf(awayEntryTeams, team);
+            if (entry < 0)
+                return string.Empty;
+            int baseLoc = awayColorStart + entry * uniformTeamStride;
+            StringBuilder sb = new StringBuilder("InGameAway=0x", 37);
+            for (int i = 0; i < 6; i++)
+                sb.Append(ReadUniformColor(baseLoc + i * 2));
+            return sb.ToString();
         }
 
         public String GetProBowlPlayers()

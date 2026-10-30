@@ -37,12 +37,20 @@ export const FREE_SLOTS = [
 /** Display order of the slots (the desktop dialog groups Jersey, Pants, Helmet). */
 export const FREE_DISPLAY = ['JerseyM', 'JerseyL', 'PantsD', 'PantsM', 'PantsL', 'HelmetD', 'HelmetM'];
 
+/** Genesis in-game colors (the "InGame=0x" value, six colors): what the game field uses, two shades per part. */
+export const INGAME_SLOTS = [
+  { id: 'iHelmetD', group: 'Helmet', label: 'Dark' }, { id: 'iHelmetL', group: 'Helmet', label: 'Light' },
+  { id: 'iJerseyD', group: 'Jersey', label: 'Dark' }, { id: 'iJerseyL', group: 'Jersey', label: 'Light' },
+  { id: 'iPantsD', group: 'Pants', label: 'Dark' }, { id: 'iPantsL', group: 'Pants', label: 'Light' },
+];
+export const slotInfo = id => FREE_SLOTS.find(s => s.id === id) || INGAME_SLOTS.find(s => s.id === id);
+const slotIndex = id => { const i = FREE_SLOTS.findIndex(s => s.id === id); return i >= 0 ? i : INGAME_SLOTS.findIndex(s => s.id === id); };
+
 export function slotHex(uniHex, id) {
-  const i = FREE_SLOTS.findIndex(s => s.id === id);
-  return uniHex.substr(i * 4, 4);
+  return uniHex.substr(slotIndex(id) * 4, 4);
 }
 export function withSlot(uniHex, id, hex4) {
-  const i = FREE_SLOTS.findIndex(s => s.id === id);
+  const i = slotIndex(id);
   return uniHex.slice(0, i * 4) + hex4 + uniHex.slice(i * 4 + 4);
 }
 
@@ -66,12 +74,20 @@ export function genesisFromLevels({ r, g, b }) {
 
 export const LEVELS = { snes: 31, genesis: 7 };
 
+/** What the Genesis emulator shows for the 8 levels of a channel (measured from screenshots; not level * 255 / 7). */
+export const GENESIS_SHADES = [0x00, 0x34, 0x57, 0x74, 0x90, 0xac, 0xce, 0xff];
 export function freeRgb(kind, hex4) {
   const l = kind === 'snes' ? snesToLevels(hex4) : genesisToLevels(hex4), max = LEVELS[kind];
+  if (kind === 'genesis') return [GENESIS_SHADES[l.r], GENESIS_SHADES[l.g], GENESIS_SHADES[l.b]];
   return [Math.round(l.r * 255 / max), Math.round(l.g * 255 / max), Math.round(l.b * 255 / max)];
 }
 export function freeLevelsFromRgb(kind, [r, g, b]) {
-  const max = LEVELS[kind], q = c => Math.max(0, Math.min(max, Math.round(c * max / 255)));
+  const max = LEVELS[kind];
+  if (kind === 'genesis') {            // nearest of the 8 displayed shades
+    const q = c => GENESIS_SHADES.reduce((best, v, i) => (Math.abs(v - c) < Math.abs(GENESIS_SHADES[best] - c) ? i : best), 0);
+    return { r: q(r), g: q(g), b: q(b) };
+  }
+  const q = c => Math.max(0, Math.min(max, Math.round(c * max / 255)));
   return { r: q(r), g: q(g), b: q(b) };
 }
 export const freeToLevels = (kind, hex4) => (kind === 'snes' ? snesToLevels(hex4) : genesisToLevels(hex4));
@@ -96,7 +112,7 @@ export const CHAMP = {
 const IMAGES = {
   snes_home: 'img/uni_snes_home.png', snes_away: 'img/uni_snes_away.png',
   nes_home: 'img/uni_nes_home.png', nes_away: 'img/uni_nes_away.png',
-  nes_div: 'img/uni_nes_div.png', nes_conf: 'img/uni_nes_conf.png',
+  coin: 'img/uni_coin.png', nes_div: 'img/uni_nes_div.png', nes_conf: 'img/uni_nes_conf.png',
 };
 let assets = null;
 
@@ -139,6 +155,19 @@ function clearBackground(img) {
 
 export const assetsReady = () => assets;
 
+/**
+ * Genesis coin-toss player: the pixel groups S0-S15 are the 16 palette entries of the team's coin-toss block (mask set 'coin').
+ * Entries the text does not carry get typical values: jersey index 0 is the Medium jersey darkened, skin is the light/dark pair
+ * every team shares, 8-10 are gray/white/black and 14-15 the facemask gray/white.
+ */
+export function coinGroups(uniHex, dark) {
+  const rgb = hex4 => freeRgb('genesis', hex4), L = id => genesisToLevels(slotHex(uniHex, id));
+  const jm = L('JerseyM'), jersey0 = genesisFromLevels({ r: jm.r >> 1, g: jm.g >> 1, b: jm.b >> 1 });
+  const colors = [jersey0, slotHex(uniHex, 'JerseyM'), slotHex(uniHex, 'JerseyL'), slotHex(uniHex, 'PantsD'), slotHex(uniHex, 'PantsM'), slotHex(uniHex, 'PantsL'),
+    dark ? '0224' : '044a', dark ? '0468' : '08ae', '0444', '0eee', '0000', '0000', slotHex(uniHex, 'HelmetD'), slotHex(uniHex, 'HelmetM'), '0444', '0eee'];
+  return colors.map((h, i) => ['S' + i, rgb(h)]);
+}
+
 /** Draws a picture on a canvas, then paints each [maskName, [r,g,b]] group of pixels over it. */
 export function paint(canvas, imageKey, maskSet, groups) {
   const a = assets;
@@ -178,4 +207,31 @@ export function usageHex(bits, original) {
   v |= BigInt('0x' + (original || '0')) & keepMask;
   const s = v.toString(16).padStart(8, '0');
   return /[A-F]/.test(original || '') ? s.toUpperCase() : s;
+}
+
+// ---- color picker helpers (hue strip, saturation/brightness square, palette grid) ----
+export function rgbToHsv([r, g, b]) {
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  let h = 0;
+  if (d) h = mx === r ? ((g - b) / d + 6) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return { h: h * 60, s: mx ? d / mx : 0, v: mx };
+}
+export function hsvToRgb({ h, s, v }) {
+  const f = n => { const k = (n + h / 60) % 6; return v - v * s * Math.max(0, Math.min(k, 4 - k, 1)); };
+  return [f(5), f(3), f(1)].map(x => Math.round(x * 255));
+}
+/** The game's colors as a grid: a gray ramp, then 12 hues in four shades (bright, light, medium, dark). Each is snapped to the console's levels. */
+export function paletteLevels(kind) {
+  const snap = rgb => freeLevelsFromRgb(kind, rgb), key = l => `${l.r},${l.g},${l.b}`, seen = new Set(), rows = [];
+  const add = (row, l) => { const k = key(l); if (!seen.has(k)) { seen.add(k); row.push(l); } };
+  const grays = [];
+  for (let i = 0; i <= 7; i++) add(grays, snap(Array(3).fill(Math.round(i * 255 / 7))));
+  rows.push(grays);
+  for (const [s, v] of [[1, 1], [0.5, 1], [1, 0.6], [1, 0.35]]) {
+    const row = [];
+    for (let h = 0; h < 360; h += 30) add(row, snap(hsvToRgb({ h, s, v })));
+    rows.push(row);
+  }
+  return rows;
 }

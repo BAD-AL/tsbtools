@@ -1,4 +1,4 @@
-# TSBToolWeb
+﻿# TSBToolWeb
 
 TSBTool in the browser (phone, tablet, desktop). The real C# core (`TSBTool\Core` and `TSB2_3_Core`, linked in place)
 runs as WebAssembly on .NET 8; the UI is plain HTML/CSS/JS with no framework and no build step.
@@ -42,6 +42,7 @@ TSB3 photos: photos appear in the roster rows and the player editor (Light/Dark 
 lists all 85. Tap one to give it to another team/position, free it, or change its picture: choose or drop an image (also drop one onto the
 player editor's photo box), drag the crop frame on the preview, zoom with the wheel or a pinch (or the sliders), adjust brightness/contrast/sharpen/auto-levels,
 and see the result in the game's grays. Not built: PNG export/import of photos.
+Genesis Uniform tab: a Home (dark) in-game section (helmet, jersey, pants, dark + light; the core's `InGame=0x` value, table at 0x57D6C, written into both skin blocks), an Away (light) section for the 19 teams that have one (`InGameAway=0x`, table at 0x5846C; which opponents trigger it is a matchup table not yet found for Genesis), and a note that Patriots and Seahawks share one home uniform above one coin-toss uniform (`Uniform1`, copied to `Uniform2` on every edit so both skin blocks match; shown on the coin-toss screen only). The color picker (SNES/Genesis) has a saturation/brightness square, hue strip, palette grid, this team's colors and optional R/G/B fine tune. Previews use the emulator's channel levels (`GENESIS_SHADES` in uniform.js).
 Dialogs can mark a footer with `class="sheetfoot"`; `wrapSheets()` keeps it below the scrolling part.
 Design mockups: the "TSBTool Web Mockups" canvas artifact.
 Round-trip (dump, apply, save) was verified byte-identical against `TSBToolSupreme.exe` on all five ROM families.
