@@ -1,5 +1,5 @@
 import { dotnet } from './_framework/dotnet.js';
-import { GROUPS, FORMATIONS, parseText, parsePlayerLine, buildPlayerLine, parseTeamLine, buildTeamLine, parsePlaybook, buildPlaybook, teamLabel, changedLines } from './model.js';
+import { GROUPS, FORMATIONS, parseText, parsePlayerLine, buildPlayerLine, parseTeamLine, buildTeamLine, parsePlaybook, buildPlaybook, parsePlaybook23, buildPlaybook23, teamLabel, changedLines } from './model.js';
 import * as U from './uniform.js';
 import * as S from './schedule.js';
 import * as P from './photos.js';
@@ -66,6 +66,15 @@ async function loadSheets() {
     sheets.plays = { w: img.naturalWidth, h: img.naturalHeight, index };
     render();
   } catch (e) { /* play names show as text */ }
+  try {                                   // TSB2/TSB3 play diagrams: R1-0..R4-15 and P1-0..P4-15, plus the play names per slot
+    const [json, img] = await Promise.all([fetch('img/plays_tsb23.json').then(r => r.json()), new Promise((res, rej) => {
+      const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = 'img/plays_tsb23.png';
+    })]);
+    const index = {};
+    for (const [k, v] of Object.entries(json.sprites)) index[k.toUpperCase()] = v;
+    sheets.plays23 = { w: img.naturalWidth, h: img.naturalHeight, index, names: json.names };
+    render();
+  } catch (e) { /* TSB2/3 plays show as text */ }
 }
 
 /** A face box: the portrait sprite when this ROM has one for `face` (number or '0x..' text), else the silhouette. */
@@ -218,7 +227,8 @@ function openTeamDraft(id) {
   if (fam === 'tsb3') { t.rush = parseInt(d.slice(0, 2), 16); t.pass = parseInt(d.slice(2, 4), 16); t.max = 255; }
   else { t.rush = parseInt(d[0], 16); t.pass = parseInt(d[1], 16); t.pref = d.length > 2 ? d[2] : null; }
   const pbLine = team.lineIndex + 1;
-  const pb = parsePlaybook(lines[pbLine]);
+  const pb = fam === 'tsb1' ? parsePlaybook(lines[pbLine]) : parsePlaybook23(lines[pbLine]);
+  if (pb && pb.hex) pb.book = 0;                         // TSB2/3: which of the team's two playbooks is shown
   const im = state.rom.version === 'GENESIS_TSB1' ? null : ID_RE.exec(lines[team.lineIndex + 2] || '');   // Genesis ignores these lines
   const ident = im ? { others: idUsed(lines, state.parsed.teams, team.lineIndex + 2), line: team.lineIndex + 2, abb: im[1], city: im[2], name: im[3] } : null;
   state.tedit = { team: team.id, line: team.lineIndex, pbLine, t, pb, id: ident, orig: { t: structuredClone(t), pb: structuredClone(pb), id: structuredClone(ident) } };
@@ -248,7 +258,7 @@ function commitTeam() {
   let changed = false;
   if (next !== lines[d.line]) { lines[d.line] = next; changed = true; }
   if (d.pb) {
-    const pl = buildPlaybook(d.pb);
+    const pl = d.pb.hex ? buildPlaybook23(d.pb) : buildPlaybook(d.pb);
     if (pl !== lines[d.pbLine]) { lines[d.pbLine] = pl; changed = true; }
   }
   if (d.id) {
@@ -267,10 +277,10 @@ function commitTeam() {
   if (changed) { state.text = lines.join('\n'); state.pending = true; }
 }
 
-function playSprite(name, k = 1.5) {
-  const s = sheets.plays, e = s && s.index[name];
+function playSprite(name, k = 1.5, sheet = 'plays') {
+  const s = sheets[sheet], e = s && s.index[name];
   if (!e) return `<div class="playimg none">${esc(name.replace('.BMP', ''))}</div>`;
-  return `<div class="playimg"><span class="sprite play" style="width:${e.width * k}px;height:${e.height * k}px;background-position:-${e.x * k}px -${e.y * k}px;background-size:${s.w * k}px ${s.h * k}px"></span></div>`;
+  return `<div class="playimg"><span class="sprite ${sheet === 'plays23' ? 'play23' : 'play'}" style="width:${e.width * k}px;height:${e.height * k}px;background-position:-${e.x * k}px -${e.y * k}px;background-size:${s.w * k}px ${s.h * k}px"></span></div>`;
 }
 
 function teamTabs(d) {
@@ -300,11 +310,26 @@ function teamSimTab(d) {
 }
 
 function teamPlaysTab(d) {
+  if (d.pb && d.pb.hex) return teamPlaysTab23(d);
   if (!d.pb) return `<div class="muted">Playbook editing for this ROM is not available yet. Current: ${esc((state.parsed.lines[d.pbLine] || '').trim())}</div>`;
   const row = (title, kind, key) => `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em">${title}</div>
     <div class="playrow">${[0, 1, 2, 3].map(i => `<button class="playbtn" data-act="playopen:${key}:${i}" aria-label="${title} slot ${i + 1}, play ${d.pb[key][i]}">
       ${playSprite(`${kind}${i + 1}-${d.pb[key][i] - 1}.BMP`)}<span class="k">${kind}${i + 1} &middot; play ${d.pb[key][i]}</span></button>`).join('')}</div>`;
   return row('Run plays', 'R', 'run') + row('Pass plays', 'P', 'pass') + '<div class="muted">Tap a play to choose another for that slot.</div>';
+}
+
+/** TSB2/TSB3: two playbooks per team (a 1 / 2 toggle), each with four run and four pass slots of 16 plays. */
+function playName23(kind, slot, n) {
+  const names = sheets.plays23 && sheets.plays23.names;
+  return names ? names[`${kind}${slot}`][n] : `Play ${n + 1}`;
+}
+function teamPlaysTab23(d) {
+  const b = d.pb.book, at = (key, i) => d.pb[key][b * 4 + i];
+  const row = (title, kind, key) => `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em">${title}</div>
+    <div class="playrow">${[0, 1, 2, 3].map(i => `<button class="playbtn" data-act="playopen:${key}:${i}" aria-label="${title} slot ${i + 1}: ${esc(playName23(kind, i + 1, at(key, i)))}">
+      ${playSprite(`${kind}${i + 1}-${at(key, i)}`, 1.5, 'plays23')}<span class="k">${kind}${i + 1} &middot; ${esc(playName23(kind, i + 1, at(key, i)))}</span></button>`).join('')}</div>`;
+  return `<div class="seg" role="group" aria-label="Playbook">${[0, 1].map(k => `<button class="${k === b ? 'on' : ''}" data-act="tbook:${k}">Playbook ${k + 1}</button>`).join('')}</div>`
+    + row('Run plays', 'R', 'run') + row('Pass plays', 'P', 'pass') + '<div class="muted">Tap a play to choose another for that slot.</div>';
 }
 
 /** How many more characters this team's city and name may use: ROM-wide budget, minus everyone else, minus the 4-letter abbreviation. */
@@ -352,12 +377,22 @@ function idTyped(t) {
 
 /** Centered dialog with the 8 plays available to one playbook slot. */
 function playPickerSheet(d) {
+  if (d.pb.hex) return playPickerSheet23(d);
   const { key, i } = state.playPick, kind = key === 'run' ? 'R' : 'P', cur = d.pb[key][i];
   const cells = Array.from({ length: 8 }, (_, n) => `<button class="playopt ${n + 1 === cur ? 'on' : ''}" data-act="playpick:${n + 1}" aria-label="Play ${n + 1}">
       ${playSprite(`${kind}${i + 1}-${n}.BMP`)}<span class="k">${n + 1}</span></button>`).join('');
-  return `<div class="scrim pop" data-act="close-play"><div class="sheet pop" role="dialog" aria-label="Pick a play" data-stop="1">
+  return `<div class="scrim pop fit" data-act="close-play"><div class="sheet pop fit" role="dialog" aria-label="Pick a play" data-stop="1">
       <div class="topbar"><h2>${kind}${i + 1} play</h2><button class="btn icon-btn" data-act="close-play" aria-label="Close">&times;</button></div>
       <div class="playpick">${cells}</div></div></div>`;
+}
+
+function playPickerSheet23(d) {
+  const { key, i } = state.playPick, kind = key === 'run' ? 'R' : 'P', cur = d.pb[key][d.pb.book * 4 + i];
+  const cells = Array.from({ length: 16 }, (_, n) => `<button class="playopt ${n === cur ? 'on' : ''}" data-act="playpick:${n}" aria-label="${esc(playName23(kind, i + 1, n))}">
+      ${playSprite(`${kind}${i + 1}-${n}`, 1.5, 'plays23')}<span class="k">${esc(playName23(kind, i + 1, n))}</span></button>`).join('');
+  return `<div class="scrim pop fit" data-act="close-play"><div class="sheet pop fit" role="dialog" aria-label="Pick a play" data-stop="1">
+      <div class="topbar"><h2>Playbook ${d.pb.book + 1} &middot; ${kind}${i + 1} play</h2><button class="btn icon-btn" data-act="close-play" aria-label="Close">&times;</button></div>
+      <div class="playpick" style="grid-template-columns:repeat(4,minmax(0,1fr))">${cells}</div></div></div>`;
 }
 
 function teamScreen() {
@@ -1462,7 +1497,8 @@ document.addEventListener('click', e => {
     case 'unone': state.usage.bits = state.usage.bits.map(() => false); render(); break;
     case 'usave': { const u = state.usage; U.set(state.tedit.colors.parts, 'UniformUsage', U.usageHex(u.bits, u.original)); state.usage = null; render(); break; }
     case 'playopen': { const [k, i] = arg.split(':'); state.playPick = { key: k, i: Number(i) }; render(); break; }
-    case 'playpick': { const { key, i } = state.playPick; state.tedit.pb[key][i] = Number(arg); state.playPick = null; render(); break; }
+    case 'playpick': { const { key, i } = state.playPick, pb = state.tedit.pb; pb[key][i + (pb.hex ? pb.book * 4 : 0)] = Number(arg); state.playPick = null; render(); break; }
+    case 'tbook': state.tedit.pb.book = Number(arg); render(); break;
     case 'close-play': state.playPick = null; render(); break;
     case 'tdone': commitTeam(); state.tedit = null; location.hash = '#/roster'; break;
     case 'tundo': { const o = state.tedit.orig; state.tedit.t = structuredClone(o.t); state.tedit.pb = structuredClone(o.pb); state.tedit.id = structuredClone(o.id); state.tedit.colors = structuredClone(o.colors); render(); break; }

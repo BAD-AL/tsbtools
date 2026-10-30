@@ -209,6 +209,7 @@ input[type=range]::-moz-range-thumb { width: 32px; height: 32px; border-radius: 
 .playimg { flex: none; line-height: 0; }
 .playimg.none { line-height: 1.4; font-size: var(--fs-small); color: var(--muted); }
 .sprite.play { background-image: url(img/plays_tsb1.png); }
+.sprite.play23 { background-image: url(img/plays_tsb23.png); }
 
 /* tabs, compact playbook, play picker, identity */
 .seg.tabs { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); }

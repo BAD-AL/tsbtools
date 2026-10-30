@@ -104,6 +104,20 @@ export function buildPlaybook(p) {
   return `PLAYBOOK R${p.run.join('')}, P${p.pass.join('')}${p.tail}`;
 }
 
+/**
+ * TSB2 / TSB3: "PLAYBOOK R626005E3, P40483E39 " -- two playbooks per team, each with four run and four pass slots, one hex digit (0-F, 16 plays) per slot.
+ * The digits are playbook 1's four slots then playbook 2's four, so run[0..3] / pass[0..3] are playbook 1 and run[4..7] / pass[4..7] playbook 2.
+ */
+export function parsePlaybook23(line) {
+  const m = /^PLAYBOOK\s+R([0-9A-Fa-f]{8}),\s*P([0-9A-Fa-f]{8})(\s*)$/.exec(line || '');
+  return m ? { run: [...m[1]].map(c => parseInt(c, 16)), pass: [...m[2]].map(c => parseInt(c, 16)), tail: m[3], hex: true } : null;
+}
+
+export function buildPlaybook23(p) {
+  const h = a => a.map(n => n.toString(16).toUpperCase()).join('');
+  return `PLAYBOOK R${h(p.run)}, P${h(p.pass)}${p.tail}`;
+}
+
 const SPECIAL_LABELS = { freeagents: 'Free agents', alltime: 'All-time' };
 
 export function teamLabel(id) {

@@ -46,3 +46,16 @@ def test_skin_tone_toggle(mods):
 def test_schedule_double_booking_is_detected(mods):
     got = call(mods, "schedule", "m.doubleBooked({ games: [{ away: 'bills', home: 'colts' }, { away: 'jets', home: 'bills' }] })")
     assert "bills" in got
+
+
+def test_tsb23_playbook_line_parses_and_rebuilds_exactly(mods):
+    line = "PLAYBOOK R626005E3, P40483E39 "
+    got = call(mods, "model", "(() => { const p = m.parsePlaybook23(arg); return [p.run, p.pass, m.buildPlaybook23(p)]; })()", line)
+    assert got[0] == [6, 2, 6, 0, 0, 5, 14, 3]            # playbook 1 run slots 1-4, then playbook 2
+    assert got[1] == [4, 0, 4, 8, 3, 14, 3, 9]
+    assert got[2] == line
+
+
+def test_tsb23_playbook_parser_rejects_the_tsb1_format(mods):
+    got = call(mods, "model", "[m.parsePlaybook23('PLAYBOOK R1215, P7321 '), m.parsePlaybook('PLAYBOOK R626005E3, P40483E39 ')]")
+    assert got == [None, None]

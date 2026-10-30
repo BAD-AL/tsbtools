@@ -2412,9 +2412,10 @@ namespace TSBTool
         // Away (light) in-game uniforms: a second table at awayColorStart, 0x40 per entry with the same layout as the home
         // table above (two 0x20 skin blocks, words helmet/jersey/pants dark+light). It only has 19 entries -- it ends where the
         // coin-toss table starts -- so only the teams listed in awayEntryTeams have an away look; the others never wear a
-        // separate one. Entry order was read off emulator games (nine entries seen directly: bills, jets, chargers, seahawks,
-        // cowboys, bears, lions, packers, rams; the rest matched by helmet colors). Which opponents make a team wear its away
-        // look is a separate matchup table that has not been found for Genesis (the SNES one is at 0x1752).
+        // separate one. Every entry's team was confirmed in an emulator (a ROM with one flat color per entry, then games where
+        // each team was forced into its away look). Which opponents make a team wear its away look is a separate matchup table
+        // that has not been found for Genesis; the SNES one (0x1752) predicts nearly all games seen, but not Bills-Colts or
+        // Steelers-Bengals, so the data is not identical.
         private const int awayColorStart = 0x5846C;
         private static readonly string[] awayEntryTeams =
         {

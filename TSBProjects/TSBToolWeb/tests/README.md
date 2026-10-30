@@ -32,9 +32,12 @@ clicked through, edits are downloaded and compared.
     (a leftover `R` after a name; the core's leftover-byte cleanup). That is listed in `LOAD_FIXES`.
   * Not compared: an unedited ROM against a desktop run. The desktop applies the dump even with no changes, which rewrites multi-word last names
     (`DE BERG` becomes `deBERG`); that round trip is kept by design.
+* `test_ui_to_text.py`, `test_ui_edits_to_text.py`: the web side of the text pipeline (the text-to-ROM half is the shared core, covered by the desktop tests).
+  * Every line of a real dump (all 8 ROMs, plus the desktop test text files) survives parse -> rebuild unchanged.
+  * Each editor (jersey, rating, sim value, team formation, playbook, uniform colors, schedule game) changes exactly the intended line and field.
+* Pro Bowl spots are text too (the core's `AFC,QB1,colts,QB1` line); `test_matches_desktop.py` compares the web ROM with the desktop on all 8 ROMs.
 * `test_photos.py`: SNES TSB3 photos (Photos screen, assignment, drop, drag-pan, wheel zoom, Use this picture).
 * `test_units.py`: `model.js` / `schema.js` / `schedule.js` logic, run in the browser's own JS engine (no Node).
 
 ## Not covered yet
-Real touch input (pinch is only simulated), screenshot comparison, byte comparison of photo edits against `-photosIn`, and edits other than players
-(team, schedule, uniforms, Pro Bowl) against the desktop.
+Real touch input (pinch is only simulated), screenshot comparison, and byte comparison of photo edits against `-photosIn` (photos are the one edit that is not text).

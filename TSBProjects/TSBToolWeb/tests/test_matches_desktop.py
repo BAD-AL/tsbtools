@@ -74,3 +74,50 @@ def test_edited_download_equals_desktop(make_page, tmp_path, rom):
     web = download_rom(page)
     desktop = desktop_rom(tmp_path, rom_path(rom), text)
     assert web == desktop, first_difference(web, desktop)
+
+
+@pytest.mark.parametrize("rom", ROMS)
+def test_probowl_edit_equals_desktop(make_page, tmp_path, rom):
+    """Pro Bowl spots are text too: the core's own "AFC,QB1,colts,QB1" line. Change one in the UI, give the same line to the desktop."""
+    page = make_page()
+    load_rom(page, rom)
+    original = rom_path(rom).read_bytes()
+    for team, pos in (("colts", "QB1"), ("dolphins", "QB2")):          # the first choice may already be what the spot holds
+        goto(page, "#/probowl")
+        page.wait_for_selector(".pbspot")
+        spot = page.locator(".pbspot .code").first.inner_text().strip()
+        page.locator(".pbspot").first.click()
+        page.click('[data-act="pbpickteam"]')
+        page.click(f'[data-act="pbteam:{team}"]')
+        page.click(f'[data-act="pbpos:{pos}"]')
+        page.click('[data-act="pbok"]')
+        goto(page, "#/home")
+        web = download_rom(page)
+        if web != original:
+            break
+    assert web != original, f"the Pro Bowl edit changed nothing (spot {spot})"
+    desktop = desktop_rom(tmp_path, rom_path(rom), f"AFC,{spot},{team},{pos}" + chr(10))
+    assert web == desktop, first_difference(web, desktop)
+
+
+@pytest.mark.parametrize("rom", ["snes2", "snes3"])
+def test_tsb23_playbook_edit_equals_desktop(make_page, tmp_path, rom):
+    """Change a playbook slot in both playbooks of the first team, then give the web app's text to the desktop command line."""
+    page = make_page()
+    load_rom(page, rom)
+    goto(page, "#/team")
+    page.wait_for_selector(".tabbody")
+    page.click('[data-act="ttab:plays"]')
+    for book in (0, 1):
+        page.click(f'[data-act="tbook:{book}"]')
+        page.click('[data-act="playopen:pass:3"]')
+        page.click('[data-act="playpick:13"]')
+        page.click('[data-act="playopen:run:1"]')
+        page.click('[data-act="playpick:5"]')
+    page.click('[data-act="tdone"]')
+    text = web_text(page)
+    goto(page, "#/home")
+    web = download_rom(page)
+    assert web != rom_path(rom).read_bytes()
+    desktop = desktop_rom(tmp_path, rom_path(rom), text)
+    assert web == desktop, first_difference(web, desktop)
