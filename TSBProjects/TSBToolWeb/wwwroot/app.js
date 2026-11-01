@@ -7,6 +7,7 @@ import * as S from './schedule.js';
 import * as P from './photos.js';
 import { LADDER, FULL, familyOf, faceKind, isDark, withTone, labelsFor, ladderIndex } from './schema.js';
 
+const STYLES = ['modern', 'retro', 'cyber', 'y2k', 'aqua', 'xp'];
 const state = {
   ready: false, busy: '', error: '',
   idTotal: 0, idMax: { city: 0, name: 0 },   // team-name budget: total characters in the stock ROM, longest stock city/name
@@ -31,7 +32,7 @@ let web = null;
 const $ = sel => document.querySelector(sel);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-try { const t = localStorage.getItem('tsb.theme'); if (t === 'retro' || t === 'modern') state.theme = t; } catch (e) { /* storage may be blocked */ }
+try { const t = localStorage.getItem('tsb.theme'); if (STYLES.includes(t)) state.theme = t; } catch (e) { /* storage may be blocked */ }
 try { state.matchDL = localStorage.getItem('tsb.matchdl') === '1'; } catch (e) { /* storage may be blocked */ }
 try { const t = localStorage.getItem('tsb.nfltheme'); if (t && t !== DEFAULT_THEME && (t === CURRENT_TEAM || themeById(t))) state.nflTheme = t; } catch (e) { /* storage may be blocked */ }
 try { const a = localStorage.getItem('tsb.accent'); if (/^#[0-9a-f]{6}$/i.test(a || '')) state.accent = a.toLowerCase(); } catch (e) { /* storage may be blocked */ }
@@ -124,7 +125,7 @@ function themeSwitch() {
     <button data-act="theme:retro" class="${state.theme === 'retro' ? 'on' : ''}">Retro</button></div>${helpButton()}</div>`;
 }
 /** The helmet button in the top left of the phone-style home page (the wide layout has it in the rail). */
-const phoneHelmet = () => `<button class="helmetbtn" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261031q" alt=""></button>`;
+const phoneHelmet = () => `<button class="helmetbtn" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261101c" alt=""></button>`;
 const helpButton = () => `<button class="btn icon-btn helpbtn" data-act="help" aria-label="Help and about" title="Help and about">?</button>`;
 
 // ---- the ? popup: About and Program guide ----
@@ -796,14 +797,18 @@ function setAccent(hex) {
 }
 
 function accentSheet() {
-  const retro = state.theme === 'retro', cur = state.accent || ACCENT_DEFAULT, active = retro || state.accent ? null : (state.nflTheme || DEFAULT_THEME);
+  const retro = state.theme === 'retro', cur = state.accent || ACCENT_DEFAULT, active = state.theme !== 'modern' || state.accent ? null : (state.nflTheme || DEFAULT_THEME);
   const follow = `<button class="themebtn wide ${active === CURRENT_TEAM ? 'on' : ''}" data-act="themeset:${CURRENT_TEAM}" aria-pressed="${active === CURRENT_TEAM}"><span class="dot" style="background:conic-gradient(#e53935, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935)"></span>Current team<span class="muted">The theme follows the team you are viewing</span></button>`;
   const retroBtn = `<button class="themebtn wide ${retro ? 'on' : ''}" data-act="theme:retro" aria-pressed="${retro}"><span class="dot retrodot"></span>Retro<span class="muted">The 8-bit look; it has its own colors</span></button>`;
+  const styleBtn = (id, name, note, dot) => `<button class="themebtn wide ${state.theme === id ? 'on' : ''}" data-act="theme:${id}" aria-pressed="${state.theme === id}"><span class="dot ${dot}"></span>${name}<span class="muted">${note}</span></button>`;
+  const cyberBtn = styleBtn('cyber', 'Cyber', 'Dark neon HUD; it has its own colors', 'cyberdot'), y2kBtn = styleBtn('y2k', 'Y2K', 'Pastel gel and Windows 98; it has its own colors', 'y2kdot'),
+    aquaBtn = styleBtn('aqua', 'Aqua', 'Glossy blue buttons and pinstripes, early 2000s Mac; it has its own colors', 'aquadot'),
+    xpBtn = styleBtn('xp', 'Windows XP', 'Luna blue title bars and beige windows; it has its own colors', 'xpdot');
   const grid = TEAM_THEMES.map(([id, name, accent, p, s]) => `<button class="themebtn ${id === active ? 'on' : ''}" data-act="themeset:${id}" aria-pressed="${id === active}"><span class="dot" style="background:linear-gradient(135deg, ${p} 0 45%, ${accent} 45% 70%, ${s} 70%)"></span>${esc(name)}</button>`).join('');
   return `<div class="scrim pop fit" data-act="accentclose"><div class="sheet pop fit" role="dialog" aria-label="Theme" data-stop="1">
       <div class="topbar"><h2>Theme</h2><button class="btn icon-btn" data-act="accentclose" aria-label="Close">&times;</button></div>
-      <div class="muted" style="margin-top:6px">Pick the Retro style, or a color theme for the Modern style. Right-click (or long-press) the Modern button to open this.</div>
-      <h3 class="themehead">Themes</h3><div class="themegrid">${retroBtn}${follow}${grid}</div>
+      <div class="muted" style="margin-top:6px">Pick the Retro, Cyber, Y2K, Aqua or Windows XP style, or a color theme for the Modern style. Right-click (or long-press) the Modern button to open this.</div>
+      <h3 class="themehead">Themes</h3><div class="themegrid">${retroBtn}${cyberBtn}${y2kBtn}${aquaBtn}${xpBtn}${follow}${grid}</div>
       <h3 class="themehead">Custom highlight color</h3>
       <div class="swatches">${ACCENT_PRESETS.map(([n, h]) => `<button class="swatch-btn ${h === cur && state.accent ? 'on' : ''}" style="background:${h}" data-act="accentset:${h}" aria-label="${n}"></button>`).join('')}</div>
       <div class="accentpick"><input type="color" id="accentcolor" value="${cur}" aria-label="Custom color"><span class="muted">Custom color <b id="accenthex">${cur}</b></span></div>
@@ -812,7 +817,7 @@ function accentSheet() {
 }
 
 function openAccent() { state.accentDlg = true; render(); }
-/** Switches between the Modern and Retro styles (remembered); true when the style changed. */
+/** Switches between the styles (Modern, Retro, Cyber, Y2K, Aqua, XP) (remembered); true when the style changed. */
 function useStyle(name) {
   if (state.theme === name) return false;
   state.theme = name;
@@ -1303,10 +1308,7 @@ function goPlayer(delta) {
 function textScreen() {
   return `<div class="hdr"><div class="topbar"><button class="btn ghost small" data-act="go:home">${ICON.left} Home</button>${themeSwitch()}</div>
     <div><h1>Text view</h1><div class="muted">Same format as the desktop app.</div></div>
-    <div class="search"><input id="q" aria-label="Search" placeholder="Search" value="${esc(state.find)}">
-      <button class="btn icon-btn" data-act="find-prev" aria-label="Previous match">${ICON.up}</button>
-      <button class="btn icon-btn" data-act="find-next" aria-label="Next match">${ICON.down}</button></div>
-    <div id="findinfo" class="muted"></div></div>${banner()}
+    <div class="search"><button class="btn" data-act="findopen" title="Find text (Ctrl+F). Enter finds the next match; F3 steps on from inside the text.">Find&hellip;</button><div id="findinfo" class="muted" role="status"></div></div></div>${banner()}
     <textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="ROM text">${esc(state.text)}</textarea>
     <div class="bar"><div><button class="btn ghost" data-act="revert">Revert</button><button class="btn primary" data-act="apply">Apply to ROM</button></div></div>`;
 }
@@ -1321,7 +1323,7 @@ function railHtml(r) {
   const on = r === 'player' ? 'roster' : r;
   const n = changedLines(state.baseline, state.text);
   const item = (key, icon, label, go) => `<button class="railbtn ${on === key ? 'on' : ''}" data-act="go:${go}" aria-label="${label}" ${on === key ? 'aria-current="page"' : ''}>${ICON[icon]}<span>${label}</span></button>`;
-  return `<nav class="rail" aria-label="Sections"><button class="railmark" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261031q" alt=""></button>
+  return `<nav class="rail" aria-label="Sections"><button class="railmark" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261101c" alt=""></button>
     ${item('home', 'home', 'Home', 'home')}${item('roster', 'players', 'Players', 'roster')}${item('team', 'teams', 'Teams', 'team')}
     ${item('schedule', 'schedule', 'Schedule', 'schedule')}${item('probowl', 'probowl', 'Pro Bowl', 'probowl')}${P.cache.on ? item('photos', 'photo', 'Photos', 'photos') : ''}${item('text', 'text', 'Text', 'text')}
     <div class="railgrow"></div>${themeSwitch()}
@@ -1469,16 +1471,46 @@ function wireDrop(el) {
 }
 
 // ---------- find in text view ----------
+/** The Find dialog: a text field; Enter (or Find) closes it and moves to the match in the text. It is added without a full render, which would drop unapplied edits in the text box. */
+function findSheet() {
+  return `<div class="scrim pop fit" data-act="findclose"><div class="sheet pop fit" role="dialog" aria-label="Find" data-stop="1">
+      <div class="topbar"><h2>Find</h2><button class="btn icon-btn" data-act="findclose" aria-label="Close">&times;</button></div>
+      <label class="field"><span class="fl">Find in the text</span><input id="fq" value="${esc(state.find)}" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <div id="findmsg" class="muted" role="status" style="min-height:1.6em;margin-top:6px">Enter finds the next match, Shift+Enter the previous one.</div>
+      <div class="autobtns"><button class="btn primary" data-act="findgo:1">Find next</button><button class="btn" data-act="findgo:-1">Find previous</button><button class="btn ghost" data-act="findclose">Cancel</button></div>
+    </div></div>`;
+}
+function openFind() {
+  if (!$('#editor') || $('#fq')) return;
+  app.insertAdjacentHTML('beforeend', findSheet());
+  document.body.classList.add('modal-open');
+  wrapSheets();
+  const q = $('#fq'); q.focus(); q.select();
+}
+function closeFind() {
+  const q = $('#fq'); if (!q) return;
+  state.find = q.value;
+  q.closest('.scrim').remove();
+  document.body.classList.remove('modal-open');
+}
+
+/** Selects the next (dir 1) or previous (dir -1) match, closes the Find dialog and puts the cursor in the text at the match (where the browser highlights it). */
 function find(dir) {
-  const ta = $('#editor'), q = $('#q').value;
-  state.find = q;
-  if (!ta || !q) return;
+  const ta = $('#editor'), fq = $('#fq');
+  if (fq) state.find = fq.value;
+  const q = state.find, say = t => { const m = $('#fq') ? $('#findmsg') : $('#findinfo'); if (m) m.textContent = t; };
+  if (!ta || !q) { say(q ? '' : 'Type something to find.'); return; }
   const hay = ta.value.toLowerCase(), needle = q.toLowerCase();
   let i = dir > 0 ? hay.indexOf(needle, ta.selectionEnd) : hay.lastIndexOf(needle, Math.max(0, ta.selectionStart - 1));
-  if (i < 0) i = dir > 0 ? hay.indexOf(needle) : hay.lastIndexOf(needle);
-  $('#findinfo').textContent = i < 0 ? 'No match' : '';
-  if (i < 0) return;
-  ta.focus(); ta.setSelectionRange(i, i + needle.length);
+  let wrapped = false;
+  if (i < 0) { wrapped = true; i = dir > 0 ? hay.indexOf(needle) : hay.lastIndexOf(needle); }
+  if (i < 0) { say('No match'); return; }
+  let total = 0, at = 0;
+  for (let p = hay.indexOf(needle); p >= 0; p = hay.indexOf(needle, p + needle.length)) { total++; if (p <= i) at = total; }
+  closeFind();
+  $('#findinfo').textContent = `${at} of ${total}${wrapped && total > 1 ? (dir > 0 ? ' (back at the top)' : ' (back at the bottom)') : ''}`;
+  ta.focus();
+  ta.setSelectionRange(i, i + needle.length);
   const line = hay.slice(0, i).split('\n').length - 1;
   const lh = parseFloat(getComputedStyle(ta).lineHeight) || 20;
   ta.scrollTop = Math.max(0, (line - 3) * lh);
@@ -1696,8 +1728,9 @@ document.addEventListener('click', e => {
     case 'team': commitTeam(); state.tedit = null; state.team = arg; state.sheet = false; render(); break;
     case 'close-sheet': state.sheet = false; render(); break;
     case 'download': download(); break;
-    case 'find-next': find(1); break;
-    case 'find-prev': find(-1); break;
+    case 'findopen': openFind(); break;
+    case 'findclose': closeFind(); { const ta = $('#editor'); if (ta) ta.focus(); } break;
+    case 'findgo': find(Number(arg)); break;
     case 'apply': applyText($('#editor').value); break;
     case 'revert': $('#editor').value = state.text; break;
   }
@@ -1744,7 +1777,10 @@ document.addEventListener('input', e => {
   }
 });
 document.addEventListener('keydown', e => {
-  if (e.target.id === 'q' && e.key === 'Enter') find(e.shiftKey ? -1 : 1);
+  if (e.target.id === 'fq' && e.key === 'Enter') { e.preventDefault(); find(e.shiftKey ? -1 : 1); }   // in the Find dialog: go to the match
+  if (e.target.id === 'fq' && e.key === 'Escape') { e.preventDefault(); closeFind(); const ta = $('#editor'); if (ta) ta.focus(); }
+  if (e.key === 'F3' && $('#editor') && state.find) { e.preventDefault(); find(e.shiftKey ? -1 : 1); }   // keep stepping from inside the text
+  if ((e.key === 'f' || e.key === 'F') && (e.ctrlKey || e.metaKey) && !e.altKey && $('#editor')) { e.preventDefault(); openFind(); }   // Ctrl+F (Cmd+F) on the Text view
   if (e.key === 'Escape' && (state.help || state.facePicker || state.sheet || state.playPick || state.upick || state.upre || state.usage || state.auto || state.sgame || state.accentDlg || state.pbEdit || state.steamDlg || state.photoDlg || state.photoEd || state.notice)) { state.help = null; state.photoDlg = null; state.photoEd = null; state.notice = null; state.steamDlg = false; state.pbEdit = null; state.accentDlg = false; state.sgame = null; state.facePicker = false; state.sheet = false; state.playPick = null; state.upick = null; state.upre = null; state.usage = null; state.auto = null; render(); }
 });
 $('#file').addEventListener('change', async e => {
@@ -1837,7 +1873,7 @@ const sheetsReady = loadSheets();
 
 // Dev hooks: index.html?rom=<url>&theme=retro loads a ROM without the file picker
 const themeParam = new URLSearchParams(location.search).get('theme');
-if (themeParam === 'retro' || themeParam === 'modern') { state.theme = themeParam; render(); }
+if (STYLES.includes(themeParam)) { state.theme = themeParam; render(); }
 const romUrl = new URLSearchParams(location.search).get('rom');
 if (romUrl) await loadRom(new Uint8Array(await (await fetch(romUrl)).arrayBuffer()), decodeURIComponent(romUrl.split('/').pop()));
 { const q = new URLSearchParams(location.search), wk = q.get('week'), sv = q.get('sview'); if (q.get('conf')) state.pbconf = q.get('conf'); if (q.get('team')) { state.team = q.get('team'); state.tedit = null; }   // dev hooks: &conf=NFC, &team=cowboys   // dev hooks: &week=<n>, &sview=team

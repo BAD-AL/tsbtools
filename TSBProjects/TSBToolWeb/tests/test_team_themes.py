@@ -50,7 +50,7 @@ def test_picking_a_team_sets_the_colors_and_survives_a_reload_and_vikings_is_the
     load_rom(page, "snes2")
     assert body_var(page, "--accent") == ""
     open_themes(page)
-    assert page.locator(".themegrid .themebtn").count() == 34   # Retro + Current team + 32 teams
+    assert page.locator(".themegrid .themebtn").count() == 38   # Retro, Cyber, Y2K, Aqua, XP + Current team + 32 teams
     page.click('[data-act="themeset:bills"]')
     assert body_var(page, "--accent") == "#cf644a" and body_var(page, "--bg") != "" and body_var(page, "--g1") != ""
     page.reload()
