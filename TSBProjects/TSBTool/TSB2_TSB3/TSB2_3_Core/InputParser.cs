@@ -34,8 +34,8 @@ namespace TSBTool2
         internal static Regex offensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
         internal static Regex playbookRegex = new Regex("PLAYBOOK\\s+(R[0-9A-Fa-f]+)\\s*,\\s*(P[0-9A-Fa-f]+)");
         internal static Regex juiceRegex = new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)");
-        internal static Regex homeRegex = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{6})");
-        internal static Regex awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{6})");
+        internal static Regex homeRegex = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{48})");
+        internal static Regex awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{48})");
         internal static Regex divChampRegex = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
         internal static Regex confChampRegex = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
         internal static Regex uniformUsageRegex = new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
@@ -212,7 +212,7 @@ namespace TSBTool2
                     ApplySchedule();
                 Int32.TryParse(m.Groups[1].ToString(), out season);
             }
-            else if (currentState == skipTeamState && (playbookRegex.IsMatch(line) || line.StartsWith("TEAM_ABB")))
+            else if (currentState == skipTeamState && (playbookRegex.IsMatch(line) || line.StartsWith("TEAM_ABB") || line.StartsWith("COLORS")))
             {
                 skippedLines++; // the unknown team's own line: not for the previous team
             }
@@ -283,7 +283,17 @@ namespace TSBTool2
                     tool.SetTeamName(index, teamName);
                 }
             }
-            /*else if (line.StartsWith("COLORS")) // do the colors here
+            else if (line.StartsWith("COLORS"))
+            {
+                TSB2Tool tsb2 = tool as TSB2Tool;
+                Match home = homeRegex.Match(line);
+                Match away = awayRegex.Match(line);
+                if (tsb2 != null && home != Match.Empty)
+                    tsb2.SetHomeUniform(currentTeam, home.Groups[1].Value);
+                if (tsb2 != null && away != Match.Empty)
+                    tsb2.SetAwayUniform(currentTeam, away.Groups[1].Value);
+            }
+            /*else if (line.StartsWith("COLORS")) // (the TSB1 version)
             {
                 string tmp;
 

@@ -1,4 +1,6 @@
 import { dotnet } from './_framework/dotnet.js';
+import { GUIDE } from './guide.js';
+import { TEAM_THEMES, DEFAULT_THEME, CURRENT_TEAM, themeById, themeForTeam } from './themes.js';
 import { GROUPS, FORMATIONS, parseText, parsePlayerLine, buildPlayerLine, parseTeamLine, buildTeamLine, parsePlaybook, buildPlaybook, parsePlaybook23, buildPlaybook23, teamLabel, changedLines } from './model.js';
 import * as U from './uniform.js';
 import * as S from './schedule.js';
@@ -10,7 +12,8 @@ const state = {
   idTotal: 0, idMax: { city: 0, name: 0 },   // team-name budget: total characters in the stock ROM, longest stock city/name
   usel: 0, upick: null, usage: null, uniLoading: false, uniError: false,   // uniform editor: selected uniform, open color picker, usage dialog
   auto: null, autoUndo: null,        // Auto-update sim: dialog { stage: 'ask'|'done'|'error', ... } and the text from before the last run
-  accent: null, accentDlg: false,      // Modern style highlight color (null = gold) and its dialog
+  help: null,           // the ? popup: null | 'menu' | 'about' | 'guide'
+  accent: null, nflTheme: null, accentDlg: false,      // Modern style highlight color (null = gold) and its dialog
   pb: null, pbconf: 'AFC', pbEdit: null,   // Pro Bowl rosters read from the core, current conference, open spot dialog
   photoDlg: null, photoEd: null, notice: null,   // TSB3 photos: detail dialog, picture editor; a plain message dialog
   sweek: 0, sview: 'week', steam: null, steamDlg: false, sgame: null,   // schedule: current week, view (week/team), team for the team view, open game dialog
@@ -29,9 +32,12 @@ const $ = sel => document.querySelector(sel);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 try { const t = localStorage.getItem('tsb.theme'); if (t === 'retro' || t === 'modern') state.theme = t; } catch (e) { /* storage may be blocked */ }
+try { state.matchDL = localStorage.getItem('tsb.matchdl') === '1'; } catch (e) { /* storage may be blocked */ }
+try { const t = localStorage.getItem('tsb.nfltheme'); if (t && t !== DEFAULT_THEME && (t === CURRENT_TEAM || themeById(t))) state.nflTheme = t; } catch (e) { /* storage may be blocked */ }
 try { const a = localStorage.getItem('tsb.accent'); if (/^#[0-9a-f]{6}$/i.test(a || '')) state.accent = a.toLowerCase(); } catch (e) { /* storage may be blocked */ }
 
 const ICON = {
+  trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>',
   photo: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M6 20c0-3 2.7-5 6-5s6 2 6 5"/></svg>',
   home: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
   players: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>',
@@ -113,9 +119,49 @@ const SILHOUETTE ='<svg viewBox="0 0 40 46" aria-hidden="true"><circle cx="20" c
 const route = () => (location.hash.replace(/^#\/?/, '') || 'home').split('/')[0];
 
 function themeSwitch() {
-  return `<div class="seg" role="group" aria-label="Style">
-    <button data-act="theme:modern" class="${state.theme === 'modern' ? 'on' : ''}">Modern</button>
-    <button data-act="theme:retro" class="${state.theme === 'retro' ? 'on' : ''}">Retro</button></div>`;
+  return `<div class="tbright"><div class="seg" role="group" aria-label="Style">
+    <button data-act="theme:modern" class="${state.theme === 'modern' ? 'on' : ''}" title="Modern style. Right-click (or long-press) to choose a team theme.">Modern</button>
+    <button data-act="theme:retro" class="${state.theme === 'retro' ? 'on' : ''}">Retro</button></div>${helpButton()}</div>`;
+}
+/** The helmet button in the top left of the phone-style home page (the wide layout has it in the rail). */
+const phoneHelmet = () => `<button class="helmetbtn" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261031q" alt=""></button>`;
+const helpButton = () => `<button class="btn icon-btn helpbtn" data-act="help" aria-label="Help and about" title="Help and about">?</button>`;
+
+// ---- the ? popup: About and Program guide ----
+const REPO_URL = 'https://github.com/BAD-AL/tsbtools', SITE_URL = 'https://tecmobowl.org/';
+const extLink = (href, text) => `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+
+function helpSheet() {
+  const h = state.help;
+  if (!h) return '';
+  const wrap = (title, body, back) => `<div class="scrim pop fit" data-act="helpclose"><div class="sheet pop fit" role="dialog" aria-label="${esc(title)}" data-stop="1">
+      <div class="topbar">${back ? `<button class="btn ghost small" data-act="help">${ICON.left} Back</button>` : `<h2>${esc(title)}</h2>`}<button class="btn icon-btn" data-act="helpclose" aria-label="Close">&times;</button></div>${back ? `<h2 class="sheettitle">${esc(title)}</h2>` : ''}${body}</div></div>`;
+  if (h === 'menu') return wrap('Help', `<div class="helpmenu"><button class="btn tile2" data-act="helpabout">About</button><button class="btn tile2" data-act="helpguide">Program guide</button></div>`, false);
+  if (h === 'about') {
+    let ver = '';
+    try { ver = web.GetVersion(); } catch (e) { /* runtime not ready */ }
+    const rom = state.rom ? `${esc(state.rom.name)} (${esc(state.rom.version)})` : 'none loaded';
+    return wrap('About TSBTool Web', `<div class="aboutbody">
+      <div class="muted">Version ${esc(ver || 'unknown')}</div>
+      <p>An editor for Tecmo Super Bowl ROMs that runs entirely in your browser, on a phone, tablet or computer.</p>
+      <p>It uses the same internal code as the desktop TSBTool: the C# engine is compiled to WebAssembly, so a ROM edited here comes out the same as one edited there.</p>
+      <p>Your ROM never leaves your device, and nothing is uploaded.</p>
+      <ul class="links">
+        <li>${extLink(REPO_URL, 'Source code on GitHub')}</li>
+        <li>${extLink(REPO_URL + '/issues', 'Report a problem or suggest a feature')}</li>
+        <li>${extLink(SITE_URL, 'tecmobowl.org')}, the Tecmo Bowl community</li>
+      </ul>
+      <p class="muted">Not affiliated with or endorsed by Tecmo, Koei Tecmo, or the NFL. Team names and helmets belong to their owners and appear here for ROM editing only.</p>
+      <div class="muted">Loaded ROM: ${rom}</div>
+      <div class="autobtns"><button class="btn" data-act="helpcopy">Copy diagnostic info</button><button class="btn primary" data-act="helpclose">Close</button></div>
+      <div class="muted" id="helpmsg" role="status"></div></div>`, true);
+  }
+  return wrap('Program guide', `<nav class="guidetoc" aria-label="Guide sections">${GUIDE.map(s => `<a href="#guide-${s.id}" data-act="guidego:${s.id}">${esc(s.title)}</a>`).join('')}</nav>
+      <div class="guidebody">${GUIDE.map(s => `<section id="guide-${s.id}"><h3>${esc(s.title)}</h3>${s.html}</section>`).join('')}</div>`, true);
+}
+function diagnosticInfo() {
+  let ver = ''; try { ver = web.GetVersion(); } catch (e) { /* runtime not ready */ }
+  return [`TSBTool Web ${ver}`, `ROM: ${state.rom ? state.rom.name + ' (' + state.rom.version + ')' : 'none'}`, `Style: ${state.theme}`, `Browser: ${navigator.userAgent}`].join('\n');
 }
 
 function banner() {
@@ -131,7 +177,7 @@ function homeScreen() {
     <span class="big only-retro">SUPER<br>BOWL</span><span class="eyebrow only-retro">TOOL</span>
     <h1 class="only-modern">TSBTool</h1><div class="muted only-modern">Tecmo Super Bowl editor</div></div>`;
   if (!state.rom) {
-    return `<div class="hdr"><div class="topbar"><span></span>${themeSwitch()}</div></div>${art}${banner()}
+    return `<div class="hdr"><div class="topbar">${phoneHelmet()}${themeSwitch()}</div></div>${art}${banner()}
       <div class="dropzone" id="drop">
         <button class="btn primary" data-act="load" ${state.ready ? '' : 'disabled'}>${state.ready ? 'Load ROM' : 'Starting...'}</button>
         <div class="muted">or drop a ROM file here</div>
@@ -141,7 +187,7 @@ function homeScreen() {
   }
   const n = changedLines(state.baseline, state.text);
   const tile = (key, label, sub, go) => `<button class="btn tile" ${go ? `data-act="go:${go}"` : 'disabled'}>${ICON[key]}<span>${label}<br><span class="sub">${go ? sub : 'Coming soon'}</span></span></button>`;
-  return `<div class="hdr"><div class="topbar"><span></span>${themeSwitch()}</div></div>${art}${banner()}
+  return `<div class="hdr"><div class="topbar">${phoneHelmet()}${themeSwitch()}</div></div>${art}${banner()}
     <div class="card"><div class="eyebrow"><span class="dot"></span>ROM loaded</div>
       <h2 style="margin-top:8px;text-transform:none;word-break:break-all">${esc(state.rom.name)}</h2>
       <div class="muted" style="margin-top:6px">${esc(state.rom.version)} &middot; ${realTeams().length} teams</div>
@@ -239,7 +285,7 @@ function openTeamDraft(id) {
     if (/^COLORS\b/.test(l)) { ci = k; break; }
   }
   const cparts = ci >= 0 ? U.parseColors(lines[ci]) : null, ckind = U.colorKind(state.rom.version);
-  state.tedit.colors = cparts && ckind ? { line: ci, parts: cparts, kind: ckind } : null;
+  state.tedit.colors = cparts && ckind ? { line: ci, parts: cparts, kind: ckind, tsb23: U.isTsb23(state.rom.version) } : null;
   state.tedit.orig.colors = structuredClone(state.tedit.colors);
   state.team = team.id;
 }
@@ -304,7 +350,7 @@ function teamSimTab(d) {
   const form = t.formation === null ? '' : `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em">Formation</div>
     <div class="seg wide three" role="group" aria-label="Formation">${FORMATIONS.map(f => `<button class="${f === t.formation ? 'on' : ''}" data-act="tform:${f}">${f.replace(/_/g, ' ')}</button>`).join('')}</div>`;
   const auto = `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em">Sim data</div>
-    <button class="btn ghost" data-act="autosim">Auto-update sim data&hellip;</button>
+    <button class="btn ghost" data-act="autosim" title="Recalculate the sim values of every player and team from their ratings. You can undo it afterward.">Auto-update sim data&hellip;</button>
     <div class="muted">Works out the sim values of every player and every team from their ratings. Values set by hand are replaced.</div>`;
   return `<div class="simgrid">${sims.join('')}</div>${pref}${form}${auto}`;
 }
@@ -399,7 +445,7 @@ function teamScreen() {
   const d = state.tedit;
   const teams = realTeams(), team = teams.find(x => x.id === state.team);
   const body = state.ttab === 'uniform' && d.colors ? teamUniformTab(d) : state.ttab === 'plays' ? teamPlaysTab(d) : state.ttab === 'identity' && d.id ? teamIdentityTab(d) : teamSimTab(d);
-  return `<div class="hdr"><div class="topbar"><button class="btn ghost small" data-act="go:roster">${ICON.left} Roster</button><button class="btn ghost small" data-act="tundo">Undo</button></div>
+  return `<div class="hdr"><div class="topbar"><button class="btn ghost small" data-act="go:roster">${ICON.left} Roster</button><div class="tbright"><button class="btn ghost small" data-act="tundo">Undo</button>${helpButton()}</div></div>
     <h1>Edit team</h1>${teamHead(team)}${teamTabs(d)}</div><div class="tabbody">${body}</div>
     <div class="bar"><div><button class="btn ghost" data-act="team-prev">${ICON.left} Prev</button>
       <button class="btn primary" data-act="tdone">Done</button>
@@ -420,6 +466,7 @@ function teamUniformTab(d) {
     return state.uniError ? '<div class="muted">The uniform pictures could not be loaded.</div>' : '<div class="status">Loading pictures...</div>';
   }
   paintPlan = [];
+  if (c.tsb23) return tsb23Uniform(c);
   const single = kind === 'genesis' && U.get(c.parts, 'InGame') !== undefined;     // Genesis: one coin-toss uniform (written to both skin blocks)
   const sel = !single && state.usel === 1 ? 1 : 0, selKey = sel ? 'Uniform2' : 'Uniform1';
   const sprite = i => {
@@ -458,11 +505,10 @@ function teamUniformTab(d) {
     }).join('');
   }
   const usage = U.get(c.parts, 'UniformUsage') === undefined ? '' :
-    `<button class="btn ghost" data-act="uusage">Uniform usage: who wears Uniform 2&hellip;</button>`;
+    `<button class="btn ghost" data-act="uusage" title="Choose which opponents make this team wear Uniform 2 instead of Uniform 1">Uniform usage: who wears Uniform 2&hellip;</button><div class="muted hint">Choose which opponents make this team wear Uniform 2 instead of Uniform 1.</div>`;
   const ig = kind === 'genesis' ? U.get(c.parts, 'InGame') : undefined;
   const awayHex = kind === 'genesis' ? U.get(c.parts, 'InGameAway') : undefined;
-  const inGame = ig === undefined ? '' : genesisInGame(c, ig, 'home') + (awayHex !== undefined ? genesisInGame(c, awayHex, 'away')
-    : '<div class="muted" style="margin-top:18px">This team has no separate away uniform in the game: it always wears the home uniform.</div>');
+  const inGame = ig === undefined ? '' : genesisInGame(c, ig, awayHex);
   const coinHead = ig === undefined ? '' : `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em;margin-top:18px">Coin toss screen</div>
     <div class="muted">These colors are only used on the coin toss picture; the game field uses the colors above. Every player of the team gets the same colors.</div>`;
   const shared = kind === 'genesis' && (state.team === 'patriots' || state.team === 'seahawks')
@@ -471,20 +517,44 @@ function teamUniformTab(d) {
     <div class="muted">${single ? 'Tap a color to change it.' : `Editing uniform ${sel + 1}. Tap a color to change it.`}</div>${chips}${usage}${champ}`;
 }
 
-/** Genesis: the colors the game field uses (helmet, jersey, pants, two shades each), shown on the SNES player picture. kind: 'home' or 'away'. */
-function genesisInGame(c, hex, kind) {
-  const away = kind === 'away', key = away ? 'InGameAway' : 'InGame', id = away ? 'uc-away' : 'uc-ig';
-  const rgb = sid => U.freeRgb('genesis', U.slotHex(hex, sid)), avg = (a, b) => a.map((v, i) => Math.round((v + b[i]) / 2));
-  paintPlan.push({ id, image: away ? 'snes_away' : 'snes_home', set: 'snes', scale: 3, groups: [
-    ['HelmetD', rgb('iHelmetD')], ['HelmetM', rgb('iHelmetL')], ['JerseyM', rgb('iJerseyD')], ['JerseyL', rgb('iJerseyL')],
-    ['PantsD', rgb('iPantsD')], ['PantsM', avg(rgb('iPantsD'), rgb('iPantsL'))], ['PantsL', rgb('iPantsL')]] });
+/** TSB2/TSB3: a Home (Uniform1) and an Away (Uniform2) uniform of 12 colors; the two pictures sit side by side and the one tapped is edited below. */
+function tsb23Uniform(c) {
+  const sel = state.usel === 1 && U.get(c.parts, 'Uniform2') !== undefined ? 1 : 0, key = sel ? 'Uniform2' : 'Uniform1', away = sel === 1;
+  const sprite = (k, i) => {
+    const h = U.get(c.parts, k), id = i ? 'uc-away' : 'uc-home';
+    if (h === undefined) return '';
+    paintPlan.push({ id, image: 'tsb23', set: 'tsb23', scale: 6, groups: U.TSB23_SLOTS.map(s => [s.id, U.freeRgb('snes', U.slotHex(h, s.id))]) });
+    return `<button class="unibtn ${i === sel ? 'on' : ''}" data-act="usel:${i}" aria-label="Edit ${i ? 'away' : 'home'} uniform"><span class="k">${i ? 'Away' : 'Home'}</span><canvas id="${id}" role="img" aria-label="${i ? 'Away' : 'Home'} uniform preview"></canvas></button>`;
+  };
+  const hex = U.get(c.parts, key) || '';
+  const chips = U.TSB23_GROUPS.map(g => `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em">${g} colors</div><div class="chips2">${
+    U.TSB23_SLOTS.filter(s => s.group === g).map(s => { const h = U.slotHex(hex, s.id); return uniChip(`ucolor:${key}:${s.id}`, s.label, U.freeRgb('snes', h), h); }).join('')}</div>`).join('');
+  const tools = `<div class="bar2"><button class="btn" data-act="upre:${key}" title="Copy the 12 colors from any team's original uniform, or from one you saved, then change what you like">Start from...</button><button class="btn" data-act="ureset:${key}" title="Put this uniform back to this team's original colors">Reset</button><button class="btn" data-act="ucopy:${key}" title="Replace the ${away ? 'home' : 'away'} uniform with a copy of this one">${away ? 'Copy to home' : 'Copy to away'}</button></div>`;
+  const matchTip = 'Each uniform part has a light shade and a dark (shadow) shade. When this is on, changing one shade sets the other for you: the dark shade is about half as bright as the light one, like the original uniforms.';
+  const match = `<button class="chk ${state.matchDL ? 'on' : ''}" role="checkbox" aria-checked="${!!state.matchDL}" data-act="umatch" title="${matchTip}"><span class="box"></span>Auto-shade: set the matching dark/light shade for me</button>
+    <div class="muted hint">Pick one shade and the other follows. You can still adjust it afterward.</div>`;
+  return `<div class="unirow">${sprite('Uniform1', 0)}${sprite('Uniform2', 1)}</div>
+    <div class="muted">Editing the ${away ? 'away' : 'home'} uniform. ${away ? 'It is worn against some opponents (which ones is set elsewhere in the game and cannot be edited yet). ' : 'It is what the team wears at home. '}Light-skin and dark-skin players get the same colors. Tap a color to change it.</div>${tools}${match}${chips}`;
+}
+
+/** Genesis: the colors the game field uses (helmet, jersey, pants, two shades each), shown on the SNES player picture. Home and away sit side by side; the one tapped is edited below. */
+function genesisInGame(c, homeHex, awayHex) {
+  const hasAway = awayHex !== undefined, sel = hasAway && state.usel === 1 ? 1 : 0, away = sel === 1, key = away ? 'InGameAway' : 'InGame', hex = away ? awayHex : homeHex;
+  const sprite = (h, i) => {
+    const id = i ? 'uc-away' : 'uc-ig';
+    const rgb = sid => U.freeRgb('genesis', U.slotHex(h, sid)), avg = (p, q) => p.map((v, n) => Math.round((v + q[n]) / 2));
+    paintPlan.push({ id, image: i ? 'snes_away' : 'snes_home', set: 'snes', scale: 2, groups: [
+      ['HelmetD', rgb('iHelmetD')], ['HelmetM', rgb('iHelmetL')], ['JerseyM', rgb('iJerseyD')], ['JerseyL', rgb('iJerseyL')],
+      ['PantsD', rgb('iPantsD')], ['PantsM', avg(rgb('iPantsD'), rgb('iPantsL'))], ['PantsL', rgb('iPantsL')]] });
+    return `<button class="unibtn ${i === sel ? 'on' : ''}" data-act="usel:${i}" aria-label="Edit ${i ? 'away' : 'home'} uniform"><span class="k">${i ? 'Away (light)' : 'Home (dark)'}</span><canvas id="${id}" role="img" aria-label="${i ? 'Away' : 'Home'} uniform preview"></canvas></button>`;
+  };
   const chips = ['Jersey', 'Pants', 'Helmet'].map(g => `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em">${g} colors</div><div class="chips2">${
     U.INGAME_SLOTS.filter(s => s.group === g).map(s => { const h = U.slotHex(hex, s.id); return uniChip(`ucolor:${key}:${s.id}`, s.label, U.freeRgb('genesis', h), h); }).join('')}</div>`).join('');
   const intro = away
-    ? 'The light uniform the game puts this team in against some opponents (which opponents is set elsewhere in the game and cannot be edited yet). Tap a color to change it.'
-    : 'What the game field shows. Every player of this team wears these, light-skin and dark-skin alike. Tap a color to change it.';
-  return `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em;${away ? 'margin-top:18px' : ''}">${away ? 'Away uniform (light)' : 'Home uniform (dark)'}</div>
-    <div class="unirow"><div class="unibtn on" style="cursor:default"><canvas id="${id}" role="img" aria-label="${away ? 'Away' : 'Home'} uniform preview"></canvas></div></div>
+    ? 'Editing the away uniform: the light uniform the game puts this team in against some opponents (which opponents is set elsewhere in the game and cannot be edited yet). Tap a color to change it.'
+    : `Editing the home uniform: what the game field shows. Every player of this team wears these, light-skin and dark-skin alike. Tap a color to change it.${hasAway ? '' : ' This team has no separate away uniform in the game: it always wears the home uniform.'}`;
+  return `<div class="muted" style="text-transform:uppercase;letter-spacing:.08em">Game field uniforms</div>
+    <div class="unirow">${sprite(homeHex, 0)}${hasAway ? sprite(awayHex, 1) : ''}</div>
     <div class="muted">${intro}</div>${chips}`;
 }
 
@@ -504,7 +574,7 @@ function uniSetColor(d, key, slot, value) {          // value: 4-hex (free) or 2
   let next;
   if (d.colors.kind === 'nes') {
     next = hex.slice(0, slot * 2) + value + hex.slice(slot * 2 + 2);
-  } else next = U.withSlot(hex, slot, value);
+  } else next = d.colors.tsb23 && state.matchDL ? U.withMatchedSlot(hex, slot, value) : U.withSlot(hex, slot, value);
   U.set(parts, key, next);
   if (d.colors.kind === 'genesis' && key === 'Uniform1' && U.get(parts, 'InGame') !== undefined) U.set(parts, 'Uniform2', next);   // one coin-toss uniform for both skin blocks
 }
@@ -516,6 +586,7 @@ function uniLabel(d, p) {
     return `${p.key === 'DivChamp' ? 'Division' : 'Conference'} champ ${U.CHAMP[p.key].slots[p.slot][0]}`;
   }
   if (p.key === 'InGame' || p.key === 'InGameAway') { const s = U.slotInfo(p.slot); return `${p.key === 'InGame' ? 'Home' : 'Away'} ${s.group} ${s.label}`; }
+  if (d.colors.tsb23) { const s = U.slotInfo(p.slot); return `${p.key === 'Uniform1' ? 'Home' : 'Away'} ${s.group.toLowerCase()} ${s.label.toLowerCase()}`; }
   const s = U.FREE_SLOTS.find(x => x.id === p.slot);
   return `Uniform ${p.key === 'Uniform1' ? 1 : 2} ${s.group} ${s.label}`;
 }
@@ -523,8 +594,37 @@ function uniLabel(d, p) {
 function uniSheets(d) {
   if (!d.colors) return '';
   if (state.upick) return uniPickerSheet(d);
+  if (state.upre) return presetSheet(d);
   if (state.usage) return usageSheet();
   return '';
+}
+
+const MINE_KEY = 'tsb.uniPresets';
+function minePresets() {
+  try { const v = JSON.parse(localStorage.getItem(MINE_KEY) || '[]'); return Array.isArray(v) ? v.filter(p => p && typeof p.name === 'string' && /^[0-9a-f]{48}$/.test(p.hex)) : []; } catch (e) { return []; }
+}
+function saveMine(list) { try { localStorage.setItem(MINE_KEY, JSON.stringify(list)); } catch (e) { /* storage may be blocked */ } }
+
+/** TSB2/TSB3 "Start from...": every stock team uniform, plus the user's own saved ones (kept in this browser only). */
+function presetSheet(d) {
+  const all = U.presetsReady();
+  if (!all) return `<div class="scrim pop fit" data-act="uclose"><div class="sheet pop fit" role="dialog" aria-label="Start from" data-stop="1"><div class="status">Loading...</div></div></div>`;
+  const stock = all[state.rom.version] || {}, ids = teamIds().filter(id => stock[id]), mine = minePresets();
+  const draw = (id, hex) => { paintPlan.push({ id, image: 'tsb23', set: 'tsb23', scale: 3, groups: U.TSB23_SLOTS.map(s => [s.id, U.freeRgb('snes', U.slotHex(hex, s.id))]) }); return `<canvas id="${id}"></canvas>`; };
+  const mineHtml = mine.length ? `<div class="presetgrid">${mine.map((p, i) => `<div class="presetcell"><button class="unibtn" data-act="upmine:${i}" aria-label="Use ${esc(p.name)}">${draw('pm-' + i, p.hex)}<span class="cl">${esc(p.name)}</span></button><button class="btn ghost" data-act="updel:${i}" aria-label="Delete ${esc(p.name)}">Delete</button></div>`).join('')}</div>` : '<div class="muted">None yet.</div>';
+  const cells = ids.map(id => [0, 1].map(k => `<button class="unibtn" data-act="upstock:${id}:${k}" aria-label="${esc(teamLabel(id))} ${k ? 'away' : 'home'}">${draw(`ps-${id}-${k}`, stock[id][k])}<span class="cl">${esc(teamLabel(id))} ${k ? 'away' : 'home'}</span></button>`).join('')).join('');
+  return `<div class="scrim pop fit" data-act="uclose"><div class="sheet pop fit" role="dialog" aria-label="Start from" data-stop="1">
+      <div class="topbar"><h2>Start from ${state.upre.key === 'Uniform1' ? 'home' : 'away'}...</h2><button class="btn icon-btn" data-act="uclose" aria-label="Close">&times;</button></div>
+      <div class="muted" style="margin-top:6px">Pick a uniform; its 12 colors replace this one. You can then change any color.</div>
+      <h3 class="presethead">My presets</h3>${mineHtml}
+      <div class="presetform"><input id="upname" type="text" maxlength="30" placeholder="Name (optional)" aria-label="Preset name">
+        <button class="btn" data-act="upsave">Save current as preset</button></div>
+      <div class="presetform"><textarea id="uptext" rows="2" placeholder="Paste a COLORS line (or 48 digits)" aria-label="Pasted colors"></textarea>
+        <button class="btn" data-act="upadd">Add pasted colors</button></div>
+      <div class="muted" id="upmsg" role="status"></div>
+      <div class="muted">Presets are kept in this browser only; nothing is sent anywhere.</div>
+      <h3 class="presethead">Stock uniforms</h3><div class="presetgrid">${cells}</div>
+    </div></div>`;
 }
 
 function uniPickerSheet(d) {
@@ -586,8 +686,8 @@ function autoSheet() {
       ? `<p class="fdesc"><b>Tecmonster</b>: Tecmonster's formulas.</p>
          <p class="fdesc"><b>TSBTool</b>: TSBTool's newer formulas, tested against many simmed seasons to match how the original game simmed. Defenders and teams still use Tecmonster's.</p>` : ''}`;
     buttons = two
-      ? `<button class="btn primary" data-act="autorun:t">Tecmonster formulas</button><button class="btn" data-act="autorun:s">TSBTool formulas</button><button class="btn ghost" data-act="autoclose">Cancel</button>`
-      : `<button class="btn primary" data-act="autorun:t">Update all</button><button class="btn ghost" data-act="autoclose">Cancel</button>`;
+      ? `<button class="btn primary" data-act="autorun:t" title="Use Tecmonster's formulas">Tecmonster formulas</button><button class="btn" data-act="autorun:s" title="Use TSBTool's newer formulas, tested against many simmed seasons">TSBTool formulas</button><button class="btn ghost" data-act="autoclose">Cancel</button>`
+      : `<button class="btn primary" data-act="autorun:t" title="Recalculate the sim values of every player and team">Update all</button><button class="btn ghost" data-act="autoclose">Cancel</button>`;
   } else if (a.stage === 'done') {
     title = 'Sim data updated';
     body = a.changed ? `${a.changed} lines changed. Use Undo to go back to the values from before.` : 'Nothing needed to change.';
@@ -649,16 +749,44 @@ const hexToRgb = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16));
 const mixRgb = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
 const rgbCss = a => `rgb(${a[0]},${a[1]},${a[2]})`;
 
-/** Sets the Modern style's highlight variables from state.accent (Retro keeps its own colors). */
+/** Text color (dark or white) with the better WCAG contrast on a button of this color. */
+function inkFor(c) {
+  const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+  const L = 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]);
+  return (L + 0.05) / (0.0055 + 0.05) >= (1.05) / (L + 0.05) ? '#14110a' : '#ffffff';
+}
+
+/** The team theme in effect: the chosen one, or (for "Current team") the one of the team being viewed; null is the built-in Vikings look. */
+function shownTheme() {
+  const id = state.nflTheme === CURRENT_TEAM ? themeForTeam(state.team) : state.nflTheme;
+  return id && id !== DEFAULT_THEME ? id : null;
+}
+
+/** Sets the Modern style's colors: the team theme (highlight + background glow) and, over it, a custom highlight color. Retro keeps its own colors. */
 function applyAccent() {
-  const st = document.body.style, names = ['--accent', '--accent-ink', '--accent-hi', '--accent-lo', '--accent-glow'];
-  if (state.theme !== 'modern' || !state.accent) { names.forEach(n => st.removeProperty(n)); return; }
-  const rgb = hexToRgb(state.accent), lum = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
-  st.setProperty('--accent', state.accent);
-  st.setProperty('--accent-ink', lum > 150 ? '#14110a' : '#ffffff');
+  const st = document.body.style, names = ['--accent', '--accent-ink', '--accent-hi', '--accent-lo', '--accent-glow', '--bg', '--g1', '--g2', '--g3', '--g4'];
+  names.forEach(n => st.removeProperty(n));
+  if (state.theme !== 'modern') return;
+  const team = themeById(shownTheme()), color = state.accent || (team && team[2]);
+  if (team) {
+    const p = hexToRgb(team[3]), s = hexToRgb(team[4]), a = hexToRgb(team[2]), rgba = (c, o) => `rgba(${c[0]},${c[1]},${c[2]},${o})`;
+    st.setProperty('--bg', rgbCss(mixRgb(p, [6, 10, 20], .88)));
+    st.setProperty('--g1', rgba(p, .5)); st.setProperty('--g2', rgba(s, .38)); st.setProperty('--g3', rgba(a, .36)); st.setProperty('--g4', rgba(mixRgb(p, s, .5), .3));
+  }
+  if (!color) return;
+  const rgb = hexToRgb(color);
+  st.setProperty('--accent', color);
+  st.setProperty('--accent-ink', inkFor(rgb));
   st.setProperty('--accent-hi', rgbCss(mixRgb(rgb, [255, 255, 255], .32)));
   st.setProperty('--accent-lo', rgbCss(mixRgb(rgb, [0, 0, 0], .08)));
   st.setProperty('--accent-glow', `rgba(${rgb[0]},${rgb[1]},${rgb[2]},.38)`);
+}
+
+function setTheme(id) {
+  state.nflTheme = id && id !== DEFAULT_THEME && (id === CURRENT_TEAM || themeById(id)) ? id : null;
+  state.accent = null;                       // choosing a team theme clears the custom highlight color
+  try { if (state.nflTheme) localStorage.setItem('tsb.nfltheme', state.nflTheme); else localStorage.removeItem('tsb.nfltheme'); localStorage.removeItem('tsb.accent'); } catch (e) { /* storage may be blocked */ }
+  applyAccent();
 }
 
 function setAccent(hex) {
@@ -668,17 +796,29 @@ function setAccent(hex) {
 }
 
 function accentSheet() {
-  const cur = state.accent || ACCENT_DEFAULT;
-  return `<div class="scrim pop fit" data-act="accentclose"><div class="sheet pop fit" role="dialog" aria-label="Highlight color" data-stop="1">
-      <div class="topbar"><h2>Highlight color</h2><button class="btn icon-btn" data-act="accentclose" aria-label="Close">&times;</button></div>
-      <div class="muted" style="margin-top:6px">Used by the Modern style's buttons, chips and tabs. Right-click (or long-press) the Modern button to open this.</div>
-      <div class="swatches">${ACCENT_PRESETS.map(([n, h]) => `<button class="swatch-btn ${h === cur ? 'on' : ''}" style="background:${h}" data-act="accentset:${h}" aria-label="${n}"></button>`).join('')}</div>
+  const retro = state.theme === 'retro', cur = state.accent || ACCENT_DEFAULT, active = retro || state.accent ? null : (state.nflTheme || DEFAULT_THEME);
+  const follow = `<button class="themebtn wide ${active === CURRENT_TEAM ? 'on' : ''}" data-act="themeset:${CURRENT_TEAM}" aria-pressed="${active === CURRENT_TEAM}"><span class="dot" style="background:conic-gradient(#e53935, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935)"></span>Current team<span class="muted">The theme follows the team you are viewing</span></button>`;
+  const retroBtn = `<button class="themebtn wide ${retro ? 'on' : ''}" data-act="theme:retro" aria-pressed="${retro}"><span class="dot retrodot"></span>Retro<span class="muted">The 8-bit look; it has its own colors</span></button>`;
+  const grid = TEAM_THEMES.map(([id, name, accent, p, s]) => `<button class="themebtn ${id === active ? 'on' : ''}" data-act="themeset:${id}" aria-pressed="${id === active}"><span class="dot" style="background:linear-gradient(135deg, ${p} 0 45%, ${accent} 45% 70%, ${s} 70%)"></span>${esc(name)}</button>`).join('');
+  return `<div class="scrim pop fit" data-act="accentclose"><div class="sheet pop fit" role="dialog" aria-label="Theme" data-stop="1">
+      <div class="topbar"><h2>Theme</h2><button class="btn icon-btn" data-act="accentclose" aria-label="Close">&times;</button></div>
+      <div class="muted" style="margin-top:6px">Pick the Retro style, or a color theme for the Modern style. Right-click (or long-press) the Modern button to open this.</div>
+      <h3 class="themehead">Themes</h3><div class="themegrid">${retroBtn}${follow}${grid}</div>
+      <h3 class="themehead">Custom highlight color</h3>
+      <div class="swatches">${ACCENT_PRESETS.map(([n, h]) => `<button class="swatch-btn ${h === cur && state.accent ? 'on' : ''}" style="background:${h}" data-act="accentset:${h}" aria-label="${n}"></button>`).join('')}</div>
       <div class="accentpick"><input type="color" id="accentcolor" value="${cur}" aria-label="Custom color"><span class="muted">Custom color <b id="accenthex">${cur}</b></span></div>
-      <div class="autobtns"><button class="btn primary" data-act="accentclose">Done</button><button class="btn ghost" data-act="accentreset">Reset to violet</button></div>
+      <div class="autobtns"><button class="btn primary" data-act="accentclose">Done</button><button class="btn ghost" data-act="accentreset">Reset to Vikings</button></div>
     </div></div>`;
 }
 
-function openAccent() { state.theme = 'modern'; state.accentDlg = true; render(); }
+function openAccent() { state.accentDlg = true; render(); }
+/** Switches between the Modern and Retro styles (remembered); true when the style changed. */
+function useStyle(name) {
+  if (state.theme === name) return false;
+  state.theme = name;
+  try { localStorage.setItem('tsb.theme', name); } catch (x) { /* ignore */ }
+  return true;
+}
 
 // right-click on the Modern button; long-press for touch screens
 let accentSuppressClick = false;
@@ -1009,8 +1149,9 @@ function scheduleScreen() {
   }).join('')}</div>`;
   const warn = (bad.length ? `<div class="banner" role="status">${bad.map(t => esc(teamLabel(t))).join(', ')} ${bad.length > 1 ? 'are' : 'is'} booked twice this week. Tap one of the games to move it.</div>` : '')
     + (w.games.length > cap ? `<div class="banner" role="status">This week has ${w.games.length} games; the most a week can hold is ${cap}.</div>` : '');
-  const games = w.games.map((g, i) => `<button class="game ${bad.includes(g.away) || bad.includes(g.home) ? 'bad' : ''}" data-act="sgame:${i}">
-      <span class="tm">${esc(teamLabel(g.away))}</span><span class="at">at</span><span class="tm r">${esc(teamLabel(g.home))}</span></button>`).join('');
+  const games = w.games.map((g, i) => `<div class="gamerow"><button class="game ${bad.includes(g.away) || bad.includes(g.home) ? 'bad' : ''}" data-act="sgame:${i}">
+      <span class="tm">${esc(teamLabel(g.away))}</span><span class="at">at</span><span class="tm r">${esc(teamLabel(g.home))}</span></button>
+      <button class="btn icon-btn gamedel" data-act="sdel:${i}" aria-label="Delete ${esc(teamLabel(g.away))} at ${esc(teamLabel(g.home))}" title="Delete this game">${ICON.trash}</button></div>`).join('');
   const full = w.games.length >= cap || bye.length < 2;
   return `<div class="hdr">${top}${chips}</div>${warn}
     <div class="list">${games || '<div class="status">No games this week.</div>'}</div>
@@ -1104,7 +1245,7 @@ function playerScreen() {
       <button class="btn icon-btn" data-act="sim:${i}:1" aria-label="${esc(lab.sim[i])} up">+</button></div></div>`).join('');
   const code = lab.attrs[sel];
   return `<div class="hdr"><div class="topbar"><button class="btn ghost small" data-act="pl-done">${ICON.left} Roster</button>
-      <button class="btn ghost small" data-act="undo">Undo</button></div>
+      <div class="tbright"><button class="btn ghost small" data-act="undo">Undo</button>${helpButton()}</div></div>
     <div><div class="eyebrow">${esc(teamLabel(team.id))} &middot; ${esc(p.pos)}</div><h1>Edit player</h1></div></div>
     <div class="editgrid">
       ${faceCard(p)}
@@ -1180,7 +1321,7 @@ function railHtml(r) {
   const on = r === 'player' ? 'roster' : r;
   const n = changedLines(state.baseline, state.text);
   const item = (key, icon, label, go) => `<button class="railbtn ${on === key ? 'on' : ''}" data-act="go:${go}" aria-label="${label}" ${on === key ? 'aria-current="page"' : ''}>${ICON[icon]}<span>${label}</span></button>`;
-  return `<nav class="rail" aria-label="Sections"><div class="railmark">TSB</div>
+  return `<nav class="rail" aria-label="Sections"><button class="railmark" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261031q" alt=""></button>
     ${item('home', 'home', 'Home', 'home')}${item('roster', 'players', 'Players', 'roster')}${item('team', 'teams', 'Teams', 'team')}
     ${item('schedule', 'schedule', 'Schedule', 'schedule')}${item('probowl', 'probowl', 'Pro Bowl', 'probowl')}${P.cache.on ? item('photos', 'photo', 'Photos', 'photos') : ''}${item('text', 'text', 'Text', 'text')}
     <div class="railgrow"></div>${themeSwitch()}
@@ -1224,8 +1365,9 @@ function render() {
   document.querySelectorAll('.pane').forEach(el => { const k = kept.find(x => x[0] === el.dataset.pane && x[1] === el.dataset.pid); if (k) el.scrollTop = k[2]; });
   if (state.lastRoute === r) window.scrollTo(0, y); else window.scrollTo(0, 0);   // keep scroll on in-place updates
   state.lastRoute = r;
-  document.body.classList.toggle('modal-open', !!(state.accentDlg || state.facePicker || state.sheet || state.playPick || state.upick || state.usage || state.auto || state.sgame || state.pbEdit || state.steamDlg || state.photoDlg || state.photoEd || state.notice));
+  document.body.classList.toggle('modal-open', !!(state.help || state.accentDlg || state.facePicker || state.sheet || state.playPick || state.upick || state.upre || state.usage || state.auto || state.sgame || state.pbEdit || state.steamDlg || state.photoDlg || state.photoEd || state.notice));
   if (state.accentDlg) app.insertAdjacentHTML('beforeend', accentSheet());
+  if (state.help) app.insertAdjacentHTML('beforeend', helpSheet());
   if (state.photoDlg) app.insertAdjacentHTML('beforeend', photoSheet());
   if (state.photoEd) app.insertAdjacentHTML('beforeend', photoEditorSheet());
   if (state.notice) app.insertAdjacentHTML('beforeend', noticeSheet());
@@ -1413,15 +1555,27 @@ document.addEventListener('click', e => {
   const [act, arg] = el.dataset.act.split(/:(.*)/);
   switch (act) {
     case 'load': $('#file').click(); break;
-    case 'theme': state.theme = arg; try { localStorage.setItem('tsb.theme', arg); } catch (x) { /* ignore */ } render(); break;
+    case 'theme': useStyle(arg); render(); break;
     case 'go': location.hash = '#/' + arg; break;
     case 'group': state.group = arg; render(); break;
     case 'tsim': { const [k, d] = arg.split(':'); const t = state.tedit.t; t[k] = clamp(t[k] + Number(d), 0, t.max); render(); break; }
     case 'tpref': state.tedit.t.pref = arg; render(); break;
     case 'ttab': state.ttab = arg; render(); break;
-    case 'accentset': setAccent(arg); render(); break;
-    case 'accentreset': setAccent(null); render(); break;
+    case 'accentset': useStyle('modern'); setAccent(arg); render(); break;
+    case 'accentreset': useStyle('modern'); setTheme(null); render(); break;
+    case 'openthemes': openAccent(); break;
+    case 'themeset': useStyle('modern'); setTheme(arg); render(); break;
     case 'accentclose': state.accentDlg = false; render(); break;
+    case 'help': state.help = 'menu'; render(); break;
+    case 'helpabout': state.help = 'about'; render(); break;
+    case 'helpguide': state.help = 'guide'; render(); break;
+    case 'helpclose': state.help = null; render(); break;
+    case 'helpcopy': {
+      const msg = $('#helpmsg'), text = diagnosticInfo();
+      (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => { msg.textContent = 'Copied.'; }, () => { msg.textContent = text; });
+      break;
+    }
+    case 'guidego': { const el = document.getElementById('guide-' + arg); if (el) el.scrollIntoView({ block: 'start' }); break; }
     case 'tform': state.tedit.t.formation = arg; render(); break;
     case 'steampick': state.steamDlg = true; render(); break;
     case 'steamset': state.steam = arg; state.steamDlg = false; render(); break;
@@ -1460,6 +1614,7 @@ document.addEventListener('click', e => {
     case 'sweekgo': state.sweek = Number(arg); state.sview = 'week'; render(); break;
     case 'swk': state.sweek += Number(arg); render(); break;
     case 'sgame': { const w = schedWeeks()[state.sweek], g = w.games[Number(arg)]; state.sgame = { week: state.sweek, idx: Number(arg), away: g.away, home: g.home }; render(); break; }
+    case 'sdel': { const w = schedWeeks()[state.sweek]; setWeekGames(state.sweek, w.games.filter((_, i) => i !== Number(arg))); render(); break; }
     case 'sadd': { const w = schedWeeks()[state.sweek], bye = S.byeTeams(w, teamIds()); state.sgame = { week: state.sweek, idx: null, away: bye[0], home: bye[1] }; render(); break; }
     case 'gswap': { const g = state.sgame; [g.away, g.home] = [g.home, g.away]; render(); break; }
     case 'gclose': state.sgame = null; render(); break;
@@ -1490,7 +1645,26 @@ document.addEventListener('click', e => {
     case 'ulv': { const [r, g, b] = arg.split(',').map(Number); state.upick.levels = { r, g, b }; state.upick.h = undefined; render(); break; }
     case 'ufine': state.upick.fine = !state.upick.fine; render(); break;
     case 'upal': { const p = state.upick; uniSetColor(state.tedit, p.key, p.slot, arg); state.upick = null; render(); break; }
-    case 'uclose': state.upick = null; state.usage = null; render(); break;
+    case 'uclose': state.upick = null; state.usage = null; state.upre = null; render(); break;
+    case 'umatch': state.matchDL = !state.matchDL; try { localStorage.setItem('tsb.matchdl', state.matchDL ? '1' : '0'); } catch (x) { /* ignore */ } render(); break;
+    case 'upre': state.upre = { key: arg }; if (!U.presetsReady()) U.loadPresets().then(() => render()).catch(() => { state.upre = null; render(); }); render(); break;
+    case 'upstock': { const [id, k] = arg.split(':'), p = U.presetsReady()[state.rom.version][id]; U.set(state.tedit.colors.parts, state.upre.key, p[Number(k)]); state.upre = null; render(); break; }
+    case 'upmine': { const m = minePresets()[Number(arg)]; if (m) U.set(state.tedit.colors.parts, state.upre.key, m.hex); state.upre = null; render(); break; }
+    case 'updel': { const m = minePresets(); m.splice(Number(arg), 1); saveMine(m); render(); break; }
+    case 'upsave': { const name = ($('#upname').value || '').trim() || 'My uniform', m = minePresets(); m.push({ name, hex: U.get(state.tedit.colors.parts, state.upre.key) }); saveMine(m); render(); break; }
+    case 'upadd': {
+      const found = U.parsePresetText($('#uptext').value);
+      if (!found.length) { $('#upmsg').textContent = 'No 48-digit uniform colors found in that text.'; break; }
+      const base = ($('#upname').value || '').trim() || 'Pasted', m = minePresets();
+      for (const [label, hex] of found) m.push({ name: label ? `${base} ${label}` : base, hex });
+      saveMine(m); render(); break;
+    }
+    case 'ureset': {
+      const go = all => { const s = all[state.rom.version] && all[state.rom.version][state.team]; if (s) { U.set(state.tedit.colors.parts, arg, s[arg === 'Uniform1' ? 0 : 1]); render(); } };
+      if (U.presetsReady()) go(U.presetsReady()); else U.loadPresets().then(go);
+      break;
+    }
+    case 'ucopy': { const parts = state.tedit.colors.parts; U.set(parts, arg === 'Uniform1' ? 'Uniform2' : 'Uniform1', U.get(parts, arg)); render(); break; }
     case 'uusage': { const orig = U.get(state.tedit.colors.parts, 'UniformUsage'); state.usage = { original: orig, ids: U.usageTeamIds(teamIds()) }; state.usage.bits = U.usageBits(orig, state.usage.ids.length); render(); break; }
     case 'utog': { const b = state.usage.bits, i = Number(arg); b[i] = !b[i]; render(); break; }
     case 'uall': state.usage.bits = state.usage.bits.map(() => true); render(); break;
@@ -1539,7 +1713,9 @@ document.addEventListener('input', e => {
     return;
   }
   if (e.target.id === 'accentcolor') {            // custom color: applies live while the box is open
+    const was = useStyle('modern');                // choosing a color means the Modern style
     setAccent(e.target.value);
+    if (was) render();
     const h = document.getElementById('accenthex'); if (h) h.textContent = e.target.value;
     return;
   }
@@ -1569,7 +1745,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.target.id === 'q' && e.key === 'Enter') find(e.shiftKey ? -1 : 1);
-  if (e.key === 'Escape' && (state.facePicker || state.sheet || state.playPick || state.upick || state.usage || state.auto || state.sgame || state.accentDlg || state.pbEdit || state.steamDlg || state.photoDlg || state.photoEd || state.notice)) { state.photoDlg = null; state.photoEd = null; state.notice = null; state.steamDlg = false; state.pbEdit = null; state.accentDlg = false; state.sgame = null; state.facePicker = false; state.sheet = false; state.playPick = null; state.upick = null; state.usage = null; state.auto = null; render(); }
+  if (e.key === 'Escape' && (state.help || state.facePicker || state.sheet || state.playPick || state.upick || state.upre || state.usage || state.auto || state.sgame || state.accentDlg || state.pbEdit || state.steamDlg || state.photoDlg || state.photoEd || state.notice)) { state.help = null; state.photoDlg = null; state.photoEd = null; state.notice = null; state.steamDlg = false; state.pbEdit = null; state.accentDlg = false; state.sgame = null; state.facePicker = false; state.sheet = false; state.playPick = null; state.upick = null; state.upre = null; state.usage = null; state.auto = null; render(); }
 });
 $('#file').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = '';

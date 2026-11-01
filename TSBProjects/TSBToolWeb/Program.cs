@@ -26,6 +26,10 @@ public static partial class WebHelper
         return tool.RomVersion.ToString();
     }
 
+    /// <summary>The TSBTool version (the assembly version from TSBTool\AssemblyInfo.cs, shared with the desktop program).</summary>
+    [JSExport]
+    public static string GetVersion() => typeof(WebHelper).Assembly.GetName().Version.ToString();
+
     [JSExport]
     public static string GetAll(int season) => tool.GetKey() + tool.GetAll(season) + tool.GetSchedule(season);
 

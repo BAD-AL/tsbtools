@@ -46,7 +46,11 @@ using System.Runtime.CompilerServices;
 // * SNES TSB1 cutscene skin color fix (+ repair on load)
 // * Added Photo editor for TSB3
 // * Fix: TSB2/TSB3 LB5 lines ignored;
-[assembly: AssemblyVersion("1.4.0.0")]     
+//[assembly: AssemblyVersion("1.4.0.0")]
+
+
+// Web TSBTool, TSB2 & TSB3 uniform colors
+[assembly: AssemblyVersion("1.4.0.1")]
 
 
 

@@ -17,7 +17,7 @@ def test_in_game_section_is_shown(make_page):
     load_rom(page, "genesis")
     open_uniform_tab(page)
     body = page.inner_text("body").upper()
-    assert "HOME UNIFORM (DARK)" in body and "AWAY UNIFORM (LIGHT)" in body and "COIN TOSS SCREEN" in body
+    assert "HOME (DARK)" in body and "AWAY (LIGHT)" in body and "COIN TOSS SCREEN" in body
     for slot in ("iHelmetD", "iHelmetL", "iJerseyD", "iJerseyL", "iPantsD", "iPantsL"):
         assert page.locator(f'[data-act="ucolor:InGame:{slot}"]').count() == 1
 
@@ -103,6 +103,7 @@ def test_away_uniform_edit_is_saved_in_both_skin_blocks(make_page):
     page = make_page()
     load_rom(page, "genesis")
     open_uniform_tab(page)                                 # first team = Bills = away entry 0
+    page.click('[data-act="usel:1"]')                      # the away picture sits beside the home one
     for slot in ("iHelmetD", "iHelmetL", "iJerseyD", "iJerseyL", "iPantsD", "iPantsL"):
         assert page.locator(f'[data-act="ucolor:InGameAway:{slot}"]').count() == 1
     page.click('[data-act="ucolor:InGameAway:iJerseyL"]')

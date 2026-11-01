@@ -226,3 +226,19 @@ def test_tsb23_playbook_tab_shows_names_and_both_playbooks(make_page, rom):
     assert page.locator('[data-act^="playopen:run:"]').count() == 4 and page.locator('[data-act^="playopen:pass:"]').count() == 4
     page.click('[data-act="playopen:pass:2"]')
     assert page.locator('[data-act^="playpick:"]').count() == 16
+
+
+@pytest.mark.parametrize("rom", ["nes", "snes1", "snes3", "genesis"])
+def test_schedule_delete_icon_removes_just_that_game(make_page, rom):
+    page = make_page()
+    load_rom(page, rom)
+    goto(page, "#/schedule")
+    page.wait_for_selector(".gamerow")
+    n = page.locator(".gamerow").count()
+    first = page.locator(".gamerow .game").nth(1).inner_text().split()
+    page.locator(".gamerow .gamedel").nth(1).click()           # one press, no dialog
+    assert page.locator(".gamerow").count() == n - 1
+    assert page.locator('[role="dialog"]').count() == 0
+    left = [" ".join(t.split()) for t in page.locator(".gamerow .game").all_inner_texts()]
+    assert " ".join(first) not in left                           # a team plays once a week, so that game is gone
+    assert page.locator('[data-act="sadd"]').is_enabled()      # the freed teams can be scheduled again

@@ -49,6 +49,10 @@ namespace TSBTool2
             get { return new int[] { 0x173934, 0x1BCBCD, 0x1BCC15, 0x1BD0B0, 0x1BD6A5, 0x1BE46F, 0x1BF782 }; }
         }
 
+        protected override int HomeUniformStart { get { return 0x19BD60; } }
+        protected override int AwayUniformStart { get { return 0x19C4E0; } }
+        protected override int UniformTeamCount { get { return 30; } }
+
         /// <summary>
         /// Overrides for setting up locations
         /// </summary>

@@ -34,6 +34,7 @@ namespace TSBTool2
         public static bool ShowPlayerSimData = true;
         public static bool ShowPlaybooks = true;
         public static bool ShowSchedule = true;
+        public static bool ShowColors = true;
 
         #region Special Locations SNES TSB2
         //https://tecmobowl.org/forums/topic/53028-tecmo-super-bowl-ii-hackingresource-documentation/
@@ -655,8 +656,84 @@ namespace TSBTool2
             }
             builder.Append(String.Format("TEAM_ABB={0},TEAM_CITY={1},TEAM_NAME={2}\n",
                 GetTeamAbbreviation(i), GetTeamCity(i), GetTeamName(i)));
+            if (ShowColors && i >= 0 && i < UniformTeamCount)
+            {
+                builder.Append(GetGameUniform(team));
+                builder.Append("\n");
+            }
             builder.Append(GetTeamPlayers(season, team));
         }
+
+        #region Uniform colors (see TSBTool_Test\TSB2_TSB3_Uniform_Findings.md)
+        // Per team 0x40 bytes: two 16-color palettes (light-skin, dark-skin players) that differ only in the skin colors.
+        // 15-bit colors, 2 bytes each. The same layout for home and away, TSB2 and TSB3 (only the start differs).
+        protected virtual int HomeUniformStart { get { return 0x19BE60; } }
+        protected virtual int AwayUniformStart { get { return 0x19C560; } }
+        protected virtual int UniformTeamCount { get { return 28; } }
+        const int UNIFORM_TEAM_SIZE = 0x40;
+        const int UNIFORM_PALETTE_SIZE = 0x20;
+        // palette indexes in the text: 1-6 helmet, jersey, pants (dark, light), 9-14 socks, pants stripe, helmet stripe.
+        // Not exposed: 0 clear, 7-8 skin, 15 shadow.
+        static readonly int[] uniformColorIndexes = { 1, 2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 14 };
+        const int UNIFORM_HEX_LENGTH = 48;
+
+        private int GetUniformLocation(string team, bool away)
+        {
+            int i = teams.IndexOf(team);
+            if (i < 0 || i >= UniformTeamCount)
+                return -1;
+            return (away ? AwayUniformStart : HomeUniformStart) + i * UNIFORM_TEAM_SIZE;
+        }
+
+        private string GetUniform(string team, bool away)
+        {
+            int location = GetUniformLocation(team, away);
+            if (location < 0)
+                return null;
+            StringBuilder sb = new StringBuilder(away ? "Uniform2=0x" : "Uniform1=0x");
+            foreach (int index in uniformColorIndexes)
+                sb.Append(String.Format("{0:x2}{1:x2}", OutputRom[location + index * 2], OutputRom[location + index * 2 + 1]));
+            return sb.ToString();
+        }
+
+        private void SetUniform(string team, string colors, bool away)
+        {
+            int location = GetUniformLocation(team, away);
+            if (location < 0 || colors == null || !System.Text.RegularExpressions.Regex.IsMatch(colors, "^[0-9a-fA-F]{" + UNIFORM_HEX_LENGTH + "}$"))
+            {
+                TSBTool.StaticUtils.AddError(String.Format("ERROR setting the {0} uniform of '{1}': the team must be one of the ROM's teams and the colors {2} hex digits.",
+                    away ? "away" : "home", team, UNIFORM_HEX_LENGTH));
+                return;
+            }
+            byte[] bytes = TSBTool.StaticUtils.GetHexBytes(colors);
+            for (int k = 0; k < uniformColorIndexes.Length; k++)
+            {
+                int first = location + uniformColorIndexes[k] * 2;
+                // The text shows the light-skin palette. A color that still matches it is left alone in both palettes: a few
+                // teams' stock palettes differ in a jersey/pants color, and a dump applied unchanged must not rewrite them.
+                if (OutputRom[first] == bytes[k * 2] && OutputRom[first + 1] == bytes[k * 2 + 1])
+                    continue;
+                for (int palette = 0; palette < 2; palette++)   // light-skin and dark-skin players get the same uniform
+                {
+                    int at = first + palette * UNIFORM_PALETTE_SIZE;
+                    SetByte(at, bytes[k * 2]);
+                    SetByte(at + 1, bytes[k * 2 + 1]);
+                }
+            }
+        }
+
+        /// <summary>"Uniform1=0x" + 12 colors (null when the team has no uniform)</summary>
+        public string GetHomeUniform(string team) { return GetUniform(team, false); }
+        /// <summary>"Uniform2=0x" + 12 colors (null when the team has no uniform)</summary>
+        public string GetAwayUniform(string team) { return GetUniform(team, true); }
+        public void SetHomeUniform(string team, string colors) { SetUniform(team, colors, false); }
+        public void SetAwayUniform(string team, string colors) { SetUniform(team, colors, true); }
+        public string GetGameUniform(string team)
+        {
+            string home = GetHomeUniform(team);
+            return home == null ? null : "COLORS " + home + ", " + GetAwayUniform(team);
+        }
+        #endregion
 
         // QB1,004A  (74)  Marino is the 74th player
         // conf, proBowlPos, team, pos

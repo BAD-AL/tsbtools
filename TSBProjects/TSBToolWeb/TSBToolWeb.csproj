@@ -6,11 +6,13 @@
     <Nullable>disable</Nullable>
     <LangVersion>latest</LangVersion>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <InvariantGlobalization>true</InvariantGlobalization>
     <WasmBuildNative>false</WasmBuildNative>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="*.cs" />
+    <Compile Include="..\TSBTool\AssemblyInfo.cs" LinkBase="TSBToolCore" />
     <Compile Include="..\TSBTool\Core\*.cs" LinkBase="TSBToolCore" />
     <Compile Include="..\TSBTool\TSB2_TSB3\TSB2_3_Core\*.cs" LinkBase="TSB2_3Core" />
     <PackageReference Include="System.Drawing.Common" Version="8.0.0" />

@@ -20,11 +20,24 @@ export const set = (parts, key, hex) => { const p = parts.find(x => x.key === ke
 
 /** Which kind of color editor a ROM gets: 'snes' (15-bit), 'genesis' (9-bit), 'nes' (64-color palette), or null. */
 export function colorKind(version) {
-  if (/^SNES_TSB1$/.test(version)) return 'snes';
+  if (/^SNES_TSB[123]$/.test(version)) return 'snes';
   if (/^GENESIS/.test(version)) return 'genesis';
   if (/^(NES|CXROM)/.test(version)) return 'nes';
-  return null;           // TSB2/TSB3 have no COLORS line
+  return null;
 }
+/** TSB2/TSB3 keep 12 colors per uniform (Uniform1 = home, Uniform2 = away) instead of TSB1's seven. */
+export const isTsb23 = version => /^SNES_TSB[23]$/.test(version);
+
+/** TSB2/TSB3 colors (48 hex digits, 12 colors): the game's palette entries 1-6 and 9-14. */
+export const TSB23_SLOTS = [
+  { id: 'tHelmetD', group: 'Helmet', label: 'Dark' }, { id: 'tHelmetL', group: 'Helmet', label: 'Light' },
+  { id: 'tJerseyD', group: 'Jersey', label: 'Dark' }, { id: 'tJerseyL', group: 'Jersey', label: 'Light' },
+  { id: 'tPantsD', group: 'Pants', label: 'Dark' }, { id: 'tPantsL', group: 'Pants', label: 'Light' },
+  { id: 'tSocksD', group: 'Socks', label: 'Light' }, { id: 'tSocksL', group: 'Socks', label: 'Dark' },   // (the ROM keeps the lighter sock shade first)
+  { id: 'tPStripeD', group: 'Pants stripe', label: 'Dark' }, { id: 'tPStripeL', group: 'Pants stripe', label: 'Light' },
+  { id: 'tHStripeD', group: 'Helmet stripe', label: 'Dark' }, { id: 'tHStripeL', group: 'Helmet stripe', label: 'Light' },
+];
+export const TSB23_GROUPS = ['Jersey', 'Pants', 'Helmet', 'Socks', 'Pants stripe', 'Helmet stripe'];
 
 // ---- free-color formats: seven 4-hex-digit colors per uniform ----
 /** Order of the seven colors inside Uniform1/Uniform2, as the desktop editor reads them. */
@@ -43,8 +56,11 @@ export const INGAME_SLOTS = [
   { id: 'iJerseyD', group: 'Jersey', label: 'Dark' }, { id: 'iJerseyL', group: 'Jersey', label: 'Light' },
   { id: 'iPantsD', group: 'Pants', label: 'Dark' }, { id: 'iPantsL', group: 'Pants', label: 'Light' },
 ];
-export const slotInfo = id => FREE_SLOTS.find(s => s.id === id) || INGAME_SLOTS.find(s => s.id === id);
-const slotIndex = id => { const i = FREE_SLOTS.findIndex(s => s.id === id); return i >= 0 ? i : INGAME_SLOTS.findIndex(s => s.id === id); };
+export const slotInfo = id => FREE_SLOTS.find(s => s.id === id) || INGAME_SLOTS.find(s => s.id === id) || TSB23_SLOTS.find(s => s.id === id);
+const slotIndex = id => {
+  for (const list of [FREE_SLOTS, INGAME_SLOTS, TSB23_SLOTS]) { const i = list.findIndex(s => s.id === id); if (i >= 0) return i; }
+  return -1;
+};
 
 export function slotHex(uniHex, id) {
   return uniHex.substr(slotIndex(id) * 4, 4);
@@ -112,7 +128,7 @@ export const CHAMP = {
 const IMAGES = {
   snes_home: 'img/uni_snes_home.png', snes_away: 'img/uni_snes_away.png',
   nes_home: 'img/uni_nes_home.png', nes_away: 'img/uni_nes_away.png',
-  coin: 'img/uni_coin.png', nes_div: 'img/uni_nes_div.png', nes_conf: 'img/uni_nes_conf.png',
+  tsb23: 'img/uni_tsb23.png', coin: 'img/uni_coin.png', nes_div: 'img/uni_nes_div.png', nes_conf: 'img/uni_nes_conf.png',
 };
 let assets = null;
 
@@ -234,4 +250,33 @@ export function paletteLevels(kind) {
     rows.push(row);
   }
   return rows;
+}
+
+// ---- TSB2/TSB3 presets and the "match dark to light" option ----
+/** Dark and light slot of each TSB2/TSB3 color group (socks keep their lighter shade in the first slot). */
+const TSB23_PAIRS = [['tHelmetD', 'tHelmetL'], ['tJerseyD', 'tJerseyL'], ['tPantsD', 'tPantsL'], ['tSocksL', 'tSocksD'], ['tPStripeD', 'tPStripeL'], ['tHStripeD', 'tHStripeL']];
+/** The stock colors have a dark shade at about this fraction of their light shade (median over all stock uniforms). */
+const DARK_SHADE = 0.48;
+/** Sets one color and, when the game keeps a dark/light pair, the other color of the pair derived from it. */
+export function withMatchedSlot(uniHex, id, hex4) {
+  const out = withSlot(uniHex, id, hex4);
+  const pair = TSB23_PAIRS.find(p => p.includes(id));
+  if (!pair) return out;
+  const isDark = pair[0] === id, other = isDark ? pair[1] : pair[0], l = snesToLevels(hex4);
+  const f = c => Math.max(0, Math.min(31, Math.round(isDark ? c / DARK_SHADE : c * DARK_SHADE)));
+  return withSlot(out, other, snesFromLevels({ r: f(l.r), g: f(l.g), b: f(l.b) }));
+}
+let presetData = null;
+/** The stock uniforms of every team: { SNES_TSB2: { bills: [home, away], ... }, SNES_TSB3: {...} }. */
+export async function loadPresets() {
+  if (!presetData) presetData = await (await fetch('img/uniform_presets.json')).json();
+  return presetData;
+}
+export const presetsReady = () => presetData;
+/** A 12-color uniform from "COLORS Uniform1=0x..., Uniform2=0x..." or one bare 48-digit hex value: the list of [label, hex]. */
+export function parsePresetText(text) {
+  const t = (text || '').trim();
+  if (/^(0x)?[0-9a-fA-F]{48}$/.test(t)) return [['', t.replace(/^0x/, '').toLowerCase()]];
+  const parts = parseColors(t) || [];
+  return parts.filter(p => /^Uniform[12]$/.test(p.key) && p.hex.length === 48).map(p => [p.key === 'Uniform1' ? 'home' : 'away', p.hex.toLowerCase()]);
 }

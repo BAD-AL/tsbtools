@@ -121,3 +121,28 @@ def test_tsb23_playbook_edit_equals_desktop(make_page, tmp_path, rom):
     assert web != rom_path(rom).read_bytes()
     desktop = desktop_rom(tmp_path, rom_path(rom), text)
     assert web == desktop, first_difference(web, desktop)
+
+
+@pytest.mark.parametrize("rom", ["snes2", "snes3"])
+def test_tsb23_uniform_edit_equals_desktop(make_page, tmp_path, rom):
+    """Change a home and an away color of the first team in the UI, then give the web app's text to the desktop command line."""
+    page = make_page()
+    load_rom(page, rom)
+    goto(page, "#/team")
+    page.wait_for_selector(".tabbody")
+    page.click('[data-act="ttab:uniform"]')
+    page.wait_for_selector("#uc-home")
+    for key, slot in (("Uniform1", "tJerseyD"), ("Uniform2", "tPStripeL")):
+        page.click(f'[data-act="usel:{0 if key == "Uniform1" else 1}"]')
+        page.click(f'[data-act="ucolor:{key}:{slot}"]')
+        page.wait_for_selector("#ubig")
+        swatches = page.locator('[data-act^="ulv:"]')
+        swatches.nth(1 if "on" in (swatches.nth(0).get_attribute("class") or "").split() else 0).click()
+        page.click('[data-act="uok"]')
+    page.click('[data-act="tdone"]')
+    text = web_text(page)
+    goto(page, "#/home")
+    web = download_rom(page)
+    assert web != rom_path(rom).read_bytes()
+    desktop = desktop_rom(tmp_path, rom_path(rom), text)
+    assert web == desktop, first_difference(web, desktop)
