@@ -1,0 +1,58 @@
+{
+  "mainAssemblyName": "TSBToolWeb",
+  "resources": {
+    "hash": "sha256-uGOjfeSvFPHPPOc5OZ5XAqx5zJHw83oWTzcgBMqs29s=",
+    "jsModuleNative": {
+      "dotnet.native.8.0.4.127dxffgs7.js": "sha256-ju0+XWE0ihz554eKEj0HQ8Opa61xpbUIaX5/MNo8we4="
+    },
+    "jsModuleRuntime": {
+      "dotnet.runtime.8.0.4.eo0tkkw8il.js": "sha256-JeVsECOqOie/Pe89n9PJNJaMmb5vJsAAxfXY8INN64A="
+    },
+    "wasmNative": {
+      "dotnet.native.wasm": "sha256-U1JSgnum2OTerSq8i5Y9L17deHEWJmae0djinSPLyJM="
+    },
+    "assembly": {
+      "Microsoft.Win32.Primitives.wasm": "sha256-h/DIuJjMS0jWeaFUsF/2inJ1GGVV4S+qrKiC4MKefyw=",
+      "Microsoft.Win32.SystemEvents.wasm": "sha256-lbNkVd5YWrK5Ln2JhKXGvvSCXSQduZm6e9c2T/3ML6Y=",
+      "System.Collections.Concurrent.wasm": "sha256-l5RYf2ZHknLi03zyb6mwFn715A9vf1k0gCHRmRc4LfQ=",
+      "System.Collections.NonGeneric.wasm": "sha256-3N+Zj6JHy0GoF4deX2a4W9NEJInVbGRwiLDvLuWY3yg=",
+      "System.Collections.Specialized.wasm": "sha256-k7qQg+N5pU7E9lU9F5zvr4ePM8dH08+RtOpEr6PBACs=",
+      "System.Collections.wasm": "sha256-VV8kt/OYvYPUq/YbXemyHGUqQ6CcuTs1ZbcGq80fda8=",
+      "System.ComponentModel.Primitives.wasm": "sha256-MQNwlXkQV7L4/STKJz6a+NiSgGFfbJueeVRpjCo3HZs=",
+      "System.ComponentModel.TypeConverter.wasm": "sha256-y1xWvfWIAVIeE6zpIFdwZu9LQWQPrwV7nYq8GQyu4Gs=",
+      "System.ComponentModel.wasm": "sha256-OPYA0sYZZcAP4RQGdVRH4OJlCNydEeybqK6QmxbogYU=",
+      "System.Console.wasm": "sha256-0Y0xXoq9l1DOJrffGh+i8ypIWbrkle2tGFLhWfw1nzg=",
+      "System.Data.Common.wasm": "sha256-I9qnylfx7ka3EVQK74krawSlIhsQgiwZgOs21yTjOO8=",
+      "System.Diagnostics.DiagnosticSource.wasm": "sha256-FHEVdLRWXtysV62jdvwtr55bKYKRAEK4pPdmdrR6UnE=",
+      "System.Diagnostics.TraceSource.wasm": "sha256-OGqCBJp52s0oZ31nUHi50p/Yexadx4o6ox2jfMxq9E0=",
+      "System.Drawing.Common.wasm": "sha256-ITamAFNmji/b8H0D3c3p/dL1AnH3NWla4QCOYdyiJvU=",
+      "System.Drawing.Primitives.wasm": "sha256-Y6evUj00Vl5xesCyZyVr5D+kSiiBSl28jcVYnNRCh4M=",
+      "System.Drawing.wasm": "sha256-H3d+yB2hrH+G+YPqi3KcuUhdB0ILVSOdjFJGxU0rRm4=",
+      "System.Linq.Expressions.wasm": "sha256-5i7g9SxA5S3y+p/n8kcyWbPTQFAr4Ou8CEn7cypMOsw=",
+      "System.Linq.wasm": "sha256-ab62QP4sGROdG/5REhTB4BBoHjKUJbugXjhhPvAAju8=",
+      "System.Memory.wasm": "sha256-cPdWb5n3FltucyKVIdt1JzrT7MDZBR/c+RgA2JWPS0s=",
+      "System.Net.Http.wasm": "sha256-GAFwKjRCf7SYTs16PcTbeSEE9C/nBbdH9ERklFqNrfw=",
+      "System.Net.Primitives.wasm": "sha256-mmK+eo+buRMFkTZiBIWYFx8pd3UbL4AJcPk7rbfym7c=",
+      "System.Numerics.Vectors.wasm": "sha256-Bc6kfBDrNOoqjNVkIP3r/e07ELOjM4RNi5E97gSBlXY=",
+      "System.ObjectModel.wasm": "sha256-mIizgO8AjgZJEBlU4pHaiIftlIiy3OFMS1xliQMWVUU=",
+      "System.Private.CoreLib.wasm": "sha256-7/nRaNH1JFcfvnEisUEbSrYMJNfNXXlybg4QBlNMuts=",
+      "System.Private.Uri.wasm": "sha256-cO0e0ZWObSuYlpDn1u5KI8u6Tmd3hOYcWeuGoIByYLc=",
+      "System.Private.Xml.wasm": "sha256-RBBXQ6e5i/1bvnIW1qC/BKD5lJbqJOiwfHrIplOvjls=",
+      "System.Runtime.InteropServices.JavaScript.wasm": "sha256-0iYV2OQodGSSKCFCXxXN1kE5Gywo9r67Z94prsXSw58=",
+      "System.Runtime.InteropServices.wasm": "sha256-mO/7/H5NHRQQpF8/p4T7Rq+a2aQ6pIMqyGi/aylsryA=",
+      "System.Runtime.Numerics.wasm": "sha256-jDXNpl/lP83l8VGSSyXOT9SVkxTj/kbrYoQWlmcYWDQ=",
+      "System.Runtime.Serialization.Formatters.wasm": "sha256-AfWiZ5hopxC4gkNmhJ2ldMPdpZQNPFuEDE1nr3xi52g=",
+      "System.Runtime.wasm": "sha256-ALRjtHYEjgYXxdJoVvcn2Nykm84QX9ZXc9EtKzs9CZs=",
+      "System.Security.Cryptography.wasm": "sha256-iwLLE9kjax3k12zeeRf27i6lxGlovItCpfWQLyYY8xU=",
+      "System.Text.RegularExpressions.wasm": "sha256-6R2hEAogfKzDBzXvv6EuxhWHWHeDH/n2leQR3gGljgo=",
+      "System.Threading.Thread.wasm": "sha256-Lxkk1wMjhW+c8iJmUutsXRtRvucd0nJEbQAClJTSuEU=",
+      "System.Threading.wasm": "sha256-PgZ+X7fIrnGSIZGdPgy2YG7mfdOk8+G+bJM1axn/W54=",
+      "System.wasm": "sha256-j40bDq1kzFWVIkWKSn7zhVhRD7pPJwcCQwpWvGrmz9A=",
+      "TSBToolWeb.wasm": "sha256-lIzGiz3VDhKwn/2ho9xSQlcDQwxhYINJpUtBUs0vCkc="
+    }
+  },
+  "cacheBootResources": true,
+  "debugLevel": 0,
+  "linkerEnabled": true,
+  "globalizationMode": "invariant"
+}

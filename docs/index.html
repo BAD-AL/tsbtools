@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TSB Tools</title>
-<meta name="description" content="Tools for Tecmo Super Bowl: a helmet editor, TSBTool in Godot and JavaScript, and the Tecmobowl.org forum.">
+<meta name="description" content="Tools for Tecmo Super Bowl: TSBTool Web, a helmet editor, TSBTool in Godot and JavaScript, and the Tecmobowl.org forum.">
 <meta name="theme-color" content="#071733">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 9%22 shape-rendering=%22crispEdges%22 aria-hidden=%22true%22%3E%3Cpath fill=%22%232a1205%22 d=%22M4 0h8v1h-8zM2 1h2v1h-2zM12 1h2v1h-2zM1 2h1v1h-1zM14 2h1v1h-1zM0 3h1v1h-1zM15 3h1v1h-1zM0 4h1v1h-1zM15 4h1v1h-1zM0 5h1v1h-1zM15 5h1v1h-1zM1 6h1v1h-1zM14 6h1v1h-1zM2 7h2v1h-2zM12 7h2v1h-2zM4 8h8v1h-8z%22/%3E%3Cpath fill=%22%23a5683a%22 d=%22M4 1h8v1h-8zM2 2h2v1h-2zM5 2h6v1h-6zM12 2h2v1h-2zM1 3h3v1h-3zM5 3h6v1h-6zM12 3h3v1h-3zM1 4h3v1h-3zM5 4h1v1h-1zM10 4h1v1h-1zM12 4h3v1h-3zM1 5h3v1h-3zM5 5h6v1h-6zM12 5h3v1h-3zM3 6h1v1h-1zM5 6h6v1h-6zM12 6h1v1h-1z%22/%3E%3Cpath fill=%22%23ffffff%22 d=%22M4 2h1v1h-1zM11 2h1v1h-1zM4 3h1v1h-1zM11 3h1v1h-1zM4 4h1v1h-1zM6 4h4v1h-4zM11 4h1v1h-1zM4 5h1v1h-1zM11 5h1v1h-1zM4 6h1v1h-1zM11 6h1v1h-1z%22/%3E%3Cpath fill=%22%236b3c19%22 d=%22M2 6h1v1h-1zM13 6h1v1h-1zM4 7h8v1h-8z%22/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -129,6 +129,16 @@
   .card.featured p { font-size: 17px; }
   .card.featured .cta { font-size: 13px; padding: 13px 18px 12px; }
 
+  /* the two top cards: half the width each, a tall screen over the text */
+  .card.half { grid-column: span 3; padding: 20px; }
+  .card.half .screen { height: 320px; }
+  .card.half .screen img { width: 100%; height: 100%; object-fit: cover; object-position: left top; }
+  .card.half h2 { font-size: clamp(13px, 1.8vw, 18px); }
+  .card.half p { font-size: 16px; }
+  .screen.web { background: radial-gradient(circle at 50% 40%, #1d3f8c, #08142e 75%); gap: 16px; grid-auto-flow: column; justify-content: center; }
+  .screen.web .phone { height: 280px; }
+  .screen.web .phone img { width: auto; }
+
   /* the Godot screenshot is a tall phone-style window */
   .phone { height: 200px; width: auto; border: 4px solid #0b1220; border-radius: 14px; background: #0b1220; overflow: hidden;
            box-shadow: 0 0 0 2px rgba(255, 255, 255, .15), 0 8px 18px rgba(0, 0, 0, .5); }
@@ -151,14 +161,16 @@
   /* ---- smaller screens ---- */
   @media (max-width: 900px) {
     .card { grid-column: span 3; }
-    .card:last-child { grid-column: 1 / -1; }
+    .card:last-child, .card.half { grid-column: 1 / -1; }
     .card.featured { grid-template-columns: 1fr; }
     .card.featured .screen { min-height: 220px; }
   }
   @media (max-width: 600px) {
     .cards { grid-template-columns: 1fr; gap: 24px; }
-    .card, .card:last-child, .card.featured { grid-column: auto; }
+    .card, .card:last-child, .card.featured, .card.half { grid-column: auto; }
     .screen { height: 210px; }
+    .card.half .screen { height: 240px; }
+    .screen.web .phone { height: 200px; }
     .card.featured .screen { height: auto; min-height: 180px; }
     .badge { top: 22px; right: 22px; }
   }
@@ -187,14 +199,14 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 9" shape-rendering="crispEdges" class="football" aria-hidden="true"><path fill="#2a1205" d="M4 0h8v1h-8zM2 1h2v1h-2zM12 1h2v1h-2zM1 2h1v1h-1zM14 2h1v1h-1zM0 3h1v1h-1zM15 3h1v1h-1zM0 4h1v1h-1zM15 4h1v1h-1zM0 5h1v1h-1zM15 5h1v1h-1zM1 6h1v1h-1zM14 6h1v1h-1zM2 7h2v1h-2zM12 7h2v1h-2zM4 8h8v1h-8z"/><path fill="#a5683a" d="M4 1h8v1h-8zM2 2h2v1h-2zM5 2h6v1h-6zM12 2h2v1h-2zM1 3h3v1h-3zM5 3h6v1h-6zM12 3h3v1h-3zM1 4h3v1h-3zM5 4h1v1h-1zM10 4h1v1h-1zM12 4h3v1h-3zM1 5h3v1h-3zM5 5h6v1h-6zM12 5h3v1h-3zM3 6h1v1h-1zM5 6h6v1h-6zM12 6h1v1h-1z"/><path fill="#ffffff" d="M4 2h1v1h-1zM11 2h1v1h-1zM4 3h1v1h-1zM11 3h1v1h-1zM4 4h1v1h-1zM6 4h4v1h-4zM11 4h1v1h-1zM4 5h1v1h-1zM11 5h1v1h-1zM4 6h1v1h-1zM11 6h1v1h-1z"/><path fill="#6b3c19" d="M2 6h1v1h-1zM13 6h1v1h-1zM4 7h8v1h-8z"/></svg>
   <p class="kicker">TECMO SUPER BOWL</p>
   <h1><span class="gold">TSB</span> TOOLS (ONLINE)</h1>
-  <p class="tagline">Tools for Tecmo Super Bowl: edit helmets, build seasons, and swap notes with the community.</p>
+  <p class="tagline">Tools for Tecmo Super Bowl: edit rosters, helmets and schedules, build seasons, and swap notes with the community.</p>
   <p class="press" aria-hidden="true">&#9660; SELECT A TOOL &#9660;</p>
 </header>
 
 <main>
   <ul class="cards">
 
-    <li class="card featured" style="--i:0">
+    <li class="card half" style="--i:0">
       <span class="badge">BETA</span>
       <div class="screen">
         <img src="HelmetEditor.png" width="1019" height="771"
@@ -208,7 +220,23 @@
       </div>
     </li>
 
-    <li class="card" style="--i:1">
+    <li class="card half" style="--i:1">
+      <span class="badge">NEW</span>
+      <div class="screen web">
+        <div class="phone"><img src="TSBToolWeb_home.png" width="497" height="1071" loading="lazy"
+             alt="TSBTool Web's home page: Players, Teams, Schedule, Pro Bowl and Text view, with Style and help buttons."></div>
+        <div class="phone"><img src="TSBToolWeb_player.png" width="497" height="1071" loading="lazy"
+             alt="TSBTool Web's player editor: a pixel face, first and last name, jersey number and rating buttons."></div>
+      </div>
+      <div class="body">
+        <ul class="tags"><li>Browser app</li><li>NES, SNES &amp; Genesis</li></ul>
+        <h2><a href="TSBToolWeb/index.html">TSBTool Web</a></h2>
+        <p>TSBTool in your browser, phone friendly: edit players, teams, uniforms, playbooks, schedules and TSB3 photos, and convert between TSB versions. Nothing is uploaded.</p>
+        <span class="cta">OPEN <span class="arrow">&#9654;</span></span>
+      </div>
+    </li>
+
+    <li class="card" style="--i:2">
       <div class="screen forum">
         <div class="plate"><img src="TecmoBowl.org.logo.png" width="274" height="95" alt="Tecmobowl.org"></div>
       </div>
@@ -220,7 +248,7 @@
       </div>
     </li>
 
-    <li class="card" style="--i:2">
+    <li class="card" style="--i:3">
       <div class="screen godot">
         <div class="phone"><img src="TSBTool_GototVersion.jpeg" width="379" height="600" loading="lazy"
              alt="TSBTool in Godot: team and position pickers, first and last name fields, jersey number and rating drop-downs."></div>
@@ -228,19 +256,19 @@
       <div class="body">
         <ul class="tags"><li>Godot 3</li><li>HTML5</li></ul>
         <h2><a href="TSBTool_Godot_3/TSBTool_Godot3.html">TSBTool Godot 3, HTML5 GDScript, C#</a></h2>
-        <p>Godot 3 application with GDScript, JavaScript, C# HTML5 integration.</p>
+        <p>Godot 3 application with GDScript, JavaScript, C# HTML5 integration. (old and not maintained)</p>
         <span class="cta">OPEN <span class="arrow">&#9654;</span></span>
       </div>
     </li>
 
-    <li class="card" style="--i:3">
+    <li class="card" style="--i:4">
       <div class="screen code">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 7" shape-rendering="crispEdges" class="code-icon" aria-hidden="true"><path fill="currentColor" d="M4 0h2v1h-2zM11 0h2v1h-2zM14 0h2v1h-2zM3 1h2v1h-2zM10 1h2v1h-2zM15 1h2v1h-2zM2 2h2v1h-2zM10 2h2v1h-2zM16 2h2v1h-2zM1 3h2v1h-2zM9 3h2v1h-2zM17 3h2v1h-2zM2 4h2v1h-2zM9 4h2v1h-2zM16 4h2v1h-2zM3 5h2v1h-2zM8 5h2v1h-2zM15 5h2v1h-2zM4 6h2v1h-2zM8 6h2v1h-2zM14 6h2v1h-2z"/></svg>
       </div>
       <div class="body">
         <ul class="tags"><li>JavaScript</li><li>Bridge.NET</li></ul>
         <h2><a href="TSBTool_Javascript_conversion/TSBTool.html">TSBTool Bridge JavaScript</a></h2>
-        <p>Simple 'Bridge.NET' (C# to JavaScript converter) integration of TSBTool functionality.</p>
+        <p>Simple 'Bridge.NET' (C# to JavaScript converter) integration of TSBTool functionality. (old and not maintained)</p>
         <span class="cta">OPEN <span class="arrow">&#9654;</span></span>
       </div>
     </li>
