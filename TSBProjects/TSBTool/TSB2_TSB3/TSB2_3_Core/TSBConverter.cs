@@ -458,7 +458,12 @@ namespace TSBTool2
                 }
                 else if (line.StartsWith("#COLORS"))
                 {
-                    builder.Append(line.Substring(1));
+                    // a line that came from TSB1 comes back; one in TSB2/TSB3's format has no meaning in TSB1 and stays commented out
+                    builder.Append(IsTsb23Colors(line) ? line : line.Substring(1));
+                }
+                else if (line.StartsWith("COLORS") && IsTsb23Colors(line))
+                {
+                    builder.Append("#" + line);
                 }
                 else if (line.StartsWith("TEAM_ABB"))
                 {
@@ -477,6 +482,12 @@ namespace TSBTool2
         private static string ConvertPlaybook(string line)
         {
             return "#"+ line;
+        }
+
+        // TSB2/TSB3's COLORS lines have 48-digit Uniform1/Uniform2 values (TSB1's have 6 or 28 digits)
+        private static bool IsTsb23Colors(string line)
+        {
+            return Regex.IsMatch(line, "Uniform[12]\\s*=\\s*0[xX][0-9a-fA-F]{48}");
         }
 
         private static bool IsPlayerLine(string line)

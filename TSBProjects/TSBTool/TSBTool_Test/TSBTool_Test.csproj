@@ -61,6 +61,7 @@
     <Compile Include="CxRomPlayerNamesTests.cs" />
     <Compile Include="RosterNamePlanTests.cs" />
     <Compile Include="ErrorBoxMergeTests.cs" />
+    <Compile Include="ColorsLineFamilyTests.cs" />
     <Compile Include="GenesisRosterTests.cs" />
     <Compile Include="GenesisAttributeTests.cs" />
     <Compile Include="GenesisPlayerSimDataTests.cs" />

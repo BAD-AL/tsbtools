@@ -169,7 +169,7 @@ input[type=range]::-moz-range-thumb { width: 32px; height: 32px; border-radius: 
 .picker .btn.on { border: 2px solid var(--accent); color: var(--accent); }
 
 /* text view */
-.search { display: flex; gap: 8px; }
+.search { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .search input { flex-grow: 1; min-width: 0; background: var(--surface); border: 1px solid #2a3a5e; border-radius: var(--radius-sm); color: var(--text); padding: 0 12px; min-height: 44px; }
 .theme-retro .search input { background: #000; border: 3px solid #fff; color: var(--accent); border-radius: 0; }
 #editor { width: 100%; height: 56vh; resize: vertical; background: #070c18; color: var(--text); border: 1px solid #1d2b4d; border-radius: var(--radius-sm); padding: 12px; font: 12px/1.65 ui-monospace, 'JetBrains Mono', Consolas, monospace; white-space: pre; overflow: auto; text-transform: none; }

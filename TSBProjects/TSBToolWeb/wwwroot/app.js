@@ -1308,7 +1308,7 @@ function goPlayer(delta) {
 function textScreen() {
   return `<div class="hdr"><div class="topbar"><button class="btn ghost small" data-act="go:home">${ICON.left} Home</button>${themeSwitch()}</div>
     <div><h1>Text view</h1><div class="muted">Same format as the desktop app.</div></div>
-    <div class="search"><button class="btn" data-act="findopen" title="Find text (Ctrl+F). Enter finds the next match; F3 steps on from inside the text.">Find&hellip;</button><div id="findinfo" class="muted" role="status"></div></div></div>${banner()}
+    <div class="search"><button class="btn" data-act="findopen" title="Find text (Ctrl+F). Enter finds the next match; F3 steps on from inside the text.">Find&hellip;</button><button class="btn" data-act="convertopen" title="Change the text between TSB1, TSB2 and TSB3 formats">Convert&hellip;</button><div id="findinfo" class="muted" role="status"></div></div></div>${banner()}
     <textarea id="editor" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="ROM text">${esc(state.text)}</textarea>
     <div class="bar"><div><button class="btn ghost" data-act="revert">Revert</button><button class="btn primary" data-act="apply">Apply to ROM</button></div></div>`;
 }
@@ -1428,9 +1428,80 @@ async function loadRom(bytes, name) {
   state.busy = ''; render();
 }
 
+/** The desktop's prompt on Apply: text of another version (TSB1/2/3) than the loaded ROM can be converted first. Added without a render, which would drop the text being edited. */
+function applyOrAskToConvert(text) {
+  let from = 'Unknown', to = 'TSB1';
+  try { from = web.ContentType(text); to = web.RomContentType(); } catch (e) { /* apply as usual */ }
+  if (from === 'Unknown' || from === to) { applyText(text); return; }
+  state.conv = { text, from, to };
+  app.insertAdjacentHTML('beforeend', convertSheet());
+  document.body.classList.add('modal-open');
+  wrapSheets();
+  const b = $('#convyes'); if (b) b.focus();
+}
+/** The Convert button: changes the text in the box to another version's format (the desktop's Convert menu). Nothing is applied; Revert or Undo (Ctrl+Z) go back. */
+function openConvert() {
+  const ta = $('#editor'); if (!ta || $('[aria-label="Convert"]')) return;
+  let from = 'Unknown', rom = 'TSB1';
+  try { from = web.ContentType(ta.value); rom = web.RomContentType(); } catch (e) { /* shown as not recognized */ }
+  const btns = ['TSB1', 'TSB2', 'TSB3'].filter(v => v !== from).map(v =>
+    `<button class="btn ${v === rom ? 'primary' : ''}" data-act="convertto:${v}">To ${v}${v === rom ? ' (the loaded ROM)' : ''}</button>`).join('');
+  app.insertAdjacentHTML('beforeend', `<div class="scrim pop fit" data-act="convertclose"><div class="sheet pop fit" role="dialog" aria-label="Convert" data-stop="1">
+      <div class="topbar"><h2>Convert</h2><button class="btn icon-btn" data-act="convertclose" aria-label="Close">&times;</button></div>
+      <p>${from === 'Unknown' ? 'The text is not recognized as TSB1, TSB2 or TSB3 content, so it cannot be converted.' : `This text looks like <b>${from}</b> content. Convert it to:`}</p>
+      ${from === 'Unknown' ? '' : `<div class="autobtns">${btns}</div>`}
+      <p class="muted">Converting between versions is not exact, and one conversion does not undo the other. Going to TSB2 also updates the sim data. TSB1 takes one season only. The text in the box is changed, not the ROM: press Apply to ROM when it looks right, or Revert to start over.</p>
+      <p class="muted" id="convmsg" role="status"></p>
+      <div class="autobtns"><button class="btn ghost" data-act="convertclose">Close</button></div>
+    </div></div>`);
+  document.body.classList.add('modal-open');
+  wrapSheets();
+}
+function closeConvert() {
+  const d = $('[aria-label="Convert"]'); if (!d) return;
+  d.closest('.scrim').remove();
+  document.body.classList.remove('modal-open');
+  const ta = $('#editor'); if (ta) ta.focus();
+}
+function convertTextTo(to) {
+  const ta = $('#editor'); if (!ta) return;
+  let out;
+  try { out = web.ConvertText(ta.value, to); }
+  catch (e) { const m = $('#convmsg'); if (m) m.textContent = 'Could not convert: ' + e.message; return; }
+  const msgs = web.TakeMessages();
+  closeConvert();
+  ta.focus(); ta.select();
+  if (!document.execCommand || !document.execCommand('insertText', false, out)) ta.value = out;   // insertText keeps Ctrl+Z working
+  ta.setSelectionRange(0, 0); ta.scrollTop = 0;
+  const info = $('#findinfo'); if (info) info.textContent = `Converted to ${to}; not applied yet.` + (msgs ? ' ' + msgs.split('\n')[0] : '');
+}
+function convertSheet() {
+  const { from, to } = state.conv;
+  return `<div class="scrim pop fit" data-act="convgo:cancel"><div class="sheet pop fit" role="dialog" aria-label="Convert the text" data-stop="1">
+      <div class="topbar"><h2>Convert the text?</h2><button class="btn icon-btn" data-act="convgo:cancel" aria-label="Close">&times;</button></div>
+      <p>This text looks like <b>${from}</b> content, but the ROM you loaded takes <b>${to}</b>.</p>
+      <p class="muted">Converting between versions is not exact, and one conversion does not undo the other. Going to TSB2 also updates the sim data. TSB1 takes one season only.</p>
+      <div class="autobtns"><button class="btn primary" id="convyes" data-act="convgo:yes">Convert to ${to} and apply</button><button class="btn" data-act="convgo:no">Apply without converting</button><button class="btn ghost" data-act="convgo:cancel">Cancel</button></div>
+    </div></div>`;
+}
+function convertChoice(choice) {
+  const c = state.conv; if (!c) return;
+  const dlg = $('[aria-label="Convert the text"]'); if (dlg) dlg.closest('.scrim').remove();
+  document.body.classList.remove('modal-open');
+  state.conv = null;
+  if (choice === 'cancel') { const ta = $('#editor'); if (ta) ta.focus(); return; }
+  let text = c.text;
+  if (choice === 'yes') {
+    try { text = web.ConvertText(c.text, c.to); }
+    catch (e) { state.error = 'Convert failed: ' + e.message; render(); return; }
+  }
+  applyText(text);
+}
+
 async function applyText(text) {
   state.busy = 'Applying...'; render(); await nextFrame();
   try {
+    text = web.DropForeignColors(text);
     web.ProcessText(text);
     state.messages = web.TakeMessages();
     state.error = '';
@@ -1735,7 +1806,11 @@ document.addEventListener('click', e => {
     case 'findopen': openFind(); break;
     case 'findclose': closeFind(); { const ta = $('#editor'); if (ta) ta.focus(); } break;
     case 'findgo': find(Number(arg)); break;
-    case 'apply': applyText($('#editor').value); break;
+    case 'apply': applyOrAskToConvert($('#editor').value); break;
+    case 'convgo': convertChoice(arg); break;
+    case 'convertopen': openConvert(); break;
+    case 'convertclose': closeConvert(); break;
+    case 'convertto': convertTextTo(arg); break;
     case 'revert': $('#editor').value = state.text; break;
   }
 });
@@ -1782,6 +1857,8 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.target.id === 'fq' && e.key === 'Enter') { e.preventDefault(); find(e.shiftKey ? -1 : 1); }   // in the Find dialog: go to the match
+  if (e.key === 'Escape' && $('[aria-label="Convert"]')) { e.preventDefault(); closeConvert(); }
+  if (e.key === 'Escape' && state.conv) { e.preventDefault(); convertChoice('cancel'); }
   if (e.target.id === 'fq' && e.key === 'Escape') { e.preventDefault(); closeFind(); const ta = $('#editor'); if (ta) ta.focus(); }
   if (e.key === 'F3' && $('#editor') && state.find) { e.preventDefault(); find(e.shiftKey ? -1 : 1); }   // keep stepping from inside the text
   if ((e.key === 'f' || e.key === 'F') && (e.ctrlKey || e.metaKey) && !e.altKey && $('#editor')) { e.preventDefault(); openFind(); }   // Ctrl+F (Cmd+F) on the Text view

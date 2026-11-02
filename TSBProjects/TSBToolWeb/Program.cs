@@ -43,6 +43,76 @@ public static partial class WebHelper
     [JSExport]
     public static byte[] GetRom() => tool.OutputRom;
 
+    /// <summary>What kind of dump the text looks like: TSB1, TSB2, TSB3 or Unknown (the desktop's content check).</summary>
+    [JSExport]
+    public static string ContentType(string text) => StaticUtils.GetContentType(text).ToString();
+
+    /// <summary>The kind of text the loaded ROM takes (the desktop's mapping: SNES TSB2 and TSB3 have their own, everything else is TSB1).</summary>
+    [JSExport]
+    public static string RomContentType() =>
+        tool.RomVersion == ROM_TYPE.SNES_TSB2 ? "TSB2" : tool.RomVersion == ROM_TYPE.SNES_TSB3 ? "TSB3" : "TSB1";
+
+    /// <summary>
+    /// Comments out the COLORS lines whose uniform format belongs to another kind of ROM (6-digit NES colors, 28-digit SNES TSB1 or Genesis colors,
+    /// 48-digit TSB2/TSB3 colors), so text copied from, say, an NES ROM applies to a SNES ROM instead of failing on every team. Says so in the messages.
+    /// </summary>
+    [JSExport]
+    public static string DropForeignColors(string text)
+    {
+        string mine = ColorsFamily(tool.RomVersion);
+        int dropped = 0;
+        string[] lines = text.Replace("\r\n", "\n").Split('\n');
+        for (int i = 0; i < lines.Length; i++)
+        {
+            if (!lines[i].StartsWith("COLORS")) continue;
+            string family = ColorsFamily(lines[i]);
+            if (family == null || family == mine) continue;
+            lines[i] = "#" + lines[i];
+            dropped++;
+        }
+        if (dropped == 0) return text;
+        WebMessageGiver.Add("Left out " + dropped + " COLORS lines: their uniform colors are for a different kind of ROM than the one loaded.");
+        return string.Join("\n", lines);
+    }
+
+    static string ColorsFamily(ROM_TYPE v)
+    {
+        switch (v)
+        {
+            case ROM_TYPE.SNES_TSB1: return "snes1";
+            case ROM_TYPE.SNES_TSB2: case ROM_TYPE.SNES_TSB3: return "tsb23";
+            case ROM_TYPE.GENESIS_TSB1: return "genesis";
+            default: return "nes";
+        }
+    }
+
+    /// <summary>Which kind of ROM a COLORS line is for, from its keys and the length of Uniform1; null when it cannot tell.</summary>
+    static string ColorsFamily(string line)
+    {
+        if (line.Contains("DivChamp")) return "nes";
+        if (line.Contains("InGame")) return "genesis";
+        System.Text.RegularExpressions.Match m = System.Text.RegularExpressions.Regex.Match(line, @"Uniform1\s*=\s*0[xX]([0-9a-fA-F]+)");
+        if (!m.Success) return null;
+        if (m.Groups[1].Length == 28) return "snes1";
+        if (m.Groups[1].Length == 48) return "tsb23";
+        return null;
+    }
+
+    /// <summary>
+    /// Converts the text between TSB1, TSB2 and TSB3 formats (the desktop's Convert menu and its prompt on Apply). The result is approximate,
+    /// and TSB1 takes one season only.
+    /// </summary>
+    [JSExport]
+    public static string ConvertText(string text, string to)
+    {
+        TSBContentType from = StaticUtils.GetContentType(text);
+        if (from == TSBContentType.Unknown) throw new InvalidOperationException("The text is not recognized as TSB1, TSB2 or TSB3 content.");
+        TSBContentType target = (TSBContentType)Enum.Parse(typeof(TSBContentType), to);
+        if (target == TSBContentType.TSB1 && from != TSBContentType.TSB1 && System.Text.RegularExpressions.Regex.Matches(text, "SEASON ").Count > 1)
+            throw new InvalidOperationException("Could not convert multiple seasons. Please have only 1 season of data in the text.");
+        return TSBTool2.TecmoConverter.Convert(from, target, text);
+    }
+
     /// <summary>
     /// The desktop's Auto Update Sim, on the whole dump text: every player's sim values from his ratings, then every team's
     /// rush/pass defense. NES/SNES TSB1/Genesis can use Tecmonster's formulas or TSBTool's for the offense and kickers;
@@ -74,6 +144,8 @@ public class WebMessageGiver : MessageGiver
     static readonly List<string> sMessages = new List<string>();
 
     public static void Clear() { sMessages.Clear(); }
+
+    public static void Add(string m) { sMessages.Add(m); }
 
     public static string Take()
     {

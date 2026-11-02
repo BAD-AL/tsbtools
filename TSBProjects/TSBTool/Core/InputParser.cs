@@ -32,15 +32,47 @@ namespace TSBTool
         private static Regex returnTeamRegex = new Regex("RETURN_TEAM\\s+([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)\\s*,\\s*([A-Z1-4]+)");
         private static Regex setRegex = new Regex("SET\\s*\\(\\s*(0x[0-9a-fA-F]+)\\s*,\\s*(0x[0-9a-fA-F]+)\\s*\\)");
         private static Regex offensiveFormationRegex = new Regex("OFFENSIVE_FORMATION\\s*=\\s*([a-zA-Z1234_]+)");
+        private static Regex colorsUniformRegex = new Regex("Uniform[12]\\s*=\\s*0[xX]([0-9a-fA-F]*)");
+
+        /// <summary>
+        /// The kinds of ROM a COLORS line can be for, from what is in it: the length of Uniform1/Uniform2 (6 digits NES/CXROM, 28 SNES TSB1 or Genesis,
+        /// 48 TSB2/TSB3), DivChamp/ConfChamp (NES/CXROM only) and InGame/InGameAway (Genesis only). A line with none of those fits every kind
+        /// (e.g. a lone UniformUsage); a Uniform value of any other length fits none.
+        /// </summary>
+        private static List<string> ColorsLineKinds(string line)
+        {
+            List<string> kinds = new List<string>(new string[] { "NES", "SNES", "Genesis", "TSB2/TSB3" });
+            foreach (Match m in colorsUniformRegex.Matches(line))
+            {
+                int digits = m.Groups[1].Length;
+                string[] allowed = digits == 6 ? new string[] { "NES" } : digits == 28 ? new string[] { "SNES", "Genesis" }
+                    : digits == 48 ? new string[] { "TSB2/TSB3" } : new string[0];
+                kinds.RemoveAll(delegate(string k) { return Array.IndexOf(allowed, k) < 0; });
+            }
+            if (line.Contains("DivChamp") || line.Contains("ConfChamp"))
+                kinds.RemoveAll(delegate(string k) { return k != "NES"; });
+            if (line.Contains("InGame"))
+                kinds.RemoveAll(delegate(string k) { return k != "Genesis"; });
+            return kinds;
+        }
+
+        /// <summary>The kind of ROM this parser's tool is, in the names ColorsLineKinds uses.</summary>
+        private string ThisRomKind()
+        {
+            if (tool is Genesis_TSB1Tool) return "Genesis";
+            if (tool is SNES_TecmoTool) return "SNES";
+            return "NES";
+        }
+
         private static Regex playbookRegex = new Regex("PLAYBOOK (R[1-8]{4})\\s*,\\s*(P[1-8]{4})");
         private static Regex juiceRegex = new Regex("JUICE\\(\\s*([0-9]{1,2}|ALL)\\s*,\\s*([0-9]{1,2})\\s*\\)");
-        private static Regex homeRegex = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{28}|[0-9a-fA-F]{6})");
-        private static Regex awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{28}|[0-9a-fA-F]{6})");
-        private static Regex divChampRegex = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})");
-        private static Regex confChampRegex = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})");
-        private static Regex inGameRegex = new Regex("InGame\\s*=\\s*0x([0-9a-fA-F]{24})");
-        private static Regex inGameAwayRegex = new Regex("InGameAway\\s*=\\s*0x([0-9a-fA-F]{24})");
-        private static Regex uniformUsageRegex = new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})");
+        private static Regex homeRegex = new Regex("Uniform1\\s*=\\s*0x([0-9a-fA-F]{28}|[0-9a-fA-F]{6})(?![0-9a-fA-F])");
+        private static Regex awayRegex = new Regex("Uniform2\\s*=\\s*0x([0-9a-fA-F]{28}|[0-9a-fA-F]{6})(?![0-9a-fA-F])");
+        private static Regex divChampRegex = new Regex("DivChamp\\s*=\\s*0x([0-9a-fA-F]{10})(?![0-9a-fA-F])");
+        private static Regex confChampRegex = new Regex("ConfChamp\\s*=\\s*0x([0-9a-fA-F]{8})(?![0-9a-fA-F])");
+        private static Regex inGameRegex = new Regex("InGame\\s*=\\s*0x([0-9a-fA-F]{24})(?![0-9a-fA-F])");
+        private static Regex inGameAwayRegex = new Regex("InGameAway\\s*=\\s*0x([0-9a-fA-F]{24})(?![0-9a-fA-F])");
+        private static Regex uniformUsageRegex = new Regex("UniformUsage\\s*=\\s*0x([0-9a-fA-F]{8})(?![0-9a-fA-F])");
         private static Regex replaceStringRegex = new Regex("ReplaceString\\(\\s*\"([A-Za-z0-9 .]+)\"\\s*,\\s*\"([A-Za-z .]+)\"\\s*(,\\s*([0-9]+))*\\s*\\)");
         private static Regex teamStringsRegex = new Regex("TEAM_ABB=([0-9A-Z. ]+),TEAM_CITY=([0-9A-Za-z .]+),TEAM_NAME=([0-9A-Z .]+)");
 
@@ -278,6 +310,13 @@ namespace TSBTool
                 tool.SetTeamAbbreviation(index, teamAbb);
                 tool.SetTeamCity(index, teamCity);
                 tool.SetTeamName(index, teamName);
+            }
+            else if (line.StartsWith("COLORS") && !ColorsLineKinds(line).Contains(ThisRomKind()))
+            {
+                // a COLORS line is in one kind of ROM's format; its numbers mean something else (or nothing) in this one, so none of it is applied
+                List<string> kinds = ColorsLineKinds(line);
+                StaticUtils.AddError(string.Format("ERROR! COLORS for {0}: the line is in the format of {1}, not of this ROM ({2}); the whole line was skipped.",
+                    currentTeam, kinds.Count > 0 ? string.Join(" or ", kinds.ToArray()) : "no known kind of ROM", ThisRomKind()));
             }
             else if (line.StartsWith("COLORS")) // do the colors here
             {
