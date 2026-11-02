@@ -446,9 +446,9 @@ body.wide #app { max-width: none; padding: 0; gap: 0; display: block; min-height
 .list-pane .col, .edit-pane .col { max-width: none; }
 .edit-pane .col { max-width: 820px; }
 /* the screens' own Home/Back buttons and style switch are replaced by the rail */
-.pane .seg[aria-label="Style"] { display: none; }
+.pane .stylebtn { display: none; }
 .pane .topbar [data-act="go:home"], .pane .topbar [data-act="go:roster"], .pane .topbar [data-act="pl-done"] { display: none; }
-.pane .hdr > .topbar:not(:has(> :not([data-act="go:home"]):not([data-act="go:roster"]):not([data-act="pl-done"]):not(.seg[aria-label="Style"]):not(span:empty))) { display: none; }
+.pane .hdr > .topbar:not(:has(> :not([data-act="go:home"]):not([data-act="go:roster"]):not([data-act="pl-done"]):not(.stylebtn):not(span:empty))) { display: none; }
 /* action bars sit at the bottom of their pane */
 body.wide .bar { position: sticky; left: auto; right: auto; bottom: 0; margin: auto -16px -16px; padding: 12px 16px 16px; }
 body.wide .bar > div { max-width: none; }
@@ -989,3 +989,13 @@ html:has(.theme-modern)::-webkit-scrollbar-thumb:active, .theme-modern *:not(.ch
   html:has(.theme-y2k), .theme-y2k * { scrollbar-color: #ff6fc8 #efe6ff; }
   html:has(.theme-xp), .theme-xp * { scrollbar-color: #8fb1f7 #f3f1e8; }
 }
+
+.stylelist { display: grid; gap: 8px; margin-top: 12px; }
+.stylelist .themebtn { width: 100%; }
+.rail .stylebtn { width: 88px; }
+.themebtn .moderndot { background: linear-gradient(135deg, #0b1220 0 40%, #a78bfa 40% 70%, #3dd6c6 70%); border-radius: 50%; border: 1px solid rgba(255, 255, 255, .5); }
+
+.guidebody .shots { display: flex; flex-wrap: wrap; gap: 12px; margin: 10px 0; }
+.guidebody figure { margin: 0; width: min(100%, 220px); }
+.guidebody figure img { display: block; width: 100%; height: auto; border: 1px solid var(--border, rgba(128, 128, 128, .35)); }
+.guidebody figcaption { margin-top: 4px; font-size: var(--fs-small); color: var(--muted); text-align: center; }

@@ -37,8 +37,13 @@ def test_every_highlight_color_reads_on_its_dark_background_and_carries_its_butt
 
 def open_themes(page):
     goto(page, "#/home")
-    page.locator('[data-act="theme:modern"]').first.click(button="right")
+    page.locator('[data-act="openthemes"]:visible').first.click()
     page.wait_for_selector(".themegrid")
+
+
+def pick_style(page, name):
+    page.locator('[data-act="openstyles"]:visible').first.click()
+    page.click(f'[data-act="stylepick:{name}"]')
 
 
 def body_var(page, name):
@@ -70,7 +75,7 @@ def test_retro_style_ignores_the_team_theme(make_page):
     open_themes(page)
     page.click('[data-act="themeset:packers"]')
     page.click('.btn.primary[data-act="accentclose"]')
-    page.click('[data-act="theme:retro"]')
+    pick_style(page, "retro")
     assert body_var(page, "--accent") == "" and body_var(page, "--bg") == ""
 
 
@@ -110,7 +115,7 @@ def test_retro_rail_keeps_the_chosen_teams_helmet(make_page):
     open_themes(page)
     page.click('[data-act="themeset:packers"]')
     page.click('.btn.primary[data-act="accentclose"]')
-    page.click('[data-act="theme:retro"]')
+    pick_style(page, "retro")
     assert "/packers.png" in page.get_attribute(".railmark img", "src")
     assert body_var(page, "--accent") == ""
 
@@ -152,7 +157,7 @@ def test_phone_home_has_the_helmet_button_top_left_and_it_opens_the_themes(make_
     page.set_viewport_size({"width": 400, "height": 800})
     assert page.is_visible(".helmetbtn")                                        # even before a ROM is loaded
     load_rom(page, "snes2")
-    box, seg = page.locator(".helmetbtn").bounding_box(), page.locator(".topbar .seg").bounding_box()
+    box, seg = page.locator(".helmetbtn").bounding_box(), page.locator(".topbar .stylebtn").bounding_box()
     assert box["x"] < 30 and box["x"] + box["width"] < seg["x"]                 # left of the style switch
     page.click(".helmetbtn")
     page.wait_for_selector(".themegrid")
@@ -168,7 +173,7 @@ def test_retro_is_an_option_in_the_theme_sheet(make_page):
     page = make_page()
     page.set_viewport_size({"width": 400, "height": 800})
     load_rom(page, "snes2")
-    page.click('[data-act="theme:retro"]')
+    pick_style(page, "retro")
     page.click(".helmetbtn")                                   # opening the sheet from Retro keeps Retro
     page.wait_for_selector(".themegrid")
     assert page.evaluate("document.body.classList.contains('theme-retro')")

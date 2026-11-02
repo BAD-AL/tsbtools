@@ -24,12 +24,14 @@ def shot(page, name):
 @pytest.mark.parametrize("style", ["cyber", "y2k", "aqua", "xp"])
 def test_style_is_chosen_in_the_theme_sheet_and_remembered(make_page, style):
     page = make_page()
-    page.click('[data-act="openthemes"]')
-    page.click(f'[data-act="theme:{style}"]')
+    page.click('[data-act="openstyles"]')
+    page.click(f'[data-act="stylepick:{style}"]')
     assert page.evaluate("document.body.className").startswith(f"theme-{style}")
     assert page.evaluate("localStorage.getItem('tsb.theme')") == style
-    assert page.locator(f'[data-act="theme:{style}"].on').count() == 1
-    assert page.locator('.themebtn.on').count() == 1                 # no team theme shows as picked
+    page.click('[data-act="openstyles"]')
+    assert page.locator(f'.stylelist [data-act="stylepick:{style}"].on').count() == 1 and page.locator('.stylelist .themebtn.on').count() == 1
+    page.click('[data-act="stylecolors"]')                            # the Style picker leads to the team colors
+    assert page.locator(f'.themegrid [data-act="theme:{style}"].on').count() == 1
     page.click('[data-act="themeset:bills"]')                         # a team theme returns to Modern
     assert page.evaluate("document.body.className").startswith("theme-modern")
 

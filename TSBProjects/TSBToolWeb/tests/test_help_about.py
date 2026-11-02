@@ -73,7 +73,21 @@ def test_question_button_is_on_every_screen_and_in_the_wide_layout(make_page):
     page.locator('[data-act="help"]').first.click()
     page.wait_for_selector('.helpmenu')
     page.keyboard.press("Escape")
-    page.click('[data-act="theme:retro"]')
+    page.locator('[data-act="openstyles"]').first.click()
+    page.click('[data-act="stylepick:retro"]')
     page.locator('[data-act="help"]').first.click()
     page.click('[data-act="helpabout"]')
     assert no_sideways_overflow(page)
+
+
+def test_guide_topic_link_scrolls_on_the_first_click_and_the_guide_has_pictures(make_page):
+    page = make_page()
+    page.click('[data-act="help"]')
+    page.click('[data-act="helpguide"]')
+    assert page.locator(".guidebody img").count() > 0
+    hash_before = page.evaluate("location.hash")
+    page.click('[data-act="guidego:text"]')
+    page.wait_for_timeout(300)
+    assert page.evaluate("location.hash") == hash_before                      # no route change, so no re-render
+    top = page.evaluate("document.getElementById('guide-text').getBoundingClientRect().top")
+    assert top < 200

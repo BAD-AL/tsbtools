@@ -1,5 +1,5 @@
 import { dotnet } from './_framework/dotnet.js';
-import { GUIDE } from './guide.js';
+import { GUIDE } from './guide.js?v=20261101e';
 import { TEAM_THEMES, DEFAULT_THEME, CURRENT_TEAM, themeById, themeForTeam } from './themes.js';
 import { GROUPS, FORMATIONS, parseText, parsePlayerLine, buildPlayerLine, parseTeamLine, buildTeamLine, parsePlaybook, buildPlaybook, parsePlaybook23, buildPlaybook23, teamLabel, changedLines } from './model.js';
 import * as U from './uniform.js';
@@ -14,7 +14,7 @@ const state = {
   usel: 0, upick: null, usage: null, uniLoading: false, uniError: false,   // uniform editor: selected uniform, open color picker, usage dialog
   auto: null, autoUndo: null,        // Auto-update sim: dialog { stage: 'ask'|'done'|'error', ... } and the text from before the last run
   help: null,           // the ? popup: null | 'menu' | 'about' | 'guide'
-  accent: null, nflTheme: null, accentDlg: false,      // Modern style highlight color (null = gold) and its dialog
+  accent: null, nflTheme: null, accentDlg: false, styleDlg: false,      // Modern style highlight color (null = gold) and its dialog
   pb: null, pbconf: 'AFC', pbEdit: null,   // Pro Bowl rosters read from the core, current conference, open spot dialog
   photoDlg: null, photoEd: null, notice: null,   // TSB3 photos: detail dialog, picture editor; a plain message dialog
   sweek: 0, sview: 'week', steam: null, steamDlg: false, sgame: null,   // schedule: current week, view (week/team), team for the team view, open game dialog
@@ -120,12 +120,10 @@ const SILHOUETTE ='<svg viewBox="0 0 40 46" aria-hidden="true"><circle cx="20" c
 const route = () => (location.hash.replace(/^#\/?/, '') || 'home').split('/')[0];
 
 function themeSwitch() {
-  return `<div class="tbright"><div class="seg" role="group" aria-label="Style">
-    <button data-act="theme:modern" class="${state.theme === 'modern' ? 'on' : ''}" title="Modern style. Right-click (or long-press) to choose a team theme.">Modern</button>
-    <button data-act="theme:retro" class="${state.theme === 'retro' ? 'on' : ''}">Retro</button></div>${helpButton()}</div>`;
+  return `<div class="tbright"><button class="btn small stylebtn" data-act="openstyles" aria-label="Change style" title="Change the look of the app">Style</button>${helpButton()}</div>`;
 }
 /** The helmet button in the top left of the phone-style home page (the wide layout has it in the rail). */
-const phoneHelmet = () => `<button class="helmetbtn" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261101c" alt=""></button>`;
+const phoneHelmet = () => `<button class="helmetbtn" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261101e" alt=""></button>`;
 const helpButton = () => `<button class="btn icon-btn helpbtn" data-act="help" aria-label="Help and about" title="Help and about">?</button>`;
 
 // ---- the ? popup: About and Program guide ----
@@ -796,19 +794,36 @@ function setAccent(hex) {
   applyAccent();
 }
 
+const STYLE_LIST = [
+  ['modern', 'Modern', 'Frosted glass; team colors and a custom highlight apply', 'moderndot'],
+  ['retro', 'Retro', 'The 8-bit look; it has its own colors', 'retrodot'],
+  ['cyber', 'Cyber', 'Dark neon HUD; it has its own colors', 'cyberdot'],
+  ['y2k', 'Y2K', 'Pastel gel and Windows 98; it has its own colors', 'y2kdot'],
+  ['aqua', 'Aqua', 'Glossy blue buttons and pinstripes, early 2000s Mac; it has its own colors', 'aquadot'],
+  ['xp', 'Windows XP', 'Luna blue title bars and beige windows; it has its own colors', 'xpdot'],
+];
+/** One wide button per style. `act` is the action prefix; the Theme sheet leaves Modern out (its team colors are the rest of that sheet). */
+const styleButtons = (act, withModern) => STYLE_LIST.filter(s => withModern || s[0] !== 'modern').map(([id, name, note, dot]) =>
+  `<button class="themebtn wide ${state.theme === id ? 'on' : ''}" data-act="${act}:${id}" aria-pressed="${state.theme === id}"><span class="dot ${dot}"></span>${name}<span class="muted">${note}</span></button>`).join('');
+
+/** The Style picker: every style, plus a way to the Modern team colors. */
+function styleSheet() {
+  return `<div class="scrim pop fit" data-act="styleclose"><div class="sheet pop fit" role="dialog" aria-label="Style" data-stop="1">
+      <div class="topbar"><h2>Style</h2><button class="btn icon-btn" data-act="styleclose" aria-label="Close">&times;</button></div>
+      <div class="muted" style="margin-top:6px">Choose how the app looks.</div>
+      <div class="stylelist">${styleButtons('stylepick', true)}</div>
+      <div class="autobtns"><button class="btn ghost" data-act="stylecolors">Team colors and highlight&hellip;</button></div>
+    </div></div>`;
+}
+
 function accentSheet() {
   const retro = state.theme === 'retro', cur = state.accent || ACCENT_DEFAULT, active = state.theme !== 'modern' || state.accent ? null : (state.nflTheme || DEFAULT_THEME);
   const follow = `<button class="themebtn wide ${active === CURRENT_TEAM ? 'on' : ''}" data-act="themeset:${CURRENT_TEAM}" aria-pressed="${active === CURRENT_TEAM}"><span class="dot" style="background:conic-gradient(#e53935, #fdd835, #43a047, #1e88e5, #8e24aa, #e53935)"></span>Current team<span class="muted">The theme follows the team you are viewing</span></button>`;
-  const retroBtn = `<button class="themebtn wide ${retro ? 'on' : ''}" data-act="theme:retro" aria-pressed="${retro}"><span class="dot retrodot"></span>Retro<span class="muted">The 8-bit look; it has its own colors</span></button>`;
-  const styleBtn = (id, name, note, dot) => `<button class="themebtn wide ${state.theme === id ? 'on' : ''}" data-act="theme:${id}" aria-pressed="${state.theme === id}"><span class="dot ${dot}"></span>${name}<span class="muted">${note}</span></button>`;
-  const cyberBtn = styleBtn('cyber', 'Cyber', 'Dark neon HUD; it has its own colors', 'cyberdot'), y2kBtn = styleBtn('y2k', 'Y2K', 'Pastel gel and Windows 98; it has its own colors', 'y2kdot'),
-    aquaBtn = styleBtn('aqua', 'Aqua', 'Glossy blue buttons and pinstripes, early 2000s Mac; it has its own colors', 'aquadot'),
-    xpBtn = styleBtn('xp', 'Windows XP', 'Luna blue title bars and beige windows; it has its own colors', 'xpdot');
   const grid = TEAM_THEMES.map(([id, name, accent, p, s]) => `<button class="themebtn ${id === active ? 'on' : ''}" data-act="themeset:${id}" aria-pressed="${id === active}"><span class="dot" style="background:linear-gradient(135deg, ${p} 0 45%, ${accent} 45% 70%, ${s} 70%)"></span>${esc(name)}</button>`).join('');
   return `<div class="scrim pop fit" data-act="accentclose"><div class="sheet pop fit" role="dialog" aria-label="Theme" data-stop="1">
       <div class="topbar"><h2>Theme</h2><button class="btn icon-btn" data-act="accentclose" aria-label="Close">&times;</button></div>
-      <div class="muted" style="margin-top:6px">Pick the Retro, Cyber, Y2K, Aqua or Windows XP style, or a color theme for the Modern style. Right-click (or long-press) the Modern button to open this.</div>
-      <h3 class="themehead">Themes</h3><div class="themegrid">${retroBtn}${cyberBtn}${y2kBtn}${aquaBtn}${xpBtn}${follow}${grid}</div>
+      <div class="muted" style="margin-top:6px">Pick a style, or a color theme for the Modern style.</div>
+      <h3 class="themehead">Themes</h3><div class="themegrid">${styleButtons('theme', false)}${follow}${grid}</div>
       <h3 class="themehead">Custom highlight color</h3>
       <div class="swatches">${ACCENT_PRESETS.map(([n, h]) => `<button class="swatch-btn ${h === cur && state.accent ? 'on' : ''}" style="background:${h}" data-act="accentset:${h}" aria-label="${n}"></button>`).join('')}</div>
       <div class="accentpick"><input type="color" id="accentcolor" value="${cur}" aria-label="Custom color"><span class="muted">Custom color <b id="accenthex">${cur}</b></span></div>
@@ -823,21 +838,6 @@ function useStyle(name) {
   state.theme = name;
   try { localStorage.setItem('tsb.theme', name); } catch (x) { /* ignore */ }
   return true;
-}
-
-// right-click on the Modern button; long-press for touch screens
-let accentSuppressClick = false;
-document.addEventListener('contextmenu', e => {
-  if (e.target.closest('[data-act="theme:modern"]')) { e.preventDefault(); openAccent(); }
-});
-{
-  let timer = null;
-  document.addEventListener('pointerdown', e => {
-    if (e.pointerType !== 'touch' || !e.target.closest('[data-act="theme:modern"]')) return;
-    timer = setTimeout(() => { timer = null; accentSuppressClick = true; openAccent(); }, 550);
-  });
-  const cancel = () => { if (timer) { clearTimeout(timer); timer = null; } };
-  document.addEventListener('pointerup', cancel); document.addEventListener('pointercancel', cancel); document.addEventListener('pointermove', cancel);
 }
 
 // ---------- pro bowl ----------
@@ -1323,7 +1323,7 @@ function railHtml(r) {
   const on = r === 'player' ? 'roster' : r;
   const n = changedLines(state.baseline, state.text);
   const item = (key, icon, label, go) => `<button class="railbtn ${on === key ? 'on' : ''}" data-act="go:${go}" aria-label="${label}" ${on === key ? 'aria-current="page"' : ''}>${ICON[icon]}<span>${label}</span></button>`;
-  return `<nav class="rail" aria-label="Sections"><button class="railmark" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261101c" alt=""></button>
+  return `<nav class="rail" aria-label="Sections"><button class="railmark" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261101e" alt=""></button>
     ${item('home', 'home', 'Home', 'home')}${item('roster', 'players', 'Players', 'roster')}${item('team', 'teams', 'Teams', 'team')}
     ${item('schedule', 'schedule', 'Schedule', 'schedule')}${item('probowl', 'probowl', 'Pro Bowl', 'probowl')}${P.cache.on ? item('photos', 'photo', 'Photos', 'photos') : ''}${item('text', 'text', 'Text', 'text')}
     <div class="railgrow"></div>${themeSwitch()}
@@ -1367,8 +1367,9 @@ function render() {
   document.querySelectorAll('.pane').forEach(el => { const k = kept.find(x => x[0] === el.dataset.pane && x[1] === el.dataset.pid); if (k) el.scrollTop = k[2]; });
   if (state.lastRoute === r) window.scrollTo(0, y); else window.scrollTo(0, 0);   // keep scroll on in-place updates
   state.lastRoute = r;
-  document.body.classList.toggle('modal-open', !!(state.help || state.accentDlg || state.facePicker || state.sheet || state.playPick || state.upick || state.upre || state.usage || state.auto || state.sgame || state.pbEdit || state.steamDlg || state.photoDlg || state.photoEd || state.notice));
+  document.body.classList.toggle('modal-open', !!(state.help || state.accentDlg || state.styleDlg || state.facePicker || state.sheet || state.playPick || state.upick || state.upre || state.usage || state.auto || state.sgame || state.pbEdit || state.steamDlg || state.photoDlg || state.photoEd || state.notice));
   if (state.accentDlg) app.insertAdjacentHTML('beforeend', accentSheet());
+  if (state.styleDlg) app.insertAdjacentHTML('beforeend', styleSheet());
   if (state.help) app.insertAdjacentHTML('beforeend', helpSheet());
   if (state.photoDlg) app.insertAdjacentHTML('beforeend', photoSheet());
   if (state.photoEd) app.insertAdjacentHTML('beforeend', photoEditorSheet());
@@ -1581,7 +1582,6 @@ function teamStep(d) {
 }
 
 document.addEventListener('click', e => {
-  if (accentSuppressClick) { accentSuppressClick = false; return; }
   const el = e.target.closest('[data-act]');
   if (!el || (el.classList.contains('scrim') && e.target !== el)) return;
   const [act, arg] = el.dataset.act.split(/:(.*)/);
@@ -1598,6 +1598,10 @@ document.addEventListener('click', e => {
     case 'openthemes': openAccent(); break;
     case 'themeset': useStyle('modern'); setTheme(arg); render(); break;
     case 'accentclose': state.accentDlg = false; render(); break;
+    case 'openstyles': state.styleDlg = true; render(); break;
+    case 'styleclose': state.styleDlg = false; render(); break;
+    case 'stylepick': useStyle(arg); state.styleDlg = false; render(); break;
+    case 'stylecolors': state.styleDlg = false; openAccent(); break;
     case 'help': state.help = 'menu'; render(); break;
     case 'helpabout': state.help = 'about'; render(); break;
     case 'helpguide': state.help = 'guide'; render(); break;
@@ -1607,7 +1611,7 @@ document.addEventListener('click', e => {
       (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => { msg.textContent = 'Copied.'; }, () => { msg.textContent = text; });
       break;
     }
-    case 'guidego': { const el = document.getElementById('guide-' + arg); if (el) el.scrollIntoView({ block: 'start' }); break; }
+    case 'guidego': { e.preventDefault(); const el = document.getElementById('guide-' + arg); if (el) el.scrollIntoView({ block: 'start' }); break; }
     case 'tform': state.tedit.t.formation = arg; render(); break;
     case 'steampick': state.steamDlg = true; render(); break;
     case 'steamset': state.steam = arg; state.steamDlg = false; render(); break;
@@ -1781,7 +1785,7 @@ document.addEventListener('keydown', e => {
   if (e.target.id === 'fq' && e.key === 'Escape') { e.preventDefault(); closeFind(); const ta = $('#editor'); if (ta) ta.focus(); }
   if (e.key === 'F3' && $('#editor') && state.find) { e.preventDefault(); find(e.shiftKey ? -1 : 1); }   // keep stepping from inside the text
   if ((e.key === 'f' || e.key === 'F') && (e.ctrlKey || e.metaKey) && !e.altKey && $('#editor')) { e.preventDefault(); openFind(); }   // Ctrl+F (Cmd+F) on the Text view
-  if (e.key === 'Escape' && (state.help || state.facePicker || state.sheet || state.playPick || state.upick || state.upre || state.usage || state.auto || state.sgame || state.accentDlg || state.pbEdit || state.steamDlg || state.photoDlg || state.photoEd || state.notice)) { state.help = null; state.photoDlg = null; state.photoEd = null; state.notice = null; state.steamDlg = false; state.pbEdit = null; state.accentDlg = false; state.sgame = null; state.facePicker = false; state.sheet = false; state.playPick = null; state.upick = null; state.upre = null; state.usage = null; state.auto = null; render(); }
+  if (e.key === 'Escape' && (state.help || state.facePicker || state.sheet || state.playPick || state.upick || state.upre || state.usage || state.auto || state.sgame || state.accentDlg || state.styleDlg || state.pbEdit || state.steamDlg || state.photoDlg || state.photoEd || state.notice)) { state.help = null; state.photoDlg = null; state.photoEd = null; state.notice = null; state.steamDlg = false; state.pbEdit = null; state.accentDlg = false; state.styleDlg = false; state.sgame = null; state.facePicker = false; state.sheet = false; state.playPick = null; state.upick = null; state.upre = null; state.usage = null; state.auto = null; render(); }
 });
 $('#file').addEventListener('change', async e => {
   const f = e.target.files[0]; e.target.value = '';
