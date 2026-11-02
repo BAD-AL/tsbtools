@@ -1,5 +1,5 @@
 import { dotnet } from './_framework/dotnet.js';
-import { GUIDE } from './guide.js?v=20261101e';
+import { GUIDE } from './guide.js?v=20261102a';
 import { TEAM_THEMES, DEFAULT_THEME, CURRENT_TEAM, themeById, themeForTeam } from './themes.js';
 import { GROUPS, FORMATIONS, parseText, parsePlayerLine, buildPlayerLine, parseTeamLine, buildTeamLine, parsePlaybook, buildPlaybook, parsePlaybook23, buildPlaybook23, teamLabel, changedLines } from './model.js';
 import * as U from './uniform.js';
@@ -123,11 +123,11 @@ function themeSwitch() {
   return `<div class="tbright"><button class="btn small stylebtn" data-act="openstyles" aria-label="Change style" title="Change the look of the app">Style</button>${helpButton()}</div>`;
 }
 /** The helmet button in the top left of the phone-style home page (the wide layout has it in the rail). */
-const phoneHelmet = () => `<button class="helmetbtn" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261101e" alt=""></button>`;
+const phoneHelmet = () => `<button class="helmetbtn" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261102a" alt=""></button>`;
 const helpButton = () => `<button class="btn icon-btn helpbtn" data-act="help" aria-label="Help and about" title="Help and about">?</button>`;
 
 // ---- the ? popup: About and Program guide ----
-const REPO_URL = 'https://github.com/BAD-AL/tsbtools', SITE_URL = 'https://tecmobowl.org/';
+const REPO_URL = 'https://github.com/BAD-AL/tsbtools', SITE_URL = 'https://tecmobowl.org/', TOOLS_URL = 'https://bad-al.github.io/tsbtools/';
 const extLink = (href, text) => `<a href="${href}" target="_blank" rel="noopener noreferrer">${text}</a>`;
 
 function helpSheet() {
@@ -135,7 +135,7 @@ function helpSheet() {
   if (!h) return '';
   const wrap = (title, body, back) => `<div class="scrim pop fit" data-act="helpclose"><div class="sheet pop fit" role="dialog" aria-label="${esc(title)}" data-stop="1">
       <div class="topbar">${back ? `<button class="btn ghost small" data-act="help">${ICON.left} Back</button>` : `<h2>${esc(title)}</h2>`}<button class="btn icon-btn" data-act="helpclose" aria-label="Close">&times;</button></div>${back ? `<h2 class="sheettitle">${esc(title)}</h2>` : ''}${body}</div></div>`;
-  if (h === 'menu') return wrap('Help', `<div class="helpmenu"><button class="btn tile2" data-act="helpabout">About</button><button class="btn tile2" data-act="helpguide">Program guide</button></div>`, false);
+  if (h === 'menu') return wrap('Help', `<div class="helpmenu"><button class="btn tile2" data-act="helpabout">About</button><button class="btn tile2" data-act="helpguide">Program guide</button><button class="btn tile2" data-act="helpsite" title="Opens the TSB Tools page in a new tab">TSBTools</button></div>`, false);
   if (h === 'about') {
     let ver = '';
     try { ver = web.GetVersion(); } catch (e) { /* runtime not ready */ }
@@ -1323,7 +1323,7 @@ function railHtml(r) {
   const on = r === 'player' ? 'roster' : r;
   const n = changedLines(state.baseline, state.text);
   const item = (key, icon, label, go) => `<button class="railbtn ${on === key ? 'on' : ''}" data-act="go:${go}" aria-label="${label}" ${on === key ? 'aria-current="page"' : ''}>${ICON[icon]}<span>${label}</span></button>`;
-  return `<nav class="rail" aria-label="Sections"><button class="railmark" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261101e" alt=""></button>
+  return `<nav class="rail" aria-label="Sections"><button class="railmark" data-act="openthemes" aria-label="Themes" title="Themes"><img src="img/helmets/${shownTheme() || DEFAULT_THEME}.png?v=20261102a" alt=""></button>
     ${item('home', 'home', 'Home', 'home')}${item('roster', 'players', 'Players', 'roster')}${item('team', 'teams', 'Teams', 'team')}
     ${item('schedule', 'schedule', 'Schedule', 'schedule')}${item('probowl', 'probowl', 'Pro Bowl', 'probowl')}${P.cache.on ? item('photos', 'photo', 'Photos', 'photos') : ''}${item('text', 'text', 'Text', 'text')}
     <div class="railgrow"></div>${themeSwitch()}
@@ -1676,6 +1676,7 @@ document.addEventListener('click', e => {
     case 'help': state.help = 'menu'; render(); break;
     case 'helpabout': state.help = 'about'; render(); break;
     case 'helpguide': state.help = 'guide'; render(); break;
+    case 'helpsite': window.open(TOOLS_URL, '_blank', 'noopener,noreferrer'); break;
     case 'helpclose': state.help = null; render(); break;
     case 'helpcopy': {
       const msg = $('#helpmsg'), text = diagnosticInfo();
